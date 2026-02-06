@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sicherheitszertifikat Weichlöten</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+            transition: background-color 0.5s ease;
+        }
+        
+        body.bestanden {
+            background-color: #4CAF50;
+        }
+        
+        body.durchgefallen {
+            background-color: #f44336;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #c00;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .name-input {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .name-input label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .name-input input {
+            padding: 8px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 250px;
+        }
+        
+        .frage {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #c00;
+        }
+        
+        .frage.richtig {
+            border-left-color: #4CAF50;
+            background-color: #e8f5e9;
+        }
+        
+        .frage.falsch {
+            border-left-color: #f44336;
+            background-color: #ffebee;
+        }
+        
+        .frage-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .antworten {
+            margin-left: 10px;
+        }
+        
+        .antwort {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .antwort input[type="radio"],
+        .antwort input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .antwort label {
+            cursor: pointer;
+            font-size: 15px;
+        }
+        
+        .submit-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #c00;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-button:hover {
+            background-color: #a00;
+        }
+        
+        .submit-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .ergebnis {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .ergebnis.show {
+            display: block;
+        }
+        
+        .ergebnis.bestanden {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .ergebnis.durchgefallen {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .ergebnis-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .reset-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: white;
+            color: #333;
+            border: 2px solid #333;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .reset-button.show {
+            display: inline-block;
+        }
+        
+        .info-box {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .info-box strong {
+            color: #856404;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 SICHERHEITSZERTIFIKAT WEICHLÖTEN 🔥</h1>
+        <p class="subtitle">Beantworte alle Fragen richtig, um dein Sicherheitszertifikat zu erhalten</p>
+        
+        <div class="info-box">
+            <strong>⚠️ Wichtig:</strong> Du musst alle Fragen richtig beantworten, um zur praktischen Lötstation zugelassen zu werden!
+        </div>
+        
+        <div class="name-input">
+            <label for="schueler-name">Dein Name:</label>
+            <input type="text" id="schueler-name" placeholder="Vor- und Nachname" required>
+        </div>
+        
+        <form id="sicherheitstest">
+            <!-- Frage 1 -->
+            <div class="frage" data-frage="1">
+                <div class="frage-text">1. Was musst du tragen, bevor du mit dem Weichlöten beginnst?</div>
+                <div class="antworten">
+                    <div class="antwort">
+                        <input type="radio" id="f1a1" name="frage1" value="falsch">
+                        <label for="f1a1">Arbeitshandschuhe</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f1a2" name="frage1" value="richtig">
+                        <label for="f1a2">Schutzbrille</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f1a3" name="frage1" value="falsch">
+                        <label for="f1a3">Gehörschutz</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f1a4" name="frage1" value="falsch">
+                        <label for="f1a4">Atemschutzmaske</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frage 2 -->
+            <div class="frage" data-frage="2">
+                <div class="frage-text">2. Womit darfst du die Brennerflamme NICHT entzünden?</div>
+                <div class="antworten">
+                    <div class="antwort">
+                        <input type="radio" id="f2a1" name="frage2" value="falsch">
+                        <label for="f2a1">Feuersteinanzünder</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f2a2" name="frage2" value="richtig">
+                        <label for="f2a2">Handelsübliches Feuerzeug</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f2a3" name="frage2" value="falsch">
+                        <label for="f2a3">Professioneller Stabanzünder</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frage 3 -->
+            <div class="frage" data-frage="3">
+                <div class="frage-text">3. Was darfst du während des Lötens auf keinen Fall tun?</div>
+                <div class="antworten">
+                    <div class="antwort">
+                        <input type="radio" id="f3a1" name="frage3" value="falsch">
+                        <label for="f3a1">Die Flamme gleichmäßig über das Werkstück bewegen</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f3a2" name="frage3" value="richtig">
+                        <label for="f3a2">Den Brenner unbeaufsichtigt lassen</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f3a3" name="frage3" value="falsch">
+                        <label for="f3a3">Flussmittel auf das Rohr auftragen</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f3a4" name="frage3" value="falsch">
+                        <label for="f3a4">Die Arbeitstemperatur kontrollieren</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frage 4 -->
+            <div class="frage" data-frage="4">
+                <div class="frage-text">4. Warum muss der Raum beim Weichlöten gut belüftet sein?</div>
+                <div class="antworten">
+                    <div class="antwort">
+                        <input type="radio" id="f4a1" name="frage4" value="falsch">
+                        <label for="f4a1">Damit die Flamme besser brennt</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f4a2" name="frage4" value="richtig">
+                        <label for="f4a2">Weil beim Löten Dämpfe entstehen</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f4a3" name="frage4" value="falsch">
+                        <label for="f4a3">Damit das Werkstück schneller abkühlt</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f4a4" name="frage4" value="falsch">
+                        <label for="f4a4">Damit man besser sehen kann</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frage 5 -->
+            <div class="frage" data-frage="5">
+                <div class="frage-text">5. Wie lange solltest du mindestens warten, bevor du ein frisch gelötetes Rohr anfasst?</div>
+                <div class="antworten">
+                    <div class="antwort">
+                        <input type="radio" id="f5a1" name="frage5" value="falsch">
+                        <label for="f5a1">30 Sekunden</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f5a2" name="frage5" value="falsch">
+                        <label for="f5a2">1 Minute</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f5a3" name="frage5" value="richtig">
+                        <label for="f5a3">2-3 Minuten</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f5a4" name="frage5" value="falsch">
+                        <label for="f5a4">10 Minuten</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frage 6 -->
+            <div class="frage" data-frage="6">
+                <div class="frage-text">6. Was muss in der Nähe der Lötstation griffbereit sein?</div>
+                <div class="antworten">
+                    <div class="antwort">
+                        <input type="radio" id="f6a1" name="frage6" value="falsch">
+                        <label for="f6a1">Erste-Hilfe-Koffer</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f6a2" name="frage6" value="richtig">
+                        <label for="f6a2">Feuerlöscher oder Löschdecke</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f6a3" name="frage6" value="falsch">
+                        <label for="f6a3">Wassereimer</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f6a4" name="frage6" value="falsch">
+                        <label for="f6a4">Werkzeugkoffer</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frage 7 -->
+            <div class="frage" data-frage="7">
+                <div class="frage-text">7. Was passiert, wenn du das Werkstück zu stark erhitzt?</div>
+                <div class="antworten">
+                    <div class="antwort">
+                        <input type="radio" id="f7a1" name="frage7" value="falsch">
+                        <label for="f7a1">Das Lot fließt besser</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f7a2" name="frage7" value="richtig">
+                        <label for="f7a2">Das Flussmittel verbrennt und das Lot tropft ab</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f7a3" name="frage7" value="falsch">
+                        <label for="f7a3">Die Lötung wird fester</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f7a4" name="frage7" value="falsch">
+                        <label for="f7a4">Nichts, die Temperatur ist egal</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Frage 8 -->
+            <div class="frage" data-frage="8">
+                <div class="frage-text">8. Was passiert, wenn du gegen die Sicherheitsregeln verstößt?</div>
+                <div class="antworten">
+                    <div class="antwort">
+                        <input type="radio" id="f8a1" name="frage8" value="falsch">
+                        <label for="f8a1">Du bekommst eine Verwarnung</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f8a2" name="frage8" value="richtig">
+                        <label for="f8a2">Du wirst sofort von der Lötstation entfernt</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f8a3" name="frage8" value="falsch">
+                        <label for="f8a3">Nichts, das ist nicht so schlimm</label>
+                    </div>
+                    <div class="antwort">
+                        <input type="radio" id="f8a4" name="frage8" value="falsch">
+                        <label for="f8a4">Du musst den Test wiederholen</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button" id="submit-btn">✓ TEST AUSWERTEN</button>
+        </form>
+
+        <div class="ergebnis" id="ergebnis">
+            <div class="ergebnis-icon" id="ergebnis-icon"></div>
+            <div id="ergebnis-text"></div>
+            <div id="ergebnis-name"></div>
+            <button class="reset-button" id="reset-btn" onclick="resetTest()">↻ Test wiederholen</button>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('sicherheitstest');
+        const submitBtn = document.getElementById('submit-btn');
+        const ergebnisDiv = document.getElementById('ergebnis');
+        const ergebnisIcon = document.getElementById('ergebnis-icon');
+        const ergebnisText = document.getElementById('ergebnis-text');
+        const ergebnisName = document.getElementById('ergebnis-name');
+        const resetBtn = document.getElementById('reset-btn');
+        const nameInput = document.getElementById('schueler-name');
+        const body = document.body;
+
+        // Anzahl der Fragen
+        const anzahlFragen = 8;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Überprüfe ob Name eingegeben wurde
+            if (!nameInput.value.trim()) {
+                alert('Bitte gib deinen Namen ein!');
+                nameInput.focus();
+                return;
+            }
+
+            // Überprüfe ob alle Fragen beantwortet wurden
+            let alleBeantwortet = true;
+            for (let i = 1; i <= anzahlFragen; i++) {
+                const antwort = document.querySelector(`input[name="frage${i}"]:checked`);
+                if (!antwort) {
+                    alleBeantwortet = false;
+                    break;
+                }
+            }
+
+            if (!alleBeantwortet) {
+                alert('Bitte beantworte alle Fragen!');
+                return;
+            }
+
+            // Auswertung
+            let richtigeAntworten = 0;
+            
+            for (let i = 1; i <= anzahlFragen; i++) {
+                const frageDiv = document.querySelector(`.frage[data-frage="${i}"]`);
+                const antwort = document.querySelector(`input[name="frage${i}"]:checked`);
+                
+                if (antwort.value === 'richtig') {
+                    richtigeAntworten++;
+                    frageDiv.classList.add('richtig');
+                    frageDiv.classList.remove('falsch');
+                } else {
+                    frageDiv.classList.add('falsch');
+                    frageDiv.classList.remove('richtig');
+                }
+            }
+
+            // Ergebnis anzeigen
+            const bestanden = (richtigeAntworten === anzahlFragen);
+            
+            ergebnisDiv.classList.add('show');
+            resetBtn.classList.add('show');
+            
+            if (bestanden) {
+                body.classList.add('bestanden');
+                body.classList.remove('durchgefallen');
+                ergebnisDiv.classList.add('bestanden');
+                ergebnisDiv.classList.remove('durchgefallen');
+                ergebnisIcon.textContent = '✓';
+                ergebnisText.innerHTML = `BESTANDEN!<br>Du hast alle ${anzahlFragen} Fragen richtig beantwortet!`;
+                ergebnisName.textContent = nameInput.value.trim();
+            } else {
+                body.classList.add('durchgefallen');
+                body.classList.remove('bestanden');
+                ergebnisDiv.classList.add('durchgefallen');
+                ergebnisDiv.classList.remove('bestanden');
+                ergebnisIcon.textContent = '✗';
+                ergebnisText.innerHTML = `NICHT BESTANDEN!<br>Du hast ${richtigeAntworten} von ${anzahlFragen} Fragen richtig.<br>Bitte wiederhole den Test!`;
+                ergebnisName.textContent = nameInput.value.trim();
+            }
+
+            // Scroll zum Ergebnis
+            ergebnisDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Button deaktivieren
+            submitBtn.disabled = true;
+        });
+
+        function resetTest() {
+            // Form zurücksetzen
+            form.reset();
+            
+            // Klassen entfernen
+            document.querySelectorAll('.frage').forEach(frage => {
+                frage.classList.remove('richtig', 'falsch');
+            });
+            
+            body.classList.remove('bestanden', 'durchgefallen');
+            ergebnisDiv.classList.remove('show', 'bestanden', 'durchgefallen');
+            resetBtn.classList.remove('show');
+            
+            // Button wieder aktivieren
+            submitBtn.disabled = false;
+            
+            // Nach oben scrollen
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
