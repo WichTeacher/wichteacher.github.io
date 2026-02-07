@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weichlöten - Vertiefungswissen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 20px;
+            opacity: 0.95;
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 30px;
+            border-radius: 15px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .module-card.completed::before {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4CAF50;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .module-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .module-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .module-description {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        
+        .module-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .module-content.active {
+            display: block;
+        }
+        
+        .module-content h2 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        
+        .module-content h3 {
+            color: #333;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .module-content p {
+            color: #444;
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 5px solid #2196F3;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .info-box h4 {
+            color: #1976D2;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .info-box p {
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+        
+        .wichtig-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .wichtig-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .quiz-section {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 40px;
+        }
+        
+        .quiz-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-question {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+        
+        .quiz-question.correct {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+        
+        .quiz-question.wrong {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .quiz-question p {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 8px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        
+        .quiz-option:hover {
+            background: #f0f0f0;
+        }
+        
+        .quiz-option input {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .quiz-feedback {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+        
+        .quiz-feedback.show {
+            display: block;
+        }
+        
+        .quiz-feedback.correct {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .quiz-feedback.wrong {
+            background: #f44336;
+            color: white;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .btn-back {
+            background: #999;
+            margin-right: 10px;
+        }
+        
+        .btn-back:hover {
+            background: #777;
+        }
+        
+        .badge {
+            display: none;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .badge.show {
+            display: block;
+        }
+        
+        .badge h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .badge-icon {
+            font-size: 80px;
+            margin: 20px 0;
+        }
+        
+        ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        ul li {
+            color: #444;
+            font-size: 17px;
+            line-height: 1.8;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Weichlöten - Vertiefungswissen 🔧</h1>
+            <p>Werde zum Weichlöt-Experten! Entdecke die Wissenschaft hinter dem Handwerk.</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress" style="width: 0%;">0 von 6 Modulen</div>
+        </div>
+
+        <!-- MODULE GRID -->
+        <div class="module-grid" id="module-grid">
+            <div class="module-card" onclick="openModule(1)">
+                <div class="module-icon">🌊</div>
+                <div class="module-title">Modul 1: Kapillarwirkung</div>
+                <div class="module-description">Warum wird das Lot "magisch" nach oben gesaugt? Die Physik hinter dem Lötspalt.</div>
+            </div>
+
+            <div class="module-card" onclick="openModule(2)">
+                <div class="module-icon">⚛️</div>
+                <div class="module-title">Modul 2: Metallurgie des Lötens</div>
+                <div class="module-description">Was passiert auf atomarer Ebene? Diffusion, Legierungsbildung und Festigkeit.</div>
+            </div>
+
+            <div class="module-card" onclick="openModule(3)">
+                <div class="module-icon">🧪</div>
+                <div class="module-title">Modul 3: Chemie des Flussmittels</div>
+                <div class="module-description">Wie bekämpft Flussmittel Oxidation? Die chemischen Prozesse beim Löten.</div>
+            </div>
+
+            <div class="module-card" onclick="openModule(4)">
+                <div class="module-icon">🔩</div>
+                <div class="module-title">Modul 4: Werkstoffkunde Kupfer</div>
+                <div class="module-description">Warum Kupfer? Eigenschaften, Härtegrade und thermische Behandlung.</div>
+            </div>
+
+            <div class="module-card" onclick="openModule(5)">
+                <div class="module-icon">📋</div>
+                <div class="module-title">Modul 5: Normen & Qualitätssicherung</div>
+                <div class="module-description">DIN, EN, ISO, DVGW - Was bedeuten die Normen und warum sind sie wichtig?</div>
+            </div>
+
+            <div class="module-card" onclick="openModule(6)">
+                <div class="module-icon">⚠️</div>
+                <div class="module-title">Modul 6: Fehlerursachen & Problemlösung</div>
+                <div class="module-description">Kalte Lötstelle, Blasen, Überhitzung - Fehler erkennen, verstehen und vermeiden.</div>
+            </div>
+        </div>
+
+        <!-- MODULE CONTENT SECTIONS -->
+        <div id="module-content-container"></div>
+
+        <!-- BADGE -->
+        <div class="badge" id="badge">
+            <div class="badge-icon">🏆</div>
+            <h2>Herzlichen Glückwunsch!</h2>
+            <p style="font-size: 20px;">Du hast alle 6 Module erfolgreich abgeschlossen und bist jetzt ein</p>
+            <h2 style="margin-top: 20px;">WEICHLÖT-EXPERTE!</h2>
+        </div>
+    </div>
+
+    <script>
+        // Fortschrittsverfolgung
+        let completedModules = new Set();
+        
+        // Modul-Inhalte
+        const modules = {
+            1: {
+                title: "Modul 1: Kapillarwirkung beim Löten",
+                content: `
+                    <h3>Was ist Kapillarwirkung?</h3>
+                    <p>Kapillarwirkung ist ein physikalisches Phänomen, bei dem eine Flüssigkeit entgegen der Schwerkraft in sehr engen Spalten nach oben steigt. Du kennst das aus dem Alltag:</p>
+                    <ul>
+                        <li>Ein Schwamm saugt Wasser auf</li>
+                        <li>Pflanzen transportieren Wasser von den Wurzeln bis in die Blätter</li>
+                        <li>Küchenpapier saugt verschüttete Flüssigkeiten auf</li>
+                    </ul>
+
+                    <h3>Warum funktioniert das beim Löten?</h3>
+                    <p>Beim Weichlöten nutzen wir die Kapillarwirkung gezielt aus. Kupferrohr und Fitting sind so aufeinander abgestimmt, dass ein haarfeiner Spalt entsteht - der sogenannte <strong>Kapillarspalt</strong>.</p>
+
+                    <div class="info-box">
+                        <h4>💡 Technische Daten</h4>
+                        <p>Der Lötspalt zwischen Rohr und Fitting ist <strong>0,02 bis 0,3 mm</strong> breit (bis 54mm Durchmesser). Das ist so eng, dass eine Stecknadel nicht hineinpassen würde!</p>
+                    </div>
+
+                    <h3>Die drei entscheidenden Kräfte</h3>
+                    <p><strong>1. Adhäsionskraft:</strong> Das flüssige Lot wird von der Kupferoberfläche angezogen (Lot "klebt" am Metall).</p>
+                    <p><strong>2. Kohäsionskraft:</strong> Die Lotmoleküle ziehen sich gegenseitig an (Lot "hält zusammen").</p>
+                    <p><strong>3. Oberflächenspannung:</strong> Das Lot "will" die kleinstmögliche Oberfläche einnehmen.</p>
+
+                    <p>Wenn die <strong>Adhäsionskraft größer</strong> ist als die Kohäsionskraft, steigt die Flüssigkeit im Spalt nach oben. Beim Löten sind die Bedingungen perfekt dafür:</p>
+                    <ul>
+                        <li>Kupfer zieht flüssiges Lot stark an (gute Benetzung)</li>
+                        <li>Der Spalt ist extrem eng</li>
+                        <li>Das Lot ist dünnflüssig bei Arbeitstemperatur</li>
+                    </ul>
+
+                    <h3>Warum läuft das Lot nicht ins Rohrinnere?</h3>
+                    <p>Im Rohrinneren gibt es <strong>keinen Kapillarspalt</strong> mehr! Die Kapillarwirkung funktioniert nur in sehr engen Spalten. Das freie Rohrinnere ist viel zu weit, daher bleibt das Lot im Spalt zwischen Rohr und Fitting.</p>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ Praktische Bedeutung</h4>
+                        <p>Die sichtbare <strong>Lotkehle</strong> am äußeren Rand des Fittings zeigt dir, dass der Kapillarspalt komplett gefüllt ist. Das Lot wurde durch die Kapillarwirkung eingesaugt und hat den gesamten Spalt ausgefüllt!</p>
+                    </div>
+
+                    <h3>Was passiert, wenn der Spalt zu breit ist?</h3>
+                    <p>Ist der Spalt breiter als 0,3-0,4 mm (z.B. weil das Rohr nicht kalibriert wurde oder die Maßtoleranzen nicht stimmen), funktioniert die Kapillarwirkung nicht mehr richtig:</p>
+                    <ul>
+                        <li>Das Lot wird nicht vollständig eingesaugt</li>
+                        <li>Es entstehen Hohlräume in der Lötnaht</li>
+                        <li>Die Verbindung wird undicht</li>
+                    </ul>
+                `,
+                quiz: [
+                    {
+                        question: "Was ist die entscheidende Voraussetzung für Kapillarwirkung beim Löten?",
+                        options: [
+                            "Ein sehr enger Spalt (0,02-0,3 mm)",
+                            "Eine raue Oberfläche",
+                            "Ein weiter Spalt (über 1 mm)",
+                            "Eine kalte Umgebungstemperatur"
+                        ],
+                        correct: 0,
+                        explanation: "Richtig! Die Kapillarwirkung funktioniert nur in sehr engen Spalten. Der Lötspalt muss zwischen 0,02 und 0,3 mm breit sein."
+                    },
+                    {
+                        question: "Warum läuft das Lot nicht ins Rohrinnere?",
+                        options: [
+                            "Das Lot ist zu dick",
+                            "Im Rohrinneren gibt es keinen Kapillarspalt mehr",
+                            "Das Flussmittel verhindert es",
+                            "Die Temperatur ist zu niedrig"
+                        ],
+                        correct: 1,
+                        explanation: "Genau! Die Kapillarwirkung funktioniert nur im engen Spalt zwischen Rohr und Fitting. Das freie Rohrinnere ist zu weit."
+                    },
+                    {
+                        question: "Woran erkennst du, dass der Lötspalt vollständig gefüllt ist?",
+                        options: [
+                            "Das Rohr wird heiß",
+                            "Es bildet sich eine sichtbare Lotkehle am äußeren Fittingrand",
+                            "Das Lot tropft ab",
+                            "Das Flussmittel verdampft"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! Die Lotkehle am äußeren Rand zeigt, dass das Lot durch den gesamten Kapillarspalt gesaugt wurde."
+                    }
+                ]
+            },
+            2: {
+                title: "Modul 2: Metallurgie des Lötens",
+                content: `
+                    <h3>Was passiert beim Löten auf atomarer Ebene?</h3>
+                    <p>Beim Löten entsteht eine feste Verbindung zwischen Lot und Kupfer - aber <strong>nicht</strong> durch Aufschmelzen des Kupfers (wie beim Schweißen), sondern durch einen Prozess namens <strong>Diffusion</strong>.</p>
+
+                    <div class="info-box">
+                        <h4>💡 Definition: Löten</h4>
+                        <p>Löten ist ein thermisches Fügeverfahren, bei dem die Grundwerkstoffe (hier: Kupfer) <strong>nicht</strong> aufgeschmolzen werden. Nur das Lot schmilzt und verbindet sich durch Diffusion mit dem Grundwerkstoff.</p>
+                    </div>
+
+                    <h3>Der Diffusionsprozess</h3>
+                    <p><strong>Diffusion</strong> bedeutet: Atome wandern von einem Material ins andere. Wenn das flüssige Lot die blanke Kupferoberfläche berührt, passiert Folgendes:</p>
+
+                    <p><strong>Schritt 1 - Benetzung:</strong> Das flüssige Lot breitet sich auf der Kupferoberfläche aus. Es "klebt" am Kupfer und bedeckt es vollständig.</p>
+
+                    <p><strong>Schritt 2 - Diffusion:</strong> Atome aus dem Lot (hauptsächlich Zinn) beginnen, in die Kupferoberfläche einzudringen. Gleichzeitig wandern Kupferatome in das flüssige Lot.</p>
+
+                    <p><strong>Schritt 3 - Legierungsbildung:</strong> In der Grenzschicht zwischen Kupfer und Lot entsteht eine neue <strong>Legierung</strong> aus Kupfer und Zinn. Diese Schicht ist nur wenige Mikrometer dünn, aber entscheidend für die Festigkeit!</p>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ Warum ist die Legierungsschicht wichtiger als das Lot?</h4>
+                        <p>Die Diffusionsschicht (Legierung aus Kupfer und Zinn) hat eine <strong>höhere Festigkeit</strong> als das reine Lot. Die eigentliche Verbindung entsteht also nicht durch das Lot allein, sondern durch diese metallurgische Reaktion zwischen Lot und Kupfer!</p>
+                    </div>
+
+                    <h3>Unterschied zum Schweißen</h3>
+                    <p>Beim <strong>Schweißen</strong> werden die Grundwerkstoffe selbst aufgeschmolzen und vermischen sich. Beim <strong>Löten</strong> bleibt das Kupfer fest - nur die Oberfläche "reagiert" mit dem Lot.</p>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; border: 1px solid #ddd;"></th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Löten</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Schweißen</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Grundwerkstoff</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Schmilzt NICHT</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Schmilzt</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Verbindung durch</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Diffusion</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Aufschmelzen</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Temperatur</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Unter 450°C (Weichlöten)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Über 1000°C</td>
+                        </tr>
+                    </table>
+
+                    <h3>Warum muss die Oberfläche blank sein?</h3>
+                    <p>Oxidschichten (z.B. Kupferoxid) verhindern die Diffusion! Atome können nicht durch die Oxidschicht wandern. Deshalb musst du vor dem Löten:</p>
+                    <ul>
+                        <li>Die Oberfläche mechanisch reinigen (blank machen)</li>
+                        <li>Flussmittel verwenden (entfernt Reste und verhindert neue Oxidation)</li>
+                    </ul>
+
+                    <div class="info-box">
+                        <h4>💡 Wusstest du?</h4>
+                        <p>Bei Raumtemperatur diffundieren Atome nur extrem langsam. Durch die Hitze beim Löten bewegen sich die Atome viel schneller - deshalb entsteht die Legierungsschicht in Sekunden statt in Jahren!</p>
+                    </div>
+
+                    <h3>Festigkeit der Lötverbindung</h3>
+                    <p>Die Festigkeit hängt von mehreren Faktoren ab:</p>
+                    <ul>
+                        <li><strong>Dicke der Diffusionsschicht:</strong> Je besser die Diffusion, desto fester die Verbindung</li>
+                        <li><strong>Füllgrad des Lötspalts:</strong> Der Spalt muss komplett gefüllt sein</li>
+                        <li><strong>Lottyp:</strong> Lotlegierungen mit Silber (Sn97Ag3) sind fester als reine Kupfer-Zinn-Lote</li>
+                    </ul>
+
+                    <p>Eine gut ausgeführte Weichlötverbindung hält <strong>Drücke bis 50 bar</strong> aus - mehr als genug für Trinkwasserinstallationen (max. 10 bar)!</p>
+                `,
+                quiz: [
+                    {
+                        question: "Was ist der Hauptunterschied zwischen Löten und Schweißen?",
+                        options: [
+                            "Beim Löten schmilzt der Grundwerkstoff nicht",
+                            "Beim Löten wird kein Zusatzwerkstoff verwendet",
+                            "Beim Löten entsteht keine feste Verbindung",
+                            "Beim Löten gibt es keine Diffusion"
+                        ],
+                        correct: 0,
+                        explanation: "Richtig! Beim Löten bleibt das Kupfer fest - nur das Lot schmilzt. Beim Schweißen schmilzt auch der Grundwerkstoff."
+                    },
+                    {
+                        question: "Was ist Diffusion beim Löten?",
+                        options: [
+                            "Das Lot verdampft",
+                            "Atome wandern zwischen Lot und Kupfer hin und her",
+                            "Das Kupfer schmilzt",
+                            "Das Flussmittel löst sich auf"
+                        ],
+                        correct: 1,
+                        explanation: "Genau! Bei der Diffusion wandern Atome aus dem Lot ins Kupfer und umgekehrt. So entsteht eine Legierungsschicht."
+                    },
+                    {
+                        question: "Warum ist die Legierungsschicht zwischen Lot und Kupfer so wichtig?",
+                        options: [
+                            "Sie sieht gut aus",
+                            "Sie hat eine höhere Festigkeit als das reine Lot",
+                            "Sie verhindert Korrosion",
+                            "Sie ist wasserdicht"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! Die Legierungsschicht ist fester als das Lot und bildet die eigentliche mechanische Verbindung."
+                    }
+                ]
+            },
+            3: {
+                title: "Modul 3: Chemie des Flussmittels",
+                content: `
+                    <h3>Warum brauchen wir Flussmittel?</h3>
+                    <p>Stell dir vor, du würdest versuchen, ohne Flussmittel zu löten. Was würde passieren?</p>
+                    <ul>
+                        <li>Das Lot würde nicht am Kupfer haften, sondern "abperlen" wie Wasser auf Wachs</li>
+                        <li>Es würden keine festen Verbindungen entstehen</li>
+                        <li>Die Lötung wäre undicht und instabil</li>
+                    </ul>
+
+                    <p>Der Grund: <strong>Oxidschichten</strong> auf dem Kupfer verhindern die Benetzung und Diffusion.</p>
+
+                    <h3>Das Problem: Oxidation</h3>
+                    <p>Kupfer reagiert mit Sauerstoff aus der Luft zu <strong>Kupferoxid (CuO oder Cu₂O)</strong>. Diese Oxidschicht bildet sich sofort, sobald du die Oberfläche blank gemacht hast:</p>
+
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; font-family: monospace;">
+                        2 Cu + O₂ → 2 CuO (Kupfer(II)-oxid, schwarz)<br>
+                        4 Cu + O₂ → 2 Cu₂O (Kupfer(I)-oxid, rot)
+                    </div>
+
+                    <p>Das Problem: Diese Oxidschichten sind für das Lot wie eine unsichtbare Barriere. Das Lot kann nicht mit dem Kupfer reagieren.</p>
+
+                    <h3>Die Lösung: Flussmittel</h3>
+                    <p>Flussmittel hat zwei wichtige Aufgaben:</p>
+
+                    <p><strong>1. Entfernung vorhandener Oxide (Reduktion):</strong></p>
+                    <p>Die aktiven Bestandteile im Flussmittel (meist schwache Säuren wie Zinkchlorid oder Ammoniumchlorid) reagieren chemisch mit den Kupferoxiden und lösen sie auf:</p>
+
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; font-family: monospace;">
+                        CuO + 2 HCl → CuCl₂ + H₂O<br>
+                        (Kupferoxid wird zu wasserlöslichem Kupferchlorid)
+                    </div>
+
+                    <p><strong>2. Verhinderung neuer Oxidation (Schutzschicht):</strong></p>
+                    <p>Das Flussmittel bildet eine dünne Schutzschicht auf der blanken Kupferoberfläche. Diese Schicht verhindert, dass während des Erhitzens neue Oxide entstehen - bis das Lot die Oberfläche benetzt.</p>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ Wirktemperaturbereich beachten!</h4>
+                        <p>Flussmittel für Weichlöten wirkt zwischen <strong>150 und 400°C</strong>. Wird es zu heiß (über 400°C), verbrennt das Flussmittel und wird unwirksam. Das Lot perlt dann ab statt zu fließen!</p>
+                    </div>
+
+                    <h3>Die drei Flussmitteltypen fürs Weichlöten</h3>
+                    <p>Nach DIN EN ISO 9454-1 sind drei Typen zugelassen:</p>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; border: 1px solid #ddd;">Typ</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Basis</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Eigenschaften</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>3.1.1</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Anorganisch, wasserlöslich</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Gute Flusswirkung, Rückstände wasserlöslich</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>3.1.2</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Anorganisch, wasserlöslich</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Ähnlich wie 3.1.1, andere Aktivatoren</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>2.1.2</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Organisch, wasserlöslich</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Mildere Wirkung, auch wasserlöslich</td>
+                        </tr>
+                    </table>
+
+                    <p>Alle drei Typen haben eine Gemeinsamkeit: Ihre <strong>Rückstände sind kaltwasserlöslich</strong>. Das ist wichtig für Trinkwasserinstallationen!</p>
+
+                    <h3>Warum müssen Flussmittelreste wasserlöslich sein?</h3>
+                    <p>Nach dem Löten bleiben Flussmittelreste auf der Oberfläche zurück. In Trinkwasserleitungen ist das problematisch:</p>
+                    <ul>
+                        <li>Nicht wasserlösliche Rückstände können ins Trinkwasser gelangen</li>
+                        <li>Sie können korrosionsfördernd wirken</li>
+                        <li>Sie entsprechen nicht den Hygienevorschriften</li>
+                    </ul>
+
+                    <p>Deshalb: Nach dem Löten die Außenseite mit einem feuchten Lappen reinigen. Beim ersten Spülen der Leitung werden auch Reste im Rohrinneren entfernt.</p>
+
+                    <div class="info-box">
+                        <h4>💡 Das DVGW-Zeichen</h4>
+                        <p>Das DVGW-Zeichen auf dem Flussmittelbehälter bestätigt, dass die Rückstände kaltwasserlöslich und für Trinkwasser geeignet sind. Ohne dieses Zeichen darf das Flussmittel nicht in Trinkwasserinstallationen verwendet werden!</p>
+                    </div>
+
+                    <h3>Was passiert, wenn du zu viel Flussmittel verwendest?</h3>
+                    <ul>
+                        <li>Überschüssiges Flussmittel kann ins Rohrinnere laufen</li>
+                        <li>Es entsteht mehr Rauch beim Erhitzen</li>
+                        <li>Die Reinigung wird aufwendiger</li>
+                    </ul>
+                    <p><strong>Faustregel:</strong> Nur das Rohrende dünn bestreichen - nicht das Fitting-Innere!</p>
+
+                    <h3>Alternative: Weichlotpaste</h3>
+                    <p>Weichlotpaste ist eine Mischung aus pulverförmigem Lot und Flussmittel. Vorteil: Du siehst am Aufschmelzen der Paste (wird silberfarben), wann die richtige Arbeitstemperatur erreicht ist.</p>
+
+                    <p><strong>Wichtig:</strong> Das Lot in der Paste reicht nicht aus, um den Spalt zu füllen! Du musst zusätzlich Lot zuführen.</p>
+                `,
+                quiz: [
+                    {
+                        question: "Was ist die Hauptaufgabe von Flussmittel?",
+                        options: [
+                            "Das Lot schneller schmelzen lassen",
+                            "Oxidschichten entfernen und neue Oxidation verhindern",
+                            "Das Kupfer härten",
+                            "Die Temperatur erhöhen"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! Flussmittel entfernt Oxidschichten chemisch und schützt die blanke Oberfläche vor neuer Oxidation."
+                    },
+                    {
+                        question: "Warum müssen Flussmittelreste in Trinkwasserleitungen wasserlöslich sein?",
+                        options: [
+                            "Damit sie nicht korrodieren",
+                            "Damit sie beim Spülen der Leitung entfernt werden können",
+                            "Damit sie besser wirken",
+                            "Damit das Lot besser haftet"
+                        ],
+                        correct: 1,
+                        explanation: "Genau! Wasserlösliche Rückstände können beim ersten Spülen entfernt werden und gelangen nicht dauerhaft ins Trinkwasser."
+                    },
+                    {
+                        question: "Was passiert, wenn du das Werkstück über 400°C erhitzt?",
+                        options: [
+                            "Das Lot wird fester",
+                            "Das Flussmittel wirkt besser",
+                            "Das Flussmittel verbrennt und wird unwirksam",
+                            "Das Kupfer schmilzt"
+                        ],
+                        correct: 2,
+                        explanation: "Richtig! Über 400°C verbrennt das Flussmittel. Das Lot kann dann nicht mehr richtig fließen und perlt ab."
+                    }
+                ]
+            },
+            4: {
+                title: "Modul 4: Werkstoffkunde Kupfer",
+                content: `
+                    <h3>Warum verwenden wir Kupfer für Rohrleitungen?</h3>
+                    <p>Kupfer ist nicht umsonst seit Jahrtausenden ein beliebter Werkstoff. Für Rohrleitungen hat es entscheidende Vorteile:</p>
+
+                    <ul>
+                        <li><strong>Korrosionsbeständig:</strong> Kupfer bildet eine schützende Patina (grünliche Schicht), die das Material vor weiterer Korrosion schützt</li>
+                        <li><strong>Antibakteriell:</strong> Kupfer tötet Bakterien ab - ideal für Trinkwasser</li>
+                        <li><strong>Gut lötbar:</strong> Lot benetzt Kupfer hervorragend (siehe Modul 2)</li>
+                        <li><strong>Formbar:</strong> Lässt sich gut biegen und verarbeiten</li>
+                        <li><strong>Langlebig:</strong> Kupferrohre halten 50+ Jahre</li>
+                        <li><strong>Recycelbar:</strong> Kupfer kann beliebig oft recycelt werden</li>
+                    </ul>
+
+                    <h3>Kupfer-Bezeichnungen nach DIN EN 1057</h3>
+                    <p>Für Rohrleitungen wird hauptsächlich <strong>Cu-DHP</strong> verwendet:</p>
+
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <strong>Cu-DHP</strong> = <strong>Cu</strong>pfer, <strong>D</strong>esoxidiert mit <strong>H</strong>igh <strong>P</strong>hosphorus<br>
+                        (Kupfer mit 0,015-0,040% Phosphor)
+                    </div>
+
+                    <p>Der Phosphor im Kupfer hat zwei Funktionen:</p>
+                    <ul>
+                        <li>Er bindet Sauerstoff → das Kupfer wird "sauerstofffrei"</li>
+                        <li>Er verbessert die Lötbarkeit (wirkt wie ein integriertes Flussmittel beim Hartlöten)</li>
+                    </ul>
+
+                    <h3>Hart oder weich? Die Härtegrade von Kupferrohren</h3>
+                    <p>Kupferrohre gibt es in drei Härtegraden, die durch thermische Behandlung eingestellt werden:</p>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; border: 1px solid #ddd;">Zustand</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Bezeichnung</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Eigenschaften</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Anwendung</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Weich (R220)</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Geglüht</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Sehr gut biegbar, niedrige Festigkeit</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">In Ringen, zum Biegen</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Halbhart (R250)</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Teilweise verfestigt</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Begrenzt biegbar, mittlere Festigkeit</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Kompromiss zwischen Festigkeit und Verarbeitbarkeit</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>Hart (R290)</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Kaltverformt</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Schwer biegbar, hohe Festigkeit</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">In Stangen, für gerade Leitungen</td>
+                        </tr>
+                    </table>
+
+                    <h3>Wie entstehen die verschiedenen Härtegrade?</h3>
+
+                    <p><strong>Harte Rohre (kaltverformt):</strong></p>
+                    <p>Beim Herstellen wird das Kupfer bei Raumtemperatur durch Walzen oder Ziehen verformt. Dabei verschieben sich die Atome im Kristallgitter - das Material wird <strong>kaltverfestigt</strong>. Es wird härter und fester, aber auch spröder.</p>
+
+                    <p><strong>Weiche Rohre (geglüht):</strong></p>
+                    <p>Harte Rohre werden auf etwa 500-650°C erhitzt und langsam abgekühlt (<strong>Glühen</strong>). Dabei ordnen sich die Atome neu an - die Kaltverfestigung wird rückgängig gemacht. Das Rohr wird wieder weich und gut biegbar.</p>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ Wichtig beim Hartlöten!</h4>
+                        <p>Beim Hartlöten (über 450°C) werden harte und halbharte Rohre ungewollt <strong>weichgeglüht</strong>! Die hohe Temperatur führt zur gleichen Atomumlagerung wie beim gezielten Glühen. Die Rohre verlieren ihre Festigkeit.</p>
+                        <p>Deshalb: Harte Rohre sollten nur <strong>weichgelötet</strong> werden (unter 450°C), oder man muss die reduzierte Festigkeit einkalkulieren.</p>
+                    </div>
+
+                    <h3>Warum müssen weiche Rohre kalibriert werden?</h3>
+                    <p>Weiche Rohre kommen in Ringen und sind beim Abrollen oft <strong>oval</strong> statt rund. Für den Kapillarspalt beim Löten ist aber eine exakt runde Form wichtig!</p>
+
+                    <p>Mit dem <strong>Kalibrierwerkzeug</strong> wird das Rohrende wieder kreisrund geformt. Ohne Kalibrieren:</p>
+                    <ul>
+                        <li>Das Rohr passt nicht richtig in den Fitting</li>
+                        <li>Der Lötspalt ist ungleichmäßig (an manchen Stellen zu breit, an anderen zu eng)</li>
+                        <li>Die Kapillarwirkung funktioniert nicht richtig</li>
+                        <li>Die Verbindung wird undicht</li>
+                    </ul>
+
+                    <div class="info-box">
+                        <h4>💡 Entgraten ist Pflicht!</h4>
+                        <p>Beim Schneiden von Kupferrohren entsteht ein <strong>Grat</strong> (scharfe Kante) an der Innenseite. Dieser muss unbedingt entfernt werden, sonst:</p>
+                        <ul>
+                            <li>Stört er den gleichmäßigen Lötspalt</li>
+                            <li>Können sich Schmutz und Kalk am Grat ablagern</li>
+                            <li>Wird die Strömung behindert (Druckverlust)</li>
+                        </ul>
+                    </div>
+
+                    <h3>Kupferlegierungen: Rotguss und Messing</h3>
+                    <p>Neben reinem Kupfer werden manchmal auch Kupferlegierungen für Fittings verwendet:</p>
+
+                    <p><strong>Rotguss (CuSn-Bronze):</strong> Kupfer + 5-10% Zinn<br>
+                    → Härter als reines Kupfer, gut für Armaturen und Fittings</p>
+
+                    <p><strong>Messing:</strong> Kupfer + Zink<br>
+                    → Sehr hart, gut spanbar (für Gewindefittings)</p>
+
+                    <p>Beide lassen sich genauso löten wie reines Kupfer!</p>
+                `,
+                quiz: [
+                    {
+                        question: "Warum wird Cu-DHP (Kupfer mit Phosphor) für Rohrleitungen verwendet?",
+                        options: [
+                            "Es ist billiger",
+                            "Der Phosphor macht es sauerstofffrei und verbessert die Lötbarkeit",
+                            "Es ist härter als normales Kupfer",
+                            "Es rostet nicht"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! Phosphor bindet Sauerstoff und macht das Kupfer sauerstofffrei. Beim Hartlöten wirkt er sogar wie ein Flussmittel."
+                    },
+                    {
+                        question: "Was passiert mit harten Kupferrohren beim Hartlöten (über 450°C)?",
+                        options: [
+                            "Sie werden noch härter",
+                            "Sie schmelzen",
+                            "Sie werden weichgeglüht und verlieren ihre Festigkeit",
+                            "Nichts, sie bleiben unverändert"
+                        ],
+                        correct: 2,
+                        explanation: "Genau! Die hohe Temperatur beim Hartlöten glüht die Rohre weich. Die Kaltverfestigung geht verloren."
+                    },
+                    {
+                        question: "Warum müssen weiche Kupferrohre vor dem Löten kalibriert werden?",
+                        options: [
+                            "Damit sie härter werden",
+                            "Damit sie kreisrund werden und ein gleichmäßiger Lötspalt entsteht",
+                            "Damit sie besser biegen",
+                            "Damit das Lot besser haftet"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! Weiche Rohre sind oft oval. Kalibrieren macht sie rund, sodass der Kapillarspalt gleichmäßig ist."
+                    }
+                ]
+            },
+            5: {
+                title: "Modul 5: Normen und Qualitätssicherung",
+                content: `
+                    <h3>Warum brauchen wir Normen?</h3>
+                    <p>Stell dir vor, jeder Hersteller würde Kupferrohre und Fittings nach eigenen Maßen produzieren. Das Chaos wäre perfekt:</p>
+                    <ul>
+                        <li>Rohre von Hersteller A passen nicht zu Fittings von Hersteller B</li>
+                        <li>Lote hätten unterschiedliche Schmelzpunkte - niemand wüsste, welches für was geeignet ist</li>
+                        <li>Qualität wäre nicht vergleichbar</li>
+                        <li>Sicherheit könnte nicht gewährleistet werden</li>
+                    </ul>
+
+                    <p><strong>Normen</strong> schaffen Ordnung und Sicherheit. Sie legen fest:</p>
+                    <ul>
+                        <li>Welche Abmessungen und Toleranzen eingehalten werden müssen</li>
+                        <li>Welche Materialien verwendet werden dürfen</li>
+                        <li>Wie Produkte gekennzeichnet werden müssen</li>
+                        <li>Welche Prüfverfahren anzuwenden sind</li>
+                    </ul>
+
+                    <h3>Die wichtigsten Normungsorganisationen</h3>
+
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <p><strong>DIN</strong> = Deutsches Institut für Normung (Deutschland)<br>
+                        <strong>EN</strong> = Europäische Norm (gilt in ganz Europa)<br>
+                        <strong>ISO</strong> = International Organization for Standardization (weltweit)</p>
+                    </div>
+
+                    <p><strong>DIN EN ISO</strong> bedeutet: Eine internationale Norm (ISO) wurde von Europa (EN) übernommen und gilt auch in Deutschland (DIN).</p>
+
+                    <h3>Normen für Kupferrohre und Fittings</h3>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; border: 1px solid #ddd;">Norm</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Titel</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Inhalt</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>DIN EN 1057</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Kupferrohre</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Maße, Toleranzen, Werkstoff, Härtegrade, Kennzeichnung</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>DIN EN 1254</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Kapillarlötfittings</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Abmessungen, Lötspaltmaße, Material, Qualitätsanforderungen</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>DIN EN ISO 9453</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Weichlote</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Zusammensetzung, Schmelzbereiche, Kennzeichnung</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>DIN EN ISO 9454-1</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Flussmittel</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Typen, Wirkbereiche, chemische Zusammensetzung</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><strong>DIN EN 1044</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Hartlote</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Legierungen, Temperaturen, Verwendung</td>
+                        </tr>
+                    </table>
+
+                    <h3>Das Gütezeichen RAL</h3>
+                    <p>Die <strong>Gütegemeinschaft Kupferrohr e.V.</strong> vergibt das <strong>RAL-Gütezeichen</strong>. Es bedeutet:</p>
+                    <ul>
+                        <li>Das Produkt erfüllt nicht nur die Mindestanforderungen der Norm</li>
+                        <li>Es erfüllt <strong>erhöhte Qualitätsanforderungen</strong></li>
+                        <li>Die Produktion wird regelmäßig überwacht</li>
+                        <li>Neutrale Prüfstellen kontrollieren die Qualität</li>
+                    </ul>
+
+                    <div class="info-box">
+                        <h4>💡 RAL vs. Norm</h4>
+                        <p>Norm = Mindestanforderung (Pflicht)<br>
+                        RAL-Gütezeichen = Qualität über der Norm (freiwillig, aber empfohlen)</p>
+                    </div>
+
+                    <h3>Das DVGW-Zeichen</h3>
+                    <p>Der <strong>Deutsche Verein des Gas- und Wasserfaches (DVGW)</strong> prüft und zertifiziert Produkte für Trinkwasser- und Gasinstallationen.</p>
+
+                    <p><strong>Für Weichlöten relevant:</strong> Flussmittel und Lote mit DVGW-Zeichen sind:</p>
+                    <ul>
+                        <li>Gesundheitlich unbedenklich (keine giftigen Bestandteile)</li>
+                        <li>Korrosionsbeständig</li>
+                        <li>Ihre Rückstände sind kaltwasserlöslich</li>
+                        <li>Sie beeinflussen Geschmack und Geruch des Trinkwassers nicht</li>
+                    </ul>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ DVGW-Zeichen ist Pflicht!</h4>
+                        <p>Für Trinkwasser- und Gasinstallationen <strong>muss</strong> das Material DVGW-zertifiziert sein. Ohne DVGW-Zeichen darf es nicht verwendet werden - das ist sogar gesetzlich geregelt!</p>
+                    </div>
+
+                    <h3>Wie werden Lote und Flussmittel geprüft?</h3>
+
+                    <p><strong>Prüfungen für Lote:</strong></p>
+                    <ul>
+                        <li><strong>Chemische Analyse:</strong> Stimmt die Zusammensetzung? (z.B. 97% Zinn, 3% Kupfer für Sn97Cu3)</li>
+                        <li><strong>Schmelzpunktbestimmung:</strong> Liegt der Schmelzbereich im erlaubten Bereich?</li>
+                        <li><strong>Zugfestigkeitsprüfung:</strong> Wie fest sind Lötverbindungen mit diesem Lot?</li>
+                        <li><strong>Benetzungstest:</strong> Fließt das Lot gut auf Kupfer?</li>
+                    </ul>
+
+                    <p><strong>Prüfungen für Flussmittel:</strong></p>
+                    <ul>
+                        <li><strong>Wirksamkeit:</strong> Entfernt es Oxide zuverlässig?</li>
+                        <li><strong>Temperaturbeständigkeit:</strong> Funktioniert es im angegebenen Temperaturbereich?</li>
+                        <li><strong>Wasserlöslichkeit:</strong> Lassen sich Rückstände mit kaltem Wasser entfernen?</li>
+                        <li><strong>Korrosionsprüfung:</strong> Greift es Kupfer an?</li>
+                        <li><strong>Trinkwasserhygiene:</strong> Sind alle Bestandteile unbedenklich? (für DVGW)</li>
+                    </ul>
+
+                    <h3>Kennzeichnung lesen lernen</h3>
+
+                    <p><strong>Beispiel Weichlot:</strong></p>
+                    <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 15px 0; font-family: monospace;">
+                        Sn97Cu3 - DIN EN ISO 9453 - [Herstellerlogo] - RAL Gütezeichen
+                    </div>
+
+                    <p><strong>Das bedeutet:</strong></p>
+                    <ul>
+                        <li><strong>Sn97Cu3:</strong> 97% Zinn, 3% Kupfer</li>
+                        <li><strong>DIN EN ISO 9453:</strong> Erfüllt die internationale Norm für Weichlote</li>
+                        <li><strong>Herstellerlogo:</strong> Identifikation des Herstellers</li>
+                        <li><strong>RAL:</strong> Erhöhte Qualitätsanforderungen erfüllt</li>
+                    </ul>
+
+                    <p><strong>Beispiel Flussmittel:</strong></p>
+                    <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 15px 0; font-family: monospace;">
+                        3.1.1 - DIN EN ISO 9454 - [Herstellerlogo] - RAL - DVGW
+                    </div>
+
+                    <p><strong>Das bedeutet:</strong></p>
+                    <ul>
+                        <li><strong>3.1.1:</strong> Flussmitteltyp (anorganisch, wasserlöslich)</li>
+                        <li><strong>DIN EN ISO 9454:</strong> Erfüllt die Flussmittel-Norm</li>
+                        <li><strong>RAL:</strong> Erhöhte Qualität</li>
+                        <li><strong>DVGW:</strong> Für Trinkwasser zugelassen</li>
+                    </ul>
+
+                    <div class="info-box">
+                        <h4>💡 Tipp für die Praxis</h4>
+                        <p>Vor jedem Einkauf: Prüfe die Kennzeichnung! Alle vier Elemente (Bezeichnung, Norm, Herstellerlogo, Gütezeichen) sollten vorhanden sein. Bei Trinkwasser zusätzlich das DVGW-Zeichen.</p>
+                    </div>
+                `,
+                quiz: [
+                    {
+                        question: "Was bedeutet 'DIN EN ISO 9453' auf einer Lotverpackung?",
+                        options: [
+                            "Das ist die Chargennummer",
+                            "Das Lot erfüllt die internationale Norm für Weichlote",
+                            "Das ist der Herstellercode",
+                            "Das Lot wurde in Deutschland hergestellt"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! DIN EN ISO 9453 ist die internationale Norm für Weichlote, die in Deutschland und Europa gilt."
+                    },
+                    {
+                        question: "Warum ist das DVGW-Zeichen bei Trinkwasserinstallationen so wichtig?",
+                        options: [
+                            "Es macht das Material billiger",
+                            "Es bestätigt, dass das Material für Trinkwasser gesundheitlich unbedenklich ist",
+                            "Es garantiert eine längere Haltbarkeit",
+                            "Es ist nur eine Empfehlung"
+                        ],
+                        correct: 1,
+                        explanation: "Genau! Das DVGW-Zeichen bestätigt, dass alle Bestandteile unbedenklich sind und die Rückstände kaltwasserlöslich sind. Ohne DVGW darf es nicht in Trinkwasserinstallationen verwendet werden!"
+                    },
+                    {
+                        question: "Was ist der Unterschied zwischen Norm und RAL-Gütezeichen?",
+                        options: [
+                            "Es gibt keinen Unterschied",
+                            "Die Norm ist Mindestanforderung, RAL bedeutet erhöhte Qualität",
+                            "RAL ist schlechter als die Norm",
+                            "Nur RAL ist wichtig, die Norm nicht"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! Die Norm legt Mindestanforderungen fest. Das RAL-Gütezeichen bedeutet, dass das Produkt darüber hinaus erhöhte Qualitätsanforderungen erfüllt."
+                    }
+                ]
+            },
+            6: {
+                title: "Modul 6: Fehlerursachen und Problemlösung",
+                content: `
+                    <h3>Fehler beim Löten verstehen und vermeiden</h3>
+                    <p>Auch erfahrene Handwerker machen manchmal Fehler. Wichtig ist, die <strong>Ursachen</strong> zu verstehen, damit du sie in Zukunft vermeiden kannst.</p>
+
+                    <h3>Fehler 1: Kalte Lötstelle</h3>
+
+                    <p><strong>Wie erkennst du sie?</strong></p>
+                    <ul>
+                        <li>Das Lot ist <strong>matt und grau</strong> statt glänzend silbrig</li>
+                        <li>Die Oberfläche ist rau und porös</li>
+                        <li>Die Verbindung ist mechanisch schwach</li>
+                        <li>Oft ist die Verbindung undicht</li>
+                    </ul>
+
+                    <p><strong>Ursachen:</strong></p>
+                    <ul>
+                        <li><strong>Zu niedrige Temperatur:</strong> Das Lot ist nicht richtig geschmolzen</li>
+                        <li><strong>Zu schnelles Abkühlen:</strong> Werkstück wurde bewegt, bevor das Lot erstarrt war</li>
+                        <li><strong>Verschmutzung:</strong> Oberfläche war nicht sauber</li>
+                    </ul>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ So vermeidest du kalte Lötstellen</h4>
+                        <ul>
+                            <li>Werkstück gleichmäßig und ausreichend erhitzen</li>
+                            <li>Auf Temperaturanzeichen achten (Lotpaste schmilzt silberfarben)</li>
+                            <li>Verbindung während des Abkühlens nicht bewegen!</li>
+                            <li>Oberflächen gründlich reinigen und entfetten</li>
+                        </ul>
+                    </div>
+
+                    <h3>Fehler 2: Überhitzung</h3>
+
+                    <p><strong>Wie erkennst du sie?</strong></p>
+                    <ul>
+                        <li>Dunkle bis schwarze Verfärbungen auf dem Kupfer</li>
+                        <li>Das Lot ist abgetropft statt zu fließen</li>
+                        <li>Starke Rauchentwicklung während des Lötens</li>
+                        <li>Das Kupfer wird spröde und brüchig</li>
+                    </ul>
+
+                    <p><strong>Ursachen:</strong></p>
+                    <ul>
+                        <li><strong>Zu lange erhitzt:</strong> Temperatur stieg über 400°C</li>
+                        <li><strong>Flamme zu konzentriert:</strong> Punktuelle Überhitzung</li>
+                        <li><strong>Falscher Brenner:</strong> Zu große Flamme für kleinen Durchmesser</li>
+                    </ul>
+
+                    <p><strong>Was passiert bei Überhitzung?</strong></p>
+                    <ul>
+                        <li>Das Flussmittel <strong>verbrennt</strong> → kann Oxide nicht mehr entfernen</li>
+                        <li>Das Lot kann die oxidierte Oberfläche nicht benetzen → perlt ab</li>
+                        <li>Bei extremer Überhitzung: Kupfer wird geschädigt (Kristallstruktur verändert sich)</li>
+                    </ul>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ So vermeidest du Überhitzung</h4>
+                        <ul>
+                            <li>Flamme ständig bewegen (Streuflamme)</li>
+                            <li>Brennergröße an Rohrdurchmesser anpassen</li>
+                            <li>Auf Temperaturindikatoren achten (Lotpaste, Farbveränderung)</li>
+                            <li>Nicht zu lange erhitzen - "so kurz wie möglich"</li>
+                        </ul>
+                    </div>
+
+                    <h3>Fehler 3: Porosität (Blasen im Lot)</h3>
+
+                    <p><strong>Wie erkennst du sie?</strong></p>
+                    <ul>
+                        <li>Kleine Löcher oder Blasen im erstarrten Lot</li>
+                        <li>Schwammartige Struktur</li>
+                        <li>Verbindung kann undicht sein</li>
+                    </ul>
+
+                    <p><strong>Ursachen:</strong></p>
+                    <ul>
+                        <li><strong>Verunreinigungen:</strong> Öl, Fett oder Schmutz auf der Oberfläche verdampfen beim Erhitzen → Gasblasen im Lot</li>
+                        <li><strong>Feuchtigkeit:</strong> Wasser verdampft explosionsartig → Blasen</li>
+                        <li><strong>Zu viel Flussmittel:</strong> Flussmittel verdampft → Blasen</li>
+                        <li><strong>Oxidschichten:</strong> Unvollständig entfernte Oxide setzen beim Löten Gas frei</li>
+                    </ul>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ So vermeidest du Porosität</h4>
+                        <ul>
+                            <li>Oberflächen gründlich mechanisch reinigen (blank machen)</li>
+                            <li>Fettfreie Handschuhe tragen oder Hände waschen</li>
+                            <li>Rohre trocken lagern, keine feuchten Teile löten</li>
+                            <li>Flussmittel sparsam auftragen (dünn!)</li>
+                        </ul>
+                    </div>
+
+                    <h3>Fehler 4: Unvollständige Füllung des Lötspalts</h3>
+
+                    <p><strong>Wie erkennst du es?</strong></p>
+                    <ul>
+                        <li>Keine oder nur teilweise sichtbare Lotkehle</li>
+                        <li>Verbindung ist undicht</li>
+                        <li>Bei Belastung lockert sich die Verbindung</li>
+                    </ul>
+
+                    <p><strong>Ursachen:</strong></p>
+                    <ul>
+                        <li><strong>Zu wenig Lot zugeführt:</strong> Der Spalt konnte nicht vollständig gefüllt werden</li>
+                        <li><strong>Lötspalt zu breit:</strong> Kapillarwirkung funktioniert nicht (>0,3-0,4mm)</li>
+                        <li><strong>Keine Lotkehle = Spalt nicht voll:</strong> Das Lot wurde nicht bis zum Rand gesaugt</li>
+                        <li><strong>Rohr nicht bis Anschlag:</strong> Wenn das Rohr nicht ganz im Fitting sitzt, fehlt Kontakt</li>
+                    </ul>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ So vermeidest du unvollständige Füllung</h4>
+                        <ul>
+                            <li>Weiche Rohre immer kalibrieren!</li>
+                            <li>Rohre bis zum Anschlag in Fitting schieben</li>
+                            <li>Lot solange zuführen, bis Lotkehle sichtbar wird</li>
+                            <li>Nur Rohre und Fittings nach Norm verwenden (DIN EN 1057/1254)</li>
+                        </ul>
+                    </div>
+
+                    <h3>Fehler 5: Lot läuft ins Rohrinnere</h3>
+
+                    <p><strong>Wie erkennst du es?</strong></p>
+                    <ul>
+                        <li>Sichtbare Lotansammlung im Rohrinneren</li>
+                        <li>Reduzierter Durchfluss</li>
+                        <li>Erhöhter Druckverlust</li>
+                    </ul>
+
+                    <p><strong>Ursachen:</strong></p>
+                    <ul>
+                        <li><strong>Zu viel Lot zugeführt:</strong> Überschüssiges Lot tropft nach innen</li>
+                        <li><strong>Lötspalt zu breit:</strong> Kapillarwirkung hält das Lot nicht mehr zurück</li>
+                        <li><strong>Flussmittel auch innen aufgetragen:</strong> Lot wird ins Innere gezogen</li>
+                    </ul>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ So vermeidest du Lot im Rohrinneren</h4>
+                        <ul>
+                            <li>Nur soviel Lot zuführen, bis Kehle sichtbar ist - nicht mehr!</li>
+                            <li>Flussmittel NUR außen auf das Rohrende auftragen</li>
+                            <li>Rohr kalibrieren für korrekten Lötspalt</li>
+                            <li>Rohr waagerecht oder leicht nach oben geneigt halten</li>
+                        </ul>
+                    </div>
+
+                    <h3>Fehler 6: Flussmittelreste nicht entfernt</h3>
+
+                    <p><strong>Warum ist das ein Problem?</strong></p>
+                    <ul>
+                        <li>Optisch unansehnlich (weiße/grüne Rückstände)</li>
+                        <li>Kann langfristig zu Korrosion führen</li>
+                        <li>In Trinkwasserleitungen: Hygieneproblem</li>
+                    </ul>
+
+                    <div class="wichtig-box">
+                        <h4>⚡ Richtiges Reinigen</h4>
+                        <ul>
+                            <li>Außen: Mit feuchtem Lappen abwischen (solange noch warm)</li>
+                            <li>Innen: Beim ersten Spülen der Leitung werden Reste entfernt</li>
+                            <li>Bei hartnäckigen Resten: Drahtbürste verwenden</li>
+                            <li>Nur DVGW-zertifizierte Flussmittel verwenden (kaltwasserlöslich!)</li>
+                        </ul>
+                    </div>
+
+                    <h3>Problemlösungs-Checkliste</h3>
+
+                    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; border: 1px solid #ddd;">Symptom</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Wahrscheinliche Ursache</th>
+                            <th style="padding: 10px; border: 1px solid #ddd;">Lösung</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Lot perlt ab</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Überhitzt / Schmutz / Oxide</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Temperatur reduzieren, besser reinigen</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Graue, matte Oberfläche</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Kalte Lötstelle (zu wenig Hitze)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Länger erhitzen, nicht bewegen</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Keine Lotkehle</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Zu wenig Lot / Spalt zu breit</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Mehr Lot zuführen, kalibrieren</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Blasen im Lot</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Verunreinigungen / Feuchtigkeit</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Gründlicher reinigen, trocken löten</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Schwarze Verfärbung</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Überhitzt (über 400°C)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Flamme bewegen, kleinerer Brenner</td>
+                        </tr>
+                    </table>
+
+                    <div class="info-box">
+                        <h4>💡 Goldene Regel</h4>
+                        <p>Die meisten Lötfehler lassen sich vermeiden durch:</p>
+                        <ul>
+                            <li><strong>Gründliche Vorbereitung:</strong> Reinigen, entgraten, kalibrieren</li>
+                            <li><strong>Richtige Temperatur:</strong> Nicht zu kalt, nicht zu heiß</li>
+                            <li><strong>Geduld:</strong> Nicht bewegen während des Abkühlens</li>
+                            <li><strong>Qualitätsmaterial:</strong> Normgerechte Materialien verwenden</li>
+                        </ul>
+                    </div>
+                `,
+                quiz: [
+                    {
+                        question: "Woran erkennst du eine kalte Lötstelle?",
+                        options: [
+                            "Das Lot ist glänzend und silbrig",
+                            "Das Lot ist matt, grau und porös",
+                            "Das Kupfer ist schwarz verfärbt",
+                            "Es bildet sich eine schöne Lotkehle"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! Kalte Lötstellen sind matt, grau und haben eine raue Oberfläche. Das Lot ist nicht richtig geschmolzen."
+                    },
+                    {
+                        question: "Was passiert, wenn du das Werkstück überhitzt (über 400°C)?",
+                        options: [
+                            "Das Lot fließt besser",
+                            "Das Flussmittel verbrennt und das Lot perlt ab",
+                            "Die Verbindung wird fester",
+                            "Das Kupfer schmilzt"
+                        ],
+                        correct: 1,
+                        explanation: "Genau! Über 400°C verbrennt das Flussmittel und kann nicht mehr wirken. Das Lot kann die oxidierte Oberfläche nicht benetzen und tropft ab."
+                    },
+                    {
+                        question: "Warum entstehen Blasen (Porosität) im Lot?",
+                        options: [
+                            "Weil zu viel Lot verwendet wurde",
+                            "Weil Verunreinigungen oder Feuchtigkeit beim Erhitzen verdampfen",
+                            "Weil die Temperatur zu niedrig war",
+                            "Weil das Rohr zu dick ist"
+                        ],
+                        correct: 1,
+                        explanation: "Richtig! Öl, Fett, Schmutz oder Feuchtigkeit verdampfen beim Erhitzen und hinterlassen Gasblasen im Lot. Deshalb: Gründlich reinigen und trocken arbeiten!"
+                    }
+                ]
+            }
+        };
+
+        function openModule(moduleNum) {
+            // Hide module grid
+            document.getElementById('module-grid').style.display = 'none';
+            
+            // Create module content
+            const container = document.getElementById('module-content-container');
+            const module = modules[moduleNum];
+            
+            container.innerHTML = `
+                <div class="module-content active">
+                    <h2>${module.title}</h2>
+                    ${module.content}
+                    
+                    <div class="quiz-section">
+                        <h3>📝 Wissenstest - Überprüfe dein Verständnis</h3>
+                        ${module.quiz.map((q, i) => `
+                            <div class="quiz-question" data-module="${moduleNum}" data-question="${i}">
+                                <p>${i + 1}. ${q.question}</p>
+                                ${q.options.map((opt, j) => `
+                                    <div class="quiz-option" onclick="selectAnswer(${moduleNum}, ${i}, ${j})">
+                                        <input type="radio" name="q${moduleNum}_${i}" id="q${moduleNum}_${i}_${j}">
+                                        <label for="q${moduleNum}_${i}_${j}">${opt}</label>
+                                    </div>
+                                `).join('')}
+                                <div class="quiz-feedback" data-feedback="${moduleNum}-${i}"></div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button class="btn btn-back" onclick="backToOverview()">← Zurück zur Übersicht</button>
+                    <button class="btn" onclick="completeModule(${moduleNum})">Modul abschließen →</button>
+                </div>
+            `;
+            
+            window.scrollTo(0, 0);
+        }
+
+        function selectAnswer(moduleNum, questionNum, answerNum) {
+            const question = modules[moduleNum].quiz[questionNum];
+            const questionDiv = document.querySelector(`[data-module="${moduleNum}"][data-question="${questionNum}"]`);
+            const feedback = document.querySelector(`[data-feedback="${moduleNum}-${questionNum}"]`);
+            
+            // Update radio selection
+            const radios = questionDiv.querySelectorAll('input[type="radio"]');
+            radios.forEach((r, i) => {
+                r.checked = (i === answerNum);
+            });
+            
+            // Show feedback
+            feedback.classList.add('show');
+            if (answerNum === question.correct) {
+                feedback.classList.remove('wrong');
+                feedback.classList.add('correct');
+                feedback.textContent = '✓ ' + question.explanation;
+                questionDiv.classList.remove('wrong');
+                questionDiv.classList.add('correct');
+            } else {
+                feedback.classList.remove('correct');
+                feedback.classList.add('wrong');
+                feedback.textContent = '✗ Das ist leider nicht richtig. ' + question.explanation;
+                questionDiv.classList.remove('correct');
+                questionDiv.classList.add('wrong');
+            }
+        }
+
+        function completeModule(moduleNum) {
+            // Check if all questions answered correctly
+            const module = modules[moduleNum];
+            const allCorrect = module.quiz.every((q, i) => {
+                const questionDiv = document.querySelector(`[data-module="${moduleNum}"][data-question="${i}"]`);
+                return questionDiv.classList.contains('correct');
+            });
+            
+            if (!allCorrect) {
+                alert('Bitte beantworte alle Fragen richtig, bevor du das Modul abschließt!');
+                return;
+            }
+            
+            // Mark as completed
+            completedModules.add(moduleNum);
+            updateProgress();
+            
+            // Show completion message
+            alert('✓ Modul ' + moduleNum + ' erfolgreich abgeschlossen!');
+            backToOverview();
+        }
+
+        function backToOverview() {
+            document.getElementById('module-grid').style.display = 'grid';
+            document.getElementById('module-content-container').innerHTML = '';
+            window.scrollTo(0, 0);
+        }
+
+        function updateProgress() {
+            const progress = (completedModules.size / 6) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+            document.getElementById('progress').textContent = completedModules.size + ' von 6 Modulen';
+            
+            // Update module cards
+            document.querySelectorAll('.module-card').forEach((card, index) => {
+                if (completedModules.has(index + 1)) {
+                    card.classList.add('completed');
+                }
+            });
+            
+            // Show badge if all completed
+            if (completedModules.size === 6) {
+                document.getElementById('badge').classList.add('show');
+            }
+        }
+    </script>
+</body>
+</html>
