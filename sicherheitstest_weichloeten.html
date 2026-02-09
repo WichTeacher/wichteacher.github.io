@@ -352,51 +352,6 @@
                 </div>
             </div>
 
-            <!-- Frage 7 -->
-            <div class="frage" data-frage="7">
-                <div class="frage-text">7. Was passiert, wenn du das Werkstück zu stark erhitzt?</div>
-                <div class="antworten">
-                    <div class="antwort">
-                        <input type="radio" id="f7a1" name="frage7" value="falsch">
-                        <label for="f7a1">Das Lot fließt besser</label>
-                    </div>
-                    <div class="antwort">
-                        <input type="radio" id="f7a2" name="frage7" value="richtig">
-                        <label for="f7a2">Das Flussmittel verbrennt und das Lot tropft ab</label>
-                    </div>
-                    <div class="antwort">
-                        <input type="radio" id="f7a3" name="frage7" value="falsch">
-                        <label for="f7a3">Die Lötung wird fester</label>
-                    </div>
-                    <div class="antwort">
-                        <input type="radio" id="f7a4" name="frage7" value="falsch">
-                        <label for="f7a4">Nichts, die Temperatur ist egal</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Frage 8 -->
-            <div class="frage" data-frage="8">
-                <div class="frage-text">8. Was passiert, wenn du gegen die Sicherheitsregeln verstößt?</div>
-                <div class="antworten">
-                    <div class="antwort">
-                        <input type="radio" id="f8a1" name="frage8" value="falsch">
-                        <label for="f8a1">Du bekommst eine Verwarnung</label>
-                    </div>
-                    <div class="antwort">
-                        <input type="radio" id="f8a2" name="frage8" value="richtig">
-                        <label for="f8a2">Du wirst sofort von der Lötstation entfernt</label>
-                    </div>
-                    <div class="antwort">
-                        <input type="radio" id="f8a3" name="frage8" value="falsch">
-                        <label for="f8a3">Nichts, das ist nicht so schlimm</label>
-                    </div>
-                    <div class="antwort">
-                        <input type="radio" id="f8a4" name="frage8" value="falsch">
-                        <label for="f8a4">Du musst den Test wiederholen</label>
-                    </div>
-                </div>
-            </div>
 
             <button type="submit" class="submit-button" id="submit-btn">✓ TEST AUSWERTEN</button>
         </form>
@@ -421,7 +376,7 @@
         const body = document.body;
 
         // Anzahl der Fragen
-        const anzahlFragen = 8;
+        const anzahlFragen = 6;
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
