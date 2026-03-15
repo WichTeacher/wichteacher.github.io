@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBB Lernapp – Staatsbürgerliche Bildung</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f12;
+    --surface: #1a1a20;
+    --surface2: #22222a;
+    --border: rgba(255,255,255,0.08);
+    --accent: #c8a96e;
+    --accent2: #7eb8a0;
+    --text: #e8e6e0;
+    --text-muted: #8a8880;
+    --must: #7eb8a0;
+    --good: #6b9fd4;
+    --overview: #888780;
+    --must-bg: rgba(126,184,160,0.12);
+    --good-bg: rgba(107,159,212,0.12);
+    --overview-bg: rgba(136,135,128,0.1);
+    --correct: #7eb8a0;
+    --wrong: #c07070;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* NOISE TEXTURE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* LAYOUT */
+  .app { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .progress-bar {
+    margin: 16px 24px 0;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 6px 24px 0;
+  }
+
+  .category-nav { padding: 12px 0; flex: 1; }
+
+  .cat-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 10px 24px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    line-height: 1.4;
+  }
+  .cat-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .cat-btn.active { color: var(--accent); border-left-color: var(--accent); background: rgba(200,169,110,0.06); }
+  .cat-btn .cat-num { font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px; }
+
+  /* MAIN CONTENT */
+  .main { flex: 1; padding: 48px 56px; max-width: 860px; }
+
+  .page-header {
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .category-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .priority-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .tag-must { background: var(--must-bg); color: var(--must); border: 1px solid rgba(126,184,160,0.3); }
+  .tag-good { background: var(--good-bg); color: var(--good); border: 1px solid rgba(107,159,212,0.3); }
+  .tag-overview { background: var(--overview-bg); color: var(--overview); border: 1px solid rgba(136,135,128,0.25); }
+
+  /* QUESTION CARDS */
+  .questions-section { margin-bottom: 48px; }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .q-header:hover { background: rgba(255,255,255,0.02); }
+
+  .q-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 32px;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .q-title {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .q-priority {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .q-toggle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: transform 0.25s;
+  }
+  .question-card.open .q-toggle { transform: rotate(180deg); }
+
+  .q-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .question-card.open .q-body { display: block; }
+
+  .explanation {
+    padding-top: 18px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  .explanation h4 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin: 20px 0 10px;
+  }
+  .explanation h4:first-child { margin-top: 0; }
+
+  .explanation p { margin-bottom: 12px; }
+  .explanation ul { padding-left: 18px; margin-bottom: 12px; }
+  .explanation li { margin-bottom: 4px; }
+
+  .expl-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .expl-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--surface2);
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .expl-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .expl-table tr:last-child td { border-bottom: none; }
+
+  .tip-box {
+    background: rgba(200,169,110,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .tip-box strong { color: var(--accent); }
+
+  /* QUIZ SECTION */
+  .quiz-section {
+    margin-top: 48px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+
+  .quiz-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .quiz-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .quiz-q-number {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .quiz-question {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: rgba(200,169,110,0.4);
+    background: rgba(200,169,110,0.06);
+  }
+  .option-btn:disabled { cursor: default; }
+
+  .option-letter {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+  }
+
+  .option-btn.correct {
+    border-color: var(--correct);
+    background: rgba(126,184,160,0.1);
+  }
+  .option-btn.correct .option-letter {
+    background: var(--correct);
+    color: #0f1f1a;
+  }
+  .option-btn.wrong {
+    border-color: var(--wrong);
+    background: rgba(192,112,112,0.1);
+  }
+  .option-btn.wrong .option-letter {
+    background: var(--wrong);
+    color: #1f0f0f;
+  }
+
+  .quiz-feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct-fb {
+    background: rgba(126,184,160,0.1);
+    border-left: 3px solid var(--correct);
+    color: var(--correct);
+  }
+  .quiz-feedback.wrong-fb {
+    background: rgba(192,112,112,0.1);
+    border-left: 3px solid var(--wrong);
+    color: var(--wrong);
+  }
+
+  /* SCORE */
+  .score-summary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .score-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .score-info { flex: 1; }
+  .score-label { font-size: 13px; color: var(--text-muted); }
+  .score-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 10px; }
+  .score-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.8s ease; }
+
+  .reset-btn {
+    padding: 10px 24px;
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { background: var(--accent); color: var(--bg); }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .app { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: static; }
+    .main { padding: 28px 20px; }
+    .page-title { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">SBB Lernapp</div>
+      <div class="sidebar-sub">Staatsbürgerliche Bildung</div>
+    </div>
+    <div class="progress-bar" style="margin-top:16px;">
+      <div class="progress-fill" id="globalProgress" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="globalProgressLabel">0 von 81 Fragen bearbeitet</div>
+    <div class="category-nav" id="categoryNav"></div>
+  </nav>
+
+  <main class="main" id="mainContent"></main>
+</div>
+
+<script>
+const categories = [
+  {
+    id: "grundrechte",
+    icon: "🏛️",
+    title: "Grundgesetz & Grundrechte",
+    questions: [
+      {
+        n: 4,
+        title: "Menschen- vs. Bürgerrechte",
+        priority: "must",
+        explanation: `
+          <h4>Kernunterschied</h4>
+          <p><strong>Menschenrechte</strong> gelten für <em>jeden Menschen</em> weltweit – unabhängig von Staatsangehörigkeit, Aufenthaltsstatus oder Herkunft. Sie sind universell, unveräußerlich und vorstaatlich.</p>
+          <p><strong>Bürgerrechte (Deutschenrechte)</strong> gelten nur für <em>deutsche Staatsbürger</em> (i.S.d. Art. 116 GG).</p>
+          <h4>Erkennungsmerkmale im GG</h4>
+          <table class="expl-table">
+            <tr><th>Typ</th><th>Wortlaut</th><th>Beispiele</th></tr>
+            <tr><td>Menschenrecht</td><td>„Jeder hat das Recht…" / „Die Würde…"</td><td>Art. 1, 2, 3, 4</td></tr>
+            <tr><td>Bürgerrecht</td><td>„Alle Deutschen haben das Recht…"</td><td>Art. 8, 9, 11, 12, 16, 33</td></tr>
+          </table>
+          <h4>Wichtige Beispiele</h4>
+          <ul>
+            <li><strong>Art. 1 GG</strong> – Menschenwürde → Menschenrecht</li>
+            <li><strong>Art. 2 GG</strong> – Freie Entfaltung → Menschenrecht</li>
+            <li><strong>Art. 8 GG</strong> – Versammlungsfreiheit → Bürgerrecht</li>
+            <li><strong>Art. 11 GG</strong> – Freizügigkeit → Bürgerrecht</li>
+            <li><strong>Art. 12 GG</strong> – Berufsfreiheit → Bürgerrecht</li>
+          </ul>
+          <div class="tip-box"><strong>Prüfungstipp:</strong> Ein Asylbewerber kann sich auf Art. 1 und 2 GG berufen, aber nicht auf Art. 8 oder 12. EU-Bürger erhalten manche Bürgerrechte jedoch über das EU-Recht (z.B. Freizügigkeit).</div>
+        `
+      },
+      {
+        n: 5,
+        title: "Rechte & Pflichten des Staatsbürgers",
+        priority: "good",
+        explanation: `
+          <h4>Rechte</h4>
+          <ul>
+            <li>Aktives und passives Wahlrecht (Art. 38 GG)</li>
+            <li>Grundrechte (Art. 1–19 GG)</li>
+            <li>Petitionsrecht (Art. 17 GG)</li>
+            <li>Zugang zu öffentlichen Ämtern (Art. 33 GG)</li>
+            <li>Schutz vor Auslieferung (Art. 16 GG)</li>
+          </ul>
+          <h4>Pflichten</h4>
+          <ul>
+            <li>Steuerpflicht</li>
+            <li>Schulpflicht</li>
+            <li>Verteidigungspflicht (Art. 12a GG)</li>
+            <li>Sozialpflichtigkeit des Eigentums (Art. 14 GG)</li>
+            <li>Gehorsamspflicht gegenüber Gesetzen</li>
+          </ul>
+          <div class="tip-box"><strong>Merksatz:</strong> Im demokratischen Rechtsstaat sind Rechte und Pflichten zwei Seiten derselben Medaille – Freiheit setzt Verantwortung voraus.</div>
+        `
+      },
+      {
+        n: 11,
+        title: "Grundrechte im GG – Überblick",
+        priority: "must",
+        explanation: `
+          <h4>Kategorien der Grundrechte</h4>
+          <table class="expl-table">
+            <tr><th>Kategorie</th><th>Beispiele</th></tr>
+            <tr><td>Freiheitsrechte</td><td>Art. 2 (Handlungsfreiheit), Art. 4 (Glaubensfreiheit), Art. 5 (Meinungsfreiheit), Art. 8 (Versammlungsfreiheit)</td></tr>
+            <tr><td>Gleichheitsrechte</td><td>Art. 3 (Gleichheit vor dem Gesetz), Art. 33 (gleicher Zugang zu Ämtern)</td></tr>
+            <tr><td>Justizgrundrechte</td><td>Art. 101 (gesetzlicher Richter), Art. 103 (rechtliches Gehör)</td></tr>
+          </table>
+          <h4>Besondere Grundrechte</h4>
+          <ul>
+            <li><strong>Art. 1 GG</strong> – Menschenwürde: „Ewigkeitsgarantie", nicht änderbar (Art. 79 III GG)</li>
+            <li><strong>Art. 19 IV GG</strong> – Rechtswegsgarantie: Wer durch die öffentliche Gewalt verletzt wird, kann Gerichte anrufen</li>
+          </ul>
+          <div class="tip-box"><strong>Prüfungstipp:</strong> Art. 1 und 20 GG sind durch Art. 79 III GG absolut geschützt – selbst eine verfassungsändernde Mehrheit kann sie nicht abschaffen.</div>
+        `
+      },
+      {
+        n: 12,
+        title: "Einschränkung von Grundrechten",
+        priority: "must",
+        explanation: `
+          <h4>Grundsatz</h4>
+          <p>Grundrechte können eingeschränkt werden, aber nur unter strengen Voraussetzungen. Voraussetzungen: <strong>Gesetzesvorbehalt</strong> (nur durch oder aufgrund eines Gesetzes), <strong>Verhältnismäßigkeit</strong> und Wahrung des <strong>Wesensgehalts</strong> (Art. 19 II GG).</p>
+          <h4>Arten des Gesetzesvorbehalts</h4>
+          <ul>
+            <li><strong>Einfacher Gesetzesvorbehalt:</strong> „durch Gesetz" (z.B. Art. 8 II GG – Versammlungsfreiheit unter freiem Himmel)</li>
+            <li><strong>Qualifizierter Gesetzesvorbehalt:</strong> Gesetz muss bestimmte Zwecke verfolgen (z.B. Art. 11 II GG)</li>
+            <li><strong>Keine Schranke:</strong> Art. 1 GG – Menschenwürde ist absolut, kein Gesetzesvorbehalt</li>
+          </ul>
+          <h4>Verhältnismäßigkeitsprinzip</h4>
+          <ul>
+            <li>Geeignetheit: Maßnahme muss Ziel erreichen können</li>
+            <li>Erforderlichkeit: Mildestes Mittel</li>
+            <li>Angemessenheit: Zweck-Mittel-Relation muss stimmen</li>
+          </ul>
+        `
+      },
+      {
+        n: 13,
+        title: "Verwirkung von Grundrechten",
+        priority: "must",
+        explanation: `
+          <h4>Grundlage: Art. 18 GG</h4>
+          <p>Wer bestimmte Grundrechte missbraucht, um die freiheitlich demokratische Grundordnung zu bekämpfen, kann diese Grundrechte <strong>verwirken</strong>.</p>
+          <h4>Betroffene Grundrechte</h4>
+          <ul>
+            <li>Meinungsfreiheit (Art. 5 I)</li>
+            <li>Pressefreiheit (Art. 5 I)</li>
+            <li>Lehrfreiheit (Art. 5 III)</li>
+            <li>Versammlungsfreiheit (Art. 8)</li>
+            <li>Vereinigungsfreiheit (Art. 9)</li>
+            <li>Brief-, Post- und Fernmeldegeheimnis (Art. 10)</li>
+            <li>Eigentumsrecht (Art. 14)</li>
+            <li>Asylrecht (Art. 16a)</li>
+          </ul>
+          <h4>Verfahren</h4>
+          <p>Nur das <strong>Bundesverfassungsgericht</strong> kann die Verwirkung aussprechen – auf Antrag von Bundestag, Bundesrat oder Bundesregierung. Bisher wurde noch kein Fall entschieden.</p>
+          <div class="tip-box"><strong>Unterschied zu Art. 9 II:</strong> Art. 18 betrifft Einzelpersonen, Art. 9 II das Vereinsverbot.</div>
+        `
+      },
+      {
+        n: 14,
+        title: "Schutz der Grundrechte",
+        priority: "must",
+        explanation: `
+          <h4>Schutzinstrumente</h4>
+          <ul>
+            <li><strong>Verfassungsbeschwerde (Art. 93 I Nr. 4a GG):</strong> Jeder kann das Bundesverfassungsgericht anrufen, wenn er sich in Grundrechten verletzt fühlt – nach Erschöpfung des Rechtswegs</li>
+            <li><strong>Bindung aller Staatsgewalt (Art. 1 III GG):</strong> Gesetzgebung, vollziehende Gewalt und Rechtsprechung sind direkt an die Grundrechte gebunden</li>
+            <li><strong>Ewigkeitsgarantie (Art. 79 III GG):</strong> Art. 1 und 20 GG sind unabänderlich</li>
+            <li><strong>Wesensgehaltsgarantie (Art. 19 II GG):</strong> Kerngehalt eines Grundrechts darf nie angetastet werden</li>
+            <li><strong>Rechtswegsgarantie (Art. 19 IV GG):</strong> Zugang zu Gerichten bei Verletzung durch öffentliche Gewalt</li>
+          </ul>
+          <h4>Institutioneller Schutz</h4>
+          <ul>
+            <li>Bundesverfassungsgericht (Karlsruhe)</li>
+            <li>Verwaltungsgerichte</li>
+            <li>Europäischer Gerichtshof für Menschenrechte (Straßburg) – für EMRK-Rechte</li>
+          </ul>
+        `
+      },
+      {
+        n: 15,
+        title: "Demokratieverständnis des GG / fdGO",
+        priority: "must",
+        explanation: `
+          <h4>Art. 20 GG – Staatsprinzipien</h4>
+          <ul>
+            <li>Demokratieprinzip</li>
+            <li>Rechtstaatsprinzip</li>
+            <li>Bundesstaatsprinzip (Föderalismus)</li>
+            <li>Sozialstaatsprinzip</li>
+            <li>Republikprinzip</li>
+          </ul>
+          <h4>Freiheitlich demokratische Grundordnung (fdGO)</h4>
+          <p>Laut Bundesverfassungsgericht umfasst sie:</p>
+          <ul>
+            <li>Achtung der im GG konkretisierten Menschenrechte</li>
+            <li>Volkssouveränität</li>
+            <li>Gewaltenteilung</li>
+            <li>Verantwortlichkeit der Regierung</li>
+            <li>Gesetzmäßigkeit der Verwaltung</li>
+            <li>Unabhängigkeit der Gerichte</li>
+            <li>Mehrparteienprinzip</li>
+            <li>Chancengleichheit für alle Parteien</li>
+            <li>Recht auf verfassungsmäßige Opposition</li>
+          </ul>
+          <div class="tip-box"><strong>Merksatz:</strong> Die fdGO ist der unantastbare Kern unserer Demokratie – sie schützt die Demokratie auch vor sich selbst.</div>
+        `
+      },
+      {
+        n: 16,
+        title: "Schutz der fdGO",
+        priority: "must",
+        explanation: `
+          <h4>Schutzmechanismen im GG</h4>
+          <ul>
+            <li><strong>Art. 18 GG</strong> – Grundrechtsverwirkung bei Missbrauch gegen die fdGO</li>
+            <li><strong>Art. 21 II GG</strong> – Parteienverbot für verfassungsfeindliche Parteien</li>
+            <li><strong>Art. 79 III GG</strong> – Ewigkeitsklausel (Art. 1 und 20 unabänderlich)</li>
+            <li><strong>Art. 20 IV GG</strong> – Widerstandsrecht: Alle Deutschen haben das Recht, gegen jeden zu widersetzen, der die freiheitliche demokratische Grundordnung beseitigen will, wenn andere Abhilfe nicht möglich ist</li>
+          </ul>
+          <h4>Institutionelle Schutzorgane</h4>
+          <ul>
+            <li>Bundesverfassungsgericht</li>
+            <li>Verfassungsschutz (BfV, Landesämter)</li>
+            <li>Bundestag (Kontrollrecht)</li>
+          </ul>
+          <div class="tip-box"><strong>Prüfungsrelevant:</strong> Die „streitbare" oder „wehrhafte Demokratie" – die Demokratie des GG schützt sich aktiv gegen ihre Feinde, anders als die Weimarer Republik.</div>
+        `
+      },
+      {
+        n: 6,
+        title: "Volkssouveränität",
+        priority: "good",
+        explanation: `
+          <h4>Definition</h4>
+          <p>Volkssouveränität bedeutet, dass alle Staatsgewalt vom Volk ausgeht (Art. 20 II GG). Das Volk ist der letzte Legitimationsquell aller staatlichen Macht.</p>
+          <h4>Ausübung</h4>
+          <ul>
+            <li><strong>Mittelbar:</strong> Durch gewählte Organe (Bundestag, Landtage) – Regelfall in der BRD</li>
+            <li><strong>Unmittelbar:</strong> Durch Abstimmungen – auf Bundesebene nur bei Neugliederung des Bundesgebiets (Art. 29 GG)</li>
+          </ul>
+          <div class="tip-box"><strong>Merksatz:</strong> In Deutschland gilt das Prinzip der repräsentativen Demokratie – das Volk wählt Vertreter, die dann in seinem Namen entscheiden.</div>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Welcher Artikel des GG schützt die Menschenwürde und kann niemals eingeschränkt werden?",
+        options: ["Art. 1 GG", "Art. 2 GG", "Art. 20 GG", "Art. 79 GG"],
+        correct: 0,
+        feedback: "Richtig! Art. 1 GG schützt die Menschenwürde. Durch Art. 79 III GG (Ewigkeitsklausel) ist er absolut unabänderlich – nicht einmal eine Zweidrittelmehrheit könnte ihn ändern."
+      },
+      {
+        q: "Ein französischer Staatsbürger lebt in Deutschland. Auf welches Grundrecht kann er sich NICHT direkt aus dem GG berufen?",
+        options: ["Art. 1 GG (Menschenwürde)", "Art. 2 GG (freie Entfaltung)", "Art. 8 GG (Versammlungsfreiheit)", "Art. 3 GG (Gleichheit vor dem Gesetz)"],
+        correct: 2,
+        feedback: "Richtig! Art. 8 GG ist ein Deutschenrecht – erkennbar am Wortlaut 'Alle Deutschen haben das Recht...'. Als EU-Bürger hat er aber über EU-Recht ähnliche Schutzrechte."
+      },
+      {
+        q: "Welches Gericht entscheidet über die Verwirkung von Grundrechten nach Art. 18 GG?",
+        options: ["Oberverwaltungsgericht", "Bundesgerichtshof", "Europäischer Gerichtshof", "Bundesverfassungsgericht"],
+        correct: 3,
+        feedback: "Richtig! Nur das Bundesverfassungsgericht kann die Grundrechtsverwirkung aussprechen. Bisher ist noch kein einziger Fall so entschieden worden."
+      },
+      {
+        q: "Was versteht man unter der 'Wesensgehaltsgarantie' (Art. 19 II GG)?",
+        options: ["Grundrechte dürfen nie eingeschränkt werden", "Der Kernbereich eines Grundrechts darf nie angetastet werden", "Nur Deutsche können Grundrechte beanspruchen", "Grundrechte gelten nur im Inland"],
+        correct: 1,
+        feedback: "Richtig! Die Wesensgehaltsgarantie bedeutet, dass selbst bei erlaubter Einschränkung eines Grundrechts immer ein unantastbarer Kernbereich bestehen bleiben muss."
+      },
+      {
+        q: "Welches Instrument ermöglicht es jeder Bürgerin, das Bundesverfassungsgericht bei Grundrechtsverletzungen anzurufen?",
+        options: ["Volksbegehren", "Normenkontrollklage", "Verfassungsbeschwerde", "Petition"],
+        correct: 2,
+        feedback: "Richtig! Die Verfassungsbeschwerde (Art. 93 I Nr. 4a GG) steht jeder Person offen – allerdings erst nachdem alle anderen Rechtswege ausgeschöpft wurden."
+      }
+    ]
+  },
+  {
+    id: "staatsprinzipien",
+    icon: "🏗️",
+    title: "Staatsstrukturprinzipien",
+    questions: [
+      {
+        n: 19,
+        title: "Rechtsstaatsprinzip",
+        priority: "must",
+        explanation: `
+          <h4>Definition</h4>
+          <p>Der Rechtsstaat ist ein Staat, in dem die gesamte staatliche Tätigkeit an das Recht gebunden ist. Kein Mensch und keine Institution steht über dem Gesetz.</p>
+          <h4>Elemente des Rechtsstaats</h4>
+          <ul>
+            <li><strong>Gesetzmäßigkeit der Verwaltung:</strong> Verwaltung darf nur handeln, wenn es eine gesetzliche Grundlage gibt</li>
+            <li><strong>Gewaltenteilung:</strong> Legislative, Exekutive und Judikative sind getrennt</li>
+            <li><strong>Unabhängigkeit der Gerichte</strong></li>
+            <li><strong>Grundrechtsbindung:</strong> Art. 1 III GG – alle Staatsgewalt an Grundrechte gebunden</li>
+            <li><strong>Verhältnismäßigkeitsprinzip</strong></li>
+            <li><strong>Rechtssicherheit und Vertrauensschutz</strong></li>
+            <li><strong>Rechtswegsgarantie (Art. 19 IV GG)</strong></li>
+          </ul>
+          <div class="tip-box"><strong>Abgrenzung:</strong> Im Gegensatz zum Polizeistaat oder zur Diktatur darf der Staat im Rechtsstaat nicht willkürlich handeln – er ist selbst an seine eigenen Gesetze gebunden.</div>
+        `
+      },
+      {
+        n: 20,
+        title: "Föderalismus – Begriff",
+        priority: "must",
+        explanation: `
+          <h4>Definition</h4>
+          <p>Föderalismus bezeichnet ein Staatsprinzip, bei dem die staatliche Macht auf mehrere Ebenen verteilt ist. In Deutschland: Bund und 16 Länder mit je eigenen Kompetenzen, Parlamenten und Regierungen.</p>
+          <h4>Grundlage im GG</h4>
+          <p>Art. 20 I GG: „Die Bundesrepublik Deutschland ist ein demokratischer und sozialer Bundesstaat." Art. 79 III GG: bundesstaatliche Gliederung ist ewig garantiert.</p>
+          <h4>Abgrenzung</h4>
+          <table class="expl-table">
+            <tr><th>Bundesstaat</th><th>Staatenbund</th><th>Einheitsstaat</th></tr>
+            <tr><td>Souveränität liegt beim Gesamtstaat, Länder haben Eigenstaatlichkeit</td><td>Souveräne Staaten schließen Vertrag</td><td>Zentrale Staatsgewalt, keine echte Eigenstaatlichkeit der Regionen</td></tr>
+            <tr><td>BRD, USA, Österreich</td><td>Früherer Dt. Bund</td><td>Frankreich</td></tr>
+          </table>
+        `
+      },
+      {
+        n: 22,
+        title: "Bundesrecht bricht Landesrecht",
+        priority: "must",
+        explanation: `
+          <h4>Grundlage: Art. 31 GG</h4>
+          <p>„Bundesrecht bricht Landesrecht" – bei Widersprüchen zwischen Bundes- und Landesrecht gilt das Bundesrecht. Dieser Grundsatz sichert die Einheitlichkeit der Rechtsordnung.</p>
+          <h4>Gilt aber nur bei konkurrierender Gesetzgebung</h4>
+          <ul>
+            <li><strong>Ausschließliche Gesetzgebung des Bundes (Art. 73 GG):</strong> z.B. Auswärtiges, Verteidigung, Währung – Länder dürfen gar nicht gesetzgeberisch tätig werden</li>
+            <li><strong>Konkurrierende Gesetzgebung (Art. 74 GG):</strong> Länder dürfen nur tätig werden, wenn und soweit der Bund keine Regelung getroffen hat</li>
+            <li><strong>Ausschließliche Länderkompetenz:</strong> z.B. Bildung, Polizei, Rundfunk – hier gilt Art. 31 nicht</li>
+          </ul>
+          <div class="tip-box"><strong>Beispiel:</strong> Bayern kann im Schulbereich eigene Gesetze erlassen (Ländersache), aber im Strafrecht nicht – das ist Bundessache.</div>
+        `
+      },
+      {
+        n: 52,
+        title: "Gewaltenteilung in der BRD",
+        priority: "must",
+        explanation: `
+          <h4>Drei Gewalten</h4>
+          <table class="expl-table">
+            <tr><th>Gewalt</th><th>Organ</th><th>Aufgabe</th></tr>
+            <tr><td>Legislative (Gesetzgebung)</td><td>Bundestag, Bundesrat</td><td>Gesetze beschließen</td></tr>
+            <tr><td>Exekutive (Vollziehung)</td><td>Bundesregierung, Behörden</td><td>Gesetze ausführen</td></tr>
+            <tr><td>Judikative (Rechtsprechung)</td><td>Gerichte, BVerfG</td><td>Recht sprechen, Gesetze kontrollieren</td></tr>
+          </table>
+          <h4>Zweck</h4>
+          <p>Machtmissbrauch verhindern durch gegenseitige Kontrolle und Hemmung. Kein Organ soll alle Macht auf sich vereinen (Montesquieu: „De l'esprit des lois", 1748).</p>
+          <h4>Gewaltenverschränkung in Deutschland</h4>
+          <p>Keine vollständige Trennung, sondern bewusste Verflechtung: z.B. Bundesregierung hat Gesetzesinitiativrecht (obwohl Exekutive), Bundestag kontrolliert Regierung.</p>
+        `
+      },
+      {
+        n: 17,
+        title: "Repräsentative Demokratie",
+        priority: "good",
+        explanation: `
+          <h4>Prinzip</h4>
+          <p>In der repräsentativen (indirekten) Demokratie wählt das Volk Vertreter, die in seinem Namen politische Entscheidungen treffen. Die Abgeordneten sind dabei an ihr Gewissen gebunden, nicht an Weisungen (freies Mandat, Art. 38 I GG).</p>
+          <h4>Abgrenzung zur direkten Demokratie</h4>
+          <table class="expl-table">
+            <tr><th>Repräsentativ</th><th>Direkt</th></tr>
+            <tr><td>Volk wählt Vertreter</td><td>Volk entscheidet selbst</td></tr>
+            <tr><td>Bundesebene in BRD</td><td>Bayern: Volksbegehren, Volksentscheid</td></tr>
+            <tr><td>Effizient bei komplexen Themen</td><td>Bürgernäher, aber aufwändiger</td></tr>
+          </table>
+          <div class="tip-box"><strong>Bayern-Bezug:</strong> Bayern kennt direktdemokratische Elemente: Volksbegehren, Volksentscheid, Bürgerbegehren, Bürgerentscheid – auf Bundesebene fehlen diese fast vollständig.</div>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Was ist der Hauptzweck der Gewaltenteilung?",
+        options: ["Effizientere Gesetzgebung", "Verhinderung von Machtmissbrauch", "Stärkere Bürgerbeteiligung", "Schnellere Verwaltung"],
+        correct: 1,
+        feedback: "Richtig! Gewaltenteilung soll verhindern, dass eine Person oder ein Organ zu viel Macht auf sich vereint. Montesquieu entwickelte dieses Prinzip, das in Art. 20 II GG verankert ist."
+      },
+      {
+        q: "Welches Prinzip gilt bei Widersprüchen zwischen Bundes- und Landesrecht?",
+        options: ["Landesrecht bricht Bundesrecht", "Das jüngere Gesetz gilt", "Bundesrecht bricht Landesrecht (Art. 31 GG)", "Das speziellere Gesetz gilt"],
+        correct: 2,
+        feedback: "Richtig! Art. 31 GG legt fest: 'Bundesrecht bricht Landesrecht'. Das gilt allerdings nur im Bereich der konkurrierenden Gesetzgebung, nicht bei ausschließlichen Länderkompetenzen wie Bildung."
+      },
+      {
+        q: "Was kennzeichnet einen Rechtsstaat besonders?",
+        options: ["Starke Armee", "Bindung aller Staatsgewalt an das Recht", "Direkte Demokratie", "Einheitliche Gesetze in allen Bereichen"],
+        correct: 1,
+        feedback: "Richtig! Im Rechtsstaat ist nicht nur der Bürger ans Gesetz gebunden, sondern auch der Staat selbst. Kein staatliches Organ darf willkürlich handeln – auch die Regierung nicht."
+      },
+      {
+        q: "Welcher Artikel des GG sichert die Bundesstaatlichkeit durch die Ewigkeitsklausel?",
+        options: ["Art. 20 GG", "Art. 31 GG", "Art. 79 III GG", "Art. 28 GG"],
+        correct: 2,
+        feedback: "Richtig! Art. 79 III GG (Ewigkeitsklausel) erklärt u.a. die bundesstaatliche Gliederung Deutschlands für unabänderlich. Selbst mit Zweidrittelmehrheit könnte man Deutschland nicht zu einem Einheitsstaat machen."
+      }
+    ]
+  },
+  {
+    id: "bundesorgane",
+    icon: "🏢",
+    title: "Bundesorgane",
+    questions: [
+      {
+        n: 41,
+        title: "Stellung der Bundestagsabgeordneten",
+        priority: "must",
+        explanation: `
+          <h4>Art. 38 I GG – Das freie Mandat</h4>
+          <p>„Die Abgeordneten des Deutschen Bundestages werden in allgemeiner, unmittelbarer, freier, gleicher und geheimer Wahl gewählt. Sie sind Vertreter des ganzen Volkes, an Aufträge und Weisungen nicht gebunden und nur ihrem Gewissen unterworfen."</p>
+          <h4>Konsequenzen</h4>
+          <ul>
+            <li>Kein imperatives Mandat: Abgeordneter kann nicht abberufen werden</li>
+            <li>Fraktionsdisziplin ist de facto üblich, aber rechtlich nicht erzwingbar</li>
+            <li>Indemnität (Art. 46 I GG): Keine Haftung für Abstimmungen und Äußerungen im Bundestag</li>
+            <li>Immunität (Art. 46 II GG): Schutz vor Strafverfolgung ohne Genehmigung des Bundestages</li>
+          </ul>
+          <div class="tip-box"><strong>Prüfungsrelevant:</strong> Das freie Mandat unterscheidet die repräsentative Demokratie grundlegend von einem imperativen System, wo Abgeordnete an Wählerwillen gebunden wären.</div>
+        `
+      },
+      {
+        n: 42,
+        title: "Aufbau & Aufgaben des Bundestages",
+        priority: "must",
+        explanation: `
+          <h4>Aufbau</h4>
+          <ul>
+            <li><strong>Präsident und Präsidium:</strong> Leitung der Sitzungen</li>
+            <li><strong>Fraktionen:</strong> Mindest 5% der Abgeordneten, organisieren parlamentarische Arbeit</li>
+            <li><strong>Ausschüsse:</strong> Fachliche Vorbereitung von Gesetzen</li>
+            <li><strong>Ältestenrat:</strong> Koordination der Arbeit</li>
+          </ul>
+          <h4>Hauptaufgaben</h4>
+          <ul>
+            <li><strong>Gesetzgebung:</strong> Beschluss von Bundesgesetzen</li>
+            <li><strong>Wahl des Bundeskanzlers (Art. 63 GG)</strong></li>
+            <li><strong>Haushaltsbewilligung:</strong> Kontrolle über Bundeshaushalt</li>
+            <li><strong>Kontrolle der Regierung:</strong> Fragestunden, Anfragen, Untersuchungsausschüsse</li>
+            <li><strong>Mitwirkung bei Verfassungsänderungen (Art. 79 GG)</strong></li>
+          </ul>
+        `
+      },
+      {
+        n: 43,
+        title: "Bildung der Bundesregierung",
+        priority: "must",
+        explanation: `
+          <h4>Ablauf (Art. 63 GG)</h4>
+          <ul>
+            <li>Bundespräsident schlägt Kanzlerkandidaten vor</li>
+            <li>Bundestag wählt im 1. Wahlgang mit absoluter Mehrheit (Kanzlermehrheit)</li>
+            <li>Falls kein Ergebnis: 2. und ggf. weitere Wahlgänge innerhalb von 14 Tagen</li>
+            <li>Danach: Wahl mit einfacher Mehrheit; Bundespräsident kann ernennen oder Bundestag auflösen</li>
+          </ul>
+          <h4>Kabinett</h4>
+          <p>Bundesminister werden auf Vorschlag des Bundeskanzlers vom Bundespräsidenten ernannt und entlassen.</p>
+          <div class="tip-box"><strong>Aktuell:</strong> Friedrich Merz (CDU) wurde am 6. Mai 2025 zum Bundeskanzler gewählt – im 2. Wahlgang, da er im 1. Wahlgang keine absolute Mehrheit erhielt.</div>
+        `
+      },
+      {
+        n: 46,
+        title: "Bundesrat – Aufgabe, Zusammensetzung, Abstimmung",
+        priority: "must",
+        explanation: `
+          <h4>Funktion</h4>
+          <p>Der Bundesrat ist das Verfassungsorgan, durch das die Länder bei der Gesetzgebung und Verwaltung des Bundes mitwirken (Art. 50 GG).</p>
+          <h4>Zusammensetzung</h4>
+          <ul>
+            <li>Mitglieder der Landesregierungen – kein direkt gewähltes Gremium</li>
+            <li>Je nach Einwohnerzahl 3–6 Stimmen pro Land (Art. 51 GG)</li>
+            <li>Derzeit 69 Stimmen gesamt</li>
+            <li>Vorsitz: rotiert jährlich unter den Ministerpräsidenten</li>
+          </ul>
+          <h4>Abstimmung</h4>
+          <ul>
+            <li>Landesstimmen müssen einheitlich abgegeben werden</li>
+            <li>Bei Einspruchsgesetzen: kann Einspruch einlegen (aufschiebend)</li>
+            <li>Bei Zustimmungsgesetzen: muss zustimmen (absolutes Vetorecht)</li>
+          </ul>
+        `
+      },
+      {
+        n: 47,
+        title: "Bundespräsident – Wahl, Amtszeit, Aufgaben",
+        priority: "must",
+        explanation: `
+          <h4>Wahl</h4>
+          <ul>
+            <li>Durch die Bundesversammlung (Bundestag + gleich viele Länderdelegierte)</li>
+            <li>Amtszeit: 5 Jahre, einmalige Wiederwahl möglich (Art. 54 GG)</li>
+          </ul>
+          <h4>Aufgaben</h4>
+          <ul>
+            <li>Staatsoberhaupt – repräsentiert Deutschland nach innen und außen</li>
+            <li>Ausfertigung und Verkündung der Bundesgesetze</li>
+            <li>Ernennung und Entlassung von Bundeskanzler und Ministern</li>
+            <li>Auflösung des Bundestages (nur in bestimmten Situationen)</li>
+            <li>Begnadigungsrecht</li>
+          </ul>
+          <div class="tip-box"><strong>Wichtig:</strong> Der Bundespräsident hat nur eingeschränkte politische Macht – er prüft aber die formale Verfassungsmäßigkeit von Gesetzen vor der Unterzeichnung.</div>
+        `
+      },
+      {
+        n: 48,
+        title: "Gesetzgebungsprozess in der BRD",
+        priority: "must",
+        explanation: `
+          <h4>Ablauf (vereinfacht)</h4>
+          <ul>
+            <li><strong>1. Initiative:</strong> Gesetzentwurf von Bundesregierung, Bundestag oder Bundesrat</li>
+            <li><strong>2. Bundesrat – 1. Durchgang:</strong> Bei Regierungsentwürfen erhält Bundesrat 6 Wochen Stellungnahmezeit</li>
+            <li><strong>3. Bundestag:</strong> 1., 2., 3. Lesung; Ausschussberatung; Beschluss</li>
+            <li><strong>4. Bundesrat – 2. Durchgang:</strong> Zustimmung, Einspruch oder Anrufung des Vermittlungsausschusses</li>
+            <li><strong>5. Ausfertigung:</strong> Bundespräsident prüft und unterzeichnet</li>
+            <li><strong>6. Verkündung:</strong> Im Bundesgesetzblatt</li>
+          </ul>
+          <h4>Unterschied: Einspruchs- vs. Zustimmungsgesetze</h4>
+          <p>Bei <strong>Zustimmungsgesetzen</strong> (betreffen Länderinteressen) muss der Bundesrat explizit zustimmen. Bei <strong>Einspruchsgesetzen</strong> kann der Bundestag den Einspruch des Bundesrats überstimmen.</p>
+        `
+      },
+      {
+        n: 45,
+        title: "Vertrauensfrage & Misstrauensvotum",
+        priority: "good",
+        explanation: `
+          <h4>Vertrauensfrage (Art. 68 GG)</h4>
+          <ul>
+            <li>Gestellt vom Bundeskanzler</li>
+            <li>Ziel: politische Handlungsfähigkeit bestätigen lassen</li>
+            <li>Erhält er kein Vertrauen → kann Bundespräsident um Auflösung des Bundestages bitten</li>
+            <li>Beispiel: Schröder 2005 (bewusst verloren um Neuwahlen zu ermöglichen), Scholz 2024</li>
+          </ul>
+          <h4>Konstruktives Misstrauensvotum (Art. 67 GG)</h4>
+          <ul>
+            <li>Bundestag kann Kanzler nur abwählen, wenn er gleichzeitig Nachfolger wählt</li>
+            <li>Verhindert Regierungslosigkeit (anders als Weimarer Republik)</li>
+            <li>Bisher nur einmal erfolgreich: 1982 (Helmut Schmidt → Helmut Kohl)</li>
+          </ul>
+        `
+      },
+      {
+        n: 40,
+        title: "Koalition & Fraktion – Begriffe",
+        priority: "good",
+        explanation: `
+          <h4>Koalition</h4>
+          <p>Bündnis mehrerer Parteien zur gemeinsamen Regierungsbildung. Notwendig, wenn keine Partei allein eine Mehrheit hat. Geregelt im Koalitionsvertrag.</p>
+          <h4>Fraktion</h4>
+          <p>Zusammenschluss von Abgeordneten derselben oder ähnlicher politischer Richtung im Bundestag. Mindestgröße: 5% der Abgeordneten (derzeit ~37 Sitze). Fraktionen erhalten staatliche Mittel und Redezeiten.</p>
+          <div class="tip-box"><strong>Unterschied:</strong> Eine Koalition ist eine Regierungsvereinbarung, eine Fraktion ist ein parlamentarisches Organisationsprinzip. Koalitionsparteien bilden i.d.R. gemeinsam eine Regierung, aber jede hat ihre eigene Fraktion.</div>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Wie wird der Bundeskanzler gewählt?",
+        options: ["Direkt vom Volk", "Vom Bundesrat", "Vom Bundestag auf Vorschlag des Bundespräsidenten", "Von der Bundesversammlung"],
+        correct: 2,
+        feedback: "Richtig! Der Bundespräsident schlägt den Kandidaten vor, der Bundestag wählt ihn mit absoluter Mehrheit (Kanzlermehrheit). So war es auch bei Friedrich Merz im Mai 2025."
+      },
+      {
+        q: "Was versteht man unter dem 'konstruktiven Misstrauensvotum'?",
+        options: ["Der Bundeskanzler stellt die Vertrauensfrage", "Der Bundesrat misstraut der Regierung", "Der Bundestag kann den Kanzler nur abwählen, wenn er gleichzeitig einen Nachfolger wählt", "Der Bundespräsident entlässt den Kanzler"],
+        correct: 2,
+        feedback: "Richtig! Art. 67 GG sichert die Regierungsstabilität: Ein Kanzler kann nur abgelöst werden, wenn der Bundestag gleichzeitig mit absoluter Mehrheit einen neuen Kanzler wählt. Bisher nur 1982 erfolgreich."
+      },
+      {
+        q: "Wie werden die Stimmen des Bundesrats je Bundesland verteilt?",
+        options: ["Jedes Land hat genau eine Stimme", "Je nach Einwohnerzahl 3–6 Stimmen", "Gleich viele Stimmen wie Bundestagsabgeordnete", "Nach Wirtschaftskraft des Landes"],
+        correct: 1,
+        feedback: "Richtig! Art. 51 GG legt fest: Länder haben je nach Einwohnerzahl 3–6 Stimmen. Bayern und NRW haben als bevölkerungsreichste Länder 6 Stimmen."
+      },
+      {
+        q: "Was ist das 'freie Mandat' der Bundestagsabgeordneten?",
+        options: ["Abgeordnete müssen kostenlos arbeiten", "Abgeordnete sind nur ihrem Gewissen unterworfen, nicht an Weisungen gebunden", "Abgeordnete dürfen frei wählen, welcher Fraktion sie angehören", "Abgeordnete erhalten freie Fahrt im ÖPNV"],
+        correct: 1,
+        feedback: "Richtig! Art. 38 I GG: Abgeordnete sind 'Vertreter des ganzen Volkes, an Aufträge und Weisungen nicht gebunden und nur ihrem Gewissen unterworfen.' Sie können nicht abberufen werden."
+      }
+    ]
+  },
+  {
+    id: "parteien",
+    icon: "🗳️",
+    title: "Parteien, Wahlen & Willensbildung",
+    questions: [
+      {
+        n: 30,
+        title: "Aufbau der Parteien",
+        priority: "must",
+        explanation: `
+          <h4>Rechtsgrundlage</h4>
+          <p>Art. 21 GG und das <strong>Parteiengesetz (PartG)</strong> von 1967.</p>
+          <h4>Innere Struktur</h4>
+          <ul>
+            <li>Aufbau von unten nach oben: Ortsverbände → Kreisverbände → Bezirks-/Landesverbände → Bundespartei</li>
+            <li>Oberstes Organ: Bundesparteitag (wählt Vorstand, beschließt Programm)</li>
+            <li>Parteiprogramm als ideologisches Fundament</li>
+            <li>Satzung als interne Verfassung</li>
+          </ul>
+          <div class="tip-box"><strong>Art. 21 II GG:</strong> Parteien müssen demokratisch aufgebaut sein – das nennt man das <em>Demokratiegebot</em> für Parteien.</div>
+        `
+      },
+      {
+        n: 33,
+        title: "Parteienverbot – Gründe & Verfahren",
+        priority: "must",
+        explanation: `
+          <h4>Grundlage: Art. 21 II GG</h4>
+          <p>Parteien sind verfassungswidrig, die „nach ihren Zielen oder nach dem Verhalten ihrer Anhänger darauf ausgehen, die freiheitliche demokratische Grundordnung zu beeinträchtigen oder zu beseitigen oder den Bestand der Bundesrepublik Deutschland zu gefährden."</p>
+          <h4>Verfahren</h4>
+          <ul>
+            <li>Antrag durch: Bundesregierung, Bundestag oder Bundesrat</li>
+            <li>Entscheidung: ausschließlich das Bundesverfassungsgericht</li>
+          </ul>
+          <h4>Bisherige Verbote</h4>
+          <ul>
+            <li>1952: SRP (Sozialistische Reichspartei)</li>
+            <li>1956: KPD (Kommunistische Partei Deutschlands)</li>
+            <li>NPD: zwei Verbotsverfahren scheiterten (2003, 2017 – zu klein für Gefahr)</li>
+          </ul>
+          <div class="tip-box"><strong>Merksatz:</strong> Ein Parteienverbot ist das schärfste Instrument der wehrhaften Demokratie – und wird daher sehr selten und nur bei echter Gefahr angewendet.</div>
+        `
+      },
+      {
+        n: 38,
+        title: "Wahlrechtsgrundsätze & Wahlsystem",
+        priority: "must",
+        explanation: `
+          <h4>Wahlrechtsgrundsätze (Art. 38 I GG)</h4>
+          <ul>
+            <li><strong>Allgemein:</strong> Alle Bürger ab 18 Jahren dürfen wählen</li>
+            <li><strong>Unmittelbar:</strong> Bürger wählen direkt, ohne Wahlmänner</li>
+            <li><strong>Frei:</strong> Kein Zwang, freie Willensentscheidung</li>
+            <li><strong>Gleich:</strong> Jede Stimme hat dasselbe Gewicht</li>
+            <li><strong>Geheim:</strong> Niemand darf die Wahlentscheidung kennen</li>
+          </ul>
+          <h4>Deutsches Wahlsystem: Personalisierte Verhältniswahl</h4>
+          <ul>
+            <li><strong>Erststimme:</strong> Direktkandidat im Wahlkreis (299 Sitze)</li>
+            <li><strong>Zweitstimme:</strong> Parteiliste → bestimmt Sitzverteilung im Bundestag</li>
+            <li><strong>5%-Klausel:</strong> Parteien ohne 5% der Zweitstimmen oder 3 Direktmandate erhalten keine Bundestagssitze</li>
+          </ul>
+          <h4>Reform 2023</h4>
+          <p>Bundestag hat feste Größe von 630 Abgeordneten. Überhangmandate werden nicht mehr automatisch ausgeglichen – ein Direktmandat kann verfallen, wenn die Partei nicht genug Zweitstimmen hat.</p>
+        `
+      },
+      {
+        n: 31,
+        title: "Parteienfinanzierung",
+        priority: "good",
+        explanation: `
+          <h4>Quellen</h4>
+          <ul>
+            <li><strong>Staatliche Teilfinanzierung:</strong> Parteien erhalten Geld nach Stimmenergebnissen und Mitgliedsbeiträgen (§18 ff. PartG)</li>
+            <li><strong>Mitgliedsbeiträge</strong></li>
+            <li><strong>Spenden:</strong> von natürlichen Personen (Obergrenzen); Spenden über 10.000 € müssen veröffentlicht werden</li>
+            <li><strong>Mandatsträgerabgaben:</strong> Abgeordnete zahlen Teil ihres Einkommens an die Partei</li>
+          </ul>
+          <h4>Begrenzungen</h4>
+          <ul>
+            <li>Absolute Obergrenze staatlicher Mittel</li>
+            <li>Keine Spenden von Unternehmen mit Bundesbeteiligung oder aus dem Ausland</li>
+            <li>Transparenzpflicht im Rechenschaftsbericht</li>
+          </ul>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Welche Sperrklausel muss eine Partei bei der Bundestagswahl überwinden?",
+        options: ["3%", "5% oder 3 Direktmandate", "7%", "10%"],
+        correct: 1,
+        feedback: "Richtig! Die 5%-Hürde (oder 3 Direktmandate) soll eine Zersplitterung des Parlaments verhindern. Parteien darunter erhalten keine Bundestagssitze – auch wenn Millionen sie gewählt haben."
+      },
+      {
+        q: "Welches Organ entscheidet über das Verbot einer politischen Partei?",
+        options: ["Bundesregierung", "Bundestag", "Bundesverfassungsgericht", "Bundesrat"],
+        correct: 2,
+        feedback: "Richtig! Nur das Bundesverfassungsgericht kann ein Parteiverbot aussprechen (Art. 21 II GG). Der Antrag kann von Bundesregierung, Bundestag oder Bundesrat gestellt werden."
+      },
+      {
+        q: "Was bestimmt die Zweitstimme bei der Bundestagswahl?",
+        options: ["Welcher Direktkandidat im Wahlkreis gewinnt", "Die Sitzverteilung im Bundestag nach Parteien", "Wer Bundeskanzler wird", "Die Stärke der Ausschüsse"],
+        correct: 1,
+        feedback: "Richtig! Die Zweitstimme ist die 'eigentliche' Parteienstimme – sie bestimmt, wie viele Sitze jede Partei im Bundestag erhält. Die Erststimme entscheidet nur über den Direktkandidaten im Wahlkreis."
+      }
+    ]
+  },
+  {
+    id: "medien",
+    icon: "📺",
+    title: "Medien & Öffentlichkeit",
+    questions: [
+      {
+        n: 27,
+        title: "Pressefreiheit & Funktion freier Presse",
+        priority: "must",
+        explanation: `
+          <h4>Grundlage: Art. 5 I GG</h4>
+          <p>„Jeder hat das Recht, seine Meinung in Wort, Schrift und Bild frei zu äußern... Die Pressefreiheit und die Freiheit der Berichterstattung durch Rundfunk und Film werden gewährleistet."</p>
+          <h4>Funktionen der freien Presse</h4>
+          <ul>
+            <li><strong>Informationsfunktion:</strong> Bürger über politische Ereignisse informieren</li>
+            <li><strong>Kontrollfunktion (4. Gewalt):</strong> Staatliches Handeln kritisch beobachten und aufdecken</li>
+            <li><strong>Meinungsbildungsfunktion:</strong> Öffentliche Diskussion ermöglichen</li>
+            <li><strong>Artikulationsfunktion:</strong> Meinungen verschiedener gesellschaftlicher Gruppen vertreten</li>
+            <li><strong>Kritik- und Gegenöffentlichkeit:</strong> Missständen entgegenwirken</li>
+          </ul>
+          <div class="tip-box"><strong>Merksatz:</strong> Freie Presse ist keine Selbstverständlichkeit – in autoritären Staaten wird sie als erstes eingeschränkt. Der Pressefreiheitsindex von Reporter ohne Grenzen zeigt jährlich den weltweiten Stand.</div>
+        `
+      },
+      {
+        n: 26,
+        title: "Demokratie & Massenkommunikation",
+        priority: "must",
+        explanation: `
+          <h4>Warum braucht Demokratie Medien?</h4>
+          <ul>
+            <li>Bürger können nur informiert wählen und politisch teilhaben, wenn sie informiert sind</li>
+            <li>Medien ermöglichen Meinungsbildungsprozess in der Gesellschaft</li>
+            <li>Ohne Öffentlichkeit keine demokratische Kontrolle der Macht</li>
+          </ul>
+          <h4>Risiken</h4>
+          <ul>
+            <li>Medienkonzentration und Meinungsmonopole</li>
+            <li>Boulevardisierung und Oberflächlichkeit</li>
+            <li>Desinformation / Fake News</li>
+            <li>Filterblasen durch Algorithmen</li>
+            <li>Politischer Einfluss auf öffentlich-rechtliche Medien</li>
+          </ul>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Welche Funktion wird der Presse oft als 'vierte Gewalt' zugeschrieben?",
+        options: ["Gesetzgebungsfunktion", "Kontrollfunktion gegenüber Staat und Politik", "Unterhaltungsfunktion", "Wirtschaftliche Regulierung"],
+        correct: 1,
+        feedback: "Richtig! Die Presse wird als 'vierte Gewalt' bezeichnet, weil sie staatliches Handeln kontrolliert und Missstände aufdeckt – neben Legislative, Exekutive und Judikative."
+      },
+      {
+        q: "Welcher Artikel des GG schützt die Pressefreiheit?",
+        options: ["Art. 1 GG", "Art. 3 GG", "Art. 5 GG", "Art. 8 GG"],
+        correct: 2,
+        feedback: "Richtig! Art. 5 I GG schützt neben der Meinungsfreiheit auch die Pressefreiheit und die Freiheit der Berichterstattung durch Rundfunk und Film."
+      }
+    ]
+  },
+  {
+    id: "bayern",
+    icon: "🏠",
+    title: "Bayern & Kommunales",
+    questions: [
+      {
+        n: 49,
+        title: "Gesetzgebungsprozess Bayern",
+        priority: "must",
+        explanation: `
+          <h4>Besonderheit Bayern</h4>
+          <p>Bayern hat keinen Bundesrat-Äquivalent (keinen Senat mehr seit 1999). Die Gesetzgebung erfolgt allein durch den Landtag.</p>
+          <h4>Ablauf</h4>
+          <ul>
+            <li><strong>Initiative:</strong> Staatsregierung, Abgeordnete oder Volksbegehren</li>
+            <li><strong>1. Lesung:</strong> Grundsatzdebatte</li>
+            <li><strong>Ausschussberatung:</strong> Fachliche Prüfung</li>
+            <li><strong>2. Lesung:</strong> Detailberatung und Abstimmung</li>
+            <li><strong>Ausfertigung:</strong> Ministerpräsident und zuständiger Minister</li>
+            <li><strong>Verkündung:</strong> Im Bayerischen Gesetz- und Verordnungsblatt</li>
+          </ul>
+          <div class="tip-box"><strong>Direktdemokratie in Bayern:</strong> Anders als auf Bundesebene gibt es in Bayern Volksbegehren und Volksentscheide als echte Gesetzgebungsalternative.</div>
+        `
+      },
+      {
+        n: 58,
+        title: "Volksbegehren, Volksentscheid, Bürgerbegehren",
+        priority: "good",
+        explanation: `
+          <h4>Volksbegehren (Landesebene)</h4>
+          <ul>
+            <li>Bürger beantragen ein bestimmtes Gesetz</li>
+            <li>Voraussetzung: 10% der Stimmberechtigten müssen unterschreiben (innerhalb von 14 Tagen)</li>
+            <li>Dann: Landtag muss sich damit befassen</li>
+          </ul>
+          <h4>Volksentscheid (Landesebene)</h4>
+          <ul>
+            <li>Direktabstimmung der Bürger über ein Gesetz</li>
+            <li>Kann nach Volksbegehren erfolgen oder vom Landtag angesetzt werden</li>
+            <li>Bekanntes Beispiel: „Rettet die Bienen" 2019</li>
+          </ul>
+          <h4>Bürgerbegehren / Bürgerentscheid (Kommunalebene)</h4>
+          <ul>
+            <li>Analog auf Gemeindeebene</li>
+            <li>Bürger können Gemeinderatsbeschlüsse initiieren oder verhindern</li>
+          </ul>
+          <div class="tip-box"><strong>Auf Bundesebene:</strong> Diese direktdemokratischen Instrumente gibt es kaum – nur bei Neugliederung des Bundesgebiets (Art. 29 GG) ist eine Volksabstimmung vorgesehen.</div>
+        `
+      },
+      {
+        n: 56,
+        title: "Aufgaben des Landtags",
+        priority: "must",
+        explanation: `
+          <h4>Hauptaufgaben</h4>
+          <ul>
+            <li><strong>Gesetzgebung:</strong> Landesgesetze in Länderkompetenz (Bildung, Polizei, Kommunen...)</li>
+            <li><strong>Wahl des Ministerpräsidenten</strong></li>
+            <li><strong>Haushaltsbewilligung</strong></li>
+            <li><strong>Kontrolle der Staatsregierung:</strong> Fragestunden, Untersuchungsausschüsse</li>
+            <li><strong>Repräsentation der Bevölkerung Bayerns</strong></li>
+          </ul>
+          <h4>Bayern-Spezifika</h4>
+          <ul>
+            <li>Bayerische Verfassung von 1946</li>
+            <li>Bayerischer Verfassungsgerichtshof</li>
+            <li>Volksbegehren und Volksentscheide als Gesetzgebungsalternative</li>
+          </ul>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Wie viel Prozent der Stimmberechtigten müssen ein Volksbegehren in Bayern unterzeichnen?",
+        options: ["5%", "10%", "15%", "25%"],
+        correct: 1,
+        feedback: "Richtig! In Bayern müssen 10% der Stimmberechtigten innerhalb von 14 Tagen das Volksbegehren unterzeichnen. Bekanntes Beispiel: 'Rettet die Bienen' 2019 mit über einer Million Unterschriften."
+      },
+      {
+        q: "Welche direktdemokratischen Instrumente gibt es auf Bundesebene in Deutschland?",
+        options: ["Volksbegehren und Volksentscheid wie in Bayern", "Nur bei Neugliederung des Bundesgebiets (Art. 29 GG)", "Bürgerentscheid bei allen wichtigen Fragen", "Gar keine"],
+        correct: 1,
+        feedback: "Richtig! Auf Bundesebene gibt es kaum direktdemokratische Instrumente. Nur bei der Neugliederung des Bundesgebiets (Art. 29 GG) ist eine Volksabstimmung vorgesehen. Die BRD ist eine repräsentative Demokratie."
+      }
+    ]
+  },
+  {
+    id: "wirtschaft",
+    icon: "💶",
+    title: "Wirtschaft & Soziales",
+    questions: [
+      {
+        n: 61,
+        title: "Entstehung soziale Marktwirtschaft",
+        priority: "must",
+        explanation: `
+          <h4>Begriff und Ursprung</h4>
+          <p>Der Begriff „Soziale Marktwirtschaft" wurde geprägt von <strong>Alfred Müller-Armack</strong> (Namensgeber, Ökonom). Die entscheidende politische Umsetzung erfolgte durch <strong>Ludwig Erhard</strong> als Wirtschaftsminister (und später Bundeskanzler) ab 1948/1949.</p>
+          <h4>Kernidee</h4>
+          <p>Verbindung von freiem Markt (Marktwirtschaft) mit sozialem Ausgleich (Sozialstaat). Der Markt ist das effiziente Steuerungsinstrument, der Staat sorgt für soziale Abfederung.</p>
+          <h4>Historischer Kontext</h4>
+          <ul>
+            <li>1948: Währungsreform + Abschaffung der Bewirtschaftung (Erhard)</li>
+            <li>„Wirtschaftswunder" der 1950er Jahre</li>
+            <li>Abgrenzung von planwirtschaftlichem System der DDR</li>
+          </ul>
+          <div class="tip-box"><strong>Merksatz:</strong> Müller-Armack dachte es, Erhard machte es. Die Soziale Marktwirtschaft ist das Wirtschaftsmodell der BRD – im GG selbst steht der Begriff nicht explizit.</div>
+        `
+      },
+      {
+        n: 62,
+        title: "Sozialversicherungssystem",
+        priority: "must",
+        explanation: `
+          <h4>Die fünf Säulen</h4>
+          <table class="expl-table">
+            <tr><th>Versicherung</th><th>Absicherung gegen</th><th>Träger</th></tr>
+            <tr><td>Krankenversicherung</td><td>Krankheit</td><td>Gesetzliche Krankenkassen</td></tr>
+            <tr><td>Rentenversicherung</td><td>Alter, Erwerbsminderung</td><td>Deutsche Rentenversicherung</td></tr>
+            <tr><td>Pflegeversicherung</td><td>Pflegebedürftigkeit</td><td>Pflegekassen</td></tr>
+            <tr><td>Arbeitslosenversicherung</td><td>Arbeitslosigkeit</td><td>Bundesagentur für Arbeit</td></tr>
+            <tr><td>Unfallversicherung</td><td>Arbeitsunfall</td><td>Berufsgenossenschaften</td></tr>
+          </table>
+          <h4>Prinzipien</h4>
+          <ul>
+            <li><strong>Beitragsprinzip:</strong> Beiträge aus Lohn (Arbeitnehmer + Arbeitgeber je 50%)</li>
+            <li><strong>Solidarprinzip:</strong> Starke helfen Schwachen</li>
+            <li><strong>Sachleistungsprinzip:</strong> v.a. in der Krankenversicherung</li>
+          </ul>
+          <div class="tip-box"><strong>Aktuelle Herausforderung:</strong> Demografischer Wandel belastet besonders Renten- und Pflegeversicherung – mehr Rentner, weniger Beitragszahler.</div>
+        `
+      },
+      {
+        n: 59,
+        title: "Wirtschaftsordnung der BRD",
+        priority: "must",
+        explanation: `
+          <h4>Soziale Marktwirtschaft</h4>
+          <p>Deutschland hat eine soziale Marktwirtschaft – weder reiner Kapitalismus noch Planwirtschaft. Charakteristika:</p>
+          <ul>
+            <li>Privateigentum an Produktionsmitteln</li>
+            <li>Freie Preisbildung durch Angebot und Nachfrage</li>
+            <li>Wettbewerb (Kartellrecht, Monopolkontrolle)</li>
+            <li>Sozialer Ausgleich durch Umverteilung und Sozialversicherung</li>
+            <li>Staatliche Rahmensetzung, aber kein Dirigismus</li>
+          </ul>
+          <h4>GG-Grundlagen</h4>
+          <ul>
+            <li>Art. 14 GG – Eigentumsrecht (mit Sozialpflichtigkeit)</li>
+            <li>Art. 12 GG – Berufsfreiheit</li>
+            <li>Art. 9 GG – Koalitionsfreiheit (Gewerkschaften, Arbeitgeberverbände)</li>
+            <li>Art. 20 GG – Sozialstaatsprinzip</li>
+          </ul>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Wer hat den Begriff 'Soziale Marktwirtschaft' geprägt?",
+        options: ["Ludwig Erhard", "Konrad Adenauer", "Alfred Müller-Armack", "Walter Eucken"],
+        correct: 2,
+        feedback: "Richtig! Alfred Müller-Armack prägte den Begriff. Ludwig Erhard war der entscheidende politische Umsetzer als Wirtschaftsminister ab 1948. Merksatz: Müller-Armack dachte es, Erhard machte es."
+      },
+      {
+        q: "Welche der folgenden ist KEINE der fünf Säulen der deutschen Sozialversicherung?",
+        options: ["Krankenversicherung", "Pflegeversicherung", "Lebensversicherung", "Unfallversicherung"],
+        correct: 2,
+        feedback: "Richtig! Die Lebensversicherung ist eine private Vorsorge, keine Sozialversicherung. Die fünf Säulen sind: Kranken-, Renten-, Pflege-, Arbeitslosen- und Unfallversicherung."
+      },
+      {
+        q: "Was versteht man unter dem 'Solidarprinzip' in der Sozialversicherung?",
+        options: ["Alle zahlen gleich viel", "Jeder bekommt genau das zurück, was er eingezahlt hat", "Starke helfen Schwachen – Beiträge nach Leistungsfähigkeit", "Nur Bedürftige erhalten Leistungen"],
+        correct: 2,
+        feedback: "Richtig! Das Solidarprinzip bedeutet, dass alle nach ihrer wirtschaftlichen Leistungsfähigkeit beitragen und bei Bedarf Leistungen erhalten – unabhängig davon, ob sie viel oder wenig eingezahlt haben."
+      }
+    ]
+  },
+  {
+    id: "europa",
+    icon: "🌍",
+    title: "Europa, NATO & UNO",
+    questions: [
+      {
+        n: 74,
+        title: "Organe der EU",
+        priority: "must",
+        explanation: `
+          <h4>Hauptorgane der EU</h4>
+          <table class="expl-table">
+            <tr><th>Organ</th><th>Zusammensetzung</th><th>Hauptaufgabe</th></tr>
+            <tr><td>Europäisches Parlament</td><td>Direkt gewählte Abgeordnete</td><td>Gesetzgebung (mit Rat), Haushalt, Kontrolle</td></tr>
+            <tr><td>Rat der EU (Ministerrat)</td><td>Fachminister der Mitgliedstaaten</td><td>Gesetzgebung, Koordination</td></tr>
+            <tr><td>Europäischer Rat</td><td>Staats-/Regierungschefs</td><td>Strategische Leitlinien</td></tr>
+            <tr><td>Europäische Kommission</td><td>Kommissare (je 1 pro Mitgliedstaat)</td><td>Gesetzesinitiative, Hüterin der Verträge</td></tr>
+            <tr><td>Europäischer Gerichtshof (EuGH)</td><td>Richter</td><td>EU-Recht auslegen und durchsetzen</td></tr>
+          </table>
+          <div class="tip-box"><strong>Wichtig:</strong> Nur die Kommission hat das Gesetzesinitiativrecht auf EU-Ebene. Das Parlament kann (noch) keine eigenen Gesetzentwürfe einbringen.</div>
+        `
+      },
+      {
+        n: 73,
+        title: "Stationen der Europäischen Einigung",
+        priority: "must",
+        explanation: `
+          <h4>Meilensteine</h4>
+          <ul>
+            <li><strong>1951:</strong> Montanunion (EGKS) – Kohle und Stahl (Frankreich, BRD, Italien, Benelux)</li>
+            <li><strong>1957:</strong> Römer Verträge – EWG und Euratom</li>
+            <li><strong>1979:</strong> Erste Direktwahl des Europäischen Parlaments</li>
+            <li><strong>1985:</strong> Schengen-Abkommen (Reisefreiheit)</li>
+            <li><strong>1992:</strong> Maastrichter Vertrag – EU-Gründung, Unionsbürgerschaft, Europlanung</li>
+            <li><strong>1995:</strong> Schengen tritt in Kraft</li>
+            <li><strong>2002:</strong> Euro-Bargeld eingeführt</li>
+            <li><strong>2004:</strong> Große Osterweiterung (10 neue Mitglieder)</li>
+            <li><strong>2009:</strong> Vertrag von Lissabon – EU-Vertrag reformiert</li>
+            <li><strong>2020:</strong> Brexit – Austritt Großbritanniens</li>
+          </ul>
+        `
+      },
+      {
+        n: 76,
+        title: "NATO – Organisation & Aufgaben",
+        priority: "must",
+        explanation: `
+          <h4>Grunddaten</h4>
+          <ul>
+            <li>Gegründet: 1949 (Nordatlantikvertrag, Washington)</li>
+            <li>Derzeit: 32 Mitglieder (nach NATO-Beitritt Schwedens 2024)</li>
+            <li>Sitz: Brüssel</li>
+            <li>Generalsekretär: Mark Rutte (seit 2024)</li>
+          </ul>
+          <h4>Kernprinzip: Art. 5</h4>
+          <p>Bündnisklausel: Ein Angriff auf ein Mitglied ist ein Angriff auf alle. Wurde bisher nur einmal ausgerufen: nach 9/11 (2001).</p>
+          <h4>Aufgaben</h4>
+          <ul>
+            <li>Kollektive Verteidigung der Mitglieder</li>
+            <li>Krisenmanagement</li>
+            <li>Kooperative Sicherheit</li>
+            <li>Abschreckung (nuclear deterrence)</li>
+          </ul>
+        `
+      },
+      {
+        n: 78,
+        title: "Entstehung & Aufgaben der UNO",
+        priority: "must",
+        explanation: `
+          <h4>Entstehung</h4>
+          <ul>
+            <li>Gegründet: 1945 nach dem Zweiten Weltkrieg</li>
+            <li>UN-Charta am 26. Juni 1945 unterzeichnet (San Francisco)</li>
+            <li>Ziel: Weltfrieden sichern, nie wieder Weltkrieg</li>
+            <li>Derzeit: 193 Mitgliedstaaten</li>
+            <li>Sitz: New York</li>
+          </ul>
+          <h4>Hauptorgane</h4>
+          <ul>
+            <li><strong>Sicherheitsrat:</strong> 15 Mitglieder, 5 ständig mit Vetorecht (USA, Russland, China, UK, Frankreich)</li>
+            <li><strong>Generalversammlung:</strong> Alle 193 Mitgliedstaaten, je eine Stimme</li>
+            <li><strong>Sekretariat / Generalsekretär</strong></li>
+            <li><strong>Internationaler Gerichtshof (IGH)</strong></li>
+          </ul>
+          <h4>Aufgaben</h4>
+          <ul>
+            <li>Friedenssicherung und Konfliktlösung</li>
+            <li>Menschenrechtsschutz</li>
+            <li>Humanitäre Hilfe</li>
+            <li>Entwicklungszusammenarbeit</li>
+          </ul>
+        `
+      },
+      {
+        n: 80,
+        title: "UNO & NATO in internationalen Konflikten",
+        priority: "overview",
+        explanation: `
+          <h4>Konkrete Beispiele</h4>
+          <table class="expl-table">
+            <tr><th>Konflikt</th><th>UNO</th><th>NATO</th></tr>
+            <tr><td>Kosovo 1999</td><td>Blockiert durch Russland-Veto</td><td>Bombenangriff ohne UN-Mandat</td></tr>
+            <tr><td>Afghanistan 2001</td><td>Resolution 1368 (UN-Mandat)</td><td>Erstmals Art. 5 ausgerufen; ISAF-Mission</td></tr>
+            <tr><td>Irak 2003</td><td>Kein Mandat</td><td>Kein NATO-Einsatz (USA bilateral)</td></tr>
+            <tr><td>Libyen 2011</td><td>Resolution 1973 (Schutzverantwortung)</td><td>Umsetzung, über Mandat hinausgegangen</td></tr>
+            <tr><td>Ukraine ab 2022</td><td>Russland-Veto blockiert Handeln</td><td>Waffenlieferungen, kein Truppeneinsatz</td></tr>
+          </table>
+          <div class="tip-box"><strong>Roter Faden:</strong> Beide Organisationen stoßen an Grenzen, wenn Großmächte involviert sind. Russland und China im Sicherheitsrat, die USA und ihr Unilateralismus – das sind die strukturellen Probleme.</div>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Welches EU-Organ hat das alleinige Recht, Gesetzesvorschläge einzubringen?",
+        options: ["Europäisches Parlament", "Rat der EU", "Europäischer Rat", "Europäische Kommission"],
+        correct: 3,
+        feedback: "Richtig! Nur die Europäische Kommission hat das Gesetzesinitiativrecht auf EU-Ebene. Das Europäische Parlament kann die Kommission auffordern, Vorschläge zu machen – aber selbst keine Gesetzentwürfe einbringen."
+      },
+      {
+        q: "Was bedeutet Artikel 5 des NATO-Vertrags?",
+        options: ["Alle Mitglieder müssen 2% des BIP für Verteidigung ausgeben", "Ein Angriff auf ein Mitglied ist ein Angriff auf alle", "Keine NATO-Truppen in Osteuropa", "Nuklearwaffen dürfen nicht eingesetzt werden"],
+        correct: 1,
+        feedback: "Richtig! Art. 5 ist die Beistandsklausel – das Herzstück der NATO. Er wurde nur einmal ausgerufen: nach den Anschlägen vom 11. September 2001."
+      },
+      {
+        q: "Warum konnte die UNO im Ukraine-Krieg ab 2022 keine bindenden Beschlüsse fassen?",
+        options: ["Die Ukraine ist kein UN-Mitglied", "Russland hat als ständiges Mitglied im Sicherheitsrat ein Vetorecht", "Die Generalversammlung muss einstimmig entscheiden", "Der UN-Generalsekretär hat den Antrag abgelehnt"],
+        correct: 1,
+        feedback: "Richtig! Russland als ständiges Mitglied im UN-Sicherheitsrat kann jeden Beschluss mit seinem Vetorecht blockieren. Das ist die strukturelle Schwäche der UNO bei Konflikten, an denen Großmächte beteiligt sind."
+      },
+      {
+        q: "In welchem Jahr wurde die EU durch den Maastrichter Vertrag gegründet?",
+        options: ["1957", "1985", "1992", "2002"],
+        correct: 2,
+        feedback: "Richtig! Der Maastrichter Vertrag von 1992 schuf die Europäische Union, führte die Unionsbürgerschaft ein und bereitete den Weg für den Euro."
+      }
+    ]
+  },
+  {
+    id: "geschichte",
+    icon: "📜",
+    title: "Geschichte",
+    questions: [
+      {
+        n: 1,
+        title: "Gründung der Bundesrepublik Deutschland",
+        priority: "must",
+        explanation: `
+          <h4>Ausgangsbedingungen 1945–1949</h4>
+          <ul>
+            <li>Deutschland nach WW2 vollständig besetzt (USA, UK, Frankreich, UdSSR)</li>
+            <li>Vier Besatzungszonen + Viermächtestatus für Berlin</li>
+            <li>Beginn des Kalten Krieges → Westmächte vs. UdSSR</li>
+            <li>Wirtschaftliche Zerrüttung, Millionen Flüchtlinge und Vertriebene</li>
+          </ul>
+          <h4>Weg zur BRD</h4>
+          <ul>
+            <li>1948: Frankfurter Dokumente → Parlamentarischer Rat beauftragt</li>
+            <li>1948/49: Parlamentarischer Rat erarbeitet das Grundgesetz</li>
+            <li>23. Mai 1949: Inkrafttreten des Grundgesetzes → Gründung der BRD</li>
+            <li>August 1949: Erste Bundestagswahl, Adenauer wird Bundeskanzler</li>
+            <li>Oktober 1949: DDR-Gründung in der Sowjetzone</li>
+          </ul>
+          <div class="tip-box"><strong>Merkdatum:</strong> 23. Mai 1949 – Tag des Grundgesetzes. Das GG sollte ursprünglich nur ein provisorisches „Grundgesetz" sein, bis zur Wiedervereinigung eine Verfassung beschlossen würde.</div>
+        `
+      },
+      {
+        n: 8,
+        title: "Demokratie vs. Diktatur / Drittes Reich",
+        priority: "must",
+        explanation: `
+          <h4>Wesentliche Unterschiede</h4>
+          <table class="expl-table">
+            <tr><th>Demokrat. Verfassungsstaat</th><th>Diktatur</th></tr>
+            <tr><td>Gewaltenteilung</td><td>Machtkonzentration bei einer Person/Gruppe</td></tr>
+            <tr><td>Grundrechte garantiert</td><td>Grundrechte abgeschafft oder ignoriert</td></tr>
+            <tr><td>Freie Wahlen</td><td>Keine freien Wahlen</td></tr>
+            <tr><td>Unabhängige Justiz</td><td>Justiz instrumentalisiert</td></tr>
+            <tr><td>Pressefreiheit</td><td>Zensur und Propaganda</td></tr>
+            <tr><td>Politischer Pluralismus</td><td>Einparteienherrschaft</td></tr>
+          </table>
+          <h4>Drittes Reich als Diktatur (Belege)</h4>
+          <ul>
+            <li>Ermächtigungsgesetz 1933: Hitler erhielt diktatorische Vollmachten</li>
+            <li>Gleichschaltung: Parteien, Medien, Justiz, Verbände</li>
+            <li>Abschaffung der Gewerkschaften</li>
+            <li>Nürnberger Rassengesetze 1935: Entrechtung von Juden</li>
+            <li>Gestapo, KZ-System, Terror</li>
+            <li>Presse- und Meinungsfreiheit abgeschafft</li>
+          </ul>
+        `
+      },
+      {
+        n: 2,
+        title: "Deutsche Teilung & Mauerbau",
+        priority: "good",
+        explanation: `
+          <h4>Ursachen der Teilung</h4>
+          <ul>
+            <li>Kalter Krieg: Gegensatz USA/Westmächte vs. UdSSR</li>
+            <li>Unterschiedliche Besatzungspolitik → zwei Staatssysteme</li>
+            <li>1949: BRD und DDR als separate Staaten</li>
+          </ul>
+          <h4>Mauerbau 13. August 1961</h4>
+          <ul>
+            <li>Ursache: Massenflucht aus der DDR (bis 1961 ca. 2,7 Mio. Menschen)</li>
+            <li>DDR-Führung (Ulbricht) erhielt Genehmigung von Chruschtschow (UdSSR)</li>
+            <li>Zunächst Stacheldraht, dann Betonmauer, Todesstreifen</li>
+            <li>156 km durch Berlin, 1378 km Grenze BRD–DDR gesamt</li>
+            <li>Mindestens 140 Menschen starben an der Berliner Mauer</li>
+          </ul>
+        `
+      },
+      {
+        n: 3,
+        title: "Stationen der Wiedervereinigung",
+        priority: "good",
+        explanation: `
+          <h4>Ereignisse 1989–1990</h4>
+          <ul>
+            <li><strong>Sommer 1989:</strong> Massenflucht über Ungarn, Botschaftsbesetzungen</li>
+            <li><strong>Oktober 1989:</strong> Montagsdemonstrationen in Leipzig (bis 300.000 Menschen)</li>
+            <li><strong>9. November 1989:</strong> Mauerfall – Schabowski-Pressekonferenz, DDR öffnet die Grenzen</li>
+            <li><strong>18. März 1990:</strong> Erste freie Volkskammerwahl in der DDR</li>
+            <li><strong>1. Juli 1990:</strong> Wirtschafts-, Währungs- und Sozialunion (D-Mark in der DDR)</li>
+            <li><strong>31. August 1990:</strong> Einigungsvertrag unterzeichnet</li>
+            <li><strong>12. September 1990:</strong> Zwei-plus-Vier-Vertrag (Außenminister BRD, DDR + 4 Siegermächte)</li>
+            <li><strong>3. Oktober 1990:</strong> Tag der deutschen Einheit – DDR tritt der BRD bei</li>
+          </ul>
+          <div class="tip-box"><strong>Wichtig:</strong> Die DDR trat der BRD bei (Art. 23 GG a.F.) – es wurde keine neue Verfassung beschlossen.</div>
+        `
+      }
+    ],
+    quiz: [
+      {
+        q: "Wann trat das Grundgesetz der Bundesrepublik Deutschland in Kraft?",
+        options: ["8. Mai 1945", "23. Mai 1949", "3. Oktober 1990", "1. Januar 1948"],
+        correct: 1,
+        feedback: "Richtig! Am 23. Mai 1949 trat das Grundgesetz in Kraft – dieser Tag wird als Tag des Grundgesetzes begangen. Das GG war ursprünglich als Provisorium bis zur Wiedervereinigung gedacht."
+      },
+      {
+        q: "Was war der unmittelbare Anlass für den Mauerbau am 13. August 1961?",
+        options: ["Militärische Bedrohung durch die NATO", "Massenfluchten aus der DDR (ca. 2,7 Mio. bis 1961)", "Wirtschaftskrise in Westdeutschland", "Forderung der USA"],
+        correct: 1,
+        feedback: "Richtig! Bis 1961 hatten ca. 2,7 Millionen Menschen die DDR in Richtung Westen verlassen. Die DDR-Führung baute die Mauer, um diese 'Abstimmung mit den Füßen' zu stoppen."
+      },
+      {
+        q: "Welches entscheidende Merkmal unterscheidet das konstruktive Misstrauensvotum im GG von der Weimarer Republik?",
+        options: ["Es braucht eine Zweidrittelmehrheit", "Der Bundestag kann den Kanzler nur abwählen, wenn gleichzeitig ein Nachfolger gewählt wird", "Der Bundespräsident muss zustimmen", "Es kann nur einmal pro Legislaturperiode angewendet werden"],
+        correct: 1,
+        feedback: "Richtig! In der Weimarer Republik konnte der Reichstag den Kanzler abwählen ohne einen Nachfolger zu wählen – das führte zu Regierungslosigkeit. Das GG lernte daraus: Art. 67 GG verlangt gleichzeitig einen neuen Kanzler."
+      }
+    ]
+  }
+];
+
+// Track answered questions
+const answered = {};
+let totalAnswered = 0;
+
+function updateProgress() {
+  const total = 81;
+  const pct = Math.round((totalAnswered / total) * 100);
+  document.getElementById('globalProgress').style.width = pct + '%';
+  document.getElementById('globalProgressLabel').textContent = `${totalAnswered} von ${total} Fragen bearbeitet`;
+}
+
+function buildNav() {
+  const nav = document.getElementById('categoryNav');
+  categories.forEach((cat, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (i === 0 ? ' active' : '');
+    btn.dataset.idx = i;
+    btn.innerHTML = `${cat.icon} ${cat.title}<span class="cat-num">${cat.questions.length} Fragen · ${cat.quiz.length} Quiz</span>`;
+    btn.onclick = () => loadCategory(i);
+    nav.appendChild(btn);
+  });
+}
+
+function loadCategory(idx) {
+  document.querySelectorAll('.cat-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  const cat = categories[idx];
+  const main = document.getElementById('mainContent');
+  main.innerHTML = '';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'page-header';
+  header.innerHTML = `
+    <div class="category-label">${cat.icon} Themenblock</div>
+    <div class="page-title">${cat.title}</div>
+    <div class="priority-tags">
+      <span class="tag tag-must">● Muss sitzen</span>
+      <span class="tag tag-good">● Gut kennen</span>
+      <span class="tag tag-overview">● Überblick reicht</span>
+    </div>
+  `;
+  main.appendChild(header);
+
+  // Questions
+  const qSection = document.createElement('div');
+  qSection.className = 'questions-section';
+  qSection.innerHTML = '<div class="section-label">Lerninhalt</div>';
+
+  cat.questions.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.style.animationDelay = (qi * 0.07) + 's';
+
+    const pLabel = { must: '🟢 Muss sitzen', good: '🔵 Gut kennen', overview: '⚪ Überblick' }[q.priority];
+    const pClass = { must: 'tag-must', good: 'tag-good', overview: 'tag-overview' }[q.priority];
+
+    card.innerHTML = `
+      <div class="q-header">
+        <div class="q-number">${q.n}</div>
+        <div class="q-title">${q.title}</div>
+        <span class="tag ${pClass}" style="font-size:10px;padding:2px 8px;">${pLabel}</span>
+        <div class="q-toggle">▼</div>
+      </div>
+      <div class="q-body">
+        <div class="explanation">${q.explanation}</div>
+      </div>
+    `;
+
+    card.querySelector('.q-header').onclick = () => {
+      card.classList.toggle('open');
+    };
+
+    qSection.appendChild(card);
+  });
+  main.appendChild(qSection);
+
+  // Quiz
+  const quizSection = document.createElement('div');
+  quizSection.className = 'quiz-section';
+  quizSection.innerHTML = `
+    <div class="quiz-title">📝 Teste dein Wissen</div>
+    <div class="quiz-subtitle">${cat.quiz.length} Multiple-Choice-Fragen zu diesem Themenblock</div>
+  `;
+
+  const quizState = { score: 0, answered: 0 };
+
+  cat.quiz.forEach((qz, qi) => {
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.style.animationDelay = (qi * 0.1) + 's';
+    const letters = ['A', 'B', 'C', 'D'];
+
+    let optionsHTML = qz.options.map((opt, oi) => `
+      <button class="option-btn" data-idx="${oi}">
+        <span class="option-letter">${letters[oi]}</span>
+        <span>${opt}</span>
+      </button>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="quiz-q-number">Frage ${qi + 1} von ${cat.quiz.length}</div>
+      <div class="quiz-question">${qz.q}</div>
+      <div class="options">${optionsHTML}</div>
+      <div class="quiz-feedback"></div>
+    `;
+
+    card.querySelectorAll('.option-btn').forEach(btn => {
+      btn.onclick = function() {
+        if (this.disabled) return;
+        const chosen = parseInt(this.dataset.idx);
+        const isCorrect = chosen === qz.correct;
+
+        card.querySelectorAll('.option-btn').forEach(b => {
+          b.disabled = true;
+          if (parseInt(b.dataset.idx) === qz.correct) b.classList.add('correct');
+          else if (parseInt(b.dataset.idx) === chosen && !isCorrect) b.classList.add('wrong');
+        });
+
+        const fb = card.querySelector('.quiz-feedback');
+        fb.textContent = qz.feedback;
+        fb.className = 'quiz-feedback show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+
+        if (isCorrect) quizState.score++;
+        quizState.answered++;
+        totalAnswered++;
+        updateProgress();
+
+        if (quizState.answered === cat.quiz.length) {
+          showScore(quizState.score, cat.quiz.length, scoreDiv);
+        }
+      };
+    });
+
+    quizSection.appendChild(card);
+  });
+
+  const scoreDiv = document.createElement('div');
+  quizSection.appendChild(scoreDiv);
+  main.appendChild(quizSection);
+
+  main.scrollTop = 0;
+}
+
+function showScore(score, total, container) {
+  const pct = Math.round((score / total) * 100);
+  const emoji = pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '📚';
+  const label = pct >= 80 ? 'Ausgezeichnet!' : pct >= 60 ? 'Gut gemacht!' : 'Weiterüben!';
+
+  container.innerHTML = `
+    <div class="score-summary">
+      <div>
+        <div class="score-number">${score}/${total}</div>
+        <div class="score-label">${emoji} ${label} · ${pct}% richtig</div>
+        <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz(this)">Nochmal versuchen</button>
+    </div>
+  `;
+}
+
+function resetQuiz(btn) {
+  const activeBtn = document.querySelector('.cat-btn.active');
+  if (activeBtn) loadCategory(parseInt(activeBtn.dataset.idx));
+}
+
+buildNav();
+loadCategory(0);
+</script>
+</body>
+</html>
