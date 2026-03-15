@@ -480,7 +480,7 @@
     <div class="progress-bar" style="margin-top:16px;">
       <div class="progress-fill" id="globalProgress" style="width:0%"></div>
     </div>
-    <div class="progress-label" id="globalProgressLabel">0 von 81 Fragen bearbeitet</div>
+    <div class="progress-label" id="globalProgressLabel">0 von … Quiz-Fragen beantwortet</div>
     <div class="category-nav" id="categoryNav"></div>
   </nav>
 
@@ -1804,6 +1804,7 @@ function resetQuiz(btn) {
 
 buildNav();
 loadCategory(0);
+document.getElementById('globalProgressLabel').textContent = `0 von ${totalQuestions} Quiz-Fragen beantwortet`;
 </script>
 </body>
 </html>
