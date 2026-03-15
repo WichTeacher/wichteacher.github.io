@@ -1635,12 +1635,12 @@ const categories = [
 // Track answered questions
 const answered = {};
 let totalAnswered = 0;
+const totalQuestions = categories.reduce((sum, cat) => sum + cat.quiz.length, 0);
 
 function updateProgress() {
-  const total = 81;
-  const pct = Math.round((totalAnswered / total) * 100);
+  const pct = Math.round((totalAnswered / totalQuestions) * 100);
   document.getElementById('globalProgress').style.width = pct + '%';
-  document.getElementById('globalProgressLabel').textContent = `${totalAnswered} von ${total} Fragen bearbeitet`;
+  document.getElementById('globalProgressLabel').textContent = `${totalAnswered} von ${totalQuestions} Quiz-Fragen beantwortet`;
 }
 
 function buildNav() {
