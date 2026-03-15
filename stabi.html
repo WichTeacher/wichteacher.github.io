@@ -404,14 +404,14 @@
   }
   .quiz-feedback.show { display: block; }
   .quiz-feedback.correct-fb {
-    background: rgba(126,184,160,0.1);
+    background: rgba(126,184,160,0.12);
     border-left: 3px solid var(--correct);
     color: var(--correct);
   }
   .quiz-feedback.wrong-fb {
-    background: rgba(192,112,112,0.1);
+    background: rgba(192,112,112,0.13);
     border-left: 3px solid var(--wrong);
-    color: var(--wrong);
+    color: #e09090;
   }
 
   /* SCORE */
@@ -1751,8 +1751,13 @@ function loadCategory(idx) {
         });
 
         const fb = card.querySelector('.quiz-feedback');
-        fb.textContent = qz.feedback;
-        fb.className = 'quiz-feedback show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+        if (isCorrect) {
+          fb.textContent = qz.feedback;
+          fb.className = 'quiz-feedback show correct-fb';
+        } else {
+          fb.textContent = '✗ Leider falsch. Die richtige Antwort war: „' + qz.options[qz.correct] + '". ' + qz.feedback;
+          fb.className = 'quiz-feedback show wrong-fb';
+        }
 
         if (isCorrect) quizState.score++;
         quizState.answered++;
