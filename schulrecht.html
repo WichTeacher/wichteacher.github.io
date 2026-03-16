@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schulrecht Lernapp – Modul 40</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f12;
+    --surface: #1a1a20;
+    --surface2: #22222a;
+    --border: rgba(255,255,255,0.08);
+    --accent: #c8a96e;
+    --accent2: #7eb8a0;
+    --text: #e8e6e0;
+    --text-muted: #8a8880;
+    --correct: #7eb8a0;
+    --wrong: #c07070;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .app { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .progress-bar {
+    margin: 16px 24px 0;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin: 6px 24px 12px;
+  }
+
+  .category-nav { padding: 8px 0; flex: 1; }
+
+  .cat-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 9px 24px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    line-height: 1.4;
+  }
+  .cat-btn:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .cat-btn.active { color: var(--accent); border-left-color: var(--accent); background: rgba(200,169,110,0.06); }
+  .cat-btn .cat-num { font-size: 10px; color: var(--text-muted); display: block; margin-top: 2px; }
+  .cat-btn.all-btn { color: var(--text); font-weight: 500; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+  .cat-btn.all-btn.active { color: var(--accent); }
+
+  /* MAIN */
+  .main { flex: 1; padding: 48px 56px; max-width: 860px; overflow-y: auto; }
+
+  .page-header {
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .category-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .page-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* QUIZ */
+  .quiz-section { margin-top: 0; }
+
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .quiz-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .shuffle-btn {
+    padding: 8px 18px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .shuffle-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .quiz-q-number {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .quiz-thema {
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .quiz-question {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: rgba(200,169,110,0.4);
+    background: rgba(200,169,110,0.06);
+  }
+  .option-btn:disabled { cursor: default; }
+
+  .option-letter {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+  }
+
+  .option-btn.correct { border-color: var(--correct); background: rgba(126,184,160,0.1); }
+  .option-btn.correct .option-letter { background: var(--correct); color: #0f1f1a; }
+  .option-btn.wrong { border-color: var(--wrong); background: rgba(192,112,112,0.1); }
+  .option-btn.wrong .option-letter { background: var(--wrong); color: #1f0f0f; }
+
+  .quiz-feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    display: none;
+  }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.correct-fb {
+    background: rgba(126,184,160,0.12);
+    border-left: 3px solid var(--correct);
+    color: var(--correct);
+  }
+  .quiz-feedback.wrong-fb {
+    background: rgba(192,112,112,0.13);
+    border-left: 3px solid var(--wrong);
+    color: #e09090;
+  }
+
+  /* SCORE */
+  .score-summary {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .score-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .score-info { flex: 1; min-width: 140px; }
+  .score-label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .score-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 10px; }
+  .score-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.8s ease; }
+
+  .reset-btn {
+    padding: 10px 24px;
+    background: none;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .reset-btn:hover { background: var(--accent); color: var(--bg); }
+
+  /* LOADING / ERROR */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--text-muted);
+    font-size: 14px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .spinner {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: rgba(192,112,112,0.1);
+    border: 1px solid rgba(192,112,112,0.3);
+    border-radius: 12px;
+    padding: 24px;
+    color: #e09090;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .error-box code {
+    background: rgba(255,255,255,0.06);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 768px) {
+    .app { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: static; }
+    .main { padding: 28px 20px; }
+    .page-title { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Schulrecht</div>
+      <div class="sidebar-sub">Modul 40 · Lernapp</div>
+    </div>
+    <div class="progress-bar" style="margin-top:16px;">
+      <div class="progress-fill" id="globalProgress" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="globalProgressLabel">Lade Fragen…</div>
+    <div class="category-nav" id="categoryNav"></div>
+  </nav>
+  <main class="main" id="mainContent">
+    <div class="loading">
+      <div class="spinner"></div>
+      Fragen werden geladen…
+    </div>
+  </main>
+</div>
+
+<script>
+// ─── Konfiguration ───────────────────────────────────────────────
+// Pfad zur JSON-Datei (im selben Verzeichnis wie diese HTML-Datei)
+const JSON_URL = 'schulrecht_fragen.json';
+
+// Anzahl der Antwortoptionen (1 richtig + N-1 falsch)
+const ANSWERS_PER_QUESTION = 4;
+
+// ─── State ───────────────────────────────────────────────────────
+let allQuestions = [];
+let themen = [];
+let totalAnswered = 0;
+let totalQuestions = 0;
+let currentThema = null; // null = alle
+
+// ─── Hilfsfunktionen ─────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildOptions(q) {
+  // Pick ANSWERS_PER_QUESTION-1 random wrong answers
+  const wrongPicked = shuffle(q.falsch).slice(0, ANSWERS_PER_QUESTION - 1);
+  // Mix with correct answer and shuffle
+  const opts = shuffle([q.richtig, ...wrongPicked]);
+  const correctIdx = opts.indexOf(q.richtig);
+  return { opts, correctIdx };
+}
+
+function updateProgress() {
+  const pct = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
+  document.getElementById('globalProgress').style.width = pct + '%';
+  document.getElementById('globalProgressLabel').textContent =
+    `${totalAnswered} von ${totalQuestions} Fragen beantwortet`;
+}
+
+// ─── Nav aufbauen ─────────────────────────────────────────────────
+function buildNav() {
+  const nav = document.getElementById('categoryNav');
+  nav.innerHTML = '';
+
+  // "Alle" Button
+  const allBtn = document.createElement('button');
+  allBtn.className = 'cat-btn all-btn' + (currentThema === null ? ' active' : '');
+  allBtn.innerHTML = `🔀 Alle Themen gemischt<span class="cat-num">${allQuestions.length} Fragen</span>`;
+  allBtn.onclick = () => loadThema(null);
+  nav.appendChild(allBtn);
+
+  themen.forEach(thema => {
+    const count = allQuestions.filter(q => q.thema === thema).length;
+    const btn = document.createElement('button');
+    btn.className = 'cat-btn' + (currentThema === thema ? ' active' : '');
+    btn.dataset.thema = thema;
+    btn.innerHTML = `${thema}<span class="cat-num">${count} Fragen</span>`;
+    btn.onclick = () => loadThema(thema);
+    nav.appendChild(btn);
+  });
+}
+
+// ─── Thema laden ──────────────────────────────────────────────────
+function loadThema(thema) {
+  currentThema = thema;
+  buildNav();
+
+  const questions = thema === null
+    ? shuffle(allQuestions)
+    : shuffle(allQuestions.filter(q => q.thema === thema));
+
+  totalQuestions = questions.length;
+  totalAnswered = 0;
+  updateProgress();
+
+  const main = document.getElementById('mainContent');
+  main.innerHTML = '';
+  main.scrollTop = 0;
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'page-header';
+  header.innerHTML = `
+    <div class="category-label">⚖️ Schulrecht – Modul 40</div>
+    <div class="page-title">${thema === null ? 'Alle Themen' : thema}</div>
+    <div class="page-meta">${questions.length} Fragen · je 4 Antwortmöglichkeiten</div>
+  `;
+  main.appendChild(header);
+
+  // Quiz section
+  const section = document.createElement('div');
+  section.className = 'quiz-section';
+
+  const quizHeader = document.createElement('div');
+  quizHeader.className = 'quiz-header';
+  quizHeader.innerHTML = `<div class="quiz-title">📝 Teste dein Wissen</div>`;
+
+  const shuffleBtn = document.createElement('button');
+  shuffleBtn.className = 'shuffle-btn';
+  shuffleBtn.textContent = '↺ Neu mischen';
+  shuffleBtn.onclick = () => loadThema(thema);
+  quizHeader.appendChild(shuffleBtn);
+  section.appendChild(quizHeader);
+
+  const quizState = { score: 0, answered: 0, total: questions.length };
+
+  questions.forEach((q, qi) => {
+    const { opts, correctIdx } = buildOptions(q);
+    const card = document.createElement('div');
+    card.className = 'quiz-card';
+    card.style.animationDelay = Math.min(qi * 0.05, 0.6) + 's';
+
+    const letters = ['A', 'B', 'C', 'D'];
+
+    card.innerHTML = `
+      <div class="quiz-thema">${q.thema}</div>
+      <div class="quiz-q-number">Frage ${qi + 1} von ${questions.length}</div>
+      <div class="quiz-question">${q.frage}</div>
+      <div class="options">
+        ${opts.map((opt, oi) => `
+          <button class="option-btn" data-idx="${oi}">
+            <span class="option-letter">${letters[oi]}</span>
+            <span>${opt}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback"></div>
+    `;
+
+    card.querySelectorAll('.option-btn').forEach(btn => {
+      btn.onclick = function() {
+        if (this.disabled) return;
+        const chosen = parseInt(this.dataset.idx);
+        const isCorrect = chosen === correctIdx;
+
+        card.querySelectorAll('.option-btn').forEach(b => {
+          b.disabled = true;
+          if (parseInt(b.dataset.idx) === correctIdx) b.classList.add('correct');
+          else if (parseInt(b.dataset.idx) === chosen && !isCorrect) b.classList.add('wrong');
+        });
+
+        const fb = card.querySelector('.quiz-feedback');
+        if (isCorrect) {
+          fb.textContent = '✓ Richtig!';
+          fb.className = 'quiz-feedback show correct-fb';
+        } else {
+          fb.textContent = `✗ Leider falsch. Richtige Antwort: „${q.richtig}"`;
+          fb.className = 'quiz-feedback show wrong-fb';
+        }
+
+        if (isCorrect) quizState.score++;
+        quizState.answered++;
+        totalAnswered++;
+        updateProgress();
+
+        if (quizState.answered === quizState.total) {
+          showScore(quizState.score, quizState.total, scoreDiv);
+        }
+      };
+    });
+
+    section.appendChild(card);
+  });
+
+  const scoreDiv = document.createElement('div');
+  section.appendChild(scoreDiv);
+  main.appendChild(section);
+}
+
+// ─── Score anzeigen ───────────────────────────────────────────────
+function showScore(score, total, container) {
+  const pct = Math.round((score / total) * 100);
+  const emoji = pct >= 80 ? '🎉' : pct >= 60 ? '👍' : '📚';
+  const label = pct >= 80 ? 'Ausgezeichnet!' : pct >= 60 ? 'Gut gemacht!' : 'Weiterüben!';
+
+  container.innerHTML = `
+    <div class="score-summary">
+      <div>
+        <div class="score-number">${score}/${total}</div>
+      </div>
+      <div class="score-info">
+        <div>${emoji} ${label}</div>
+        <div class="score-label">${pct}% richtig</div>
+        <div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>
+      </div>
+      <button class="reset-btn" onclick="loadThema(currentThema)">↺ Nochmal</button>
+    </div>
+  `;
+}
+
+// ─── Daten laden ──────────────────────────────────────────────────
+async function init() {
+  try {
+    const res = await fetch(JSON_URL);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    allQuestions = await res.json();
+
+    // Themen in Reihenfolge des ersten Auftretens
+    themen = [...new Set(allQuestions.map(q => q.thema))];
+
+    totalQuestions = allQuestions.length;
+    updateProgress();
+    buildNav();
+    loadThema(null);
+  } catch (err) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="error-box">
+        <strong>Fragen konnten nicht geladen werden.</strong><br><br>
+        Stelle sicher, dass sich <code>schulrecht_fragen.json</code> im selben Verzeichnis wie diese HTML-Datei befindet
+        und du die Seite über einen Webserver aufrufst (nicht direkt als Datei).<br><br>
+        Fehler: ${err.message}
+      </div>
+    `;
+    document.getElementById('globalProgressLabel').textContent = 'Fehler beim Laden';
+  }
+}
+
+init();
+</script>
+</body>
+</html>

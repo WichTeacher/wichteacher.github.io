@@ -1,0 +1,1315 @@
+[
+  {
+    "thema": "KMK",
+    "frage": "Was ist die Kultusministerkonferenz (KMK)?",
+    "richtig": "Der Zusammenschluss der Kultusminister aller 16 Bundesländer zur Abstimmung der Bildungspolitik",
+    "falsch": [
+      "Ein Bundesministerium, das einheitliche Bildungsgesetze für alle Länder erlässt",
+      "Eine EU-Behörde zur Koordination europäischer Bildungsstandards",
+      "Ein Ausschuss des Deutschen Bundestags für Bildungsfragen",
+      "Eine Konferenz der Schulleiter aller deutschen Bundesländer",
+      "Ein Gremium zur Prüfung und Zertifizierung von Lehrkräften",
+      "Die Vereinigung der Berufsschullehrer auf Bundesebene"
+    ]
+  },
+  {
+    "thema": "KMK",
+    "frage": "Welche der folgenden Aufgaben gehört zu den Aufgaben der KMK?",
+    "richtig": "Bundesweit einheitliche Rahmenlehrpläne für den Berufsschulunterricht beschließen",
+    "falsch": [
+      "Direkte Unterrichtsvorgaben für einzelne Schulstunden erstellen",
+      "Lehrkräfte bundesweit einheitlich prüfen und zertifizieren",
+      "Schulbücher für alle Bundesländer verbindlich genehmigen",
+      "Schulgebühren auf Bundesebene festlegen",
+      "Lehrerstellen in den einzelnen Bundesländern ausschreiben",
+      "Die Stundentafel für alle Schularten bundesweit festlegen"
+    ]
+  },
+  {
+    "thema": "KMK",
+    "frage": "Was enthält ein von der KMK beschlossener Rahmenlehrplan?",
+    "richtig": "Lernfelder, Kompetenzen und Zeitrichtwerte",
+    "falsch": [
+      "Konkrete Unterrichtsstunden, Arbeitsblätter und Prüfungsaufgaben",
+      "Noten, Versetzungsregelungen und Abschlussprüfungen",
+      "Stundentafeln, Klassengrößen und Lehrerqualifikationen",
+      "Ausbildungsabschnitte, Fertigkeiten und Betriebspraktika",
+      "Schulordnungen, Hausordnungen und Erziehungsmaßnahmen",
+      "Lehrerzulassungen, Fortbildungspflichten und Gehaltsstufen"
+    ]
+  },
+  {
+    "thema": "Rahmenlehrplan",
+    "frage": "Was ist der Rahmenlehrplan auf Bundesebene?",
+    "richtig": "Ein von der KMK bundesweit einheitlich beschlossener Lehrplan für Berufsschulen, der den Ländern als Orientierung zur Erstellung ihrer Lehrplanrichtlinien dient",
+    "falsch": [
+      "Ein verbindlicher Unterrichtsplan, der direkt im Unterricht umgesetzt werden muss",
+      "Ein Lehrplan, der vom Bundesministerium für Bildung direkt für Schulen erstellt wird",
+      "Eine Prüfungsordnung für bundesweit einheitliche Abschlussprüfungen",
+      "Ein Lehrplan, der die betriebliche Ausbildung in Unternehmen regelt",
+      "Ein Dokument, das Schulen vorschreibt welche Lehrbücher zu verwenden sind",
+      "Eine Empfehlung der EU für den Berufsschulunterricht in Deutschland"
+    ]
+  },
+  {
+    "thema": "Ausbildungsrahmenplan",
+    "frage": "Was ist der Ausbildungsrahmenplan?",
+    "richtig": "Der verbindliche Ausbildungsplan auf betrieblicher Seite, der Teil der Ausbildungsordnung ist und bundesweit einheitlich gilt",
+    "falsch": [
+      "Ein schulischer Lehrplan, der von der KMK für Berufsschulen erstellt wird",
+      "Eine Empfehlung der IHK für die betriebliche Ausbildung ohne Verbindlichkeit",
+      "Ein individueller Plan, den jeder Betrieb selbst für seine Azubis erstellt",
+      "Ein Rahmendokument der EU zur Harmonisierung europäischer Berufsausbildungen",
+      "Ein Lehrplan, der die theoretischen Inhalte der Berufsschule festlegt",
+      "Eine Prüfungsordnung für die Zwischenprüfung der Auszubildenden"
+    ]
+  },
+  {
+    "thema": "Ausbildungsrahmenplan",
+    "frage": "Was legt der Ausbildungsrahmenplan fest?",
+    "richtig": "Welche Fertigkeiten, Kenntnisse und Fähigkeiten zu welchem Zeitpunkt im Betrieb vermittelt werden sollen",
+    "falsch": [
+      "Welche Noten ein Auszubildender in der Berufsschule erreichen muss",
+      "Wie viele Stunden pro Woche der Auszubildende in der Berufsschule verbringen muss",
+      "Welche Lehrkräfte für welche Fächer in der Berufsschule eingesetzt werden",
+      "Welche Lernfelder und Kompetenzen in der Berufsschule unterrichtet werden",
+      "Wie die Abschlussprüfung des Ausbildungsberufs aufgebaut ist",
+      "Welche Schulabschlüsse für die Aufnahme einer Ausbildung erforderlich sind"
+    ]
+  },
+  {
+    "thema": "Rahmenlehrplan vs. Ausbildungsrahmenplan",
+    "frage": "Welche Aussage zum Unterschied zwischen Rahmenlehrplan und Ausbildungsrahmenplan ist korrekt?",
+    "richtig": "Der Rahmenlehrplan regelt den schulischen Teil, der Ausbildungsrahmenplan den betrieblichen Teil der dualen Ausbildung",
+    "falsch": [
+      "Der Rahmenlehrplan ist bundesweit verbindlich, der Ausbildungsrahmenplan gilt nur auf Länderebene",
+      "Der Rahmenlehrplan wird vom Bund erstellt, der Ausbildungsrahmenplan von den Ländern",
+      "Der Rahmenlehrplan gilt für Betriebe, der Ausbildungsrahmenplan für Berufsschulen",
+      "Beide Pläne werden von der KMK erstellt, unterscheiden sich aber in ihrer Verbindlichkeit",
+      "Der Rahmenlehrplan regelt die Abschlussprüfung, der Ausbildungsrahmenplan die Zwischenprüfung",
+      "Der Rahmenlehrplan gilt nur für vollzeitschulische Ausbildungen, der Ausbildungsrahmenplan für duale"
+    ]
+  },
+  {
+    "thema": "Rahmenlehrplan vs. Ausbildungsrahmenplan",
+    "frage": "Wer ist für den Rahmenlehrplan zuständig, wer für den Ausbildungsrahmenplan?",
+    "richtig": "Rahmenlehrplan: Länder (KMK) – Ausbildungsrahmenplan: Bund",
+    "falsch": [
+      "Rahmenlehrplan: Bund – Ausbildungsrahmenplan: Länder (KMK)",
+      "Rahmenlehrplan: EU – Ausbildungsrahmenplan: Bund",
+      "Rahmenlehrplan: IHK – Ausbildungsrahmenplan: KMK",
+      "Rahmenlehrplan: Schulleitung – Ausbildungsrahmenplan: Betrieb",
+      "Rahmenlehrplan: Bundesministerium für Bildung – Ausbildungsrahmenplan: IHK",
+      "Beide werden gemeinsam von Bund und Ländern in der KMK beschlossen"
+    ]
+  },
+  {
+    "thema": "Rahmenlehrplan vs. Ausbildungsrahmenplan",
+    "frage": "Ein Auszubildender möchte während seiner Ausbildung als Elektroniker von Hessen nach Bayern wechseln. Was trifft zu?",
+    "richtig": "Ein Wechsel ist möglich, da Ausbildungsordnungen bundeseinheitlich geregelt sind und sich die schulischen Lehrpläne am gemeinsamen KMK-Rahmenlehrplan orientieren",
+    "falsch": [
+      "Ein Wechsel ist nicht möglich, da jedes Bundesland eigene Ausbildungsordnungen hat",
+      "Ein Wechsel ist nur beim betrieblichen Teil möglich, der schulische Teil muss neu begonnen werden",
+      "Ein Wechsel ist nur möglich, wenn beide Bundesländer identische Lehrplanrichtlinien haben",
+      "Ein Wechsel ist generell möglich, aber die Abschlussprüfung muss im Ursprungsbundesland abgelegt werden",
+      "Ein Wechsel ist nur nach dem ersten Ausbildungsjahr möglich und muss von der KMK genehmigt werden",
+      "Ein Wechsel ist nicht möglich, da die Lehrpläne der Berufsschulen bundesweit zu unterschiedlich sind"
+    ]
+  },
+  {
+    "thema": "Gesetze und Verordnungen",
+    "frage": "Was regelt das BayEUG (Bayerisches Erziehungs- und Unterrichtsgesetz)?",
+    "richtig": "Grundlegende Strukturen wie Schularten und Bildungsauftrag sowie Rechte und Pflichten aller Beteiligten",
+    "falsch": [
+      "Praktische Details wie Aufnahme, Versetzung und Prüfungsmodalitäten",
+      "Den staatlichen Erziehungsauftrag und übergeordnete Bildungsziele wie Demokratie und Toleranz",
+      "Spezifische Regelungen für Berufsschulen wie Unterrichtsformen und Klassenbildung",
+      "Die Gehälter und Dienstpflichten der Lehrkräfte in Bayern",
+      "Die Zulassung und Genehmigung von Schulbüchern in Bayern",
+      "Die Aufnahmevoraussetzungen für alle weiterführenden Schulen in Bayern"
+    ]
+  },
+  {
+    "thema": "Gesetze und Verordnungen",
+    "frage": "Welches bayerische Gesetz/welche Verordnung regelt spezifisch Themen der Berufsschule wie Unterrichtsformen, Zeugnisse und Klassenbildung?",
+    "richtig": "BSO (Berufsschulordnung)",
+    "falsch": [
+      "BayEUG (Bayerisches Erziehungs- und Unterrichtsgesetz)",
+      "BaySchO (Bayerische Schulordnung)",
+      "BV (Bayerische Verfassung)",
+      "BBiG (Berufsbildungsgesetz)",
+      "AVBayLpR (Ausführungsverordnung zum Bayerischen Lehrerbildungsgesetz)",
+      "KMK-Rahmenlehrplan"
+    ]
+  },
+  {
+    "thema": "Gesetze und Verordnungen",
+    "frage": "In welcher Reihenfolge werden die rechtlichen Grundlagen des bayerischen Schulwesens von allgemein nach konkret geordnet?",
+    "richtig": "BV → BayEUG → BaySchO → BSO",
+    "falsch": [
+      "BSO → BaySchO → BayEUG → BV",
+      "BayEUG → BV → BSO → BaySchO",
+      "BV → BSO → BaySchO → BayEUG",
+      "BaySchO → BayEUG → BV → BSO",
+      "BSO → BayEUG → BV → BaySchO",
+      "BV → BaySchO → BayEUG → BSO"
+    ]
+  },
+  {
+    "thema": "BBiG",
+    "frage": "Was ist das BBiG und was regelt es?",
+    "richtig": "Das Berufsbildungsgesetz bildet die bundeseinheitliche rechtliche Grundlage für alle Ausbildungsberufe und regelt u.a. welche Berufe es gibt, wie lange die Ausbildung dauert und welche Inhalte vermittelt werden müssen",
+    "falsch": [
+      "Das BBiG ist ein bayerisches Gesetz, das die Berufsschulpflicht und Unterrichtszeiten regelt",
+      "Das BBiG regelt die Rechte und Pflichten der Lehrkräfte an Berufsschulen bundesweit",
+      "Das BBiG ist eine KMK-Vereinbarung zur Abstimmung der schulischen Rahmenlehrpläne",
+      "Das BBiG legt die Prüfungsordnungen für alle akademischen Abschlüsse in Deutschland fest",
+      "Das BBiG regelt die Zulassung von Ausbildungsbetrieben durch die Industrie- und Handelskammer",
+      "Das BBiG ist eine EU-Verordnung zur Harmonisierung der Berufsausbildung in Europa"
+    ]
+  },
+  {
+    "thema": "BBiG",
+    "frage": "Welche der folgenden Aussagen zum BBiG ist korrekt?",
+    "richtig": "Das BBiG sorgt dafür, dass Ausbildungsberufe bundesweit einheitlich und vergleichbar sind",
+    "falsch": [
+      "Das BBiG gilt nur für Ausbildungsberufe im Handwerk, nicht für kaufmännische Berufe",
+      "Das BBiG wird von jedem Bundesland eigenständig ausgestaltet und angepasst",
+      "Das BBiG regelt ausschließlich den schulischen Teil der dualen Ausbildung",
+      "Das BBiG wird von der KMK beschlossen und gilt nur für Berufsschulen",
+      "Das BBiG schreibt vor, welche Noten Auszubildende für eine Übernahme brauchen",
+      "Das BBiG gilt nur für Ausbildungsberufe mit mehr als 10.000 Auszubildenden bundesweit"
+    ]
+  },
+  {
+    "thema": "BIBB",
+    "frage": "Was ist das BIBB und wofür ist es zuständig?",
+    "richtig": "Das Bundesinstitut für Berufsbildung ist zuständig für Forschung, Entwicklung und Beratung rund um die berufliche Bildung in Deutschland",
+    "falsch": [
+      "Das BIBB ist die Bundesbehörde, die Lehrkräfte an Berufsschulen prüft und zertifiziert",
+      "Das BIBB ist ein Zusammenschluss der IHKen und HWKen zur Qualitätssicherung in Betrieben",
+      "Das BIBB ist eine EU-Agentur zur Förderung der beruflichen Bildung in Europa",
+      "Das BIBB ist das Bundesministerium für berufliche Bildung und Berufsschulrecht",
+      "Das BIBB ist ein Forschungsinstitut der KMK für schulische Bildungsfragen",
+      "Das BIBB ist eine privatwirtschaftliche Organisation der Ausbildungsbetriebe"
+    ]
+  },
+  {
+    "thema": "BIBB",
+    "frage": "Welche Aufgabe gehört zu den Aufgaben des BIBB?",
+    "richtig": "Ausbildungsordnungen entwickeln und modernisieren sowie die Bundesregierung in Fragen der Berufsbildung beraten",
+    "falsch": [
+      "Bundesweit einheitliche Schulordnungen für Berufsschulen beschließen",
+      "Abschlussprüfungen für alle Ausbildungsberufe bundesweit durchführen und bewerten",
+      "Lehrkräfte an Berufsschulen fortbilden und deren Unterrichtsqualität kontrollieren",
+      "Rahmenlehrpläne für allgemeinbildende Schulen in Deutschland erstellen",
+      "Die Vergabe von Ausbildungsplätzen in Betrieben bundesweit koordinieren",
+      "Berufsschulen in Bayern hinsichtlich ihrer Ausstattung und Infrastruktur fördern"
+    ]
+  },
+  {
+    "thema": "Bayerische Verfassung",
+    "frage": "Was legt Artikel 131 Absatz 1 der Bayerischen Verfassung fest?",
+    "richtig": "Das oberste Bildungsziel: Schulen sollen nicht nur Wissen und Können vermitteln, sondern auch Herz und Charakter bilden",
+    "falsch": [
+      "Die Schulpflicht aller Kinder in Bayern ab dem vollendeten 6. Lebensjahr",
+      "Das Recht der Eltern auf Wahl der Schulart für ihre Kinder",
+      "Die Verpflichtung des Staates, ausreichend Lehrkräfte auszubilden",
+      "Die Trennung von staatlichem Bildungsauftrag und religiöser Erziehung",
+      "Die Grundlage für das dreigliedrige Schulsystem in Bayern",
+      "Die Pflicht der Schulen zur politischen Neutralität im Unterricht"
+    ]
+  },
+  {
+    "thema": "Bayerische Verfassung",
+    "frage": "Welche Bedeutung hat Artikel 131 der Bayerischen Verfassung für Lehrkräfte?",
+    "richtig": "Er legt den staatlichen Bildungs- und Erziehungsauftrag verbindlich fest und bindet Lehrkräfte an Erziehungsziele wie Menschenwürde, Demokratie und Toleranz",
+    "falsch": [
+      "Er garantiert Lehrkräften vollständige Freiheit in der Unterrichtsgestaltung ohne inhaltliche Vorgaben",
+      "Er verpflichtet Lehrkräfte ausschließlich zur Wissensvermittlung, nicht zur Wertebildung",
+      "Er regelt die Dienstpflichten der Lehrkräfte hinsichtlich Arbeitszeit und Unterrichtsumfang",
+      "Er schützt Lehrkräfte vor disziplinarrechtlichen Maßnahmen bei pädagogischen Entscheidungen",
+      "Er verpflichtet Lehrkräfte zur Mitgliedschaft in einer Gewerkschaft",
+      "Er gibt Lehrkräften das Recht, veraltete Lehrpläne durch eigene Curricula zu ersetzen"
+    ]
+  },
+  {
+    "thema": "Rechtsbindung Lehrplan",
+    "frage": "Eine Lehrkraft unterrichtet weiterhin nach dem alten Lehrplan, da sie die neue Lehrplanrichtlinie für unpassend hält. Sie beruft sich auf die Freiheit der Unterrichtsgestaltung. Wie ist dies rechtlich zu bewerten?",
+    "richtig": "Die Lehrkraft handelt rechtswidrig, da sie nach §3 LDO an die geltenden Lehrpläne gebunden ist – die Freiheit der Unterrichtsgestaltung gilt nur im Rahmen der geltenden Lehrplanrichtlinien",
+    "falsch": [
+      "Die Lehrkraft handelt rechtmäßig, da die pädagogische Freiheit Vorrang vor Lehrplanvorgaben hat",
+      "Die Lehrkraft handelt rechtmäßig, da die Meinungsfreiheit auch im Unterricht uneingeschränkt gilt",
+      "Die Lehrkraft handelt zwar problematisch, doch ein disziplinarrechtliches Vorgehen ist nicht möglich",
+      "Die Lehrkraft handelt rechtswidrig, aber die Schulleitung hat keine Befugnis einzugreifen",
+      "Die Lehrkraft handelt rechtmäßig, solange sie nachweist, dass der alte Lehrplan pädagogisch besser ist",
+      "Die Lehrkraft handelt rechtswidrig, aber nur wenn Schülerinnen und Schüler sich beschweren"
+    ]
+  },
+  {
+    "thema": "Rechtsbindung Lehrplan",
+    "frage": "Was gilt laut §3 LDO für die Bindung einer Lehrkraft an Lehrpläne?",
+    "richtig": "Die Lehrkraft ist bei ihrem Unterricht an die geltenden Lehrpläne und Stundentafeln gebunden; die Freiheit der Unterrichtsgestaltung gilt nur im vorgegebenen Rahmen",
+    "falsch": [
+      "Die Lehrkraft kann von Lehrplänen abweichen, wenn sie dies pädagogisch begründet",
+      "Die Lehrkraft ist nur an Lehrpläne gebunden, wenn der Schulleiter dies ausdrücklich anordnet",
+      "Die Lehrplanvorgaben gelten nur für Prüfungsfächer, nicht für Wahlpflichtfächer",
+      "Die Lehrkraft ist vollständig frei in der Unterrichtsgestaltung, solange die Lernziele erreicht werden",
+      "Lehrpläne sind nur Empfehlungen und entfalten keine rechtliche Bindungswirkung",
+      "Die Bindung an Lehrpläne entfällt bei Lehrkräften mit mehr als 10 Jahren Berufserfahrung"
+    ]
+  },
+  {
+    "thema": "Auskunftspflicht",
+    "frage": "Ein Ausbildungsbetrieb fragt eine Lehrkraft nach den Unterrichtsinhalten und deren zeitlicher Planung. Was gilt laut §24 BSO?",
+    "richtig": "Die Lehrkraft ist verpflichtet, den Betrieben auf Antrag mindestens halbjährlich die Themenbereiche der einzelnen Fächer mitzuteilen – genaue Unterrichtsentwürfe müssen jedoch nicht herausgegeben werden",
+    "falsch": [
+      "Die Lehrkraft ist nicht verpflichtet, dem Betrieb irgendwelche Auskünfte über den Unterricht zu geben",
+      "Die Lehrkraft muss vollständige Unterrichtsentwürfe inklusive Methodik und Materialien herausgeben",
+      "Die Lehrkraft darf Auskunft geben, ist dazu aber nicht verpflichtet",
+      "Die Lehrkraft muss nur dann Auskunft geben, wenn der Schulleiter dies ausdrücklich anordnet",
+      "Die Lehrkraft darf keinerlei Informationen über den Unterricht an Betriebe weitergeben",
+      "Die Auskunftspflicht gilt nur gegenüber großen Ausbildungsbetrieben mit mehr als 50 Mitarbeitern"
+    ]
+  },
+  {
+    "thema": "Auskunftspflicht",
+    "frage": "Was unterliegt bei der Zusammenarbeit mit Ausbildungsbetrieben der Schweigepflicht der Lehrkraft?",
+    "richtig": "Noten und Schülerdaten dürfen nicht herausgegeben werden und unterliegen der Schweigepflicht",
+    "falsch": [
+      "Die Themenbereiche des Unterrichts unterliegen der Schweigepflicht und dürfen nicht mitgeteilt werden",
+      "Die verwendeten Lehrwerke und Unterrichtsmaterialien unterliegen der Schweigepflicht",
+      "Der gesamte Lehrplan unterliegt der Schweigepflicht gegenüber Betrieben",
+      "Die Stundentafel und Unterrichtszeiten unterliegen der Schweigepflicht",
+      "Die Klassenstärke und Zusammensetzung der Klasse unterliegen der Schweigepflicht",
+      "Die Schulordnung und Hausordnung unterliegen der Schweigepflicht gegenüber Betrieben"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Ein Schulleiter weist eine Lehrkraft per dienstlicher Anweisung zur Pausenaufsicht ein. Die Lehrkraft weigert sich mit Verweis auf ihr Erholungsrecht. Was gilt laut §5 LDO?",
+    "richtig": "Die Lehrkraft ist zur Durchführung der Pausenaufsicht verpflichtet, da es sich um eine rechtmäßige dienstliche Anweisung handelt und Lehrkräfte auch außerhalb des Unterrichts zur Aufsicht herangezogen werden können",
+    "falsch": [
+      "Die Lehrkraft muss keine Aufsicht führen, da Pausen zur persönlichen Erholung dienen und nicht dienstlich belegt werden dürfen",
+      "Die Lehrkraft kann die Aufsicht verweigern, wenn keine ausdrückliche gesetzliche Grundlage vorliegt",
+      "Die Pausenaufsicht ist freiwillig und kann nur durch eine Vereinbarung im Arbeitsvertrag verpflichtend gemacht werden",
+      "Die Lehrkraft muss nur dann Aufsicht führen, wenn sie dafür eine zusätzliche Vergütung erhält",
+      "Die Schulleitung darf Aufsicht nur für Unterrichtszeiten, nicht für Pausen anordnen",
+      "Die Lehrkraft ist zur Aufsicht verpflichtet, aber nur wenn alle Kollegen gleichmäßig eingeteilt werden"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Wer ist laut §5 LDO für die besondere Einteilung der Lehrkräfte zur Aufsicht zuständig?",
+    "richtig": "Die Schulleiterin oder der Schulleiter",
+    "falsch": [
+      "Das Kollegium entscheidet gemeinsam in einer Lehrerkonferenz",
+      "Die Lehrkräfte teilen die Aufsicht eigenverantwortlich untereinander auf",
+      "Das Staatliche Schulamt legt die Aufsichtseinteilung für alle Schulen fest",
+      "Der Personalrat muss die Einteilung genehmigen und koordiniert sie",
+      "Die Elternvertretung hat ein Mitspracherecht bei der Aufsichtseinteilung",
+      "Die Klassenleitung ist automatisch für die Aufsicht ihrer Klasse zuständig"
+    ]
+  },
+  {
+    "thema": "Außerunterrichtliche Dienstpflichten",
+    "frage": "Kann ein Schulleiter eine Lehrkraft per dienstlicher Anweisung zur Mitarbeit im Schulentwicklungsteam verpflichten?",
+    "richtig": "Ja, laut §9b LDO gehört die Mitarbeit an der inneren Schulentwicklung zu den außerunterrichtlichen Dienstpflichten, die der Schulleiter anweisen kann",
+    "falsch": [
+      "Nein, die Mitarbeit in Schulentwicklungsteams ist grundsätzlich freiwillig und kann nicht angewiesen werden",
+      "Nein, außerunterrichtliche Tätigkeiten bedürfen einer gesonderten vertraglichen Vereinbarung",
+      "Ja, aber nur wenn die Lehrkraft dafür eine Stundenreduktion im Unterricht erhält",
+      "Nein, der Schulleiter darf nur unterrichtsbezogene Tätigkeiten anweisen",
+      "Ja, aber nur wenn alle Lehrkräfte der Schule gleichzeitig daran teilnehmen",
+      "Nein, eine solche Anweisung bedarf der Zustimmung des Personalrats"
+    ]
+  },
+  {
+    "thema": "Außerunterrichtliche Dienstpflichten",
+    "frage": "Was schreibt §9b LDO zur Verteilung außerunterrichtlicher Aufgaben vor?",
+    "richtig": "Die Schulleitung hat darauf zu achten, dass außerunterrichtliche Aufgaben unter Berücksichtigung der individuellen dienstlichen Belastung möglichst gleichmäßig auf alle Lehrkräfte verteilt werden",
+    "falsch": [
+      "Außerunterrichtliche Aufgaben dürfen nur an Lehrkräfte mit weniger als vollem Lehrdeputat vergeben werden",
+      "Die Verteilung außerunterrichtlicher Aufgaben erfolgt ausschließlich nach Dienstalter",
+      "Außerunterrichtliche Aufgaben sind grundsätzlich optional und können nicht verpflichtend zugeteilt werden",
+      "Die Lehrkräfte einigen sich eigenverantwortlich auf die Verteilung außerunterrichtlicher Aufgaben",
+      "Außerunterrichtliche Aufgaben dürfen nur Lehrkräfte mit unbefristetem Dienstverhältnis übernehmen",
+      "Die Verteilung außerunterrichtlicher Aufgaben muss vom Staatlichen Schulamt genehmigt werden"
+    ]
+  },
+  {
+    "thema": "Schulträgerschaft",
+    "frage": "Wer ist Dienstherr der Lehrkräfte an staatlichen Schulen in Bayern?",
+    "richtig": "Der Freistaat Bayern",
+    "falsch": [
+      "Die jeweilige kommunale Körperschaft (Kreis, Stadt, Gemeinde)",
+      "Der private Schulträger",
+      "Das Staatliche Schulamt des jeweiligen Landkreises",
+      "Der Bezirk, in dem die Schule liegt",
+      "Die Schulleitung im Auftrag des Kultusministeriums",
+      "Die Bundesrepublik Deutschland über das Bundesbildungsministerium"
+    ]
+  },
+  {
+    "thema": "Schulträgerschaft",
+    "frage": "Was unterscheidet kommunale Schulen von staatlichen Schulen in Bayern?",
+    "richtig": "Bei kommunalen Schulen ist eine kommunale Körperschaft (Kreis, Stadt) sowohl Dienstherr als auch Sachaufwandsträger, während bei staatlichen Schulen der Freistaat Bayern Dienstherr ist",
+    "falsch": [
+      "Kommunale Schulen sind privat finanziert, staatliche Schulen erhalten staatliche Mittel",
+      "An kommunalen Schulen unterrichten nur verbeamtete Lehrkräfte, an staatlichen nur Angestellte",
+      "Kommunale Schulen unterstehen direkt dem Kultusministerium, staatliche Schulen dem Schulamt",
+      "Staatliche Schulen dürfen keine Abschlüsse vergeben, kommunale Schulen schon",
+      "An kommunalen Schulen gelten andere Lehrpläne als an staatlichen Schulen",
+      "Kommunale Schulen sind nur für Berufsausbildungen zuständig, staatliche für Allgemeinbildung"
+    ]
+  },
+  {
+    "thema": "Privatschulen",
+    "frage": "Was ist der wesentliche Unterschied zwischen Ersatzschulen und Ergänzungsschulen?",
+    "richtig": "Ersatzschulen ersetzen öffentliche Schulen und erfüllen mit ihrem Besuch die Schulpflicht; Ergänzungsschulen ergänzen das öffentliche Angebot, entsprechen keiner vorhandenen öffentlichen Schulform und sind nur anzeigepflichtig",
+    "falsch": [
+      "Ersatzschulen sind kostenlos, Ergänzungsschulen erheben Schulgeld",
+      "Ersatzschulen werden staatlich gefördert, Ergänzungsschulen sind vollständig privat finanziert",
+      "Ersatzschulen bieten nur Berufsausbildungen an, Ergänzungsschulen nur allgemeinbildende Abschlüsse",
+      "Ergänzungsschulen können staatliche Abschlüsse selbst vergeben, Ersatzschulen nicht",
+      "Ersatzschulen sind nur anzeigepflichtig, Ergänzungsschulen müssen genehmigt werden",
+      "Ergänzungsschulen erfüllen die Schulpflicht, Ersatzschulen nicht"
+    ]
+  },
+  {
+    "thema": "Privatschulen",
+    "frage": "Können anerkannte Ersatzschulen staatliche Abschlüsse vergeben?",
+    "richtig": "Ja, anerkannte Ersatzschulen können staatliche Abschlüsse selbst vergeben; genehmigte Ersatzschulen hingegen nicht – deren Schüler müssen extern ablegen",
+    "falsch": [
+      "Nein, an keiner Privatschule können staatliche Abschlüsse vergeben werden",
+      "Ja, alle Privatschulen dürfen staatliche Abschlüsse vergeben, sofern sie anzeigepflichtig sind",
+      "Nur Ergänzungsschulen dürfen staatliche Abschlüsse vergeben, Ersatzschulen nicht",
+      "Ja, aber nur wenn die Schule mindestens 10 Jahre bestanden hat",
+      "Nein, staatliche Abschlüsse können nur an öffentlichen Schulen erworben werden",
+      "Ja, alle genehmigten Privatschulen dürfen automatisch staatliche Abschlüsse vergeben"
+    ]
+  },
+  {
+    "thema": "Berufliche Schulen Bayern",
+    "frage": "Welche berufliche Schule in Bayern ist die einzige Pflichtschule?",
+    "richtig": "Die Berufsschule",
+    "falsch": [
+      "Die Berufsfachschule",
+      "Die Fachoberschule",
+      "Die Wirtschaftsschule",
+      "Die Berufsoberschule",
+      "Die Fachschule",
+      "Die Fachakademie"
+    ]
+  },
+  {
+    "thema": "Berufliche Schulen Bayern",
+    "frage": "Welchen Abschluss vermittelt die Fachoberschule (FOS) in der Regelform?",
+    "richtig": "Die Fachhochschulreife; durch die FOS13 kann zusätzlich die fachgebundene oder allgemeine Hochschulreife erworben werden",
+    "falsch": [
+      "Den mittleren Schulabschluss",
+      "Den Berufsschulabschluss mit Möglichkeit zum mittleren Schulabschluss",
+      "Die allgemeine Hochschulreife als Regelabschluss",
+      "Die fachgebundene Hochschulreife als Regelabschluss",
+      "Den Techniker- oder Meisterabschluss",
+      "Einen staatlich geregelten Berufsabschluss mit eingeschränkter Fachhochschulreife"
+    ]
+  },
+  {
+    "thema": "Berufliche Schulen Bayern",
+    "frage": "Was unterscheidet die Berufsoberschule (BOS) von der Fachoberschule (FOS) bei der Aufnahme?",
+    "richtig": "Die BOS setzt zusätzlich zum mittleren Schulabschluss eine abgeschlossene Berufsausbildung voraus, deren Fachrichtung zum gewählten Zweig passen muss",
+    "falsch": [
+      "Die BOS setzt keinen mittleren Schulabschluss voraus, die FOS schon",
+      "Die BOS ist nur für Absolventen staatlicher Schulen zugänglich, die FOS auch für Privatschüler",
+      "Die BOS erfordert einen Notendurchschnitt von mindestens 2,5, die FOS nicht",
+      "Die BOS ist nur in bestimmten Fachrichtungen verfügbar, die FOS ist fachrichtungsunabhängig",
+      "Die BOS setzt Berufserfahrung von mindestens 2 Jahren voraus, ohne Ausbildungsabschluss",
+      "Die BOS erfordert eine bestandene Aufnahmeprüfung, die FOS nicht"
+    ]
+  },
+  {
+    "thema": "Berufliche Schulen Bayern",
+    "frage": "Welchen Abschluss vermittelt die Fachschule (z.B. Technikerschule)?",
+    "richtig": "Die Fachschulreife; bei besonderer Prüfung ist auch die Fachhochschulreife möglich",
+    "falsch": [
+      "Den mittleren Schulabschluss",
+      "Die allgemeine Hochschulreife",
+      "Die Fachhochschulreife als Regelabschluss ohne zusätzliche Prüfung",
+      "Den Berufsschulabschluss mit Vertiefung",
+      "Die fachgebundene Hochschulreife als Regelabschluss",
+      "Einen bundesweit anerkannten Meisterbrief"
+    ]
+  },
+  {
+    "thema": "Hochschulzugangsberechtigungen",
+    "frage": "Was berechtigt die Fachhochschulreife im Unterschied zur fachgebundenen Hochschulreife?",
+    "richtig": "Die Fachhochschulreife berechtigt zum Studium an allen Fachhochschulen; die fachgebundene Hochschulreife berechtigt zusätzlich zum Studium an allen Hochschulen, aber nur in bestimmten Fachrichtungen",
+    "falsch": [
+      "Die Fachhochschulreife berechtigt zum Studium an allen Hochschulen, die fachgebundene nur an Fachhochschulen",
+      "Beide Abschlüsse berechtigen zum Studium an allen Hochschulen ohne Einschränkung",
+      "Die Fachhochschulreife berechtigt nur zum Studium in Bayern, die fachgebundene bundesweit",
+      "Die fachgebundene Hochschulreife ist nur an staatlichen Schulen erwerbbar, die Fachhochschulreife auch an Privatschulen",
+      "Beide Abschlüsse sind gleichwertig und berechtigen zu denselben Studiengängen",
+      "Die Fachhochschulreife berechtigt zum Masterstudium, die fachgebundene nur zum Bachelor"
+    ]
+  },
+  {
+    "thema": "Mittlerer Schulabschluss Berufsschule",
+    "frage": "Unter welchen Voraussetzungen kann mit dem Berufsschulabschlusszeugnis der mittlere Schulabschluss verliehen werden?",
+    "richtig": "Mindestens zweijährige Berufsausbildung erfolgreich abgeschlossen, Notendurchschnitt aller Fächer (außer Sport) mindestens 3,0 und Englischkenntnisse auf fünfjährigem Unterrichtsniveau mit mindestens 4,0",
+    "falsch": [
+      "Der Notendurchschnitt muss mindestens 2,5 betragen und die Ausbildung muss dreijährig sein",
+      "Es reicht, die Abschlussprüfung der Berufsausbildung bestanden zu haben",
+      "Der mittlere Schulabschluss wird automatisch mit dem Berufsschulabschluss verliehen",
+      "Es ist ein gesonderter Antrag beim Schulamt erforderlich, unabhängig von den Noten",
+      "Der Notendurchschnitt muss mindestens 2,0 betragen und Sport wird mitgerechnet",
+      "Englischkenntnisse sind nicht erforderlich, wenn eine andere Fremdsprache nachgewiesen wird"
+    ]
+  },
+  {
+    "thema": "Mittlerer Schulabschluss Berufsschule",
+    "frage": "Wann wird der mittlere Schulabschluss über das Berufsschulzeugnis von Amts wegen verliehen, wann muss er beantragt werden?",
+    "richtig": "Von Amts wegen wird er verliehen, wenn die Schülerinnen und Schüler noch keinen mittleren Schulabschluss besitzen; bei bereits vorhandenem mittleren Schulabschluss kann er beantragt werden",
+    "falsch": [
+      "Er wird immer von Amts wegen verliehen, ein Antrag ist nie notwendig",
+      "Er muss immer beantragt werden, eine automatische Verleihung ist nicht vorgesehen",
+      "Er wird von Amts wegen verliehen, wenn der Notendurchschnitt besser als 2,5 ist",
+      "Er kann nur beantragt werden, wenn die Schülerinnen und Schüler noch keinen mittleren Schulabschluss haben",
+      "Er wird immer automatisch verliehen, unabhängig davon ob bereits ein mittlerer Schulabschluss vorliegt",
+      "Er wird von Amts wegen verliehen, wenn die Ausbildung mindestens drei Jahre dauert"
+    ]
+  },
+  {
+    "thema": "Schulabschlüsse Mittelschule",
+    "frage": "Was ist der Unterschied zwischen dem erfolgreichen Abschluss der Mittelschule und dem qualifizierenden Abschluss der Mittelschule (Quali)?",
+    "richtig": "Den erfolgreichen Abschluss erhalten alle Schülerinnen und Schüler nach der 9. Jahrgangsstufe; den Quali erwerben nur jene, die zusätzlich an einer besonderen Leistungsfeststellung (Deutsch, Mathe, Englisch) mit einem Gesamtnotendurchschnitt von mindestens 3,0 teilnehmen",
+    "falsch": [
+      "Der Quali wird nach der 10. Jahrgangsstufe vergeben, der erfolgreiche Abschluss nach der 9.",
+      "Der Quali entspricht dem mittleren Schulabschluss und berechtigt zum Besuch der FOS",
+      "Beide Abschlüsse sind gleichwertig, unterscheiden sich nur in der Bezeichnung",
+      "Den Quali können nur Schülerinnen und Schüler erwerben, die keine Ausbildung beginnen",
+      "Der Quali wird automatisch vergeben, wenn der Notendurchschnitt besser als 2,0 ist",
+      "Der erfolgreiche Abschluss beinhaltet immer auch den Quali, sofern die Noten ausreichen"
+    ]
+  },
+  {
+    "thema": "Schulabschlüsse Mittelschule",
+    "frage": "Was ist der qualifizierte berufliche Bildungsabschluss (Quabi) und welche Voraussetzungen gelten?",
+    "richtig": "Der Quabi ist ein Abschluss, den die Mittelschule verleiht (Art. 7a Abs. 5 BayEUG); Voraussetzungen sind der Quali, ein Berufsausbildungsabschluss mit Ø-Note mindestens 3,0 sowie Englischkenntnisse auf fünfjährigem Niveau mit mindestens 4,0",
+    "falsch": [
+      "Der Quabi wird von der Berufsschule verliehen, an der die Ausbildung absolviert wurde",
+      "Der Quabi entspricht dem mittleren Schulabschluss und wird automatisch mit dem Berufsabschluss verliehen",
+      "Für den Quabi ist kein Englischnachweis erforderlich, nur ein Gesamtnotendurchschnitt von 2,5",
+      "Der Quabi kann auch ohne Quali erworben werden, wenn der Berufsabschluss mit Note 1,0 erreicht wurde",
+      "Der Quabi wird vom Kultusministerium zentral ausgestellt, nicht von der Mittelschule",
+      "Der Quabi berechtigt direkt zum Studium an Fachhochschulen ohne weitere Prüfung"
+    ]
+  },
+  {
+    "thema": "Schulabschlüsse Mittelschule",
+    "frage": "Von welcher Schule wird das Zeugnis über den Quabi ausgestellt?",
+    "richtig": "Von der Mittelschule, an der der Quali erworben wurde",
+    "falsch": [
+      "Von der Berufsschule, an der die Ausbildung absolviert wurde",
+      "Vom zuständigen Staatlichen Schulamt",
+      "Vom Kultusministerium in München",
+      "Von der IHK oder HWK, die die Abschlussprüfung abgenommen hat",
+      "Von der Berufsschule gemeinsam mit der Mittelschule",
+      "Von der Schule, die der Schüler zuletzt besucht hat"
+    ]
+  },
+  {
+    "thema": "Berufsschule Plus",
+    "frage": "Was ist das Angebot der Berufsschule Plus (BS+)?",
+    "richtig": "Eine freiwillige schulische Weiterqualifizierung parallel zur Ausbildung, die durch Zusatzunterricht und Zusatzprüfungen in Deutsch, Englisch und Mathematik zur Fachhochschulreife führt",
+    "falsch": [
+      "Ein Pflichtangebot für leistungsstarke Auszubildende zur Vorbereitung auf die Meisterprüfung",
+      "Ein staatliches Förderprogramm für Auszubildende mit schwachen Schulleistungen",
+      "Eine Verlängerung der Berufsschulzeit um ein Jahr zur Vertiefung des Lernstoffs",
+      "Ein Angebot zur Nachqualifizierung für Auszubildende ohne mittleren Schulabschluss",
+      "Ein Austauschprogramm, das Auszubildenden ermöglicht, im Ausland zu lernen",
+      "Eine Maßnahme zur Berufsvorbereitung für Schülerinnen und Schüler ohne Ausbildungsplatz"
+    ]
+  },
+  {
+    "thema": "Berufsschule Plus",
+    "frage": "Welche Voraussetzungen gelten für die Teilnahme an der Berufsschule Plus (BS+)?",
+    "richtig": "Mindestens zweijährige betriebliche Erstausbildung mit Berufsschulbesuch sowie mittlerer Schulabschluss mit Ø mindestens 3,5 in Deutsch, Mathematik und Englisch (alternativ: Vorrückerlaubnis in Jgst. 11 des Gymnasiums)",
+    "falsch": [
+      "Abgeschlossene Berufsausbildung und Gesamtnotendurchschnitt von mindestens 2,0",
+      "Qualifizierender Abschluss der Mittelschule und Empfehlung des Ausbildungsbetriebs",
+      "Mittlerer Schulabschluss mit Gesamtdurchschnitt 3,0 und mindestens dreijährige Ausbildung",
+      "Bestandene Aufnahmeprüfung und Zustimmung des Ausbildungsbetriebs",
+      "Fachhochschulreife und laufende Ausbildung in einem technischen Beruf",
+      "Abitur oder fachgebundene Hochschulreife und Empfehlung der Berufsschule"
+    ]
+  },
+  {
+    "thema": "Schulpflicht",
+    "frage": "Eine Schülerin mit qualifizierendem Abschluss der Mittelschule (9 Schuljahre) wird im 1. Ausbildungsjahr vom Betrieb gekündigt. Muss sie weiterhin zur Schule gehen?",
+    "richtig": "Ja, sie muss weiterhin zur Schule – entweder in einem neuen Ausbildungsbetrieb oder in der Berufsvorbereitung, da weder 12 Schulbesuchsjahre noch ein mittlerer Schulabschluss vorliegen und keine Befreiungsausnahmen zutreffen",
+    "falsch": [
+      "Nein, mit dem qualifizierenden Abschluss der Mittelschule endet die Schulpflicht automatisch",
+      "Nein, da das Ausbildungsverhältnis beendet wurde, entfällt auch die Berufsschulpflicht",
+      "Ja, aber nur wenn sie innerhalb von 4 Wochen einen neuen Ausbildungsplatz findet",
+      "Nein, die Schulpflicht endet nach 9 absolvierten Schuljahren unabhängig vom Abschluss",
+      "Ja, aber sie kann sich freiwillig von der Schulpflicht befreien lassen",
+      "Nein, da der Quali dem mittleren Schulabschluss gleichgestellt ist und von der Schulpflicht befreit"
+    ]
+  },
+  {
+    "thema": "Schulpflicht",
+    "frage": "Eine Schülerin mit mittlerem Schulabschluss (10 Schuljahre) wird im 1. Ausbildungsjahr vom Betrieb gekündigt. Muss sie weiterhin zur Schule gehen?",
+    "richtig": "Nein, da sie den mittleren Schulabschluss erlangt hat, ist sie von der Schulpflicht befreit – sofern sie sich nicht in einer Erstausbildung befindet; beginnt sie eine neue Ausbildung, wird sie wieder berufsschulpflichtig",
+    "falsch": [
+      "Ja, sie muss weiter zur Schule, da 12 Schulbesuchsjahre noch nicht erreicht sind",
+      "Ja, da das Ausbildungsverhältnis im ersten Jahr gekündigt wurde, bleibt die Schulpflicht bestehen",
+      "Nein, sie ist dauerhaft von jeder Schulpflicht befreit, auch wenn sie eine neue Ausbildung beginnt",
+      "Ja, aber nur in der Berufsvorbereitung, bis sie einen neuen Ausbildungsplatz gefunden hat",
+      "Nein, die Schulpflicht endet immer nach dem 9. Schuljahr, unabhängig vom Abschluss",
+      "Ja, sie muss bis zur Vollendung des 18. Lebensjahres zur Schule gehen"
+    ]
+  },
+  {
+    "thema": "Schulpflicht",
+    "frage": "Wann endet die Berufsschulpflicht laut BayEUG? Nennen Sie alle relevanten Ausnahmen.",
+    "richtig": "Die Berufsschulpflicht endet bei: bereits abgeschlossener Ausbildung, Hochschulzugangsberechtigung, Vollendung des 21. Lebensjahres oder Befreiung nach Art. 39 BayEUG (z.B. freiwilliges soziales Jahr, Wehrdienst)",
+    "falsch": [
+      "Die Berufsschulpflicht endet grundsätzlich nach 9 absolvierten Schuljahren",
+      "Die Berufsschulpflicht endet mit dem mittleren Schulabschluss oder nach dem 18. Lebensjahr",
+      "Die Berufsschulpflicht endet mit Erreichen des Abiturs oder nach 13 Schuljahren",
+      "Die Berufsschulpflicht endet nach dem ersten abgeschlossenen Ausbildungsjahr",
+      "Die Berufsschulpflicht endet mit der Volljährigkeit (18. Lebensjahr) automatisch",
+      "Die Berufsschulpflicht endet nach 12 Schulbesuchsjahren oder mit Vollendung des 18. Lebensjahres"
+    ]
+  },
+  {
+    "thema": "Berufsschulberechtigung",
+    "frage": "Ein Abiturient beginnt eine Ausbildung als Metallbauer. Ist er berufsschulpflichtig oder nur berufsschulberechtigt?",
+    "richtig": "Er ist nur berufsschulberechtigt, da er eine Hochschulzugangsberechtigung (Abitur) besitzt; ob er die Berufsschule besucht, wird durch den Lehrvertrag geregelt",
+    "falsch": [
+      "Er ist berufsschulpflichtig, da er eine neue Ausbildung begonnen hat",
+      "Er ist weder pflichtig noch berechtigt, da das Abitur den Berufsschulbesuch ausschließt",
+      "Er ist berufsschulpflichtig, aber nur für die Fachtheorie, nicht für die allgemeinbildenden Fächer",
+      "Er ist berufsschulberechtigt und kann ohne vertragliche Regelung selbst entscheiden",
+      "Er ist berufsschulpflichtig für das erste Ausbildungsjahr, danach nur noch berechtigt",
+      "Er ist berufsschulberechtigt, muss aber in jedem Fall die Abschlussprüfung an der Berufsschule ablegen"
+    ]
+  },
+  {
+    "thema": "Berufsschulberechtigung",
+    "frage": "Was gilt, wenn im Lehrvertrag eines berufsschulberechtigten Schülers nichts über den Berufsschulbesuch geregelt ist?",
+    "richtig": "Ist der Berufsschulbesuch vertraglich nicht geregelt, kann der Betrieb den Schüler nicht zur Teilnahme zwingen – der Schüler ist dann verpflichtet, zur Arbeit zu erscheinen",
+    "falsch": [
+      "Der Schüler gilt automatisch als berufsschulpflichtig und muss die Schule besuchen",
+      "Die Berufsschule entscheidet, ob der Schüler am Unterricht teilnehmen muss",
+      "Der Schüler kann frei wählen, ob er zur Schule oder zur Arbeit geht",
+      "Das Staatliche Schulamt legt fest, ob der Schüler berufsschulpflichtig ist",
+      "Der Schüler muss zumindest in Prüfungsfächern am Unterricht teilnehmen",
+      "Der Betrieb kann den Schüler per Einzelweisung zur Teilnahme am Unterricht verpflichten"
+    ]
+  },
+  {
+    "thema": "Befreiung vom Unterricht",
+    "frage": "Von welchen Fächern kann ein berufsschulberechtigter Schüler mit mittlerem Schulabschluss laut §4 BSO befreit werden?",
+    "richtig": "Von Religion, Ethik und Deutsch; von Politik und Gesellschaft nur, wenn die zuständige Stelle auf den Prüfungsteil Wirtschafts- und Sozialkunde verzichtet",
+    "falsch": [
+      "Von allen Fächern außer den berufsfachlichen Pflichtfächern",
+      "Von Englisch, wenn weniger als drei Jahre Englischunterricht in der Sekundarstufe I nachgewiesen werden",
+      "Von Sport und Deutsch, wenn ein mittlerer Schulabschluss vorliegt",
+      "Von keinem Fach – eine Befreiung ist für berufsschulberechtigte Schüler nicht möglich",
+      "Von allen allgemeinbildenden Fächern automatisch, ohne gesonderten Antrag",
+      "Von Religion und Ethik nur, wenn eine Konfessionslosigkeit nachgewiesen wird"
+    ]
+  },
+  {
+    "thema": "Befreiung vom Unterricht",
+    "frage": "Ist eine Befreiung vom Englischunterricht an der Berufsschule möglich?",
+    "richtig": "Nein, eine Befreiung vom Englischunterricht ist nicht möglich; berufsschulberechtigte Schüler oder jene mit weniger als drei Jahren Englisch in der Sek I können jedoch beantragen, dass Leistungsnachweise nicht benotet werden",
+    "falsch": [
+      "Ja, berufsschulberechtigte Schüler können sich vollständig vom Englischunterricht befreien lassen",
+      "Ja, wenn der Schüler eine andere Fremdsprache auf gleichem Niveau nachweisen kann",
+      "Ja, bei abgeschlossener Ausbildung in einem englischsprachigen Betrieb entfällt Englisch",
+      "Ja, Schüler mit Abitur sind automatisch vom Englischunterricht befreit",
+      "Nein, und auch eine Nicht-Benotung ist unter keinen Umständen möglich",
+      "Ja, wenn der Schüler nachweist, dass er Englisch in der Sekundarstufe I bereits sechs Jahre gelernt hat"
+    ]
+  },
+  {
+    "thema": "Befreiung vom Unterricht",
+    "frage": "Wer genehmigt die Befreiung eines Schülers vom Unterricht in einzelnen Fächern (z.B. Sport)?",
+    "richtig": "Der Schulleiter genehmigt die Befreiung; Arbeitgeber und ggf. Erziehungsberechtigte (bei Schülerinnen und Schülern unter 21 Jahren) müssen schriftlich informiert werden",
+    "falsch": [
+      "Die Klassenleitung entscheidet eigenverantwortlich über Befreiungen ohne Rücksprache",
+      "Das Staatliche Schulamt muss jede Befreiung einzeln genehmigen",
+      "Der Betrieb genehmigt die Befreiung, da er Ausbildungspartner ist",
+      "Die Lehrerkonferenz entscheidet gemeinsam über Befreiungsanträge",
+      "Der Schüler kann sich selbst befreien, wenn er volljährig ist",
+      "Das Kultusministerium muss bei Befreiungen von Pflichtfächern zustimmen"
+    ]
+  },
+  {
+    "thema": "Befreiung vom Unterricht",
+    "frage": "Ein muslimischer Schüler möchte am Zuckerfest (Ramazan Bayrami) nicht am Unterricht teilnehmen. Was gilt laut KMBek vom 01.08.2015?",
+    "richtig": "Der Schüler ist an den ersten zwei Tagen des Ramazan Bayrami ohne besonderen Antrag vom Unterricht befreit; die Erziehungsberechtigten bzw. der volljährige Schüler müssen die Schule jedoch rechtzeitig über Grund und Dauer der Abwesenheit informieren",
+    "falsch": [
+      "Der Schüler muss einen formellen Antrag beim Schulleiter stellen und auf Genehmigung warten",
+      "Eine Befreiung ist nur möglich, wenn der Betrieb ebenfalls zustimmt",
+      "Der Schüler ist nicht befreit, da islamische Feiertage keine schulrechtlich anerkannten Befreiungsgründe sind",
+      "Der Schüler muss die versäumten Unterrichtsstunden durch Zusatzaufgaben nachholen",
+      "Die Befreiung gilt nur, wenn der Schulleiter sie vorab genehmigt hat",
+      "Der Schüler ist nur befreit, wenn er an einer staatlichen Schule mit überwiegend muslimischen Schülern unterrichtet wird"
+    ]
+  },
+  {
+    "thema": "Unterrichtsorganisation Berufsschule",
+    "frage": "Was ist der Unterschied zwischen Einzeltagesunterricht und Blockunterricht an der Berufsschule?",
+    "richtig": "Beim Einzeltagesunterricht besuchen Schüler 1, 1½ oder 2 Tage pro Woche die Berufsschule; beim Blockunterricht wechseln sich Unterrichtswochen und betriebliche Ausbildungswochen ab",
+    "falsch": [
+      "Beim Einzeltagesunterricht findet jeden Tag Unterricht statt; beim Blockunterricht nur an einem Tag pro Woche",
+      "Blockunterricht bedeutet, dass alle Fächer eines Tages hintereinander in einem Block unterrichtet werden",
+      "Einzeltagesunterricht findet nur im ersten Ausbildungsjahr statt, Blockunterricht ab dem zweiten",
+      "Beim Blockunterricht besuchen Schüler die Berufsschule ganztägig jeden Tag; beim Einzeltagesunterricht nur halbtags",
+      "Beide Formen sind identisch, unterscheiden sich nur in der Bezeichnung je nach Bundesland",
+      "Einzeltagesunterricht ist für vollzeitschulische Bildungsgänge; Blockunterricht nur für duale Ausbildungen"
+    ]
+  },
+  {
+    "thema": "Unterrichtsorganisation Berufsschule",
+    "frage": "Welche Schritte sind nötig, um die Unterrichtsform an einer Berufsschule von Tages- auf Blockbeschulung umzustellen?",
+    "richtig": "Die Schulleitung entscheidet, der Berufsschulbeirat muss darüber abstimmen; außerdem müssen die Ausbildungsbetriebe vorab informiert und eingebunden werden",
+    "falsch": [
+      "Das Staatliche Schulamt entscheidet, die Schulleitung setzt die Änderung um",
+      "Die Lehrerkonferenz stimmt ab, die Schulleitung informiert anschließend die Betriebe",
+      "Das Kultusministerium muss die Umstellung genehmigen, Betriebe haben kein Mitspracherecht",
+      "Die Betriebe beantragen die Umstellung, die Schulleitung setzt sie nach Zustimmung des Schulamts um",
+      "Nur die Schulleitung entscheidet, eine Abstimmung mit dem Berufsschulbeirat ist nicht erforderlich",
+      "Der Elternbeirat und die Schülervertretung müssen der Umstellung gemeinsam zustimmen"
+    ]
+  },
+  {
+    "thema": "Berufsschulbeirat",
+    "frage": "Wie setzt sich der Berufsschulbeirat zusammen?",
+    "richtig": "Schulleiter (Vorsitz), ein Vertreter des Sachaufwandsträgers, drei Lehrkräfte, drei Schülervertreter, ein Elternvertreter, zwei Arbeitgebervertreter, zwei Arbeitnehmervertreter und zwei Vertreter der zuständigen Stellen",
+    "falsch": [
+      "Schulleiter, fünf Lehrkräfte, fünf Schülervertreter und zwei Betriebsvertreter",
+      "Schulleiter, Klassenleitung, Elternbeirat und Vertreter der IHK",
+      "Schulleiter, Staatliches Schulamt, Betriebsvertreter und Gewerkschaftsvertreter",
+      "Schulleiter, zwei Lehrkräfte, zwei Schülervertreter und zwei Elternvertreter",
+      "Schulleiter, Vertreter aller Fachbereiche und ein Vertreter des Kultusministeriums",
+      "Schulleiter, Personalrat, Elternbeirat und Schülersprecher"
+    ]
+  },
+  {
+    "thema": "Berufsschulbeirat",
+    "frage": "Wann ist der Berufsschulbeirat beschlussfähig?",
+    "richtig": "Wenn alle Mitglieder ordnungsgemäß geladen wurden und mindestens die Hälfte aller Mitglieder anwesend ist; Beschlüsse werden mit einfacher Stimmenmehrheit gefasst, bei Stimmengleichheit entscheidet der Vorsitzende",
+    "falsch": [
+      "Wenn mindestens zwei Drittel aller Mitglieder anwesend sind und eine Zweidrittelmehrheit erreicht wird",
+      "Wenn der Schulleiter und mindestens drei weitere Mitglieder anwesend sind",
+      "Wenn alle Mitglieder anwesend sind; Beschlüsse erfordern eine Dreiviertelmehrheit",
+      "Wenn mindestens ein Vertreter jeder Gruppe anwesend ist, unabhängig von der Gesamtzahl",
+      "Wenn der Schulleiter und die Mehrheit der Lehrkraftvertreter anwesend sind",
+      "Wenn das Staatliche Schulamt die Sitzung genehmigt hat und ein Protokollführer bestellt ist"
+    ]
+  },
+  {
+    "thema": "Berufsschulbeirat",
+    "frage": "Welche der folgenden Aufgaben gehört zu den Aufgaben des Berufsschulbeirats?",
+    "richtig": "Abstimmung über die Änderung der Beschulungsform (z.B. von Block- auf Tagesbeschulung) sowie Mitwirkung bei der Einführung neuer Lernmittel",
+    "falsch": [
+      "Genehmigung von Lehrplanänderungen und Prüfungsordnungen",
+      "Einstellung und Entlassung von Lehrkräften an der Berufsschule",
+      "Festlegung der Schulgebühren und Verwaltung des Schulbudgets",
+      "Entscheidung über Ordnungsmaßnahmen gegen einzelne Schülerinnen und Schüler",
+      "Kontrolle der Unterrichtsqualität durch regelmäßige Unterrichtsbesuche",
+      "Genehmigung von Dienstreisen und Fortbildungen der Lehrkräfte"
+    ]
+  },
+  {
+    "thema": "Verkürzung der Ausbildungszeit",
+    "frage": "Was ist der Unterschied zwischen einer Lehrzeitverkürzung (§8 BBiG) und einer vorzeitigen Zulassung zur Abschlussprüfung (§45 BBiG)?",
+    "richtig": "Bei der Lehrzeitverkürzung wird bereits bei Vertragsabschluss eine verkürzte Lehrzeit vereinbart (z.B. wegen Vorbildung); die vorzeitige Zulassung wird während der Ausbildung aufgrund überdurchschnittlicher Leistungen beantragt",
+    "falsch": [
+      "Beide Varianten sind identisch und unterscheiden sich nur im Antragszeitpunkt",
+      "Die Lehrzeitverkürzung erfordert überdurchschnittliche Noten, die vorzeitige Zulassung nicht",
+      "Die vorzeitige Zulassung wird bereits bei Vertragsabschluss festgelegt, die Lehrzeitverkürzung erst während der Ausbildung",
+      "Bei der Lehrzeitverkürzung entfällt die Abschlussprüfung, bei der vorzeitigen Zulassung nicht",
+      "Beide Varianten erfordern denselben Notendurchschnitt von mindestens 2,0",
+      "Die Lehrzeitverkürzung ist nur für Umschüler möglich, die vorzeitige Zulassung nur für Erstausbildende"
+    ]
+  },
+  {
+    "thema": "Verkürzung der Ausbildungszeit",
+    "frage": "Welche Voraussetzungen gelten für eine vorzeitige Zulassung zur Abschlussprüfung nach §45 Abs. 1 BBiG?",
+    "richtig": "Der Notendurchschnitt in prüfungsrelevanten Fächern soll besser als 2,5 sein und sowohl Betrieb als auch Berufsschule müssen überdurchschnittliche Leistungen bestätigen; die Mindestausbildungszeit des BIBB darf nicht unterschritten werden",
+    "falsch": [
+      "Ein Notendurchschnitt von 1,5 und die alleinige Empfehlung der Berufsschule sind ausreichend",
+      "Nur der Betrieb muss überdurchschnittliche Leistungen bestätigen, die Berufsschule ist nicht beteiligt",
+      "Es genügt, wenn der Schüler alle Prüfungsfächer mit mindestens Note 3,0 abgeschlossen hat",
+      "Die Zulassung erfolgt automatisch, wenn der Schüler das letzte Ausbildungsjahr mit Bestnoten abschließt",
+      "Der Notendurchschnitt muss besser als 1,5 sein und die IHK muss die Verkürzung genehmigen",
+      "Die Mindestausbildungszeit spielt keine Rolle, wenn Betrieb und Schule zustimmen"
+    ]
+  },
+  {
+    "thema": "Zeugnisse Berufsschule",
+    "frage": "Was ist der Unterschied zwischen Abschlusszeugnis und Entlassungszeugnis an der Berufsschule?",
+    "richtig": "Das Abschlusszeugnis erhalten Schülerinnen und Schüler, die die Berufsschule mit Erfolg abgeschlossen haben; das Entlassungszeugnis erhalten jene, die sie ohne Erfolg abgeschlossen haben – es bestätigt lediglich die Erfüllung der Berufsschulpflicht",
+    "falsch": [
+      "Das Abschlusszeugnis wird am Ende der Ausbildung ausgestellt, das Entlassungszeugnis beim Schulaustritt vor Ende der Ausbildung",
+      "Das Entlassungszeugnis enthält Bemerkungen über Fehlzeiten und Verhalten, das Abschlusszeugnis nicht",
+      "Das Abschlusszeugnis wird von der IHK ausgestellt, das Entlassungszeugnis von der Berufsschule",
+      "Beide Zeugnisse sind identisch, unterscheiden sich nur in der Bezeichnung",
+      "Das Entlassungszeugnis enthält keine Noten, nur eine Bestätigung der Schulpflichterfüllung",
+      "Das Abschlusszeugnis wird nur verliehen, wenn auch der mittlere Schulabschluss erreicht wurde"
+    ]
+  },
+  {
+    "thema": "Zeugnisse Berufsschule",
+    "frage": "Welches Datum erhalten Abschluss- und Entlassungszeugnisse der Berufsschule?",
+    "richtig": "Das Datum des letzten Unterrichtstags der Klasse (Aushändigungsdatum) – nicht zwingend der letzte Schultag des gesamten Schuljahres oder Halbjahres",
+    "falsch": [
+      "Das Datum des letzten Schultags des Schuljahres für alle Klassen einheitlich",
+      "Das Datum der bestandenen IHK-Abschlussprüfung",
+      "Das Datum, an dem das Zeugnis vom Schulleiter unterzeichnet wird",
+      "Der erste Tag des darauffolgenden Schuljahres",
+      "Das Datum des letzten Schultags des Halbjahres, in dem die Ausbildung endet",
+      "Das Datum, an dem der Ausbildungsvertrag ausläuft"
+    ]
+  },
+  {
+    "thema": "Zeugnisse Berufsschule",
+    "frage": "Was dürfen Berufsschulzeugnisse laut §17 BSO nicht enthalten?",
+    "richtig": "Keine Bemerkungen über Anlagen, Fehltage, Mitarbeit oder Verhalten; sie dürfen keine Hinweise enthalten, die den Übertritt in das Berufsleben erschweren könnten",
+    "falsch": [
+      "Keine Noten aus dem letzten Ausbildungsjahr",
+      "Keine Angaben zum Ausbildungsberuf oder zur Ausbildungsdauer",
+      "Keine Angaben über den erreichten Schulabschluss",
+      "Keine Unterschrift des Schulleiters",
+      "Keine Angaben über bestandene oder nicht bestandene Prüfungen",
+      "Keine Angaben zur Nationalität oder Herkunft der Schülerin bzw. des Schülers"
+    ]
+  },
+  {
+    "thema": "Zeugnisse Berufsschule",
+    "frage": "Was ist der Unterschied zwischen Berufsschulabschlusszeugnis und Berufsabschlusszeugnis?",
+    "richtig": "Das Berufsschulabschlusszeugnis ist das Zeugnis der Berufsschule und verleiht den erfolgreichen Berufsschulabschluss; das Berufsabschlusszeugnis (z.B. Gesellenbrief) verleiht den Berufsabschluss und ist Voraussetzung für die Verleihung des mittleren Schulabschlusses",
+    "falsch": [
+      "Beide Zeugnisse werden von der Berufsschule ausgestellt und sind gleichwertig",
+      "Das Berufsabschlusszeugnis wird von der Berufsschule ausgestellt, der Gesellenbrief von der IHK",
+      "Das Berufsschulabschlusszeugnis berechtigt zum Studium, das Berufsabschlusszeugnis nicht",
+      "Das Berufsabschlusszeugnis enthält Schulnoten, das Berufsschulabschlusszeugnis nur Prüfungsnoten",
+      "Beide sind identisch, werden aber je nach Ausbildungsberuf unterschiedlich bezeichnet",
+      "Das Berufsschulabschlusszeugnis wird nur bei bestandener Abschlussprüfung ausgestellt"
+    ]
+  },
+  {
+    "thema": "BVJ",
+    "frage": "Was ist das Berufsvorbereitungsjahr (BVJ) und welche Zielsetzung hat es?",
+    "richtig": "Das BVJ ist ein einjähriges schulisches Vollzeitangebot (§2 und §5 BSO) für Jugendliche ohne Ausbildungsstelle; es dient der Berufsorientierung, soll zur Ausbildungsreife führen und kann von der Berufsschulpflicht befreien",
+    "falsch": [
+      "Das BVJ ist ein zweijähriges betriebliches Praktikum für Jugendliche ohne Schulabschluss",
+      "Das BVJ ist ein freiwilliges Angebot zur Vorbereitung auf das Abitur an Berufsschulen",
+      "Das BVJ ist ein staatlich gefördertes Ausbildungsprogramm, das als erstes Ausbildungsjahr angerechnet wird",
+      "Das BVJ ist ein Teilzeitangebot für Jugendliche, die bereits in einem Betrieb beschäftigt sind",
+      "Das BVJ ist ein Angebot zur Nachqualifizierung für Jugendliche nach einer abgebrochenen Ausbildung",
+      "Das BVJ ist ein Programm des Arbeitsamts zur Vermittlung von Ausbildungsplätzen"
+    ]
+  },
+  {
+    "thema": "BVJ",
+    "frage": "Welche Zeugnisarten können im BVJ ausgehändigt werden?",
+    "richtig": "Zwischenzeugnis (Ende 1. Schulhalbjahr mit Beiblatt Leistungsausprägung), Jahreszeugnis (befreit von Berufsschulpflicht, bestätigt evtl. Mittelschulabschluss) und Bescheinigungen (bei Austritt, unregelmäßigem Besuch oder nicht erbrachten Leistungen)",
+    "falsch": [
+      "Nur ein Jahreszeugnis am Ende des BVJ, keine Zwischenzeugnisse",
+      "Abschlusszeugnis und Entlassungszeugnis, wie in regulären Berufsschulklassen",
+      "Nur Bescheinigungen über die Teilnahme, keine vollwertigen Zeugnisse",
+      "Halbjahreszeugnis und Abschlusszeugnis, beide ohne Beiblatt",
+      "Nur ein Zeugnis am Ende, das automatisch von der Schulpflicht befreit",
+      "Zwischenzeugnis, Abschlusszeugnis und Gesellenbrief als Sonderform"
+    ]
+  },
+  {
+    "thema": "BVJ",
+    "frage": "Unter welchen Voraussetzungen gilt das BVJ als erfolgreich abgeschlossen?",
+    "richtig": "Wenn in allen Fächern mindestens Note 4 erreicht wird; Notenausgleich ist möglich (weniger als 1 Fach schlechter als 4, wenn mindestens 2 Fächer Note 3)",
+    "falsch": [
+      "Wenn der Gesamtnotendurchschnitt mindestens 3,0 beträgt und kein Fach schlechter als 5 ist",
+      "Wenn alle Fächer mit mindestens Note 3 abgeschlossen werden",
+      "Wenn der Schüler regelmäßig anwesend war und keinen Ausschluss erhalten hat",
+      "Wenn mindestens die Hälfte der Fächer mit Note 4 oder besser abgeschlossen wird",
+      "Wenn der Schüler die Abschlussprüfung mit mindestens ausreichend bestanden hat",
+      "Wenn kein Fach schlechter als 5 bewertet wurde, unabhängig vom Gesamtdurchschnitt"
+    ]
+  },
+  {
+    "thema": "BVJ",
+    "frage": "Was kann Schülerinnen und Schülern im BVJ bei erfolgreichem Abschluss verliehen werden?",
+    "richtig": "Der erfolgreiche Abschluss der Mittelschule kann verliehen werden",
+    "falsch": [
+      "Der qualifizierende Abschluss der Mittelschule (Quali)",
+      "Der mittlere Schulabschluss, wenn zusätzlich Englisch mit mindestens 4,0 nachgewiesen wird",
+      "Die Berufsschulreife als Vorstufe zur Berufsausbildung",
+      "Ein Berufsvorbereitungszeugnis, das dem Hauptschulabschluss gleichgestellt ist",
+      "Der Quabi, sofern eine Ausbildung im Anschluss begonnen wird",
+      "Die Fachhochschulreife, wenn der Notendurchschnitt besser als 2,0 ist"
+    ]
+  },
+  {
+    "thema": "Schulgeld",
+    "frage": "Ist es an öffentlichen Schulen in Bayern rechtlich möglich, Schulgeld von Schülerinnen und Schülern zu erheben?",
+    "richtig": "Nein, laut Art. 23 BaySchFG ist Schulgeld an öffentlichen Schulen nicht zulässig; Art. 96 BayEUG verbietet zudem jede Unterscheidung nach Herkunft, Stand, Einkommen oder Vermögen der Eltern",
+    "falsch": [
+      "Ja, wenn die Schulkonferenz zustimmt und das Schulgeld zweckgebunden für Lernmittel verwendet wird",
+      "Ja, für Wahlpflichtfächer und Zusatzangebote kann Schulgeld erhoben werden",
+      "Nein, außer bei kostenpflichtigen Schulveranstaltungen wie Schulausflügen",
+      "Ja, wenn der Sachaufwandsträger finanziell nicht ausreichend unterstützt und der Schulleiter zustimmt",
+      "Ja, Schulgeld ist möglich, solange es einen sozialen Ausgleich für einkommensschwache Familien gibt",
+      "Nein, außer an beruflichen Schulen mit besonderer Ausstattung, wie Fachschulen"
+    ]
+  },
+  {
+    "thema": "Gastschulverhältnis",
+    "frage": "Eine Schülerin macht ihre Ausbildung in Landshut, wohnt aber in Deggendorf. In beiden Städten gibt es eine passende Berufsschule. Welche muss sie besuchen?",
+    "richtig": "Die Berufsschule am Ausbildungsort (Landshut); ein Wechsel zur Schule am Wohnort ist nur bei wichtigen Gründen (z.B. unzumutbare Verkehrsverhältnisse, Zusatzqualifikationen) per Antrag möglich",
+    "falsch": [
+      "Die Schule am Wohnort (Deggendorf), da der Wohnsitz für die Schulzuordnung maßgeblich ist",
+      "Die Schülerin kann frei wählen, welche Berufsschule sie besucht",
+      "Die Schule mit dem besseren Ruf oder den kürzeren Anfahrtswegen",
+      "Die Schule am Wohnort, wenn der Betrieb zustimmt",
+      "Beide Schulen abwechselnd, je nach Schichtplan des Ausbildungsbetriebs",
+      "Die Schule am Ausbildungsort, aber nur wenn der Wohnort weniger als 30 km entfernt ist"
+    ]
+  },
+  {
+    "thema": "Gastschulverhältnis",
+    "frage": "Welche Stellen sind am formalen Genehmigungsverfahren eines Gastschulantrags beteiligt?",
+    "richtig": "Erziehungsberechtigter oder volljähriger Schüler (stellt Antrag), abgebende Berufsschule, Schulaufwandsträger der abgebenden BS, aufnehmende Berufsschule, Schulaufwandsträger der aufnehmenden BS – die für die aufnehmende Schule zuständige Regierung entscheidet",
+    "falsch": [
+      "Nur Schüler und aufnehmende Schule müssen zustimmen, die Regierung ist nicht beteiligt",
+      "Nur der Ausbildungsbetrieb und die abgebende Schule entscheiden gemeinsam",
+      "Die IHK genehmigt den Antrag, nachdem Schüler und Betrieb zugestimmt haben",
+      "Nur die Schulleitung der aufnehmenden Schule entscheidet über den Antrag",
+      "Das Kultusministerium genehmigt alle Gastschulanträge zentral",
+      "Schüler, beide Schulen und das Staatliche Schulamt entscheiden gemeinsam"
+    ]
+  },
+  {
+    "thema": "Schulaufsicht",
+    "frage": "Welcher Behörde unterstehen Berufsschulen in Bayern, welcher Behörde unterstehen Fachoberschulen?",
+    "richtig": "Berufsschulen unterstehen den Bezirksregierungen; Fachoberschulen und Berufsoberschulen unterstehen dem StMUK über die Ministerialbeauftragten",
+    "falsch": [
+      "Beide Schularten unterstehen den Bezirksregierungen",
+      "Berufsschulen unterstehen dem StMUK, Fachoberschulen den Bezirksregierungen",
+      "Beide Schularten unterstehen direkt dem Bayerischen Kultusministerium",
+      "Berufsschulen unterstehen den Staatlichen Schulämtern, Fachoberschulen den Bezirksregierungen",
+      "Fachoberschulen unterstehen den Bezirksregierungen, Berufsschulen den Ministerialbeauftragten",
+      "Beide Schularten unterstehen dem Staatlichen Schulamt des jeweiligen Landkreises"
+    ]
+  },
+  {
+    "thema": "Schulaufsicht",
+    "frage": "Welchen Dienstweg muss eine Lehrkraft an einer Berufsschule einhalten?",
+    "richtig": "Schulleitung → zuständige Bezirksregierung → Staatsministerium für Unterricht und Kultus",
+    "falsch": [
+      "Schulleitung → Ministerialbeauftragter → Staatsministerium für Unterricht und Kultus",
+      "Schulleitung → Staatliches Schulamt → Bezirksregierung → Kultusministerium",
+      "Schulleitung → IHK → Bezirksregierung → Kultusministerium",
+      "Schulleitung → direkt an das Kultusministerium, ohne Zwischenstellen",
+      "Schulleitung → Personalrat → Bezirksregierung → Kultusministerium",
+      "Schulleitung → Schulaufwandsträger → Bezirksregierung → Kultusministerium"
+    ]
+  },
+  {
+    "thema": "Schulaufsicht",
+    "frage": "Welchen Dienstweg muss eine Lehrkraft an einer Fachoberschule einhalten?",
+    "richtig": "Schulleitung → Ministerialbeauftragter → Staatsministerium für Unterricht und Kultus",
+    "falsch": [
+      "Schulleitung → zuständige Bezirksregierung → Staatsministerium für Unterricht und Kultus",
+      "Schulleitung → Staatliches Schulamt → Kultusministerium",
+      "Schulleitung → direkt an das Kultusministerium, ohne Zwischenstellen",
+      "Schulleitung → Schulaufwandsträger → Ministerialbeauftragter → Kultusministerium",
+      "Schulleitung → Bezirksregierung → Ministerialbeauftragter → Kultusministerium",
+      "Schulleitung → IHK → Ministerialbeauftragter → Kultusministerium"
+    ]
+  },
+  {
+    "thema": "Erziehungs- und Ordnungsmaßnahmen",
+    "frage": "Nach welchem Prinzip müssen Erziehungs- und Ordnungsmaßnahmen laut Art. 86 BayEUG ausgewählt werden?",
+    "richtig": "Verhältnismäßigkeit: Maßnahmen müssen erforderlich, geeignet und angemessen sein; zuerst Erziehungsmaßnahmen, dann bei Erfolglosigkeit Ordnungsmaßnahmen, als letztes Mittel Sicherungsmaßnahmen",
+    "falsch": [
+      "Schwere zuerst: Bei wiederholtem Fehlverhalten ist sofort der schriftliche Verweis anzuwenden",
+      "Einheitlichkeit: Alle Schüler müssen bei gleichem Fehlverhalten identisch sanktioniert werden",
+      "Schnelligkeit: Maßnahmen müssen unmittelbar und ohne Wartezeit angewendet werden",
+      "Öffentlichkeit: Maßnahmen müssen vor der Klasse kommuniziert werden, um Abschreckung zu erzielen",
+      "Stufenlosigkeit: Jede Maßnahme kann unabhängig von vorherigen Maßnahmen angewendet werden",
+      "Elternpflicht: Erziehungsberechtigte müssen vor jeder Maßnahme schriftlich informiert werden"
+    ]
+  },
+  {
+    "thema": "Erziehungs- und Ordnungsmaßnahmen",
+    "frage": "Wann ist ein Schulausschluss als Sicherungsmaßnahme zulässig?",
+    "richtig": "Wenn das Verhalten des Schülers das Leben oder die Gesundheit von Mitmenschen in der Schule in erheblicher Weise gefährdet",
+    "falsch": [
+      "Wenn der Schüler dreimal einen schriftlichen Verweis erhalten hat",
+      "Wenn der Schüler die Schule mehr als 10 Tage unentschuldigt gefehlt hat",
+      "Wenn der Schüler den Schulfrieden durch wiederholtes Rauchen auf dem Schulhof stört",
+      "Wenn der Ausbildungsbetrieb den Ausschluss beantragt und die Schulleitung zustimmt",
+      "Wenn der Schüler mehrfach Unterrichtsmaterial beschädigt oder entwendet hat",
+      "Wenn der Schüler die Lehrkraft beleidigt und sich trotz Ermahnung nicht entschuldigt"
+    ]
+  },
+  {
+    "thema": "Schulwegunfall / KUVB",
+    "frage": "Wer übernimmt die Kosten bei einem Schulwegunfall eines Schülers?",
+    "richtig": "Die Kommunale Unfallversicherung Bayern (KUVB); bei Personenschäden entstehen zunächst nur Ansprüche gegen den Träger der gesetzlichen Unfallversicherung – gegen eine Lehrkraft kann die KUVB nur bei grober Fahrlässigkeit Regress geltend machen",
+    "falsch": [
+      "Die Krankenkasse des Schülers übernimmt alle Behandlungskosten vollständig",
+      "Der Ausbildungsbetrieb haftet für alle Unfälle auf dem Weg zur Berufsschule",
+      "Die Lehrkraft haftet persönlich für Schulwegunfälle ihrer Schülerinnen und Schüler",
+      "Der Freistaat Bayern übernimmt die Kosten direkt über das Kultusministerium",
+      "Die Schule trägt die Kosten über das Schulbudget des Sachaufwandsträgers",
+      "Die Haftpflichtversicherung der Eltern ist in jedem Fall zuständig"
+    ]
+  },
+  {
+    "thema": "Schulwegunfall / KUVB",
+    "frage": "Was muss nach einem Schulunfall zwingend dokumentiert werden und in welchem Zeitrahmen?",
+    "richtig": "Der Unfall muss innerhalb von drei Tagen auf der vorgeschriebenen Unfallmeldung dokumentiert werden; auch die Herausgabe eines Pflasters muss unbedingt dokumentiert werden",
+    "falsch": [
+      "Der Unfall muss sofort, spätestens am selben Tag, dem Staatlichen Schulamt gemeldet werden",
+      "Eine Dokumentation ist nur bei stationärem Krankenhausaufenthalt des Schülers erforderlich",
+      "Der Unfall muss innerhalb einer Woche schriftlich der KUVB gemeldet werden",
+      "Eine Unfallmeldung ist nur erforderlich, wenn die Lehrkraft bei dem Unfall anwesend war",
+      "Der Unfall muss am nächsten Schultag in der Klassenkonferenz besprochen werden",
+      "Eine Dokumentation ist nur nötig, wenn der Schüler länger als drei Tage fehlt"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Einer Lehrkraft wird während des Unterrichts unwohl und sie muss das Klassenzimmer verlassen. Was muss sie sicherstellen?",
+    "richtig": "Die Lehrkraft muss sicherstellen, dass die Aufsicht angemessen gewährleistet bleibt – z.B. durch kurzfristige Übertragung an den Klassensprecher oder einen älteren Schüler sowie durch Bitte an eine Lehrkraft im Nachbarzimmer",
+    "falsch": [
+      "Die Lehrkraft darf das Zimmer nur verlassen, wenn der Schulleiter die Aufsicht persönlich übernimmt",
+      "Die Lehrkraft muss den Unterricht sofort beenden und alle Schüler nach Hause schicken",
+      "Die Lehrkraft darf die Klasse kurz alleine lassen, da Berufsschüler volljährig sind",
+      "Die Lehrkraft muss zunächst die Erziehungsberechtigten informieren, bevor sie das Zimmer verlässt",
+      "Die Lehrkraft kann die Klasse unbeaufsichtigt lassen, wenn der Unterricht ruhig verläuft",
+      "Die Lehrkraft muss den Unterricht unterbrechen und eine offizielle Vertretung beim Schulamt beantragen"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Schülerinnen und Schüler möchten in der Pause im Klassenzimmer bleiben. Warum ist das problematisch?",
+    "richtig": "Die Aufsicht ist möglicherweise nicht ausreichend gewährleistet – es besteht erhöhtes Risiko für Beschädigungen, Diebstahl oder Gefährdungen ohne anwesende Lehrkraft",
+    "falsch": [
+      "Das Klassenzimmer muss in der Pause gelüftet werden, daher darf es nicht betreten werden",
+      "Schüler dürfen das Klassenzimmer nur während des Unterrichts betreten, nicht in Pausen",
+      "Es ist grundsätzlich erlaubt, solange ein Schülersprecher anwesend ist",
+      "Es ist nur problematisch, wenn die Schüler minderjährig sind",
+      "Das Klassenzimmer steht der Lehrkraft in der Pause zur Erholung zu und darf nicht genutzt werden",
+      "Es ist nur problematisch, wenn in dem Zimmer gefährliche Gegenstände oder Chemikalien gelagert sind"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "In welchen Unterrichtssituationen sind besonders intensive Aufsichtsmaßnahmen erforderlich?",
+    "richtig": "In Fächern oder Örtlichkeiten mit besonderen Risiken, z.B. Sportunterricht, Labor, Werkstatt, Küche, Salon, DV-Raum oder bei Experimenten",
+    "falsch": [
+      "Nur in Fächern mit schriftlichen Prüfungen, da dort Täuschungsversuche möglich sind",
+      "Nur bei Unterricht mit minderjährigen Schülerinnen und Schülern unter 16 Jahren",
+      "In allen Fächern gleichermaßen – die Aufsichtspflicht ist überall identisch",
+      "Nur in Fächern, die als Pflichtfächer im Lehrplan ausgewiesen sind",
+      "Nur wenn die Klasse als verhaltensauffällig bekannt ist",
+      "Nur bei Unterricht in gemischten Klassen mit Schülerinnen und Schülern verschiedener Jahrgänge"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Welche Aspekte der Aufsichtspflicht müssen bei einer Lehrfahrt mit Stadtbummel besonders beachtet werden?",
+    "richtig": "Vorabinformation und Anweisungen, Information der Erziehungsberechtigten, ausreichend Begleitpersonen, Kontrolle während der Bahnfahrt, Gruppenregelung in der Stadt, Ersthelfer mit Erste-Hilfe-Material, Stadtplan, Zeitplan und Handynummern sowie Alkoholverbot",
+    "falsch": [
+      "Nur die Erziehungsberechtigten müssen informiert werden, alles andere liegt im Ermessen der Lehrkraft",
+      "Schülerinnen und Schüler ab 18 Jahren bedürfen keiner Aufsicht beim Stadtbummel",
+      "Ausreichende Aufsicht ist nur bei der Bahnfahrt erforderlich, nicht beim Stadtbummel",
+      "Die Aufsichtspflicht entfällt, wenn Schülerinnen und Schüler eine Einverständniserklärung unterschreiben",
+      "Es reicht, eine Handynummer der Lehrkraft auszugeben und die Schüler selbstständig losziehen zu lassen",
+      "Nur die Begleitpersonen tragen die Aufsichtspflicht, die Lehrkraft ist beim Stadtbummel entlastet"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Eine Lehrkraft weist einen störenden Schüler aus dem Zimmer. Wie ist dies rechtlich zu bewerten?",
+    "richtig": "Der Schulverweis ist eine Ordnungsmaßnahme, die nur der Schulleiter anordnen darf; aufsichtsrechtlich ist die Maßnahme nicht erlaubt, da keine ausreichende Aufsicht mehr sichergestellt ist",
+    "falsch": [
+      "Die Lehrkraft darf den Schüler jederzeit aus dem Zimmer weisen, da sie Hausrecht ausübt",
+      "Der Verweis aus dem Zimmer ist eine reine Erziehungsmaßnahme und bedarf keiner Genehmigung",
+      "Die Maßnahme ist rechtlich zulässig, wenn die Lehrkraft den Vorfall dokumentiert",
+      "Die Maßnahme ist zulässig, wenn der Schüler in einen beaufsichtigten Raum geschickt wird",
+      "Die Lehrkraft darf den Schüler verweisen, muss aber den Eltern sofort Bescheid geben",
+      "Der Schulverweis ist immer zulässig, solange er nicht länger als eine Unterrichtsstunde dauert"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Eine Lehrkraft überträgt die Pausenaufsicht eigenmächtig dem Hausmeister, weil sie erkältet ist. Ist das zulässig?",
+    "richtig": "Nein, der Hausmeister kann nur im Notfall und nur durch den Schulleiter zur Aufsicht herangezogen werden; die Lehrkraft kann ihre Aufsichtspflicht nur an eine andere Lehrkraft übertragen, muss den Schulleiter aber zumindest informieren",
+    "falsch": [
+      "Ja, der Hausmeister ist als Schulpersonal berechtigt, die Aufsicht zu übernehmen",
+      "Ja, wenn die Lehrkraft krank ist, darf sie die Aufsicht an beliebiges Schulpersonal delegieren",
+      "Nein, die Lehrkraft muss trotz Erkältung die Aufsicht selbst führen",
+      "Ja, solange die Erkältung ärztlich bestätigt ist und der Hausmeister einverstanden ist",
+      "Nein, aber die Schüler können sich in der Pause eigenverantwortlich beaufsichtigen",
+      "Ja, wenn die Klasse ausschließlich volljährige Schülerinnen und Schüler enthält"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Eine Schülerin gibt an, ihr sei schwindlig und sie möchte allein nach Hause zum Arzt. Wie verhält sich die Lehrkraft richtig?",
+    "richtig": "Bei ernstzunehmender Erkrankung darf die Lehrkraft die Schülerin nicht allein nach Hause lassen; sinnvoll ist ein Anruf bei den Erziehungsberechtigten oder ein Transport zum Arzt/Krankenhaus; bei harmlosem Verlauf kann der Schulleiter die Schülerin beurlauben",
+    "falsch": [
+      "Die Lehrkraft darf die Schülerin sofort nach Hause schicken, da sie volljährig ist",
+      "Die Lehrkraft muss zunächst einen Arzt rufen, bevor sie irgendetwas unternimmt",
+      "Die Lehrkraft kann die Schülerin immer allein nach Hause schicken, wenn diese das möchte",
+      "Die Lehrkraft muss die Schülerin bis zum Ende der Unterrichtsstunde im Zimmer behalten",
+      "Die Lehrkraft darf die Schülerin nur nach Hause schicken, wenn die Eltern schriftlich zustimmen",
+      "Die Schülerin darf die Schule nur verlassen, wenn der Schulleiter persönlich anwesend ist"
+    ]
+  },
+  {
+    "thema": "Aufsichtspflicht",
+    "frage": "Eine Lehrkraft hält sich bei der Pausenaufsicht stets am gleichen Ort auf und bemerkt eine Rauferei nicht, bei der sich ein Schüler verletzt. Welche Ansprüche bestehen?",
+    "richtig": "Die Eltern haben Ansprüche gegen die Gemeindeunfallversicherung (KUVB), nicht gegen die Lehrkraft; die Versicherung kann bei grober Fahrlässigkeit Regress gegen die Lehrkraft nehmen; Ansprüche gegen den anderen Schüler bestehen nur bei vorsätzlicher Schädigungsabsicht",
+    "falsch": [
+      "Die Eltern können die Lehrkraft direkt auf Schadensersatz verklagen",
+      "Die Schule haftet vollumfänglich, die Lehrkraft ist vollständig aus der Haftung entlassen",
+      "Der andere Schüler haftet automatisch für alle Verletzungen, die er verursacht hat",
+      "Die Lehrkraft haftet persönlich, da sie ihre Aufsichtspflicht verletzt hat",
+      "Die Eltern haben keine Ansprüche, da Raufereien unter Schülern nicht der Aufsichtspflicht unterliegen",
+      "Der Sachaufwandsträger haftet vollständig, die KUVB ist nicht zuständig"
+    ]
+  },
+  {
+    "thema": "Schadenshaftung",
+    "frage": "Eine Lehrkraft wirft versehentlich den Laptop eines Schülers zu Boden. Wer haftet für den Schaden?",
+    "richtig": "Der Schaden wird über die Amtshaftung von der zuständigen Regierung beglichen; der Schüler macht den Anspruch beim Lehrer geltend, der ihn an die zuständige Regierung weitergibt",
+    "falsch": [
+      "Die Lehrkraft haftet persönlich mit ihrem Privatvermögen für den Schaden",
+      "Die Schule erstattet den Schaden aus dem Schulbudget des Sachaufwandsträgers",
+      "Die KUVB übernimmt den Schaden, da es sich um einen Schulunfall handelt",
+      "Der Schüler trägt den Schaden selbst, da er den Laptop unerlaubt mitgebracht hat",
+      "Die Haftpflichtversicherung der Lehrkraft ist zuständig",
+      "Der Schaden wird nicht erstattet, da Privatgegenstände in der Schule nicht versichert sind"
+    ]
+  },
+  {
+    "thema": "Schadenshaftung",
+    "frage": "Im Sportunterricht verstaucht sich ein Schüler beim Sturz das Bein, außerdem zerbricht dabei seine Brille. Wer trägt die Kosten – und unter welcher Bedingung werden die Brillenkosten erstattet?",
+    "richtig": "Die Kosten trägt die KUVB (Meldung binnen 3 Tagen); die Brillenkosten werden nur erstattet, wenn die Brille beim Unfall getragen wurde – lag sie z.B. auf einem Tisch, werden die Kosten nicht übernommen",
+    "falsch": [
+      "Die Schule trägt alle Kosten inklusive Brille aus dem Schulbudget",
+      "Die Brille wird immer ersetzt, da sie zum Schulunfall gehört",
+      "Die Eltern müssen alle Kosten selbst tragen, da Sport ein Risikofach ist",
+      "Die Krankenversicherung des Schülers übernimmt alle Kosten einschließlich der Brille",
+      "Die Lehrkraft haftet für alle Sachschäden, die im Sportunterricht entstehen",
+      "Die KUVB übernimmt nur die Arztkosten, nicht die Brillenkosten unter keinen Umständen"
+    ]
+  },
+  {
+    "thema": "Schulpflicht",
+    "frage": "Wie viele Schulbesuchsjahre umfasst die Schulpflicht in Bayern insgesamt und wie setzt sie sich zusammen?",
+    "richtig": "12 Schulbesuchsjahre: 9 Jahre Vollzeitschulpflicht (Art. 35 BayEUG) und 3 Jahre Berufsschulpflicht (Art. 39 BayEUG)",
+    "falsch": [
+      "10 Jahre: 9 Jahre Vollzeitschulpflicht und 1 Jahr Berufsschulpflicht",
+      "13 Jahre: 10 Jahre Vollzeitschulpflicht und 3 Jahre Berufsschulpflicht",
+      "9 Jahre Vollzeitschulpflicht, danach keine weitere Schulpflicht",
+      "12 Jahre ausschließlich Vollzeitschulpflicht ohne separate Berufsschulpflicht",
+      "10 Jahre Vollzeitschulpflicht und 2 Jahre Berufsschulpflicht",
+      "9 Jahre Vollzeitschulpflicht und 2 Jahre Berufsschulpflicht"
+    ]
+  },
+  {
+    "thema": "Schulpflicht",
+    "frage": "Wann ist ein Schüler ohne Ausbildungsverhältnis von der Berufsschulpflicht befreit?",
+    "richtig": "U.a. bei mittlerem Schulabschluss, freiwilligem sozialen Jahr, Vorbereitungsdienst (z.B. Bundeswehr, Polizei), nach 11 Schuljahren bei Beschäftigungsverhältnis, bei Härtefall oder erfolgreichem Besuch von BVJ, BGJ oder einjährigem Vollzeitlehrgang",
+    "falsch": [
+      "Nur bei mittlerem Schulabschluss oder Vollendung des 18. Lebensjahres",
+      "Nur bei abgeschlossener Berufsausbildung oder Hochschulzugangsberechtigung",
+      "Automatisch nach 9 absolvierten Schuljahren, unabhängig vom Abschluss",
+      "Nur wenn der Schüler nachweislich keinen Ausbildungsplatz findet",
+      "Nur bei Hochschulzugangsberechtigung oder Vollendung des 21. Lebensjahres",
+      "Automatisch mit Vollendung des 18. Lebensjahres"
+    ]
+  },
+  {
+    "thema": "Beurlaubung",
+    "frage": "Für welche Anlässe können Schülerinnen und Schüler nach §20 BaySchO und §11 BSO beurlaubt werden?",
+    "richtig": "Auf schriftlichen Antrag des Schülers oder Arbeitgebers für besondere Maßnahmen, z.B. Prüfungen nach dem BIBB, Schulungen der Jugendvertretung/Betriebsrat oder Teilnahme an überbetrieblichen Lehrlingsunterweisungen (ÜLU)",
+    "falsch": [
+      "Beurlaubungen sind nur bei Erkrankung oder familiären Notfällen möglich",
+      "Beurlaubungen sind grundsätzlich nicht möglich, Fehlzeiten müssen immer entschuldigt werden",
+      "Nur der Schulleiter kann Beurlaubungen ohne Antrag gewähren",
+      "Beurlaubungen sind nur für religionsbedingte Feiertage vorgesehen",
+      "Nur Erziehungsberechtigte, nicht Arbeitgeber, können Beurlaubungsanträge stellen",
+      "Beurlaubungen sind nur für Schülerinnen und Schüler unter 18 Jahren möglich"
+    ]
+  },
+  {
+    "thema": "Aufbewahrung Aufschreibungen",
+    "frage": "Wie lange muss eine Lehrkraft ihre Aufschreibungen über Schülerleistungen laut §3 LDO aufbewahren?",
+    "richtig": "Mindestens ein Jahr nach Ablauf des Schuljahres; die Aufschreibungen müssen beim Ausscheiden oder bei längerer Dienstverhinderung der Schulleitung zur Weitergabe zugänglich gemacht werden",
+    "falsch": [
+      "Drei Jahre nach Ende des Schuljahres, dann können sie vernichtet werden",
+      "Bis zum Ende des laufenden Schuljahres, danach sind sie nicht mehr aufbewahrungspflichtig",
+      "Fünf Jahre, da sie steuerrechtlich relevante Dokumente darstellen",
+      "Unbegrenzt – Aufschreibungen müssen dauerhaft archiviert werden",
+      "Sechs Monate nach Aushändigung der Zeugnisse an die Schülerinnen und Schüler",
+      "Nur bis zur Übergabe an die Nachfolgelehrkraft, danach entfällt die Aufbewahrungspflicht"
+    ]
+  },
+  {
+    "thema": "Schweigepflicht",
+    "frage": "Wer darf laut §14 LDO Auskünfte an Presse, Rundfunk und Fernsehen erteilen?",
+    "richtig": "Nur die Schulleiterin oder der Schulleiter oder eine von ihr/ihm beauftragte Lehrkraft",
+    "falsch": [
+      "Jede Lehrkraft darf Auskünfte erteilen, solange sie keine vertraulichen Informationen preisgibt",
+      "Der Personalrat ist für die Kommunikation mit der Presse zuständig",
+      "Der Sachaufwandsträger erteilt alle Auskünfte an die Öffentlichkeit",
+      "Alle Lehrkräfte dürfen Auskünfte erteilen, wenn der Schulleiter nicht erreichbar ist",
+      "Die Bezirksregierung ist für Presseanfragen an Berufsschulen zuständig",
+      "Jede Lehrkraft darf im Rahmen ihrer Meinungsfreiheit Auskünfte an die Presse erteilen"
+    ]
+  },
+  {
+    "thema": "Schweigepflicht",
+    "frage": "Bis wann dürfen laut §14 LDO keine Auskünfte über Zeugnisnoten oder Vorrücken erteilt werden?",
+    "richtig": "Bis zur endgültigen Festlegung der Zeugnisnoten nach den für die jeweilige Schulart geltenden Bestimmungen dürfen weder Schülerinnen und Schüler noch Erziehungsberechtigte informiert werden",
+    "falsch": [
+      "Auskünfte dürfen jederzeit erteilt werden, wenn die Eltern ausdrücklich danach fragen",
+      "Auskünfte dürfen erst nach Aushändigung der Zeugnisse erteilt werden",
+      "Auskünfte sind bereits nach der Klassenkonferenz erlaubt, auch vor offiziellem Zeugnistag",
+      "Es gibt keine Einschränkungen – Lehrkräfte dürfen Noten jederzeit mitteilen",
+      "Auskünfte dürfen erst nach schriftlicher Genehmigung durch den Schulleiter erteilt werden",
+      "Auskünfte sind verboten bis zum Ende des gesamten Schuljahres"
+    ]
+  },
+  {
+    "thema": "Schweigepflicht",
+    "frage": "An wen darf die Schule laut §14 LDO Auskünfte über Schülerinnen und Schüler und ihre Leistungen erteilen?",
+    "richtig": "Grundsätzlich nur an Erziehungsberechtigte; Ausnahmen sind möglich bei ausdrücklicher Zustimmung der Erziehungsberechtigten oder wenn die Auskunft für Schüler und Eltern nur vorteilhaft ist; die Auskunftspflicht gegenüber Ausbildenden nach Berufsschulrecht bleibt unberührt",
+    "falsch": [
+      "An alle Behörden, die Auskunft anfordern, ohne weitere Einschränkungen",
+      "An Erziehungsberechtigte und Ausbildungsbetriebe gleichermaßen ohne Einschränkungen",
+      "Nur an staatliche Behörden, niemals an private Personen oder Betriebe",
+      "An niemanden außer der Schulleitung – Lehrkräfte dürfen keinerlei Auskünfte erteilen",
+      "An alle Erziehungsberechtigten, auch wenn der Schüler volljährig ist",
+      "An Presse und Öffentlichkeit, wenn es dem Ansehen der Schule dient"
+    ]
+  },
+  {
+    "thema": "Berufsschulbeirat",
+    "frage": "Wie lange dauert die Amtszeit der Mitglieder des Berufsschulbeirats und wie endet die Mitgliedschaft vorzeitig?",
+    "richtig": "Die Amtszeit dauert zwei Jahre; sie endet vorzeitig beim Ausscheiden aus der Schule, Niederlegung des Amtes, Verlust der Wählbarkeit oder Tod – in diesem Fall wird die Person mit der nächst höheren Stimmenzahl Mitglied",
+    "falsch": [
+      "Die Amtszeit beträgt vier Jahre und endet nur durch freiwilligen Rücktritt",
+      "Die Amtszeit beträgt ein Jahr und wird jährlich neu gewählt",
+      "Die Amtszeit ist unbegrenzt, bis ein Mitglied die Schule verlässt",
+      "Die Amtszeit beträgt zwei Jahre, endet aber automatisch mit dem Schuljahresende",
+      "Die Amtszeit dauert drei Jahre; bei vorzeitigem Ausscheiden bleibt der Platz unbesetzt",
+      "Die Amtszeit beträgt zwei Jahre; bei vorzeitigem Ausscheiden muss eine Neuwahl stattfinden"
+    ]
+  },
+  {
+    "thema": "Berufsschulbeirat",
+    "frage": "Auf welcher Basis erfolgt die Mitgliedschaft im Berufsschulbeirat und wer kann zusätzlich an Sitzungen teilnehmen?",
+    "richtig": "Die Mitgliedschaft erfolgt ehrenamtlich; teilnahmeberechtigt sind u.a. Vertreter der Religionsgemeinschaften, des öffentlichen Gesundheitsdienstes und der Berufsberatung; Schulaufsichtsbehörden können beratend teilnehmen",
+    "falsch": [
+      "Die Mitgliedschaft ist vergütet; alle Mitglieder erhalten eine feste monatliche Aufwandsentschädigung",
+      "Nur die gewählten Mitglieder dürfen an Sitzungen teilnehmen, Gäste sind grundsätzlich ausgeschlossen",
+      "Die Mitgliedschaft ist ehrenamtlich; externe Personen dürfen niemals an Sitzungen teilnehmen",
+      "Mitglieder erhalten grundsätzlich eine Vergütung durch das Kultusministerium",
+      "Nur Vertreter der Schulaufsichtsbehörden dürfen zusätzlich an Sitzungen teilnehmen",
+      "Die Mitgliedschaft ist vergütet durch den Sachaufwandsträger ohne gesonderten Antrag"
+    ]
+  },
+  {
+    "thema": "Haftung Lehrkräfte",
+    "frage": "Wann haftet eine Lehrkraft persönlich für Schäden laut Art. 34 Grundgesetz?",
+    "richtig": "Lehrkräfte haften nur bei grober Fahrlässigkeit oder Vorsatz persönlich; ansonsten haftet grundsätzlich der Staat oder die Körperschaft, in deren Dienst die Lehrkraft tätig ist",
+    "falsch": [
+      "Lehrkräfte haften immer persönlich für alle Schäden, die sie im Dienst verursachen",
+      "Lehrkräfte haften nie persönlich, da der Dienstherr stets vollständig haftet",
+      "Lehrkräfte haften nur bei vorsätzlichem Handeln, nicht bei Fahrlässigkeit",
+      "Lehrkräfte haften ab einfacher Fahrlässigkeit persönlich mit ihrem Privatvermögen",
+      "Die Haftung richtet sich ausschließlich nach dem jeweiligen Versicherungsvertrag der Lehrkraft",
+      "Lehrkräfte haften persönlich sobald Erziehungsberechtigte Schadensersatz fordern"
+    ]
+  },
+  {
+    "thema": "Haftung Lehrkräfte",
+    "frage": "Wie soll eine Lehrkraft vorgehen, wenn Schadensersatzforderungen an sie gerichtet werden?",
+    "richtig": "Alle Schadensersatzforderungen aus der dienstlichen Tätigkeit immer an den Dienstherrn (Regierung) weiterleiten; die Lehrkraft soll weder schriftlich noch mündlich ein Verschulden anerkennen",
+    "falsch": [
+      "Die Lehrkraft soll sofort mit den Geschädigten eine außergerichtliche Einigung suchen",
+      "Die Lehrkraft soll die Forderung direkt an ihre private Haftpflichtversicherung weiterleiten",
+      "Die Lehrkraft soll die Forderung schriftlich anerkennen und dann den Dienstherrn informieren",
+      "Die Lehrkraft muss die Forderung selbst regulieren und kann danach Regress beim Dienstherrn nehmen",
+      "Die Lehrkraft soll die Forderung ignorieren, bis ein Gericht sie offiziell zustellt",
+      "Die Lehrkraft soll sofort anwaltliche Hilfe suchen und eigenständig vor Gericht reagieren"
+    ]
+  },
+  {
+    "thema": "Haftung Lehrkräfte",
+    "frage": "Welche drei Versicherungen werden Lehrkräften für den Dienstbereich empfohlen?",
+    "richtig": "Diensthaftpflichtversicherung (z.B. bei Aufsichtspflichtverletzung), Amtshaftpflichtversicherung (z.B. bei Zerstörung eines Kopierers) und Privathaftpflichtversicherung",
+    "falsch": [
+      "Krankenversicherung, Unfallversicherung und Berufsunfähigkeitsversicherung",
+      "Rechtsschutzversicherung, Haftpflichtversicherung und Lebensversicherung",
+      "Nur eine Privathaftpflichtversicherung reicht für alle Schadensszenarien aus",
+      "Dienstunfallversicherung, Sachschadenversicherung und Beamtenrechtsschutz",
+      "KUVB-Mitgliedschaft, Gewerkschaftsmitgliedschaft und Privathaftpflicht",
+      "Schulgebäudeversicherung, Haftpflicht und Berufsrechtsschutz"
+    ]
+  },
+  {
+    "thema": "Haftung Lehrkräfte",
+    "frage": "Wie unterscheidet sich die Haftung bei Schäden an Dienstgeräten je nach Verschuldensgrad?",
+    "richtig": "Bei Vorsatz oder grober Fahrlässigkeit haftet die Lehrkraft dem Dienstherrn gegenüber vollständig; bei nur leichter Fahrlässigkeit kommt es zu keiner Haftung (Sachaufwandsträger trägt den Schaden); mittlere Fahrlässigkeit kann zu anteiliger Haftung führen",
+    "falsch": [
+      "Die Lehrkraft haftet immer vollständig für Schäden an Dienstgeräten, unabhängig vom Verschulden",
+      "Der Sachaufwandsträger haftet stets vollständig für alle Schäden an Dienstgeräten",
+      "Bei leichter Fahrlässigkeit haftet die Lehrkraft zur Hälfte, bei grober vollständig",
+      "Die private Haftpflichtversicherung übernimmt alle dienstlich verursachten Schäden an Geräten",
+      "Schäden an Dienstgeräten sind grundsätzlich nicht ersatzpflichtig, unabhängig vom Verschulden",
+      "Die Lehrkraft haftet nur, wenn der Schaden außerhalb der Unterrichtszeit entstanden ist"
+    ]
+  },
+  {
+    "thema": "Haftung Lehrkräfte",
+    "frage": "Eine Lehrkraft verursacht in ihrer Freizeit als Privatperson einen Schaden an einem Dienstgerät. Kann sie an ihre private Haftpflichtversicherung verwiesen werden?",
+    "richtig": "Ja, bei Schäden als Privatperson in der Freizeit ist der Verweis auf die private Haftpflichtversicherung gerechtfertigt – sofern mit der Schule keine anderweitige Haftungsvereinbarung getroffen wurde",
+    "falsch": [
+      "Nein, Dienstgeräte sind immer über den Dienstherrn versichert, egal wann der Schaden entsteht",
+      "Ja, die private Haftpflicht ist auch bei beruflichen Schäden immer zuständig",
+      "Nein, der Sachaufwandsträger haftet grundsätzlich für alle Schäden an Dienstgeräten",
+      "Ja, aber nur wenn die Lehrkraft das Gerät ausdrücklich für private Zwecke ausgeliehen hat",
+      "Nein, Freizeit und Dienstzeit werden bei Dienstgeräten haftungsrechtlich nicht unterschieden",
+      "Ja, aber die Lehrkraft muss den Schaden zunächst selbst bezahlen und wird dann von der Versicherung erstattet"
+    ]
+  },
+  {
+    "thema": "Haftung Lehrkräfte",
+    "frage": "Warum ist die Diensthaftpflichtversicherung besonders wichtig für verbeamtete Lehrkräfte?",
+    "richtig": "Im Unterschied zu normalen Arbeitnehmern haftet der Dienstherr nicht für Schäden, die Beamte während ihrer Dienstzeit verursachen – der Beamte haftet persönlich und unbegrenzt",
+    "falsch": [
+      "Weil Beamte keine gesetzliche Unfallversicherung haben und sich selbst absichern müssen",
+      "Weil der Dienstherr alle Schäden ersetzt, aber danach unbegrenzt Regress beim Beamten nehmen kann",
+      "Weil Beamte grundsätzlich nicht haften, die Versicherung aber bei Regressforderungen schützt",
+      "Weil die Diensthaftpflicht auch private Schäden abdeckt und günstiger als Privathaftpflicht ist",
+      "Weil Beamte im Schadensfall strafrechtlich verfolgt werden können und Anwaltskosten entstehen",
+      "Weil Beamte nur bei Vorsatz haften, die Versicherung aber auch bei Fahrlässigkeit zahlt"
+    ]
+  }
+]
