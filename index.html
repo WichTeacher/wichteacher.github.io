@@ -1,190 +1,270 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expertengruppe 2: Ablauf Weichlöten</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #0066cc;
-            border-bottom: 3px solid #0066cc;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #333;
-            margin-top: 25px;
-        }
-        .schritt {
-            background-color: #f0f8ff;
-            border-left: 5px solid #0066cc;
-            padding: 15px;
-            margin: 15px 0;
-        }
-        .schritt h3 {
-            margin-top: 0;
-            color: #0066cc;
-        }
-        .tipp {
-            background-color: #ffffcc;
-            border: 2px solid #ffcc00;
-            padding: 10px;
-            margin: 15px 0;
-        }
-        .qualitaet {
-            background-color: #e6ffe6;
-            border: 3px solid #009900;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        ul {
-            margin-left: 20px;
-        }
-        li {
-            margin-bottom: 8px;
-        }
-        .aufgabe {
-            background-color: #e6f3ff;
-            border: 2px solid #0066cc;
-            padding: 15px;
-            margin-top: 30px;
-        }
-        .rolle {
-            background-color: #fff4e6;
-            border: 2px solid #ff9900;
-            padding: 10px;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projekte</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --card-bg: #17171e;
+      --border: #2a2a38;
+      --accent-1: #c8a96e;
+      --accent-2: #7e9fc4;
+      --text: #e8e6e0;
+      --muted: #7a7870;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      overflow-x: hidden;
+    }
+
+    /* Background texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(200,169,110,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(126,159,196,0.07) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    .eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-1);
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider-icon {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    /* Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 500px) {
+      .cards { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2rem 1.75rem;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.35s; }
+    .card:nth-child(2) { animation-delay: 0.5s; }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--c1), var(--c2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(255,255,255,0.12);
+      transform: translateY(-3px);
+    }
+
+    .card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .card-1 { --c1: #c8a96e; --c2: #e8c98e; }
+    .card-2 { --c1: #7e9fc4; --c2: #a0bedd; }
+
+    .card-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      opacity: 0.07;
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      line-height: 1;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+
+    .card-1 .card-tag { background: rgba(200,169,110,0.12); color: var(--accent-1); }
+    .card-2 .card-tag { background: rgba(126,159,196,0.12); color: var(--accent-2); }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.6;
+    }
+
+    .card-arrow {
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: gap 0.3s ease, color 0.3s ease;
+    }
+
+    .card:hover .card-arrow {
+      gap: 0.7rem;
+      color: var(--text);
+    }
+
+    .card-1:hover .card-arrow { color: var(--accent-1); }
+    .card-2:hover .card-arrow { color: var(--accent-2); }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.65s forwards;
+      letter-spacing: 0.05em;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-    <h1>Expertengruppe 2: Arbeitsablauf beim Weichlöten</h1>
-    
-    <div class="rolle">
-        Deine Rolle in der Stammgruppe: KUNDENDIENSTLER<br>
-        (Du führst die Lötung beim Kunden durch)
+  <div class="wrapper">
+    <header>
+      <p class="eyebrow">Übersicht</p>
+      <h1>Projekte</h1>
+      <p class="subtitle">Eine Sammlung meiner interaktiven Tools & Simulationen</p>
+    </header>
+
+    <div class="divider">
+      <span class="divider-icon">TOOLS</span>
     </div>
 
-    <h2>Was ist Weichlöten?</h2>
-    <p>Weichlöten ist ein Verbindungsverfahren für Kupferrohre bei Temperaturen unter 450°C. Das flüssige Lot wird durch Kapillarwirkung in den sehr engen Spalt (Kapillarspalt) zwischen Rohr und Fitting gesogen und verbindet sich beim Abkühlen fest mit dem Kupfer.</p>
-
-    <h2>Schritt-für-Schritt-Anleitung</h2>
-
-    <div class="schritt">
-        <h3>Schritt 1: Rohrende vorbereiten</h3>
-        <ul>
-            <li><strong>Entgraten:</strong> Rohrende innen und außen mit dem Entgrater glätten</li>
-            <li><strong>Kalibrieren (nur bei weichen Rohren):</strong> Rohrende rund formen, damit es in den Fitting passt</li>
-        </ul>
-        <div class="tipp">
-            <strong>Warum wichtig?</strong> Ohne Entgraten ist kein gleichmäßiger Kapillarspalt möglich – das Lot würde nicht richtig fließen!
+    <div class="cards">
+      <a href="stabi.html" class="card card-1">
+        <span class="card-number">I</span>
+        <span class="card-tag">Interaktiv</span>
+        <h2 class="card-title">Staatsbürger&shy;liche Bildung</h2>
+        <p class="card-desc">Mündliche Simulation mit Fragenkatalog</p>
+        <div class="card-arrow">
+          Zum Tool <span>→</span>
         </div>
-    </div>
+      </a>
 
-    <div class="schritt">
-        <h3>Schritt 2: Oberflächen reinigen</h3>
-        <ul>
-            <li><strong>Rohrende außen:</strong> Mit Stahlwolle, Schmirgelpapier (Körnung 240) oder Reinigungsvlies metallisch blank machen</li>
-            <li><strong>Fitting innen:</strong> Ebenfalls blank reinigen mit Rundbürste oder Reinigungsvlies</li>
-        </ul>
-        <div class="tipp">
-            <strong>Warum wichtig?</strong> Das Lot benetzt und bindet nur auf blanken, sauberen Oberflächen. Oxidschichten oder Schmutz verhindern eine feste Verbindung!
+      <a href="schulrecht.html" class="card card-2">
+        <span class="card-number">II</span>
+        <span class="card-tag">Interaktiv</span>
+        <h2 class="card-title">Schulrecht &amp; Schulkunde</h2>
+        <p class="card-desc">Mündliche Simulation mit Fragenkatalog</p>
+        <div class="card-arrow">
+          Zum Tool <span>→</span>
         </div>
+      </a>
     </div>
 
-    <div class="schritt">
-        <h3>Schritt 3: Flussmittel auftragen</h3>
-        <ul>
-            <li><strong>Nur das Rohrende</strong> dünn mit Flussmittel (oder Weichlotpaste) bestreichen</li>
-            <li>NICHT ins Rohrinnere oder auf den Fitting auftragen</li>
-            <li>Überschüssiges Flussmittel nach dem Zusammenstecken außen abwischen</li>
-        </ul>
-        <div class="tipp">
-            <strong>Warum wichtig?</strong> Flussmittel verhindert, dass sich während des Erhitzens neue Oxidschichten bilden. So kann das Lot optimal fließen und binden.
-        </div>
-    </div>
-
-    <div class="schritt">
-        <h3>Schritt 4: Rohr und Fitting zusammenstecken</h3>
-        <ul>
-            <li>Rohrende <strong>bis zum Anschlag</strong> in den Fitting schieben</li>
-            <li>Darauf achten, dass die Verbindung gerade sitzt</li>
-        </ul>
-    </div>
-
-    <div class="schritt">
-        <h3>Schritt 5: Erwärmen</h3>
-        <ul>
-            <li>Brennerflamme einschalten und einstellen</li>
-            <li>Verbindungsstelle <strong>gleichmäßig</strong> in der Streuflamme erwärmen</li>
-            <li>Flamme ständig bewegen, nicht auf eine Stelle konzentrieren</li>
-            <li><strong>Arbeitstemperatur erkennen:</strong> Weichlotpaste schmilzt und wird silberfarben glänzend</li>
-        </ul>
-        <div class="tipp">
-            <strong>ACHTUNG:</strong> Nicht überhitzen! Bei zu hoher Temperatur verbrennt das Flussmittel und das Lot tropft ab statt zu fließen.
-        </div>
-    </div>
-
-    <div class="schritt">
-        <h3>Schritt 6: Lot zuführen</h3>
-        <ul>
-            <li>Lot <strong>ohne direkte Flammeneinwirkung</strong> am Lötspalt (zwischen Rohr und Fitting) ansetzen</li>
-            <li>Das Lot schmilzt durch die Hitze des Rohrs und wird in den Spalt gesaugt</li>
-            <li>So lange Lot zuführen, bis eine <strong>sichtbare Lotkehle</strong> am äußeren Fittingrand entsteht</li>
-        </ul>
-        <div class="tipp">
-            <strong>Wie viel Lot?</strong> Die Kehle zeigt an, dass der Lötspalt komplett gefüllt ist. Nicht zu wenig (Spalt nicht voll) und nicht zu viel (Lot läuft ins Rohrinnere).
-        </div>
-    </div>
-
-    <div class="schritt">
-        <h3>Schritt 7: Abkühlen lassen</h3>
-        <ul>
-            <li>Brenner ausschalten</li>
-            <li>Verbindung <strong>nicht bewegen oder erschüttern</strong> während des Abkühlens</li>
-            <li>Das Lot verfestigt sich nicht schlagartig, sondern innerhalb seines Schmelzbereichs</li>
-            <li>Mindestens 2-3 Minuten warten, bevor du das Rohr anfasst</li>
-        </ul>
-    </div>
-
-    <div class="schritt">
-        <h3>Schritt 8: Reinigen</h3>
-        <ul>
-            <li>Nach dem Abkühlen: Flussmittelreste mit <strong>feuchtem Lappen</strong> entfernen</li>
-            <li>In Trinkwasserinstallationen: Gesamte Leitung später durchspülen</li>
-        </ul>
-    </div>
-
-    <div class="qualitaet">
-        <h2>Qualitätskriterien einer guten Weichlötverbindung</h2>
-        <p>So erkennst du, ob deine Lötung gelungen ist:</p>
-        <ul>
-            <li>&#9744; <strong>Lotkehle vorhanden:</strong> Gleichmäßiger Lotring am äußeren Rand des Fittings sichtbar</li>
-            <li>&#9744; <strong>Keine Blasen oder Löcher:</strong> Lot ist glatt und durchgehend</li>
-            <li>&#9744; <strong>Gleichmäßige Verteilung:</strong> Lot ist rund um die gesamte Verbindung gelaufen</li>
-            <li>&#9744; <strong>Verbindung sitzt fest:</strong> Kein Wackeln zwischen Rohr und Fitting</li>
-            <li>&#9744; <strong>Flussmittelreste entfernt:</strong> Außenfläche ist sauber</li>
-        </ul>
-        <p><strong>Diese Checkliste nutzt du beim praktischen Löten zur Bewertung deiner Arbeit!</strong></p>
-    </div>
-
-    <div class="aufgabe">
-        <h3>Deine Aufgabe als Kundendienstler:</h3>
-        <ol>
-            <li>Lies dieses Infoblatt aufmerksam durch und präge dir die 8 Schritte ein</li>
-            <li>Geh zurück in deine Stammgruppe</li>
-            <li>Erkläre deinen Kollegen den Arbeitsablauf Schritt für Schritt</li>
-            <li>Teile die Qualitätscheckliste mit deiner Gruppe</li>
-            <li>Beim praktischen Löten: Du führst die Lötung durch, deine Kollegen unterstützen und überwachen dich</li>
-        </ol>
-    </div>
-
+    <footer>Made with ♥ in Nürnberg</footer>
+  </div>
 </body>
 </html>
