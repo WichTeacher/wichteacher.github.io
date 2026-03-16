@@ -431,7 +431,7 @@
   {
     "thema": "Berufliche Schulen Bayern",
     "frage": "Welchen Abschluss vermittelt die Fachschule (z.B. Technikerschule)?",
-    "richtig": "Die Fachschulreife; bei besonderer Prüfung ist auch die Fachhochschulreife möglich",
+    "richtig": "Den Fachschulabschluss; bei besonderer Prüfung ist auch die Fachhochschulreife möglich",
     "falsch": [
       "Den mittleren Schulabschluss",
       "Die allgemeine Hochschulreife",
@@ -795,14 +795,14 @@
   {
     "thema": "Zeugnisse Berufsschule",
     "frage": "Was ist der Unterschied zwischen Berufsschulabschlusszeugnis und Berufsabschlusszeugnis?",
-    "richtig": "Das Berufsschulabschlusszeugnis ist das Zeugnis der Berufsschule und verleiht den erfolgreichen Berufsschulabschluss; das Berufsabschlusszeugnis (z.B. Gesellenbrief) verleiht den Berufsabschluss und ist Voraussetzung für die Verleihung des mittleren Schulabschlusses",
+    "richtig": "Das Berufsschulabschlusszeugnis ist das Zeugnis der Berufsschule und verleiht den Berufsschulabschluss; das Berufsabschlusszeugnis (z.B. Gesellenbrief) wird von der Kammer ausgestellt und verleiht den Berufsabschluss – erst beides zusammen ermöglicht die Verleihung des mittleren Schulabschlusses",
     "falsch": [
       "Beide Zeugnisse werden von der Berufsschule ausgestellt und sind gleichwertig",
       "Das Berufsabschlusszeugnis wird von der Berufsschule ausgestellt, der Gesellenbrief von der IHK",
-      "Das Berufsschulabschlusszeugnis berechtigt zum Studium, das Berufsabschlusszeugnis nicht",
+      "Das Berufsschulabschlusszeugnis berechtigt allein zum Studium an Fachhochschulen",
       "Das Berufsabschlusszeugnis enthält Schulnoten, das Berufsschulabschlusszeugnis nur Prüfungsnoten",
       "Beide sind identisch, werden aber je nach Ausbildungsberuf unterschiedlich bezeichnet",
-      "Das Berufsschulabschlusszeugnis wird nur bei bestandener Abschlussprüfung ausgestellt"
+      "Das Berufsschulabschlusszeugnis wird nur bei bestandener Kammerprüfung ausgestellt"
     ]
   },
   {
@@ -1237,14 +1237,14 @@
   {
     "thema": "Haftung Lehrkräfte",
     "frage": "Wann haftet eine Lehrkraft persönlich für Schäden laut Art. 34 Grundgesetz?",
-    "richtig": "Lehrkräfte haften nur bei grober Fahrlässigkeit oder Vorsatz persönlich; ansonsten haftet grundsätzlich der Staat oder die Körperschaft, in deren Dienst die Lehrkraft tätig ist",
+    "richtig": "Nach Art. 34 GG haftet primär der Staat oder die Körperschaft (Amtshaftung); gegen die Lehrkraft persönlich kann der Dienstherr nur bei Vorsatz oder grober Fahrlässigkeit Regress nehmen",
     "falsch": [
       "Lehrkräfte haften immer persönlich für alle Schäden, die sie im Dienst verursachen",
-      "Lehrkräfte haften nie persönlich, da der Dienstherr stets vollständig haftet",
-      "Lehrkräfte haften nur bei vorsätzlichem Handeln, nicht bei Fahrlässigkeit",
+      "Lehrkräfte haften nie persönlich, da der Dienstherr stets vollständig haftet ohne Regressmöglichkeit",
       "Lehrkräfte haften ab einfacher Fahrlässigkeit persönlich mit ihrem Privatvermögen",
       "Die Haftung richtet sich ausschließlich nach dem jeweiligen Versicherungsvertrag der Lehrkraft",
-      "Lehrkräfte haften persönlich sobald Erziehungsberechtigte Schadensersatz fordern"
+      "Lehrkräfte haften persönlich sobald Erziehungsberechtigte Schadensersatz fordern",
+      "Lehrkräfte haften nur bei vorsätzlichem Handeln, Fahrlässigkeit ist grundsätzlich ausgeschlossen"
     ]
   },
   {
@@ -1302,14 +1302,14 @@
   {
     "thema": "Haftung Lehrkräfte",
     "frage": "Warum ist die Diensthaftpflichtversicherung besonders wichtig für verbeamtete Lehrkräfte?",
-    "richtig": "Im Unterschied zu normalen Arbeitnehmern haftet der Dienstherr nicht für Schäden, die Beamte während ihrer Dienstzeit verursachen – der Beamte haftet persönlich und unbegrenzt",
+    "richtig": "Denn obwohl der Staat nach außen hin haftet (Amtshaftung Art. 34 GG), kann er bei Vorsatz oder grober Fahrlässigkeit intern unbegrenzt Regress beim Beamten nehmen – die Diensthaftpflicht schützt vor diesem Rückgriff",
     "falsch": [
       "Weil Beamte keine gesetzliche Unfallversicherung haben und sich selbst absichern müssen",
-      "Weil der Dienstherr alle Schäden ersetzt, aber danach unbegrenzt Regress beim Beamten nehmen kann",
-      "Weil Beamte grundsätzlich nicht haften, die Versicherung aber bei Regressforderungen schützt",
+      "Weil der Dienstherr alle Schäden ersetzt und danach niemals Regress beim Beamten nehmen kann",
+      "Weil Beamte grundsätzlich nicht haften und die Versicherung daher überflüssig ist",
       "Weil die Diensthaftpflicht auch private Schäden abdeckt und günstiger als Privathaftpflicht ist",
-      "Weil Beamte im Schadensfall strafrechtlich verfolgt werden können und Anwaltskosten entstehen",
-      "Weil Beamte nur bei Vorsatz haften, die Versicherung aber auch bei Fahrlässigkeit zahlt"
+      "Weil Beamte nur bei Vorsatz haften und die Versicherung nur dann greift",
+      "Weil normale Arbeitnehmer anders als Beamte nie persönlich haften"
     ]
   }
 ]
