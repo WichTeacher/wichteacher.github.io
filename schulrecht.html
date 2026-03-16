@@ -405,6 +405,7 @@ const ANSWERS_PER_QUESTION = 4;
 let allQuestions = [];
 let themen = [];
 let totalAnswered = 0;
+let totalCorrect = 0;
 let totalQuestions = 0;
 let currentThema = null; // null = alle
 
@@ -428,10 +429,12 @@ function buildOptions(q) {
 }
 
 function updateProgress() {
-  const pct = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
+  const pct = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
   document.getElementById('globalProgress').style.width = pct + '%';
   document.getElementById('globalProgressLabel').textContent =
-    `${totalAnswered} von ${totalQuestions} Fragen beantwortet`;
+    totalAnswered === 0
+      ? `${totalQuestions} Fragen bereit`
+      : `${totalCorrect} von ${totalAnswered} richtig (${pct}%)`;
 }
 
 // ─── Nav aufbauen ─────────────────────────────────────────────────
@@ -468,6 +471,7 @@ function loadThema(thema) {
 
   totalQuestions = questions.length;
   totalAnswered = 0;
+  totalCorrect = 0;
   updateProgress();
 
   const main = document.getElementById('mainContent');
@@ -548,6 +552,7 @@ function loadThema(thema) {
         if (isCorrect) quizState.score++;
         quizState.answered++;
         totalAnswered++;
+        if (isCorrect) totalCorrect++;
         updateProgress();
 
         if (quizState.answered === quizState.total) {
