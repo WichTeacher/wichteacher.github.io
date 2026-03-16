@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Impressum</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0f0f13;
+      --card-bg: #17171e;
+      --border: #2a2a38;
+      --accent-1: #c8a96e;
+      --text: #e8e6e0;
+      --muted: #7a7870;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(200,169,110,0.07) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 2.5rem;
+      transition: color 0.2s ease, gap 0.2s ease;
+      letter-spacing: 0.05em;
+    }
+    .back:hover { color: var(--accent-1); gap: 0.65rem; }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent-1);
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2rem;
+    }
+
+    .field {
+      margin-bottom: 1.5rem;
+    }
+    .field:last-child { margin-bottom: 0; }
+
+    .field-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .field-value {
+      font-size: 0.9rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    .field-value a {
+      color: var(--accent-1);
+      text-decoration: none;
+    }
+    .field-value a:hover { text-decoration: underline; }
+
+    .placeholder {
+      color: #c0392b;
+      background: rgba(192,57,43,0.1);
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.85rem;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .note {
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <a href="index.html" class="back">← Zurück</a>
+
+    <p class="eyebrow">Rechtliches</p>
+    <h1>Impressum</h1>
+
+    <div class="card">
+      <div class="field">
+        <div class="field-label">Angaben gemäß § 5 TMG</div>
+        <div class="field-value">
+          <span class="placeholder">[Vorname Nachname]</span><br>
+          <span class="placeholder">[Straße Hausnummer]</span><br>
+          <span class="placeholder">[PLZ] Nürnberg</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <div class="field-label">Kontakt</div>
+        <div class="field-value">
+          <a href="mailto:DEINE@EMAIL.DE"><span class="placeholder">[deine@email.de]</span></a>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <div class="field-label">Haftungsausschluss</div>
+        <div class="field-value">
+          Diese Seite ist ein privates, nicht-kommerzielles Projekt.
+          Für die Richtigkeit der Inhalte wird keine Gewähr übernommen.
+        </div>
+      </div>
+    </div>
+
+    <p class="note">
+      Privatperson · Keine kommerziellen Interessen · Keine Werbung
+    </p>
+  </div>
+</body>
+</html>
