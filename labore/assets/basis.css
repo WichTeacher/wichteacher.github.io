@@ -2,7 +2,7 @@
    Labore – gemeinsame Basis
 
    Einbinden:  <link rel="stylesheet" href="../../assets/basis.css">
-   Fach wählen: <body data-fach="tm">   (tm | me | wc | prog | pm)
+   Fach wählen: <body data-fach="tm">   (tm | me | wc | prog)
    Die Fachfarbe steht dann überall als var(--fach) zur Verfügung.
 
    Rot und Grün sind der Rückmeldung (richtig/falsch) vorbehalten und
@@ -75,7 +75,7 @@ a{color:var(--fach)}
 .kopf h1{margin:0 0 4px;font-size:1.7rem}
 .kopf p{margin:0;opacity:.92;font-size:.98rem}
 /* Übersichtsseiten ohne Fach: dunkle Kopfleiste mit Streifen in allen Fachfarben */
-.kopf.bunt{background:#1d2533;color:#fff;border-bottom:6px solid;border-image:linear-gradient(90deg,var(--tm) 0 20%,var(--me) 20% 40%,var(--wc) 40% 60%,var(--prog) 60% 80%,var(--pm) 80%) 1}
+.kopf.bunt{background:#1d2533;color:#fff;border-bottom:6px solid;border-image:linear-gradient(90deg,var(--tm) 0 25%,var(--me) 25% 50%,var(--wc) 50% 75%,var(--prog) 75%) 1}
 
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:16px}
 .card h2{margin:0 0 6px;font-size:1.35rem;color:var(--fach)}
