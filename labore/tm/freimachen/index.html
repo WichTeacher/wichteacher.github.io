@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freimachen – Labor</title>
+<meta name="description" content="Interaktives Labor: Bauteile freimachen, Reaktionskräfte, Wertigkeit von Lagern">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css */
+  body{ --accent:var(--fach); --hint-line:var(--hint); --gew:#d9822b; }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+  .sub{margin:0 0 12px;color:var(--muted);font-size:.93rem}
+  .small{font-size:.85rem;color:var(--muted)}
+  .lab{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:16px}
+  @media (max-width:860px){ .lab{grid-template-columns:1fr} }
+
+  .lbl{font-size:.9rem;margin:6px 0 4px;color:var(--muted)}
+  .seg{display:flex;flex-wrap:wrap;gap:4px}
+  .seg button{font:inherit;font-weight:600;padding:5px 10px;border:2px solid var(--line);background:#fff;border-radius:6px;cursor:pointer}
+  .seg button:hover{background:#eef2f7}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  .range-info{font-size:.9rem;margin-top:2px}
+  .range-info b{color:var(--accent)}
+  .chk{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.95rem;cursor:pointer}
+  .chk input{width:18px;height:18px;accent-color:var(--accent)}
+
+  svg{width:100%;height:auto;display:block;background:#fbfcfe;border:1px solid var(--line);border-radius:10px}
+  .fbox{border-radius:10px;padding:10px 14px;font-size:.93rem;background:#eef3fb;margin-top:12px}
+  .fbox h3{margin:0 0 6px;font-size:1rem;color:var(--accent)}
+  .itab{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;margin:0}
+  .itab dt{color:var(--muted);font-weight:600}
+  .itab dd{margin:0}
+  .merk{margin-top:8px;padding-top:8px;border-top:1px dashed #b9c6da}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0 0;font-size:.9rem}
+  .legend span::before{content:"";display:inline-block;width:24px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+  .legend .r::before{background:var(--bad)} .legend .g::before{background:var(--accent)} .legend .w::before{background:var(--gew)}
+  ol.steps{margin:8px 0 0 20px;padding:0}
+  ol.steps li{margin:2px 0}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:760px){ .two{grid-template-columns:1fr} }
+
+  .status{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .bar{flex:1;min-width:160px;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar>div{height:100%;width:0;background:var(--ok);transition:width .3s}
+  .score{font-weight:600;white-space:nowrap}
+  button.reset{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+  button.reset:hover{background:#eef2f7}
+  .task{border-top:1px solid var(--line);padding:14px 0}
+  .task:first-of-type{border-top:none}
+  .task.solved{border-left:5px solid var(--ok);padding-left:12px}
+  .task .q{margin-bottom:10px}
+  .task .q b{color:var(--accent)}
+  .cap{font-size:.85rem;color:var(--muted);margin:0 0 4px;font-weight:600}
+  .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+  .row .rl{min-width:150px;font-weight:700;color:var(--accent)}
+  .row .rl small{display:block;font-weight:400;color:var(--muted)}
+  .row select{flex:1;min-width:230px;max-width:520px;font:inherit;padding:6px 8px;border:2px solid var(--line);border-radius:6px;background:#fff}
+  .row input[type=text]{width:70px;font:inherit;padding:6px 8px;border:2px solid var(--line);border-radius:6px;text-align:center;background:#fff}
+  .flip{font:inherit;border:2px solid var(--line);background:#fff;border-radius:6px;padding:5px 10px;cursor:pointer}
+  .flips{display:inline-flex;flex-wrap:wrap;gap:6px}
+  .flip:disabled{opacity:.4;cursor:default}
+  .flip:not(:disabled):hover{background:#eef2f7}
+  .rmsg{flex-basis:100%;display:none;padding:5px 10px;border-radius:6px;border:2px solid var(--line);font-size:.92rem}
+  .rmsg.ok,.rmsg.bad{display:block}
+  .rmsg.bad{color:var(--bad)}
+  .ok{border-color:var(--ok)!important;background:var(--ok-bg)!important;color:var(--ok)!important;border-style:solid!important}
+  .bad{border-color:var(--bad)!important;background:var(--bad-bg)!important}
+  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+  .hint{display:none;margin-top:10px;background:var(--hint-bg);border-left:4px solid var(--hint-line);padding:8px 12px;border-radius:6px;font-size:.93rem}
+  .hint.show{display:block}
+  .hint b{color:#8a6d00}
+  .hbtn{border:1px solid var(--hint-line);background:var(--hint-bg);border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+  .gbtn{border:none;background:var(--accent);color:#fff;border-radius:8px;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600}
+  .gbtn:hover{filter:brightness(1.1)}
+  .tfb{margin-top:8px;font-weight:600}
+  svg.pick.active{cursor:crosshair;border:2px dashed var(--accent)}
+  .pmsg{min-height:1.6em;margin-top:6px;font-size:.92rem;padding:4px 10px;border-radius:6px}
+  .pmsg.ok{background:var(--ok-bg);color:var(--ok)}
+  .pmsg.bad{background:var(--bad-bg);color:var(--bad)}
+  .pmsg.info{background:var(--hint-bg);color:#6b5400}
+  .step{background:#eef3fb;border-radius:8px;padding:8px 12px;margin:10px 0 4px;font-size:.93rem}
+  .done{display:none;background:var(--ok-bg);border:2px solid var(--ok);color:var(--ok);border-radius:12px;padding:14px 18px;font-weight:600;text-align:center;margin-top:8px}
+  .done.show{display:block}
+
+  #game{display:none}
+  #game.show{display:block}
+  .gbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;font-weight:600}
+  #cv{display:block;width:100%;max-width:520px;margin:0 auto;border-radius:10px;background:#0f2742;touch-action:none;cursor:none;border:none}
+  sub{font-size:.72em}
+</style>
+</head>
+<body data-fach="tm">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../../#tm">Technische Mechanik</a></div>
+    <h1>Freimachen von Bauteilen – Experimentier-Labor</h1>
+    <p>Berührungsarten · Reaktionskräfte · Wirklinie · Richtungssinn · Wertigkeit · Bearbeitungszeit ca. 30 min</p>
+  </header>
+
+  <div class="card">
+    <strong>So arbeiten Sie:</strong> Beim <b>Freimachen</b> wird ein Bauteil aus dem Gesamtsystem herausgelöst. Alle <b>berührenden Teile</b> (Lager, Stützen, Seile, Wände …)
+    werden entfernt und durch ihre <b>Reaktionskräfte</b> ersetzt. Probieren Sie zuerst im Labor aus, welche Kräfte die einzelnen Berührungsarten übertragen können.
+    Bearbeiten Sie danach die Aufträge.
+    <ol class="steps">
+      <li>Körper abgrenzen und <b>ohne Umgebung</b> skizzieren.</li>
+      <li>Alle <b>Berührstellen</b> suchen.</li>
+      <li>Jede Berührstelle durch die Kräfte ersetzen, die dort <b>übertragen werden können</b> (Wirklinie und Richtungssinn beachten).</li>
+      <li>Gegebene Kräfte eintragen – und die Gewichtskraft <b>G</b>, wenn der Schwerpunkt <b>S</b> eingezeichnet ist.</li>
+    </ol>
+    <div class="legend"><span class="r">Reaktionskraft (gesucht)</span><span class="g">gegebene Kraft</span><span class="w">Gewichtskraft G im Schwerpunkt S</span></div>
+  </div>
+
+  <div class="lab">
+    <!-- ============ Einstellungen ============ -->
+    <div class="card">
+      <h2>Einstellungen</h2>
+      <div class="lbl">Berührungsart</div>
+      <div class="seg" id="lK"></div>
+      <div class="lbl" id="lAngL" style="margin-top:14px"></div>
+      <input type="range" id="lAng" aria-label="Winkel">
+      <div class="range-info" id="lAngV"></div>
+      <label class="chk" id="wReib"><input type="checkbox" id="cReib"> raue Fläche (Reibung berücksichtigen)</label>
+      <div id="wZug">
+        <div class="lbl" style="margin-top:10px">Richtungssinn der Stabkraft (wird angenommen)</div>
+        <div class="seg" id="lZ"></div>
+      </div>
+      <label class="chk"><input type="checkbox" id="cG"> Gewichtskraft G im Schwerpunkt S anzeigen</label>
+      <button class="reset" id="lRes" type="button">↺ Grundeinstellung</button>
+    </div>
+
+    <!-- ============ Darstellung ============ -->
+    <div class="card">
+      <h2>Berührstelle und freigemachter Körper</h2>
+      <svg id="lab" viewBox="0 0 640 340" role="img" aria-label="Situation und freigemachter Körper"></svg>
+      <p class="small">Im Labor sehen Sie nur, was die Berührstelle <b>übertragen kann</b>. Das Gleichgewicht stellt sich erst mit allen weiteren Kräften ein.</p>
+      <div class="fbox"><h3 id="iH"></h3><dl class="itab" id="iT"></dl><div class="merk" id="iM"></div></div>
+    </div>
+  </div>
+
+  <!-- ============ Aufträge ============ -->
+  <div class="card">
+    <h2>Aufträge: Bauteile freimachen</h2>
+    <p class="sub">Jede Aufgabe hat zwei Schritte: <b>1.</b> Klicken Sie im Systembild alle Berührstellen an – wie viele es sind, wird nicht verraten.
+      <b>2.</b> Wählen Sie für jede <b>Stelle</b> die passende Reaktionskraft. Ihr freigemachter Körper wird rechts live gezeichnet. <b>Achtung:</b> Der Pfeil erscheint zunächst in <b>zufälliger</b> Richtung – prüfen Sie den Richtungssinn und kehren Sie ihn bei Bedarf mit <b>⇄</b> um. Wirken an einer Stelle zwei Kräfte (z. B. Festlager), lässt sich jeder Pfeil einzeln drehen.
+      Ist der Schwerpunkt <b>S</b> eingezeichnet, muss die Gewichtskraft G berücksichtigt werden – sonst ist das Gewicht vernachlässigbar.</p>
+    <div class="status">
+      <div class="bar"><div id="bar"></div></div>
+      <span class="score" id="score"></span>
+      <button class="reset" id="reset" type="button">Alles zurücksetzen</button>
+    </div>
+    <div id="tasks"></div>
+    <div class="done" id="done">🎉 Alle Aufträge erledigt – sehr gut! Als Belohnung wartet unten ein kleines Spiel.</div>
+  </div>
+
+  <div class="card" id="game">
+    <h2>🎮 Bonus: Wertigkeits-Fänger</h2>
+    <p class="sub">Verbindungen und Lager fallen vom Band. Fangen Sie nur die, die zum aktuellen Auftrag passen:
+      <b>einwertig</b> (1 Reaktionskraft) oder <b>zweiwertig</b> (2 Komponenten). Falsch gefangen gibt einen Punkt Abzug.
+      Steuerung: Maus, Finger oder Pfeiltasten ← →. Dauer: 45 Sekunden.</p>
+    <div class="gbar"><span id="gInfo">Punkte: 0 · Zeit: 45 s</span><span id="gBest"></span>
+      <button class="gbtn" id="gStart" type="button">Spiel starten</button></div>
+    <canvas id="cv" width="520" height="440" aria-label="Spielfeld"></canvas>
+  </div>
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const INK='#1d2533', MUTED='#5b6678', RED='#c5221f', BLUE='#1f5fa8', ORANGE='#d9822b', GRAY='#8a94a6', BODY='#dbe6f5';
+const r1 = v => Math.round(v*10)/10;
+const rad = d => d*Math.PI/180;
+const unit = (ax,ay,bx,by) => { const d=Math.hypot(bx-ax,by-ay); return [(bx-ax)/d,(by-ay)/d]; };
+
+/* =====================================================================
+   SVG-Bausteine
+   ===================================================================== */
+function sub(s){ const i=s.indexOf('_'); return i<0 ? s : s.slice(0,i)+`<tspan dy="3" font-size="10">${s.slice(i+1)}</tspan>`; }
+function lab(x,y,s,col=INK,anchor='middle',size=14,weight=700){
+  return `<text x="${r1(x)}" y="${r1(y)}" text-anchor="${anchor}" font-size="${size}" font-weight="${weight}" fill="${col}" stroke="#fbfcfe" stroke-width="3.5" stroke-linejoin="round" paint-order="stroke" font-family="system-ui,Segoe UI,Arial,sans-serif">${sub(s)}</text>`;
+}
+function ln(x1,y1,x2,y2,st=INK,w=2,ex=''){ return `<line x1="${r1(x1)}" y1="${r1(y1)}" x2="${r1(x2)}" y2="${r1(y2)}" stroke="${st}" stroke-width="${w}" ${ex}/>`; }
+function ci(x,y,r,fill='#fff',st=INK,w=2){ return `<circle cx="${r1(x)}" cy="${r1(y)}" r="${r}" fill="${fill}" stroke="${st}" stroke-width="${w}"/>`; }
+function rc(x,y,w,h,fill=BODY,st=INK,sw=2,rx=2){ return `<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${rx}" fill="${fill}" stroke="${st}" stroke-width="${sw}"/>`; }
+function bar(x1,y1,x2,y2,w=9){ return ln(x1,y1,x2,y2,INK,w+3)+ln(x1,y1,x2,y2,BODY,w-1); }
+function WL(x1,y1,x2,y2){ return ln(x1,y1,x2,y2,GRAY,1.6,'stroke-dasharray="9 4 2 4"'); }
+
+function arrow(x1,y1,x2,y2,col,label,o={}){
+  const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy)||1, ux=dx/L, uy=dy/L, px=-uy, py=ux;
+  const hl=12, hw=5.5, bx=x2-ux*hl, by=y2-uy*hl;
+  let s=ln(x1,y1,bx+ux*2,by+uy*2,col,3.2,o.dash?'stroke-dasharray="7 4"':'');
+  s+=`<polygon points="${r1(x2)},${r1(y2)} ${r1(bx+px*hw)},${r1(by+py*hw)} ${r1(bx-px*hw)},${r1(by-py*hw)}" fill="${col}"/>`;
+  if(label){
+    let off=o.off;
+    if(off===undefined){
+      const sg=(Math.abs(uy)>Math.abs(ux)) ? Math.sign(px) : Math.sign(py);
+      const halfW=4.2*label.replace('_','').length+2, halfH=8;
+      off=(sg||1)*(6+Math.abs(px)*halfW+Math.abs(py)*halfH);
+    }
+    else off=Math.sign(off)*(6+Math.abs(px)*(4.2*label.replace('_','').length+2)+Math.abs(py)*8);
+    const pos=o.pos===undefined ? 0.5 : o.pos;
+    s+=lab(x1+dx*pos+px*off, y1+dy*pos+py*off+5, label, col, 'middle', 14);
+  }
+  return s;
+}
+/* Schraffur: (dx,dy) zeigt in die Richtung, in der das "Erdreich" liegt */
+function hatchTo(x,y,dx,dy,len=60){
+  const ang=Math.atan2(-dx,dy)*180/Math.PI;
+  let s=`<g transform="translate(${r1(x)} ${r1(y)}) rotate(${r1(ang)})">`;
+  s+=`<line x1="${-len/2}" y1="0" x2="${len/2}" y2="0" stroke="${INK}" stroke-width="2.4"/>`;
+  for(let i=-len/2+4;i<=len/2;i+=8) s+=`<line x1="${i}" y1="0" x2="${i-7}" y2="8" stroke="${GRAY}" stroke-width="1.6"/>`;
+  return s+'</g>';
+}
+function grp(x,y,dx,dy,inner){ const ang=Math.atan2(-dx,dy)*180/Math.PI; return `<g transform="translate(${r1(x)} ${r1(y)}) rotate(${r1(ang)})">${inner}</g>`; }
+function pin(x,y,dx=0,dy=1){
+  return grp(x,y,dx,dy, `<polygon points="0,0 -12,22 12,22" fill="#fff" stroke="${INK}" stroke-width="2"/>`+hatchTo(0,22,0,1,38)+ci(0,0,3.5));
+}
+function roller(x,y,dx=0,dy=1){
+  return grp(x,y,dx,dy, `<polygon points="0,0 -12,19 12,19" fill="#fff" stroke="${INK}" stroke-width="2"/>`+ci(-6,24,4.5)+ci(6,24,4.5)+hatchTo(0,29,0,1,44)+ci(0,0,3.5));
+}
+function spring(x1,y1,x2,y2,n=7,amp=7,lead=14){
+  const dx=x2-x1, dy=y2-y1, L=Math.hypot(dx,dy), ux=dx/L, uy=dy/L, px=-uy, py=ux;
+  const pts=[[x1,y1],[x1+ux*lead,y1+uy*lead]], span=L-2*lead;
+  for(let i=0;i<n*2;i++){ const t=(i+0.5)/(n*2), sg=(i%2?-1:1)*amp;
+    pts.push([x1+ux*(lead+span*t)+px*sg, y1+uy*(lead+span*t)+py*sg]); }
+  pts.push([x2-ux*lead,y2-uy*lead],[x2,y2]);
+  return `<polyline points="${pts.map(p=>r1(p[0])+','+r1(p[1])).join(' ')}" fill="none" stroke="${INK}" stroke-width="2"/>`;
+}
+function sMark(x,y){ return ci(x,y,5.5,'#fff',INK,1.6)+ln(x-5.5,y,x+5.5,y,INK,1.4)+ln(x,y-5.5,x,y+5.5,INK,1.4)+lab(x+12,y-7,'S',INK,'start',13); }
+
+/* =====================================================================
+   LABOR
+   ===================================================================== */
+const LAB = {
+  seil:   {name:'Seil / Kette',   sym:'α', min:0,  max:60, def:20, lbl:'Seilwinkel α zur Senkrechten'},
+  stab:   {name:'Zweigelenkstab', sym:'α', min:10, max:60, def:30, lbl:'Neigung α des Stabes zur Senkrechten'},
+  flaeche:{name:'Ebene Fläche',   sym:'α', min:0,  max:40, def:20, lbl:'Neigung α der Stützfläche'},
+  rolle:  {name:'Rolle / Walze',  sym:'α', min:0,  max:40, def:20, lbl:'Neigung α der Stützfläche'},
+  los:    {name:'Loslager',       sym:'α', min:0,  max:40, def:20, lbl:'Neigung α der Stützfläche des Lagers'},
+  fest:   {name:'Festlager',      sym:'γ', min:10, max:80, def:40, lbl:'Winkel γ der (unbekannten) Lagerkraft zur Waagerechten'}
+};
+const L = {key:'seil', ang:{}, reib:false, zug:false, g:false};
+Object.keys(LAB).forEach(k => L.ang[k]=LAB[k].def);
+
+function labBeam(){ return rc(-112,-12,174,8) + `<path d="M-112 -20 l7 6 l-7 6 l7 6 l-7 6 l7 6" fill="none" stroke="${INK}" stroke-width="1.6"/>`; }
+
+function scene(key,a,o){
+  const A=rad(a), s=Math.sin(A), c=Math.cos(A);
+  let real='', free='', S=null;
+  if(key==='seil'){
+    const P=[0,-10], d=[s,-c], An=[P[0]+d[0]*100,P[1]+d[1]*100];
+    const body=rc(-45,-10,90,50)+ci(P[0],P[1],4.5);
+    real=hatchTo(An[0],An[1],d[0],d[1],44)+ln(P[0],P[1],An[0],An[1],INK,2.5)+body;
+    free=body+WL(P[0]-d[0]*26,P[1]-d[1]*26,P[0]+d[0]*118,P[1]+d[1]*118)+arrow(P[0],P[1],P[0]+d[0]*88,P[1]+d[1]*88,RED,'F_S');
+    S=[0,15];
+  }
+  else if(key==='stab'){
+    const P=[0,-14], d=[s,-c], Q=[P[0]-d[0]*112,P[1]-d[1]*112];
+    const body=rc(-60,-30,120,16)+ci(P[0],P[1],4.5);
+    real=hatchTo(Q[0],Q[1]+5,0,1,80)+bar(Q[0],Q[1],P[0],P[1],6)+ci(Q[0],Q[1],4.5)+body;
+    const ar = o.zug ? arrow(P[0],P[1],P[0]-d[0]*88,P[1]-d[1]*88,RED,'F_St')
+                     : arrow(P[0]-d[0]*88,P[1]-d[1]*88,P[0],P[1],RED,'F_St');
+    free=body+WL(P[0]-d[0]*118,P[1]-d[1]*118,P[0]+d[0]*26,P[1]+d[1]*26)+ar;
+    S=[-32,-22];
+  }
+  else if(key==='flaeche' || key==='rolle'){
+    const C=[0,52], n=[-s,-c], u=[c,-s];
+    const tf=`translate(${C[0]} ${C[1]}) rotate(${-a})`;
+    const shape = key==='flaeche' ? rc(-50,-55,100,55) : ci(0,-34,34,BODY)+ci(0,-34,3,INK,INK,1);
+    const hat=`<g transform="${tf}">${hatchTo(0,0,0,1,230)}</g>`, blk=`<g transform="${tf}">${shape}</g>`;
+    real=hat+blk;
+    let ar=arrow(C[0]-n[0]*66,C[1]-n[1]*66,C[0],C[1],RED, key==='flaeche'?'F_N':'F_N');
+    if(o.reib && a>0) ar+=arrow(C[0],C[1],C[0]+u[0]*86,C[1]+u[1]*86,RED,'F_R',{off:-16});
+    const wl = key==='rolle' ? WL(C[0]-n[0]*26,C[1]-n[1]*26,C[0]+n[0]*108,C[1]+n[1]*108) : '';
+    free=blk+wl+ci(C[0],C[1],3.5,INK,INK,1)+ar;
+    S = key==='flaeche' ? [C[0]+n[0]*27.5,C[1]+n[1]*27.5] : [C[0]+n[0]*34,C[1]+n[1]*34];
+  }
+  else if(key==='los'){
+    const P=[62,-4], n=[-s,-c], g=[s,c];
+    const load=arrow(-44,-66,-44,-12,BLUE,'F');
+    real=roller(P[0],P[1],g[0],g[1])+labBeam()+ci(P[0],P[1],3.5,INK,INK,1)+load+lab(P[0]+10,P[1]-14,'B',INK,'start');
+    free=labBeam()+load+ci(P[0],P[1],3.5,INK,INK,1)+WL(P[0]-n[0]*80,P[1]-n[1]*80,P[0]+n[0]*50,P[1]+n[1]*50)
+        +arrow(P[0]-n[0]*66,P[1]-n[1]*66,P[0],P[1],RED,'F_B')+lab(P[0]+10,P[1]-14,'B',INK,'start');
+    S=[-25,-8];
+  }
+  else if(key==='fest'){
+    const P=[62,-4], Lg=80, cg=Math.cos(A), sg=Math.sin(A);
+    const load=arrow(-44,-66,-44,-12,BLUE,'F');
+    real=pin(P[0],P[1],0,1)+labBeam()+ci(P[0],P[1],3.5,INK,INK,1)+load+lab(P[0]+10,P[1]-14,'A',INK,'start');
+    free=labBeam()+load+ci(P[0],P[1],3.5,INK,INK,1)
+        +arrow(P[0]+Lg*cg,P[1]+Lg*sg,P[0],P[1],GRAY,'F_A',{dash:true,pos:0.15})
+        +arrow(P[0]+Lg*cg,P[1],P[0],P[1],RED,'F_Ax',{off:16})
+        +arrow(P[0],P[1]+Lg*sg,P[0],P[1],RED,'F_Ay',{off:-16})
+        +lab(P[0]+10,P[1]-14,'A',INK,'start');
+    S=[-25,-8];
+  }
+  return {real,free,S};
+}
+
+function infoFor(key,o){
+  const I={
+    seil:{b:'Seil, Kette, Riemen', k:'Zugkraft F_S', w:'in Seilrichtung', s:'immer vom Körper weg – ein Seil kann nur ziehen', n:1,
+          m:'Die Zugkraft ist an jeder Stelle des Seils gleich, auch bei Umlenkung.'},
+    stab:{b:'Zweigelenkstab (Pendelstütze)', k:'Stabkraft F_St (Zug oder Druck)', w:'Verbindungsgerade der beiden Gelenkpunkte', s:'Zug oder Druck – der Sinn wird angenommen', n:1,
+          m:'Nur das Stabende am Körper zählt: Die Kraft wirkt immer genau entlang der Geraden durch beide Gelenke.'},
+    los:{b:'Loslager (einwertig)', k:'eine Lagerkraft F_B', w:'senkrecht zur Stützfläche – bestimmt durch die Lage der Rollen, nicht durch den Balken', s:'drückt auf den Körper', n:1,
+          m:'Loslager können nur die Kraft senkrecht zur Stützfläche übertragen.'},
+    fest:{b:'Festlager (zweiwertig)', k:'zwei Komponenten F_Ax und F_Ay', w:'Richtung und Betrag der Lagerkraft F_A sind unbekannt – deshalb zerlegt man sie in zwei senkrecht aufeinander stehende Komponenten', s:'wird angenommen (ein negatives Ergebnis kehrt ihn um)', n:2,
+          m:'Festlager können Kräfte in beliebiger Richtung übertragen. Beim Freimachen zeichnet man immer zwei Komponenten.'}
+  };
+  if(key==='flaeche') return o.reib
+    ? {b:'Ebene Stützfläche – rau', k:'Normalkraft F_N und Reibkraft F_R', w:'F_N senkrecht, F_R parallel zur Fläche', s:'F_N drückt auf den Körper, F_R wirkt der drohenden Bewegung entgegen (hier: Abrutschen hangabwärts)', n:2,
+       m:'Raue Berührflächen übertragen Normal- und Tangentialkräfte (Reibung).'+(L.ang.flaeche===0?' <b>Bei α = 0° droht hier keine Bewegung – deshalb ist F<sub>R</sub> = 0 und wird nicht gezeichnet.</b> Erst eine Schubkraft oder eine Neigung ruft Reibung hervor.':'')}
+    : {b:'Ebene Stützfläche – glatt', k:'Normalkraft F_N', w:'senkrecht zur Fläche', s:'drückt auf den Körper', n:1,
+       m:'Ohne Reibung kann eine ebene Stützfläche nur die Kraft senkrecht zur Fläche übertragen.'};
+  if(key==='rolle') return o.reib
+    ? {b:'Gewölbte Stützfläche (Rolle) – mit Reibung', k:'Radialkraft F_N und Tangentialkraft F_R', w:'F_N durch Berührpunkt und Mittelpunkt, F_R tangential', s:'F_N drückt auf den Körper', n:2,
+       m:'Gewölbte Stützflächen übertragen Radialkräfte (z. B. Gewichtskräfte) und Tangentialkräfte (z. B. Reibungskräfte).'+(L.ang.rolle===0?' <b>Bei α = 0° droht keine Bewegung – F<sub>R</sub> = 0.</b>':'')}
+    : {b:'Gewölbte Stützfläche (Rolle) – reibungsfrei', k:'Radialkraft F_N', w:'durch Berührpunkt und Mittelpunkt', s:'drückt auf den Körper', n:1,
+       m:'Die Wirklinie der Radialkraft verläuft durch den Berührpunkt und den Mittelpunkt des Rollkörpers.'};
+  return I[key];
+}
+const unkTxt = n => n===1 ? '1 Unbekannte' : n+' Unbekannte';
+function subPlain(s){ return s.replace(/_(\w+)/g,(m,t)=>`<sub>${t}</sub>`); }
+
+function renderLab(){
+  const cfg=LAB[L.key], a=L.ang[L.key], sc=scene(L.key,a,L);
+  $('lAngL').textContent=cfg.lbl;
+  const sl=$('lAng'); sl.min=cfg.min; sl.max=cfg.max; sl.value=a;
+  $('lAngV').innerHTML=`<b>${cfg.sym} = ${a}°</b>`;
+  $('wReib').style.display = (L.key==='flaeche'||L.key==='rolle') ? 'flex' : 'none';
+  $('wZug').style.display = L.key==='stab' ? 'block' : 'none';
+  let g='';
+  if(L.g && sc.S){ const gl=(L.key==='flaeche'||L.key==='rolle')?42:55; g=sMark(sc.S[0],sc.S[1])+arrow(sc.S[0],sc.S[1],sc.S[0],sc.S[1]+gl,ORANGE,'G',{off:16}); }
+  $('lab').innerHTML =
+    lab(160,26,'Situation',MUTED,'middle',15)+lab(480,26,'Freigemachter Körper',MUTED,'middle',15)
+    +`<line x1="320" y1="40" x2="320" y2="325" stroke="#d8dee8" stroke-dasharray="5 5"/>`
+    +`<g transform="translate(160 175)">${sc.real}</g>`
+    +`<g transform="translate(480 175)">${sc.free}${g}</g>`;
+  const I=infoFor(L.key,L);
+  $('iH').innerHTML=I.b;
+  $('iT').innerHTML=`<dt>überträgt</dt><dd>${subPlain(I.k)}</dd><dt>Wirklinie</dt><dd>${I.w}</dd><dt>Richtungssinn</dt><dd>${I.s}</dd><dt>Wertigkeit</dt><dd><b>${unkTxt(I.n)}</b></dd>`;
+  $('iM').innerHTML='<b>Merke:</b> '+I.m;
+  document.querySelectorAll('#lK button').forEach(b=>b.classList.toggle('on',b.dataset.k===L.key));
+  document.querySelectorAll('#lZ button').forEach(b=>b.classList.toggle('on',(b.dataset.z==='zug')===L.zug));
+}
+(function initLab(){
+  const K=$('lK');
+  Object.keys(LAB).forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.dataset.k=k; b.textContent=LAB[k].name;
+    b.onclick=()=>{ L.key=k; renderLab(); }; K.appendChild(b); });
+  const Z=$('lZ');
+  [['druck','Druck (Stab drückt)'],['zug','Zug (Stab zieht)']].forEach(([z,t])=>{ const b=document.createElement('button'); b.type='button'; b.dataset.z=z; b.textContent=t;
+    b.onclick=()=>{ L.zug=(z==='zug'); renderLab(); }; Z.appendChild(b); });
+  $('lAng').oninput=e=>{ L.ang[L.key]=+e.target.value; renderLab(); };
+  $('cReib').onchange=e=>{ L.reib=e.target.checked; renderLab(); };
+  $('cG').onchange=e=>{ L.g=e.target.checked; renderLab(); };
+  $('lRes').onclick=()=>{ L.key='seil'; L.reib=false; L.zug=false; L.g=false; $('cReib').checked=false; $('cG').checked=false;
+    Object.keys(LAB).forEach(k=>L.ang[k]=LAB[k].def); renderLab(); };
+  renderLab();
+})();
+
+/* =====================================================================
+   AUFTRÄGE
+   ===================================================================== */
+const TASKS=[];
+const PT_OPTS=[
+  ['','– bitte wählen –'],
+  ['none','keine Reaktionskraft'],
+  ['normal','eine Kraft senkrecht zur Berührfläche (Normal-/Radialkraft)'],
+  ['normalR','Normalkraft + Reibkraft (raue Fläche)'],
+  ['fest','zwei Komponenten Fx und Fy (Festlager / Gelenk)'],
+  ['seil','Zugkraft in Seilrichtung (Seil, Kette, Zugfeder)'],
+  ['stab','Kraft in Stabrichtung (Zug oder Druck)']
+];
+
+/* 1 – Träger auf zwei Lagern */
+TASKS.push({
+  title:'Träger auf zwei Lagern',
+  text:'Der Träger liegt links auf dem Lager A und rechts auf dem Lager B. In der Trägermitte greift die Kraft F an. Machen Sie den Träger frei.',
+  center:[180,123], S:null, G:false, unk:3,
+  sys:()=>pin(60,128)+roller(300,128), body:()=>rc(40,118,280,10), top:()=>'', sysTop:()=>'',
+  loads:()=>arrow(150,68,180,118,BLUE,'F'),
+  decoys:[{at:[180,118],msg:'Hier greift die <b>gegebene Kraft F</b> an. Sie bleibt stehen – hier wird nichts weggeschnitten.'}],
+  pts:[
+    {id:'A',what:'linkes Lager', at:[60,128], lab:[14,-16], correct:'fest'},
+    {id:'B',what:'rechtes Lager',at:[300,128],lab:[-14,-16], correct:'normal', n:[0,-1]}
+  ],
+  hint:'Zeichnen Sie den Träger <b>ohne Lager</b>. Welche Lagerarten sind dargestellt? Das Festlager nimmt Kräfte in beide Richtungen auf (2 Komponenten), das Loslager nur die Kraft senkrecht zur Stützfläche (1 Kraft).'
+});
+
+/* 2 – Wandausleger mit Seil */
+(()=>{ const W=[50,28], T=[300,105], r=unit(T[0],T[1],W[0],W[1]);
+TASKS.push({
+  title:'Wandausleger mit Seil',
+  text:'Ein Ausleger ist links gelenkig an der Wand befestigt. Am rechten Ende trägt er die Last F und wird von einem Seil gehalten. Der Schwerpunkt S des Auslegers ist eingezeichnet.',
+  center:[178,105], S:[178,105], G:true, unk:3,
+  sys:()=>hatchTo(50,120,-1,0,200)+ln(T[0],T[1],W[0],W[1],INK,2.5)+ci(W[0],W[1],3.5,INK),
+  body:()=>rc(56,100,244,10), top:()=>ci(56,105,5), sysTop:()=>'',
+  loads:()=>arrow(300,110,300,170,BLUE,'F'),
+  decoys:[{at:W,msg:'Das ist die Befestigung des <b>Seils</b> an der Wand – sie berührt den Ausleger nicht. Schneiden Sie das Seil selbst durch.'}],
+  pts:[
+    {id:'A',what:'Anschluss an der Wand',at:[56,105],lab:[16,-12],correct:'fest'},
+    {id:'B',what:'Seil am rechten Ende', at:T,       lab:[14,-14],correct:'seil', r, cut:[T,[T[0]+(W[0]-T[0])*0.85,T[1]+(W[1]-T[1])*0.85]]}
+  ],
+  hint:'Das Seil kann nur <b>ziehen</b> – der Pfeil zeigt vom Körper weg, in Seilrichtung. Die Wand hält den Ausleger gelenkig: Richtung unbekannt, also zwei Komponenten. Der Schwerpunkt S ist eingezeichnet – denken Sie an <b>G</b>.'
+}); })();
+
+/* 3 – Leiter */
+TASKS.push({
+  title:'Leiter an der Wand',
+  text:'Eine Leiter lehnt an einer glatten Wand und steht auf rauem Boden. Sie droht am Fußpunkt A nach links (von der Wand weg) zu rutschen. S ist der Schwerpunkt der Leiter.',
+  center:[245,117], S:[245,117.5], G:true, unk:3,
+  sys:()=>hatchTo(180,205,0,1,340)+hatchTo(300,120,1,0,200),
+  body:()=>bar(190,205,300,30,9), top:()=>'', sysTop:()=>'', loads:()=>'',
+  pts:[
+    {id:'A',what:'Fußpunkt am Boden',at:[190,205],lab:[-18,-12],correct:'normalR', n:[0,-1], t:[1,0]},
+    {id:'B',what:'Anlehnpunkt an der Wand',at:[300,30],lab:[-18,-8],correct:'normal', n:[-1,0]}
+  ],
+  hint:'<b>Glatte</b> Wand: nur eine Kraft senkrecht zur Wand. <b>Rauer</b> Boden: Normalkraft <i>und</i> Reibkraft. Die Reibkraft wirkt der drohenden Bewegung entgegen – wohin würde der Fuß rutschen?'
+});
+
+/* 4 – Walze an der Schrägen */
+(()=>{ const a=rad(30), s=Math.sin(a), c=Math.cos(a), n=[-s,-c], u=[c,-s], rr=38;
+  const C=[150,215-130*Math.tan(a)], M=[C[0]+n[0]*rr,C[1]+n[1]*rr], An=[M[0]+u[0]*130,M[1]+u[1]*130];
+TASKS.push({
+  title:'Walze auf der schiefen Ebene',
+  text:'Eine Walze liegt auf einer glatten schiefen Ebene. Ein Seil, das parallel zur Ebene an der Walzenachse angreift, hält sie fest. S ist der Schwerpunkt der Walze.',
+  center:M, S:M, G:true, unk:2, gOff:16,
+  sys:()=>hatchTo(180,215-160*Math.tan(a),s,c,370)+hatchTo(An[0],An[1],u[0],u[1],40),
+  body:()=>ci(M[0],M[1],rr,BODY), top:()=>'',
+  sysTop:()=>ln(M[0],M[1],An[0],An[1],INK,2.5)+ci(M[0],M[1],4,'#fff'),
+  loads:()=>'',
+  decoys:[{at:An,msg:'Das ist die Befestigung des <b>Seils</b> – sie berührt die Walze nicht. Schneiden Sie das Seil selbst durch.'}],
+  pts:[
+    {id:'A',what:'Berührstelle auf der Ebene',at:C,lab:[-6,24],correct:'normal',n},
+    {id:'B',what:'Seil an der Walzenachse',  at:M,lab:[-22,-2],correct:'seil',r:u,lo:-16, cut:[M,[M[0]+u[0]*110,M[1]+u[1]*110]]}
+  ],
+  hint:'Die Ebene ist <b>glatt</b>: nur eine Kraft senkrecht zur Fläche – bei einer Walze verläuft sie durch Berührpunkt und Mittelpunkt. Das Seil zieht parallel zur Ebene nach oben. S ist eingezeichnet → <b>G</b>.'
+}); })();
+
+/* 5 – Hebel mit Zugfeder */
+TASKS.push({
+  title:'Hebel mit Zugfeder',
+  text:'Ein Hebel ist links mit einem Bolzen gelenkig an der Wand gelagert. Eine Zugfeder hält ihn oben, am rechten Ende greift die Kraft F an. Das Hebelgewicht ist vernachlässigbar.',
+  center:[181,105], S:null, G:false, unk:3,
+  sys:()=>hatchTo(50,118,-1,0,190)+spring(220,100,220,34)+hatchTo(220,34,0,-1,56),
+  body:()=>rc(56,100,250,10), top:()=>ci(56,105,5), sysTop:()=>'',
+  loads:()=>arrow(306,110,306,170,BLUE,'F'),
+  decoys:[{at:[306,112],msg:'Hier greift die <b>gegebene Kraft F</b> an. Sie bleibt stehen – hier wird nichts weggeschnitten.'},{at:[220,34],msg:'Das ist die Befestigung der <b>Feder</b> an der Decke – sie berührt den Hebel nicht. Schneiden Sie die Feder selbst durch.'}],
+  pts:[
+    {id:'A',what:'Anschluss an der Wand',at:[56,105],lab:[16,-12],correct:'fest'},
+    {id:'B',what:'Zugfeder',             at:[220,100],lab:[16,-2],correct:'seil', r:[0,-1], cut:[[220,100],[220,46]]}
+  ],
+  hint:'Die Zugfeder wirkt wie ein Seil: Kraft <b>in Federrichtung</b>, vom Körper weg. Das Wandlager ist ein Gelenk (zwei Komponenten). Kein S eingezeichnet → Gewicht vernachlässigbar.'
+});
+
+/* 6 – Getriebewelle */
+TASKS.push({
+  title:'Getriebewelle',
+  text:'Eine Welle mit Zahnrad ist im Loslager A und im Festlager B gelagert. Am Zahnrad greift die Zahnkraft F schräg an. Das Wellengewicht ist vernachlässigbar. Machen Sie die Welle frei.',
+  center:[180,117], S:null, G:false, unk:3,
+  sys:()=>roller(62,122)+pin(300,122),
+  body:()=>rc(137,88,26,58,'#c9d8ee')+rc(40,112,280,10), top:()=>'', sysTop:()=>'',
+  loads:()=>arrow(120,38,150,88,BLUE,'F'),
+  pts:[
+    {id:'A',what:'linkes Lager', at:[62,122], lab:[14,-16],correct:'normal',n:[0,-1]},
+    {id:'B',what:'rechtes Lager',at:[300,122],lab:[-14,-16], correct:'fest'}
+  ],
+  decoys:[{at:[150,88],msg:'Hier greift die <b>gegebene Zahnkraft F</b> an. Sie bleibt als gegebene Kraft stehen – hier wird nichts weggeschnitten. Das Zahnrad gehört zur Welle.'}],
+  hint:'Nur dort, wo ein <b>anderes Bauteil berührt</b> (Lager), wird eine Reaktionskraft eingezeichnet. Die Zahnkraft F ist eine gegebene Belastung.'
+});
+
+/* 7 – Klappe mit Stütze */
+(()=>{ const Q=[150,200], B=[236,110], d=unit(Q[0],Q[1],B[0],B[1]);
+TASKS.push({
+  title:'Klappe mit Stützstab',
+  text:'Eine Klappe ist links an der Wand angelenkt und wird von einem Stützstab mit Gelenken an beiden Enden gehalten. S ist der Schwerpunkt der Klappe.',
+  center:[176,105], S:[176,105], G:true, unk:3,
+  sys:()=>hatchTo(50,120,-1,0,180)+hatchTo(Q[0],Q[1]+7,0,1,70)+bar(Q[0],Q[1],B[0],B[1],6)+ci(Q[0],Q[1],4.5),
+  body:()=>rc(56,100,240,10), top:()=>ci(56,105,5)+ci(B[0],B[1],4.5), sysTop:()=>'', loads:()=>'',
+  decoys:[{at:Q,msg:'Das ist das <b>untere Gelenk</b> des Stabes – es berührt die Klappe nicht. Gesucht ist, wo der Stab die Klappe berührt (oder schneiden Sie den Stab durch).'}],
+  pts:[
+    {id:'A',what:'Anschluss an der Wand',at:[56,105],lab:[16,-12],correct:'fest'},
+    {id:'B',what:'Stützstab',            at:B,       lab:[16,4],  correct:'stab', d, cut:[B,[B[0]+(Q[0]-B[0])*0.8,B[1]+(Q[1]-B[1])*0.8]]}
+  ],
+  hint:'Ein Stab mit zwei Gelenken ist ein <b>Zweigelenkstab</b>: Die Kraft wirkt genau entlang der Verbindungsgeraden seiner Gelenke (Zug oder Druck – den Sinn dürfen Sie annehmen). S ist eingezeichnet → <b>G</b>.'
+}); })();
+
+/* 8 – Lose Rolle */
+TASKS.push({
+  title:'Rolle mit Last',
+  text:'Ein Seil ist an zwei Deckenpunkten befestigt und läuft unter einer Rolle durch. An der Rolle hängt die Last F. Machen Sie die Rolle mit Haken frei (Rollengewicht vernachlässigbar).',
+  center:[180,140], S:null, G:false, unk:1,
+  cntWhy:'Beide Stränge gehören zum <b>selben Seil</b> – die Seilkraft F<sub>S</sub> ist überall gleich groß. Es gibt also nur <b>eine</b> Unbekannte.',
+  sys:()=>hatchTo(180,22,0,-1,150)+ln(150,22,150,140,INK,2.5)+ln(210,22,210,140,INK,2.5),
+  body:()=>ci(180,140,30,BODY)+ln(180,170,180,198,INK,4), top:()=>ci(180,140,3,INK)+ci(180,202,4.5),
+  sysTop:()=>`<path d="M150 140 A30 30 0 0 0 210 140" fill="none" stroke="${INK}" stroke-width="3.6"/>`,
+  loads:()=>arrow(180,207,180,258,BLUE,'F'),
+  pts:[
+    {id:'A',what:'linker Seilstrang', at:[150,140],lab:[-20,4],correct:'seil', r:[0,-1], lbl:'F_S', cut:[[150,140],[150,30]]},
+    {id:'B',what:'rechter Seilstrang',at:[210,140],lab:[20,4], correct:'seil', r:[0,-1], lbl:'F_S', cut:[[210,140],[210,30]]}
+  ],
+  decoys:[{at:[180,204],msg:'Am Haken hängt die <b>gegebene Last F</b> – sie bleibt als gegebene Kraft stehen, hier wird nichts weggeschnitten.'},
+          {at:[180,170],r:12,msg:'Das Seilstück, das um die Rolle läuft, wird <b>mit</b> der Rolle freigemacht. Schneiden Sie die Seilstränge, die zur Decke führen.'}],
+  hint:'Schneiden Sie <b>beide</b> Seilstränge durch: Jeder überträgt eine Zugkraft in Seilrichtung (hier senkrecht nach oben). Es ist <b>ein</b> Seil – die Zugkraft ist in beiden Strängen gleich groß (F<sub>S</sub>), auch bei Umlenkung. Die Last F ist gegeben.'
+});
+
+/* ---------- Zustand & Hilfsfunktionen ---------- */
+const ST=[];
+/* flip[0] = erster Pfeil (F, F_N bzw. F_x), flip[1] = zweiter Pfeil (F_R bzw. F_y) – jeder Pfeil lässt sich einzeln drehen */
+const rnd = () => Math.random()<0.5;
+const rndFlip = type => type==='normalR' ? [rnd(),rnd()] : (type==='normal'||type==='seil') ? [rnd(),false] : [false,false];
+const TWO = type => type==='fest' || type==='normalR';
+function initTask(i){ ST[i]={pts:TASKS[i].pts.map(()=>({type:'',flip:[false,false]})),found:TASKS[i].pts.map(()=>false),phase:1,miss:null,pmsg:null,helped:false,g:'',cnt:'',solved:false,sol:false}; }
+TASKS.forEach((_,i)=>initTask(i));
+
+/* Standardrichtungen, falls ein Schüler an einer Stelle einen "falschen" Typ wählt */
+function geo(p,T){
+  const [x,y]=p.at, cx=T.center[0]-x, cy=T.center[1]-y, Ld=Math.hypot(cx,cy);
+  const toC = Ld<1 ? [0,-1] : [cx/Ld,cy/Ld];
+  return {n:p.n||[0,-1], t:p.t||[1,0], r:p.r||[-toC[0],-toC[1]], d:p.d||toC};
+}
+function reaction(p0,st,T){
+  const p=Object.assign({},p0,geo(p0,T));
+  const [x,y]=p.at, L0=56, col=RED, id=p.id, f=st.flip[0], f2=st.flip[1], nm=p.lbl||('F_'+id);
+  const push=(vx,vy,lb,o)=>arrow(x-vx*L0,y-vy*L0,x,y,col,lb,o);     // Spitze am Berührpunkt
+  const pull=(vx,vy,lb,o)=>arrow(x,y,x+vx*L0,y+vy*L0,col,lb,o);     // Schaft am Berührpunkt
+  switch(st.type){
+    case 'normal': { const [nx,ny]=p.n; return f ? pull(-nx,-ny,nm) : push(nx,ny,nm); }
+    case 'normalR':{ const [nx,ny]=p.n, [tx,ty]=p.t, sx=f2?-tx:tx, sy=f2?-ty:ty;
+      const ro={off:Math.sign((-sy)*nx+sx*ny)*16||16};            // F_R-Beschriftung auf die Körperseite
+      return (f ? pull(-nx,-ny,nm+'N') : push(nx,ny,nm+'N')) + pull(sx,sy,nm+'R',ro); }
+    case 'seil':   { const [rx,ry]=p.r, lo=p.lo?{off:p.lo}:{}; return f ? push(-rx,-ry,nm,lo) : pull(rx,ry,nm,lo); }
+    case 'stab':   { const [dx,dy]=p.d; return f ? pull(-dx,-dy,nm) : push(dx,dy,nm); }
+    case 'fest':   { const sx=Math.sign(T.center[0]-x)||1;       // sx: Richtung zum Körper hin
+      const ax=f ? arrow(x,y,x-sx*L0,y,col,'') : arrow(x-sx*L0,y,x,y,col,'');
+      const ay=f2 ? arrow(x,y,x,y+L0,col,'')   : arrow(x,y+L0,x,y,col,'');
+      return ax+ay+lab(x-sx*L0*0.55,y-11,nm+'x',col)+lab(x-sx*24,y+L0*0.62,nm+'y',col,sx>0?'end':'start'); }
+    default: return '';
+  }
+}
+function ptMark(p,found){
+  return (found ? ci(p.at[0],p.at[1],9,'rgba(30,142,62,.18)','#1e8e3e',2) : '')
+       + ci(p.at[0],p.at[1],3.5,INK,INK,1)+lab(p.at[0]+p.lab[0],p.at[1]+p.lab[1]+5,p.id,found?'#1e8e3e':INK,'middle',15);
+}
+function sysSVG(i){
+  const T=TASKS[i], S=ST[i]; let s=`<rect width="360" height="270" fill="transparent"/>`+T.sys()+T.body()+T.top()+T.sysTop()+T.loads();
+  if(T.S) s+=sMark(T.S[0],T.S[1]);
+  T.pts.forEach((p,k)=>{ if(S.found[k]) s+=ptMark(p,S.phase===1); });
+  if(S.miss){ const [x,y]=S.miss; s+=ln(x-7,y-7,x+7,y+7,RED,3)+ln(x-7,y+7,x+7,y-7,RED,3); }
+  return s;
+}
+function freeSVG(i){
+  const T=TASKS[i], S=ST[i]; let s=T.body()+T.top()+T.loads();
+  T.pts.forEach((p,k)=>{ if(S.found[k]) s+=ptMark(p,false); });
+  if(T.S) s+=sMark(T.S[0],T.S[1]);
+  if(S.phase===2) T.pts.forEach((p,k)=>{ s+=reaction(p,S.pts[k],T); });
+  if(S.g==='ja'){ const g=T.S||T.center; s+=arrow(g[0],g[1],g[0],g[1]+60,ORANGE,'G',T.gOff?{off:T.gOff}:{}); }
+  return s;
+}
+
+/* ---------- Rückmeldungen ---------- */
+const MSG={
+  'fest>normal':'Zu wenig: Hier sitzt ein Festlager bzw. Gelenk – die Richtung der Kraft ist unbekannt, deshalb sind es <b>zwei Komponenten</b>.',
+  'fest>normalR':'Zu wenig: Ein Festlager bzw. Gelenk überträgt Kräfte in beliebiger Richtung → zwei Komponenten.',
+  'fest>seil':'Hier hängt kein Seil, sondern ein Festlager bzw. Gelenk → zwei Komponenten.',
+  'fest>stab':'Hier ist kein Zweigelenkstab, sondern ein Festlager bzw. Gelenk → zwei Komponenten.',
+  'normal>fest':'Zu viel: Ein Loslager bzw. eine glatte Fläche ist <b>einwertig</b> – es gibt nur eine Kraft senkrecht zur Stützfläche.',
+  'normal>normalR':'Keine Reibung: Die Stelle ist glatt bzw. rollt – es wirkt nur die Kraft senkrecht zur Fläche.',
+  'normal>seil':'Hier zieht kein Seil – eine Stützfläche kann nur drücken, und zwar senkrecht zur Fläche.',
+  'normal>stab':'Hier ist kein Stab – eine Stützfläche überträgt nur die Kraft senkrecht zur Fläche.',
+  'normalR>normal':'Die Fläche ist <b>rau</b>: Zusätzlich zur Normalkraft wirkt eine Reibkraft parallel zur Fläche.',
+  'normalR>fest':'Zwei Kräfte sind richtig, aber nicht als Lagerkomponenten: Normalkraft senkrecht zur Fläche und Reibkraft parallel dazu.',
+  'seil>stab':'Ein Seil (Zugfeder) kann nur ziehen – das ist kein Stab, der auch drücken kann.',
+  'seil>normal':'Ein Seil drückt nicht senkrecht auf eine Fläche, es zieht in Seilrichtung.',
+  'seil>fest':'Ein Seil überträgt nur <b>eine</b> Zugkraft in Seilrichtung – keine zwei Komponenten.',
+  'stab>seil':'Ein Zweigelenkstab kann Zug <i>und</i> Druck übertragen – hier ist der Stab gemeint.',
+  'stab>fest':'Ein Zweigelenkstab überträgt nur <b>eine</b> Kraft – genau in Stabrichtung.',
+  'stab>normal':'Die Kraft eines Zweigelenkstabes steht nicht senkrecht zu irgendeiner Fläche, sondern liegt in Stabrichtung.'
+};
+const OK={none:'Richtig: Hier wird nichts weggeschnitten.', normal:'Richtig: eine Kraft senkrecht zur Berührfläche, sie drückt auf den Körper.',
+  normalR:'Richtig: Normalkraft senkrecht und Reibkraft parallel zur Fläche.', fest:'Richtig: zwei Komponenten (Richtungssinn frei wählbar).',
+  seil:'Richtig: Zugkraft in Seilrichtung, vom Körper weg.', stab:'Richtig: Kraft in Stabrichtung (Zug oder Druck).'};
+const SENSE={normal:'Die Art stimmt, aber der Richtungssinn nicht: Eine Stützfläche kann nur <b>drücken</b> – der Pfeil zeigt zum Körper hin.',
+  normalN:'Die Art stimmt, aber der Richtungssinn der <b>Normalkraft</b> nicht: Sie drückt auf den Körper – der Pfeil zeigt zum Körper hin.',
+  normalR:'Die Art stimmt, aber der Richtungssinn der <b>Reibkraft</b> nicht: Sie wirkt der drohenden Bewegung entgegen – wohin würde der Körper rutschen?',
+  normalNR:'Die Art stimmt, aber beide Richtungen nicht: Die Normalkraft drückt auf den Körper, die Reibkraft wirkt der drohenden Bewegung entgegen.',
+  seil:'Die Art stimmt, aber der Richtungssinn nicht: Ein Seil kann nur <b>ziehen</b> – der Pfeil zeigt vom Körper weg.'};
+/* Rückmeldung zum Richtungssinn; beim Festlager und beim Stab ist er frei wählbar */
+function senseMsg(c,fl){
+  if(c==='normal'||c==='seil') return fl[0] ? SENSE[c] : '';
+  if(c==='normalR') return fl[0]&&fl[1] ? SENSE.normalNR : fl[0] ? SENSE.normalN : fl[1] ? SENSE.normalR : '';
+  return '';
+}
+
+function fbPt(p,st){
+  if(!st.type) return {ok:false,msg:'Noch nichts gewählt.'};
+  const c=p.correct, t=st.type;
+  if(t!==c){
+    if(t==='none') return {ok:false,msg:'Hier berührt ein anderes Bauteil den Körper – es muss durch eine Reaktionskraft ersetzt werden.'};
+    if(c==='none') return {ok:false,msg:p.why||'Hier berührt kein Bauteil – keine Reaktionskraft.'};
+    return {ok:false,msg:MSG[c+'>'+t]||'Überlegen Sie: Welches Bauteil berührt hier? Welche Kräfte kann es übertragen?'};
+  }
+  const sm=senseMsg(c,st.flip); if(sm) return {ok:false,msg:sm};
+  return {ok:true,msg:(c==='none'&&p.why)?('Richtig: '+p.why):OK[c]};
+}
+function fbG(T,S){
+  if(!S.g) return {ok:false,msg:'Noch nichts gewählt.'};
+  const c=T.G?'ja':'nein';
+  if(S.g===c) return {ok:true,msg:T.G?'Richtig: S ist eingezeichnet – die Gewichtskraft G greift im Schwerpunkt an.':'Richtig: Ohne Schwerpunktangabe ist das Gewicht vernachlässigbar.'};
+  return {ok:false,msg:T.G?'Der Schwerpunkt S ist eingezeichnet – die Gewichtskraft G muss berücksichtigt werden.':'Es ist kein Schwerpunkt angegeben – das Gewicht ist vernachlässigbar.'};
+}
+function fbCnt(T,S){
+  const v=parseInt(String(S.cnt).trim(),10);
+  if(isNaN(v)) return {ok:false,msg:'Noch keine Zahl eingegeben.'};
+  if(v===T.unk) return {ok:true,msg:T.cntWhy ? 'Richtig: '+T.cntWhy : `Richtig: ${T.unk} Unbekannte – die Gewichtskraft und gegebene Kräfte zählen nicht mit.`};
+  if(T.cntWhy && v===2) return {ok:false,msg:T.cntWhy};
+  return {ok:false,msg:'Zählen Sie nur die Reaktionskomponenten: Festlager/Gelenk 2, Loslager, Seil, Stab, glatte Fläche je 1, raue Fläche 2.'};
+}
+
+/* ---------- Schritt 1: Berührstellen anklicken ---------- */
+const TOL=22, TOLSEG=12;
+function dSeg(x,y,A,B){
+  const vx=B[0]-A[0], vy=B[1]-A[1], L2=vx*vx+vy*vy;
+  const t=Math.max(0,Math.min(1,((x-A[0])*vx+(y-A[1])*vy)/L2));
+  return Math.hypot(x-A[0]-t*vx, y-A[1]-t*vy);
+}
+function setP(i,kind,msg){ ST[i].pmsg=msg?{kind,msg}:null; drawP(i); }
+function drawP(i){ const e=$('pm'+i), m=ST[i].pmsg; if(!e) return;
+  e.className='pmsg'+(m?' '+m.kind:''); e.innerHTML=m?m.msg:''; }
+function pick(i,x,y){
+  const T=TASKS[i], S=ST[i]; if(S.phase!==1) return;
+  let best=-1, bd=1e9;
+  T.pts.forEach((p,k)=>{
+    let d=Math.hypot(x-p.at[0],y-p.at[1]);
+    if(p.cut) d=Math.min(d, dSeg(x,y,p.cut[0],p.cut[1])*TOL/TOLSEG);
+    if(d<=TOL && d<bd){ bd=d; best=k; }
+  });
+  if(best>=0){
+    const p=T.pts[best]; S.miss=null;
+    if(S.found[best]) setP(i,'info',`Stelle ${p.id} haben Sie bereits gefunden.`);
+    else { S.found[best]=true; setP(i,'ok',`✓ Berührstelle gefunden: <b>Stelle ${p.id}</b> – ${p.what}.`); }
+    syncTask(i); return;
+  }
+  S.miss=[x,y];
+  const dec=(T.decoys||[]).find(d=>Math.hypot(x-d.at[0],y-d.at[1])<=(d.r||16));
+  if(dec) setP(i,'bad','✗ '+dec.msg);
+  else if(T.S && Math.hypot(x-T.S[0],y-T.S[1])<=16) setP(i,'bad','✗ Das ist der <b>Schwerpunkt S</b> – hier greift die Gewichtskraft G an. Das ist keine Berührstelle.');
+  else setP(i,'bad','✗ Hier berührt kein anderes Bauteil den Körper.');
+  syncTask(i);
+}
+function confirmFound(i){
+  const S=ST[i];
+  if(S.found.every(Boolean)){
+    S.phase=2; S.miss=null;
+    setP(i,'ok','✓ Alle Berührstellen gefunden. Jetzt <b>Schritt 2</b>: Ersetzen Sie jede Stelle durch ihre Reaktionskraft.');
+    syncTask(i);
+  } else {
+    setP(i,'bad','✗ Es fehlen noch Berührstellen. Gehen Sie den Umriss des Körpers noch einmal ab: Wo berührt ein Lager, eine Wand, der Boden, ein Seil, ein Stab oder eine Feder?');
+  }
+}
+function hint1(i){
+  const T=TASKS[i], S=ST[i], k=S.found.indexOf(false);
+  if(k<0){ setP(i,'info','💡 Tipp: Gehen Sie den Umriss des Körpers ab: Wo berührt ein Lager, eine Wand, der Boden, ein Seil, ein Stab oder eine Feder? Seile, Federn und Stäbe dürfen Sie an beliebiger Stelle durchschneiden.'); return; }
+  S.found[k]=true; S.helped=true; S.miss=null;
+  setP(i,'info',`💡 Aufgedeckt: <b>Stelle ${T.pts[k].id}</b> – ${T.pts[k].what}. Mit aufgedeckter Stelle zählt die Aufgabe erst nach „↺ Neu“.`);
+  syncTask(i);
+}
+
+/* ---------- Aufbau der Aufgaben ---------- */
+function buildTasks(){
+  const host=$('tasks'); host.innerHTML='';
+  TASKS.forEach((T,i)=>{
+    const rows = T.pts.map((p,k)=>`
+      <div class="row">
+        <div class="rl">Stelle ${p.id}<small>${p.what}</small></div>
+        <select data-t="${i}" data-p="${k}" aria-label="Reaktionskraft an Stelle ${p.id}">${PT_OPTS.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select>
+        <span class="flips" id="fl-${i}-${k}"></span>
+        <div class="rmsg" id="m-${i}-${k}"></div>
+      </div>`).join('');
+    const d=document.createElement('div'); d.className='task'; d.id='task'+i;
+    d.innerHTML = `
+      <div class="q"><b>Aufgabe ${i+1} – ${T.title}.</b> ${T.text}</div>
+      <div class="two">
+        <div><p class="cap" id="tc${i}"></p><svg viewBox="0 0 360 270" id="ts${i}" class="pick" data-t="${i}" role="img" aria-label="System – Berührstellen anklicken"></svg>
+          <div class="pmsg" id="pm${i}"></div></div>
+        <div><p class="cap">Ihr freigemachter Körper</p><svg viewBox="0 0 360 270" id="tf${i}" role="img" aria-label="Freigemachter Körper"></svg></div>
+      </div>
+      <div class="step" id="st1-${i}"><b>Schritt 1 – Berührstellen finden:</b> Klicken Sie im Systembild auf <b>jede</b> Stelle, an der ein anderes Bauteil den Körper berührt.
+        Seile, Federn und Stäbe dürfen Sie an beliebiger Stelle durchschneiden. Wenn Sie meinen, alle gefunden zu haben, bestätigen Sie.</div>
+      <div id="st2-${i}" style="display:none">
+        <div class="step"><b>Schritt 2 – Reaktionskräfte eintragen:</b> Wählen Sie für jede Stelle die passende Kraft.</div>
+        ${rows}
+        <div class="row">
+          <div class="rl">Gewicht<small>Schwerpunkt S?</small></div>
+          <select data-t="${i}" data-g="1" aria-label="Gewichtskraft"><option value="">– bitte wählen –</option><option value="ja">ja – G im Schwerpunkt eintragen</option><option value="nein">nein – Gewicht vernachlässigbar</option></select>
+          <div class="rmsg" id="m-${i}-g"></div>
+        </div>
+        <div class="row">
+          <div class="rl">Unbekannte<small>Anzahl</small></div>
+          <input type="text" inputmode="numeric" maxlength="2" data-t="${i}" data-c="1" aria-label="Anzahl der Unbekannten"> <span class="small">Reaktionskomponenten am freigemachten Körper</span>
+          <div class="rmsg" id="m-${i}-c"></div>
+        </div>
+      </div>
+      <div class="btns">
+        <button type="button" class="gbtn" data-act="main" data-t="${i}" id="mb${i}"></button>
+        <button type="button" class="hbtn" data-act="hint" data-t="${i}">💡 Hinweis</button>
+        <button type="button" class="reset" data-act="sol" data-t="${i}">Lösung zeigen</button>
+        <button type="button" class="reset" data-act="new" data-t="${i}">↺ Neu</button>
+      </div>
+      <div class="hint" id="th${i}"><b>Hinweis:</b> ${T.hint}</div>
+      <div class="tfb" id="tfb${i}"></div>`;
+    host.appendChild(d);
+    syncTask(i);
+  });
+}
+function setMsg(id,r){ const e=$(id); if(!e) return; e.className='rmsg'+(r?(r.ok?' ok':' bad'):''); e.innerHTML=r?r.msg:''; }
+/* Ein Richtungsknopf pro Pfeil: zwei beim Festlager (F_x, F_y) und bei der rauen Fläche (F_N, F_R) */
+function flipButtons(i,k){
+  const host=$(`fl-${i}-${k}`), p=TASKS[i].pts[k], type=ST[i].pts[k].type;
+  if(host.dataset.type===type) return;           // nur neu aufbauen, wenn sich die Art geändert hat
+  host.dataset.type=type;
+  const nm=p.lbl||('F_'+p.id), btn=(j,txt,dis)=>`<button type="button" class="flip" data-t="${i}" data-p="${k}" data-j="${j}"${dis?' disabled':''}>⇄ ${txt}</button>`;
+  host.innerHTML = type==='fest'    ? btn(0,subPlain(nm+'x'))+' '+btn(1,subPlain(nm+'y'))
+                 : type==='normalR' ? btn(0,subPlain(nm+'N'))+' '+btn(1,subPlain(nm+'R'))
+                 : btn(0,'Richtung',!type||type==='none');
+}
+function syncTask(i){
+  const S=ST[i], el=$('task'+i), p1=(S.phase===1);
+  el.querySelectorAll('select[data-p]').forEach(sel=>{ const k=+sel.dataset.p; sel.value=S.pts[k].type; flipButtons(i,k); });
+  el.querySelector('select[data-g]').value=S.g;
+  el.querySelector('input[data-c]').value=S.cnt;
+  $('st1-'+i).style.display = p1 ? 'block' : 'none';
+  $('st2-'+i).style.display = p1 ? 'none' : 'block';
+  $('mb'+i).textContent = p1 ? 'Ich habe alle Berührstellen gefunden' : 'Prüfen';
+  $('tc'+i).textContent = p1 ? 'System – klicken Sie auf die Berührstellen' : 'System';
+  $('ts'+i).classList.toggle('active',p1);
+  $('ts'+i).innerHTML=sysSVG(i);
+  $('tf'+i).innerHTML=freeSVG(i);
+  drawP(i);
+  el.classList.toggle('solved',S.solved);
+}
+function clearMsgs(i){ TASKS[i].pts.forEach((_,k)=>setMsg(`m-${i}-${k}`,null)); setMsg(`m-${i}-g`,null); setMsg(`m-${i}-c`,null); $('tfb'+i).textContent=''; $('th'+i).classList.remove('show'); }
+
+function checkTask(i){
+  const T=TASKS[i], S=ST[i]; let all=true;
+  T.pts.forEach((p,k)=>{ const r=fbPt(p,S.pts[k]); setMsg(`m-${i}-${k}`,r); all=all&&r.ok; });
+  const rg=fbG(T,S); setMsg(`m-${i}-g`,rg); all=all&&rg.ok;
+  const rc2=fbCnt(T,S); setMsg(`m-${i}-c`,rc2); all=all&&rc2.ok;
+  S.solved = all && !S.sol && !S.helped;
+  $('task'+i).classList.toggle('solved',S.solved);
+  const fb=$('tfb'+i);
+  if(all && S.sol){ fb.style.color='var(--muted)'; fb.textContent='Lösung wurde angezeigt – klicken Sie auf „↺ Neu“, damit die Aufgabe zählt.'; }
+  else if(all && S.helped){ fb.style.color='var(--muted)'; fb.textContent='Richtig – aber eine Berührstelle wurde aufgedeckt. Klicken Sie auf „↺ Neu“, damit die Aufgabe zählt.'; }
+  else if(all){ fb.style.color='var(--ok)'; fb.textContent='✓ Aufgabe gelöst!'; }
+  else { fb.style.color='var(--bad)'; fb.textContent='Noch nicht ganz – lesen Sie die Rückmeldungen und korrigieren Sie.'; }
+  updateProgress();
+}
+function showSolution(i){
+  const T=TASKS[i], S=ST[i];
+  S.found=T.pts.map(()=>true); S.phase=2; S.miss=null; S.pmsg=null;
+  S.pts=T.pts.map(p=>({type:p.correct,flip:[false,false]})); S.g=T.G?'ja':'nein'; S.cnt=String(T.unk); S.sol=true;
+  syncTask(i); checkTask(i);
+}
+function updateProgress(){
+  const n=ST.filter(s=>s.solved).length, N=TASKS.length;
+  $('bar').style.width=(100*n/N)+'%';
+  $('score').textContent=`${n} von ${N} Aufträgen gelöst`;
+  const all=(n===N);
+  $('done').classList.toggle('show',all);
+  $('game').classList.toggle('show',all);
+}
+function resetAll(){ TASKS.forEach((_,i)=>initTask(i)); buildTasks(); updateProgress(); }
+
+$('tasks').addEventListener('change',e=>{
+  const el=e.target, i=+el.dataset.t; if(isNaN(i)) return;
+  const S=ST[i];
+  if(el.dataset.p!==undefined){ const k=+el.dataset.p; S.pts[k].type=el.value; S.pts[k].flip=rndFlip(el.value); setMsg(`m-${i}-${k}`,null); }
+  else if(el.dataset.g){ S.g=el.value; setMsg(`m-${i}-g`,null); }
+  else return;
+  S.solved=false; syncTask(i); $('tfb'+i).textContent=''; updateProgress();
+});
+$('tasks').addEventListener('input',e=>{
+  const el=e.target; if(el.dataset.c){ const i=+el.dataset.t; ST[i].cnt=el.value; ST[i].solved=false; $('task'+i).classList.remove('solved'); setMsg(`m-${i}-c`,null); updateProgress(); }
+});
+$('tasks').addEventListener('click',e=>{
+  const sv=e.target.closest('svg.pick');
+  if(sv){ const i=+sv.dataset.t, r=sv.getBoundingClientRect();
+    if(r.width>0) pick(i,(e.clientX-r.left)*360/r.width,(e.clientY-r.top)*270/r.height);
+    return; }
+  const b=e.target.closest('button'); if(!b) return;
+  const i=+b.dataset.t;
+  if(b.classList.contains('flip')){ const k=+b.dataset.p, j=+b.dataset.j; ST[i].pts[k].flip[j]=!ST[i].pts[k].flip[j]; ST[i].solved=false; setMsg(`m-${i}-${k}`,null); syncTask(i); updateProgress(); return; }
+  switch(b.dataset.act){
+    case 'main':  if(ST[i].phase===1) confirmFound(i); else checkTask(i); break;
+    case 'hint':  if(ST[i].phase===1) hint1(i); else $('th'+i).classList.toggle('show'); break;
+    case 'sol':   showSolution(i); break;
+    case 'new':   initTask(i); clearMsgs(i); syncTask(i); updateProgress(); break;
+  }
+});
+$('reset').onclick=resetAll;
+buildTasks(); updateProgress();
+
+/* =====================================================================
+   BONUS-SPIEL: Wertigkeits-Fänger
+   ===================================================================== */
+(function(){
+  const cv=$('cv'); let c=null;
+  try{ c=cv.getContext('2d'); }catch(e){}
+  if(!c) return;
+  const W=cv.width, H=cv.height, DUR=45, PHASE=15;
+  const ITEMS=[['Loslager',1],['Festlager',2],['Seil',1],['Pendelstab',1],['glatte Fläche',1],['raue Fläche',2],['Scharnier',2],
+               ['Zugfeder',1],['Kette',1],['Bolzengelenk',2],['Rolle auf Ebene',1],['Riemen',1]];
+  const ORDER=[1,2,1];
+  let run=false, t0=0, last=0, items=[], score=0, px=W/2, spawn=0, best=0, flash=null;
+  const keys={};
+  const info=$('gInfo'), bestEl=$('gBest'), btn=$('gStart');
+  const target=t=>ORDER[Math.min(ORDER.length-1,Math.floor(t/PHASE))];
+
+  function draw(t){
+    c.clearRect(0,0,W,H);
+    const g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#16365c'); g.addColorStop(1,'#0f2742'); c.fillStyle=g; c.fillRect(0,0,W,H);
+    const tg=target(t);
+    c.fillStyle=tg===1?'#2f7fd6':'#d9822b'; c.fillRect(0,0,W,40);
+    c.fillStyle='#fff'; c.font='bold 17px system-ui,sans-serif'; c.textAlign='center'; c.textBaseline='middle';
+    c.fillText(tg===1?'Jetzt fangen: EINWERTIG (1 Kraft)':'Jetzt fangen: ZWEIWERTIG (2 Komponenten)',W/2,21);
+    c.fillStyle='rgba(255,255,255,.25)'; c.fillRect(0,40,W*Math.max(0,1-t/DUR),4);
+    c.font='600 15px system-ui,sans-serif';
+    items.forEach(it=>{
+      c.fillStyle='#eef3fb'; c.strokeStyle='#8fb0da'; c.lineWidth=2;
+      c.beginPath(); c.roundRect ? c.roundRect(it.x-it.w/2,it.y,it.w,30,8) : c.rect(it.x-it.w/2,it.y,it.w,30); c.fill(); c.stroke();
+      c.fillStyle='#1d2533'; c.fillText(it.n,it.x,it.y+16);
+    });
+    const cw=120, cy=H-34;
+    c.fillStyle='#e6f4ea'; c.strokeStyle='#1e8e3e'; c.lineWidth=3;
+    c.beginPath(); c.roundRect ? c.roundRect(px-cw/2,cy,cw,22,8) : c.rect(px-cw/2,cy,cw,22); c.fill(); c.stroke();
+    if(flash && flash.t>0){ c.globalAlpha=Math.min(1,flash.t*2); c.fillStyle=flash.col; c.font='bold 22px system-ui,sans-serif'; c.fillText(flash.txt,px,cy-16-(1-flash.t)*24); c.globalAlpha=1; }
+  }
+  function endScreen(){
+    draw(DUR); c.fillStyle='rgba(15,39,66,.82)'; c.fillRect(0,0,W,H);
+    c.fillStyle='#fff'; c.textAlign='center'; c.font='bold 30px system-ui,sans-serif'; c.fillText('Zeit abgelaufen!',W/2,H/2-28);
+    c.font='bold 40px system-ui,sans-serif'; c.fillText(score+' Punkte',W/2,H/2+20);
+  }
+  function loop(ts){
+    if(!run) return;
+    if(!t0){ t0=ts; last=ts; }
+    const dt=Math.min(0.05,(ts-last)/1000); last=ts;
+    const t=(ts-t0)/1000;
+    if(t>=DUR){ run=false; if(score>best){best=score;} bestEl.textContent='Bestwert: '+best; btn.textContent='Nochmal spielen'; info.textContent=`Punkte: ${score} · Zeit: 0 s`; endScreen(); return; }
+    if(keys.ArrowLeft) px-=340*dt; if(keys.ArrowRight) px+=340*dt;
+    px=Math.max(60,Math.min(W-60,px));
+    spawn-=dt;
+    if(spawn<=0){ spawn=0.8;
+      const tg=target(t), pool=Math.random()<0.5 ? ITEMS.filter(i=>i[1]===tg) : ITEMS, it=pool[Math.floor(Math.random()*pool.length)];
+      c.font='600 15px system-ui,sans-serif'; const w=c.measureText(it[0]).width+24;
+      items.push({n:it[0],v:it[1],w,x:w/2+10+Math.random()*(W-w-20),y:48,vy:110+Math.random()*70});
+    }
+    const cy=H-34, tg=target(t);
+    items=items.filter(it=>{
+      it.y+=it.vy*dt;
+      if(it.y+30>=cy && it.y<cy+22 && Math.abs(it.x-px)<60+it.w/2-14){
+        if(it.v===tg){ score++; flash={t:1,col:'#7fe3a0',txt:'+1'}; } else { score--; flash={t:1,col:'#ff8a80',txt:'−1 ('+(it.v===1?'einwertig':'zweiwertig')+')'}; }
+        return false;
+      }
+      return it.y<H;
+    });
+    if(flash) flash.t-=dt*1.4;
+    info.textContent=`Punkte: ${score} · Zeit: ${Math.ceil(DUR-t)} s`;
+    draw(t);
+    requestAnimationFrame(loop);
+  }
+  function start(){ run=true; t0=0; items=[]; score=0; spawn=0.3; flash=null; px=W/2; btn.textContent='Läuft …'; requestAnimationFrame(loop); }
+  btn.onclick=()=>{ if(!run) start(); };
+  const moveTo=e=>{ const r=cv.getBoundingClientRect(); px=(e.clientX-r.left)*W/r.width; };
+  cv.addEventListener('pointermove',moveTo); cv.addEventListener('pointerdown',moveTo);
+  window.addEventListener('keydown',e=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'){ keys[e.key]=true; if(run) e.preventDefault(); } });
+  window.addEventListener('keyup',e=>{ keys[e.key]=false; });
+  draw(0); c.fillStyle='rgba(15,39,66,.7)'; c.fillRect(0,0,W,H); c.fillStyle='#fff'; c.textAlign='center'; c.font='bold 22px system-ui,sans-serif';
+  c.fillText('Bereit? „Spiel starten“ drücken',W/2,H/2);
+})();
+</script>
+</body>
+</html>
