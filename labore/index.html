@@ -10,7 +10,7 @@
   .fach{margin-bottom:28px;scroll-margin-top:16px}
   .fach-titel{display:flex;align-items:baseline;gap:10px;border-bottom:3px solid var(--fach);padding-bottom:4px;margin:0 0 12px}
   .fach-titel h2{margin:0;font-size:1.5rem;color:var(--fach)}
-  .kacheln{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+  .kacheln{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px}
   .kachel{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-top:5px solid var(--fach);
           border-radius:var(--radius);padding:14px 16px;color:var(--ink);text-decoration:none;transition:transform .15s, box-shadow .15s}
   a.kachel:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.12)}

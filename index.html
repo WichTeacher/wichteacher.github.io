@@ -1,290 +1,58 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projekte</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #0f0f13;
-      --card-bg: #17171e;
-      --border: #2a2a38;
-      --accent-1: #c8a96e;
-      --accent-2: #7e9fc4;
-      --text: #e8e6e0;
-      --muted: #7a7870;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      overflow-x: hidden;
-    }
-
-    /* Background texture */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(200,169,110,0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(126,159,196,0.07) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .wrapper {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 680px;
-    }
-
-    /* Header */
-    header {
-      text-align: center;
-      margin-bottom: 3.5rem;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards;
-    }
-
-    .eyebrow {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--accent-1);
-      margin-bottom: 1rem;
-    }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 700;
-      line-height: 1.15;
-      color: var(--text);
-      margin-bottom: 0.75rem;
-    }
-
-    .subtitle {
-      font-size: 0.9rem;
-      color: var(--muted);
-      font-weight: 300;
-    }
-
-    /* Divider */
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeUp 0.8s ease 0.2s forwards;
-    }
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .divider-icon {
-      font-size: 0.75rem;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-    }
-
-    /* Cards */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.25rem;
-    }
-
-    @media (max-width: 500px) {
-      .cards { grid-template-columns: 1fr; }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 2rem 1.75rem;
-      text-decoration: none;
-      color: inherit;
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.3s ease, transform 0.3s ease;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards;
-    }
-
-    .card:nth-child(1) { animation-delay: 0.35s; }
-    .card:nth-child(2) { animation-delay: 0.5s; }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, var(--c1), var(--c2));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.4s ease;
-    }
-
-    .card:hover {
-      border-color: rgba(255,255,255,0.12);
-      transform: translateY(-3px);
-    }
-
-    .card:hover::before {
-      transform: scaleX(1);
-    }
-
-    .card-1 { --c1: #c8a96e; --c2: #e8c98e; }
-    .card-2 { --c1: #7e9fc4; --c2: #a0bedd; }
-
-    .card-number {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.5rem;
-      font-weight: 700;
-      opacity: 0.07;
-      position: absolute;
-      top: 1rem;
-      right: 1.5rem;
-      line-height: 1;
-    }
-
-    .card-tag {
-      display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      padding: 0.2rem 0.6rem;
-      border-radius: 2px;
-      margin-bottom: 1rem;
-    }
-
-    .card-1 .card-tag { background: rgba(200,169,110,0.12); color: var(--accent-1); }
-    .card-2 .card-tag { background: rgba(126,159,196,0.12); color: var(--accent-2); }
-
-    .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      line-height: 1.3;
-    }
-
-    .card-desc {
-      font-size: 0.8rem;
-      color: var(--muted);
-      font-weight: 300;
-      line-height: 1.6;
-    }
-
-    .card-arrow {
-      margin-top: 1.5rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      transition: gap 0.3s ease, color 0.3s ease;
-    }
-
-    .card:hover .card-arrow {
-      gap: 0.7rem;
-      color: var(--text);
-    }
-
-    .card-1:hover .card-arrow { color: var(--accent-1); }
-    .card-2:hover .card-arrow { color: var(--accent-2); }
-
-    /* Footer */
-    footer {
-      text-align: center;
-      margin-top: 3rem;
-      font-size: 0.72rem;
-      color: var(--muted);
-      opacity: 0;
-      animation: fadeUp 0.8s ease 0.65s forwards;
-      letter-spacing: 0.05em;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interaktive Labore &amp; Werkzeuge</title>
+<meta name="description" content="Interaktive Labore zum Ausprobieren und Üben sowie Lernhilfen für die Prüfung im Referendariat">
+<link rel="stylesheet" href="labore/assets/basis.css">
+<style>
+  .wrap{max-width:920px}
+  .faecher{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:14px;margin-bottom:12px}
+  .fach-kachel{display:flex;flex-direction:column;justify-content:space-between;min-height:120px;background:var(--card);
+               border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);padding:14px 16px;
+               color:var(--ink);text-decoration:none;transition:transform .15s, box-shadow .15s}
+  .fach-kachel:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+  .fach-kachel h3{margin:0;font-size:1.3rem;color:var(--fach)}
+  .fach-kachel span{font-size:.9rem;color:var(--muted)}
+  .alle{display:inline-block;margin:4px 0 28px;font-weight:600;color:var(--ink)}
+  .abschnitt{font-size:1.25rem;margin:0 0 4px}
+  .klein{color:var(--muted);font-size:.92rem;margin:0 0 10px}
+  .liste{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+  .liste li+li{border-top:1px solid var(--line)}
+  .liste a{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;color:var(--ink);text-decoration:none}
+  .liste a:hover{background:var(--soft)}
+  .liste small{color:var(--muted)}
+</style>
 </head>
 <body>
-  <div class="wrapper">
-    <header>
-      <p class="eyebrow">Übersicht</p>
-      <h1>Projekte</h1>
-      <p class="subtitle">Eine Sammlung meiner interaktiven Tools & Simulationen</p>
-    </header>
+<div class="wrap">
+  <header class="kopf bunt">
+    <h1>Interaktive Labore &amp; Werkzeuge</h1>
+    <p>Zum Ausprobieren und Üben, nach Fächern sortiert</p>
+  </header>
 
-    <div class="divider">
-      <span class="divider-icon">TOOLS</span>
+  <section aria-labelledby="t-labore">
+    <h2 class="abschnitt" id="t-labore">Labore</h2>
+    <div class="faecher">
+      <a class="fach-kachel" data-fach="tm" href="labore/#tm"><h3>Technische Mechanik</h3><span>1 Labor →</span></a>
+      <a class="fach-kachel" data-fach="me" href="labore/#me"><h3>Maschinen&shy;elemente</h3><span>folgt</span></a>
+      <a class="fach-kachel" data-fach="wc" href="labore/#wc"><h3>Werkstoffkunde &amp; Chemie</h3><span>folgt</span></a>
+      <a class="fach-kachel" data-fach="prog" href="labore/#prog"><h3>Program&shy;mieren</h3><span>folgt</span></a>
     </div>
+    <a class="alle" href="labore/">Alle Labore im Überblick →</a>
+  </section>
 
-    <div class="cards">
-  <a href="stabi.html" class="card card-1">
-    <span class="card-number">I</span>
-    <span class="card-tag">Interaktiv</span>
-    <h2 class="card-title">Staatsbürger&shy;liche Bildung</h2>
-    <p class="card-desc">Mündliche Simulation mit Fragenkatalog</p>
-    <div class="card-arrow">Zum Tool <span>→</span></div>
-  </a>
+  <section aria-labelledby="t-ref">
+    <h2 class="abschnitt" id="t-ref">Prüfungsvorbereitung Referendariat</h2>
+    <p class="klein">Lernhilfen für die mündlichen Prüfungen in Bayern</p>
+    <ul class="liste">
+      <li><a href="stabi.html"><span>Staatsbürgerliche Bildung</span><small>Fragenkatalog →</small></a></li>
+      <li><a href="schulrecht.html"><span>Schulrecht &amp; Schulkunde</span><small>Fragenkatalog →</small></a></li>
+    </ul>
+  </section>
 
-  <a href="schulrecht.html" class="card card-2">
-    <span class="card-number">II</span>
-    <span class="card-tag">Interaktiv</span>
-    <h2 class="card-title">Schulrecht &amp; Schulkunde</h2>
-    <p class="card-desc">Mündliche Simulation mit Fragenkatalog</p>
-    <div class="card-arrow">Zum Tool <span>→</span></div>
-  </a>
-
-  <a href="weichloeten_vertiefung.html" class="card card-1">
-    <span class="card-number">III</span>
-    <span class="card-tag">Interaktiv</span>
-    <h2 class="card-title">Weichlöten – Vertiefung</h2>
-    <p class="card-desc">Vertiefende Inhalte zur Weichlöt-Einheit</p>
-    <div class="card-arrow">Zum Tool <span>→</span></div>
-  </a>
-
-  <a href="sicherheitstest_weichloeten.html" class="card card-2">
-    <span class="card-number">IV</span>
-    <span class="card-tag">Interaktiv</span>
-    <h2 class="card-title">Sicherheitstest Weichlöten</h2>
-    <p class="card-desc">Interaktiver Sicherheitstest zur Löteinheit</p>
-    <div class="card-arrow">Zum Tool <span>→</span></div>
-  </a>
-
-  <a href="labore/" class="card card-1">
-    <span class="card-number">V</span>
-    <span class="card-tag">Sammlung</span>
-    <h2 class="card-title">Interaktive Labore</h2>
-    <p class="card-desc">Labore für TM, ME, WC und Programmieren – nach Fächern sortiert</p>
-    <div class="card-arrow">Zu den Laboren <span>→</span></div>
-  </a>
+  <footer class="fuss"><a href="impressum.html">Impressum</a></footer>
 </div>
-
-    <footer>Made with ♥ in Nürnberg &nbsp;·&nbsp; <a href="impressum.html" style="color:inherit;text-decoration:none;opacity:0.6;transition:opacity 0.2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.6">Impressum</a></footer>
-  </div>
 </body>
 </html>

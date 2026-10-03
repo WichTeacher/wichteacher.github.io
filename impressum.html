@@ -4,15 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Impressum</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="labore/assets/basis.css" />
   <style>
+    /* Farben und Schrift aus labore/assets/basis.css (hell/dunkel automatisch) */
     :root {
-      --bg: #0f0f13;
-      --card-bg: #17171e;
-      --border: #2a2a38;
-      --accent-1: #c8a96e;
-      --text: #e8e6e0;
-      --muted: #7a7870;
+      --card-bg: var(--card);
+      --border: var(--line);
+      --accent-1: var(--tm);
+      --text: var(--ink);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,7 +19,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'DM Sans', sans-serif;
+      font-family: var(--font);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -33,7 +32,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(200,169,110,0.07) 0%, transparent 60%);
+      background: none;
       pointer-events: none;
       z-index: 0;
     }
@@ -70,7 +69,7 @@
     }
 
     h1 {
-      font-family: 'Playfair Display', serif;
+      font-family: var(--font-head);
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 2rem;
