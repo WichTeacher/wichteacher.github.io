@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Impressum</title>
+  <meta name="robots" content="noindex, noarchive" />
   <link rel="stylesheet" href="labore/assets/basis.css" />
   <style>
     /* Farben und Schrift aus labore/assets/basis.css (hell/dunkel automatisch) */
@@ -158,7 +159,7 @@
       <div class="field">
         <div class="field-label">Kontakt</div>
         <div class="field-value">
-          <a href="mailto:DEINE@EMAIL.DE"><span class="placeholder">annabelle.github@protonmail.com</span></a>
+          <span class="placeholder mail" data-m="bW9jLmxpYW1ub3RvcnBAYnVodGlnLmVsbGViYW5uYQ==">annabelle.github [at] protonmail [punkt] com</span>
         </div>
       </div>
 
@@ -177,5 +178,12 @@
       Privatperson · Keine kommerziellen Interessen · Keine Werbung
     </p>
   </div>
+<script>
+  // E-Mail-Adresse erst im Browser zusammensetzen, damit Programme sie nicht aus dem Quelltext auslesen
+  document.querySelectorAll('.mail[data-m]').forEach(function(el){
+    var a=document.createElement('a'), m=atob(el.dataset.m).split('').reverse().join('');
+    a.href='mailto:'+m; a.textContent=m; el.textContent=''; el.appendChild(a);
+  });
+</script>
 </body>
 </html>
