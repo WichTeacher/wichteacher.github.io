@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maschinenelemente – Labore</title>
+<meta name="description" content="Interaktive Labore: Maschinenelemente">
+<link rel="stylesheet" href="../assets/basis.css">
+<style>
+  .fach{margin-bottom:28px;scroll-margin-top:16px}
+  .fach-titel{display:flex;align-items:baseline;gap:10px;border-bottom:3px solid var(--fach);padding-bottom:4px;margin:0 0 12px}
+  .fach-titel h2{margin:0;font-size:1.5rem;color:var(--fach)}
+  .kacheln{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px}
+  .kachel{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-top:5px solid var(--fach);
+          border-radius:var(--radius);padding:14px 16px;color:var(--ink);text-decoration:none;transition:transform .15s, box-shadow .15s}
+  a.kachel:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+  .kachel h3{margin:0 0 4px;font-size:1.25rem;color:var(--fach)}
+  .kachel p{margin:0 0 10px;color:var(--muted);font-size:.95rem;flex:1}
+  .kachel .meta{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--muted)}
+  .kachel .meta a{color:var(--fach);font-weight:600}
+  .leer{color:var(--muted);font-style:italic;margin:0}
+  .sprung{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+  .sprung a{text-decoration:none;font-weight:600;padding:5px 12px;border-radius:999px;background:var(--fach);color:var(--fach-ink)}
+</style>
+</head>
+<body data-fach="me">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../">Labore</a> › Maschinenelemente</div>
+    <h1>Maschinenelemente</h1>
+    <p>Interaktive Labore zu Maschinenelementen</p>
+  </header>
+
+    <p class="leer">Folgt.</p>
+
+  <footer class="fuss"><a href="../">alle Labore</a> · <a href="../../">Startseite</a> · <a href="../../impressum.html">Impressum</a></footer>
+</div>
+</body>
+</html>
