@@ -56,6 +56,23 @@
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .small{margin-top:10px}
   @media (max-width:480px){.wrap{padding:12px 12px 40px}.panel{padding:12px}.ctl{padding:8px 4px}.btns button{min-width:40px;padding:4px 8px}.ctl .lbl{font-size:.85rem}.tile{width:108px}.tile .sym{font-size:2.8rem}.facts{font-size:.9rem}}
+
+  /* Infokasten Isotope: bewusst ohne Rot/Grün (der Rückmeldung vorbehalten) */
+  .iso{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
+  .iso summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px}
+  .iso summary::-webkit-details-marker{display:none}
+  .iso summary::before{content:"▸";color:var(--fach);font-size:1.2rem;transition:transform .15s}
+  .iso[open] summary::before{transform:rotate(90deg)}
+  .iso summary:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .iso-body{padding:0 16px 14px;font-size:1rem}
+  .iso-body ol{margin:0;padding-left:1.3em}
+  .iso-body li{margin:0 0 8px}
+  .iso-tab{overflow-x:auto;margin-top:6px}
+  .iso-tab table{border-collapse:collapse;font-size:.95rem}
+  .iso-tab th,.iso-tab td{border:1px solid var(--line);padding:4px 12px;text-align:center}
+  .iso-tab th{background:var(--soft);font-weight:600}
+  .iso-tip{margin:6px 0 0;padding:8px 10px;background:var(--soft);border-radius:6px;font-weight:600}
+  @media (max-width:480px){.iso summary{padding:10px 12px}.iso-body{padding:0 12px 12px}.iso-tab table{font-size:.85rem}.iso-tab th,.iso-tab td{padding:4px 6px}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
   .pop{animation:pop .25s ease-out}
   @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
@@ -68,6 +85,31 @@
     <h1>Atombaukasten</h1>
     <p>Bohr'sches Schalenmodell · Elemente 1–20 · Protonen, Neutronen, Elektronen, Isotope</p>
   </header>
+
+  <!-- Infokasten: Warum gibt es bei gleicher Ordnungszahl verschiedene Massenzahlen? -->
+  <details class="iso" id="isoInfo">
+    <summary>Gleiche Ordnungszahl, andere Massenzahl?</summary>
+    <div class="iso-body">
+      <ol>
+        <li><b>Ordnungszahl = Zahl der Protonen.</b> Sie legt fest, um welches Element es sich handelt: Ein Atom mit 6 Protonen ist immer Kohlenstoff.</li>
+        <li><b>Massenzahl = Protonen + Neutronen.</b> Neutronen sind ungeladen und ändern das Element nicht. Atome desselben Elements können deshalb unterschiedlich viele Neutronen haben.</li>
+        <li><b>Isotope</b> sind Atome mit gleicher Protonenzahl, aber unterschiedlicher Neutronenzahl.
+          <div class="iso-tab"><table>
+            <thead><tr><th>Isotop</th><th>Protonen</th><th>Neutronen</th><th>Massenzahl</th></tr></thead>
+            <tbody>
+              <tr><td>C-12</td><td>6</td><td>6</td><td>12</td></tr>
+              <tr><td>C-14</td><td>6</td><td>8</td><td>14</td></tr>
+              <tr><td>Cl-35</td><td>17</td><td>18</td><td>35</td></tr>
+              <tr><td>Cl-37</td><td>17</td><td>20</td><td>37</td></tr>
+            </tbody>
+          </table></div>
+        </li>
+        <li>Chemisch verhalten sich Isotope praktisch gleich, weil ihre Elektronenhülle gleich ist.</li>
+        <li>Die <b>Atommasse im PSE</b> (z. B. Chlor: 35,45 u) ist der Mittelwert aller natürlich vorkommenden Isotope, gewichtet nach ihrer Häufigkeit. Deshalb ist sie keine ganze Zahl. Die Massenzahl eines einzelnen Atoms ist dagegen immer ganzzahlig.</li>
+      </ol>
+      <p class="iso-tip">Probieren Sie es aus: Bauen Sie Kohlenstoff mit 6 und mit 8 Neutronen.</p>
+    </div>
+  </details>
 
   <div class="grid">
     <div class="panel"><svg id="model" viewBox="0 0 400 400" role="img" aria-label="Schalenmodell des gebauten Atoms"></svg></div>
