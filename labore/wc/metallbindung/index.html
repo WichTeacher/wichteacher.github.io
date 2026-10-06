@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metallbindung – Labor</title>
+<meta name="description" content="Interaktives Labor: Atomrümpfe im Elektronengas – elektrische Leitung, Wärmeleitung und Verformbarkeit der Metalle im Modell">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Elektronen blau wie im Atombaukasten. Wärme läuft von Grau über Bernstein nach Gelb,
+     Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
+  :root{--electron:#1F6FB2;--rumpf:#7D8B97;--rumpf-ink:#ffffff;--heiss1:#E39B2D;--heiss2:#F5D04A}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--electron:#5BA7E8;--rumpf:#5E6B77;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}}
+  :root[data-theme="dark"]{--electron:#5BA7E8;--rumpf:#5E6B77;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
+  .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 16px}
+  .tabs button[aria-selected="true"]{background:var(--fach);border-color:var(--fach);color:var(--fach-ink)}
+  .taskbox{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:var(--card);padding:16px;margin-bottom:16px}
+  canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+  button{touch-action:manipulation}
+  button:focus-visible,input:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .wahl{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .wahl button{font:inherit;border:none;background:var(--card);color:var(--ink);padding:6px 12px;cursor:pointer}
+  .wahl button+button{border-left:1px solid var(--line)}
+  .wahl button[aria-pressed="true"]{background:var(--fach);color:var(--fach-ink);font-weight:600}
+  .regler{display:flex;align-items:center;gap:10px;flex:1;min-width:240px}
+  .regler input{flex:1;accent-color:var(--fach)}
+  .regler output{font-weight:700;min-width:5.5em;text-align:right}
+  .status{border-left:4px solid var(--fach);border-radius:6px;padding:6px 10px;margin-top:12px;min-height:3.4em;font-size:.97rem;background:var(--soft)}
+  .status .warn{display:block;margin-top:4px;color:var(--hint-ink);background:var(--hint-bg);border-left:4px solid var(--hint);padding:4px 8px;border-radius:4px}
+  .messung{display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:center;margin-top:12px}
+  .balken{height:16px;border-radius:8px;background:var(--soft);border:1px solid var(--line);position:relative;overflow:hidden}
+  .balken span{position:absolute;left:0;top:0;bottom:0;background:var(--electron);transition:width .3s}
+  .balken i{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+  .messung b{font-family:var(--font-head);font-size:1.25rem}
+  table.erg{border-collapse:collapse;margin-top:12px;font-size:.95rem}
+  table.erg th,table.erg td{border:1px solid var(--line);padding:4px 12px;text-align:left}
+  table.erg th{background:var(--soft);font-weight:600}
+  .grenze{font-size:.88rem;color:var(--muted);margin:12px 0 0}
+  .fragen h3{margin:18px 0 4px;font-size:1.2rem;color:var(--fach)}
+  .frage{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+  .frage p{margin:0 0 6px;font-weight:600}
+  .frage label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer}
+  .frage input{margin-top:.35em;accent-color:var(--fach)}
+  .frage .fb{margin-top:8px}
+  .frage .fb:empty{display:none}
+
+  .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
+  .info summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px}
+  .info summary::-webkit-details-marker{display:none}
+  .info summary::before{content:"▸";color:var(--fach);font-size:1.2rem;transition:transform .15s}
+  .info[open] summary::before{transform:rotate(90deg)}
+  .info summary:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .info-body{padding:0 16px 14px}
+  .info-body ol{margin:0;padding-left:1.3em}
+  .info-body li{margin:0 0 8px}
+  .info-tip{margin:6px 0 0;padding:8px 10px;background:var(--soft);border-radius:6px;font-weight:600}
+  @media (max-width:480px){.wrap{padding:12px 12px 40px}.taskbox{padding:10px}.tabs button{padding:6px 10px;font-size:.92rem}.regler{min-width:100%;gap:6px}.regler output{min-width:3.6em}.info summary{padding:10px 12px}.info-body{padding:0 12px 12px}}
+</style>
+</head>
+<body data-fach="wc">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Werkstoffkunde &amp; Chemie</a></div>
+    <h1>Metallbindung</h1>
+    <p>Atomrümpfe im Elektronengas · elektrische Leitung, Wärmeleitung, Verformbarkeit</p>
+  </header>
+
+  <details class="info">
+    <summary>Das Modell: Atomrümpfe im Elektronengas</summary>
+    <div class="info-body">
+      <ol>
+        <li>Metallatome haben <b>wenige Außenelektronen</b>, und diese sind nur schwach an den Kern gebunden (großer Atomradius, kleine Ionisierungsenergie).</li>
+        <li>Im Metall geben die Atome ihre Außenelektronen ab. Übrig bleiben positiv geladene <b>Atomrümpfe</b> (Metallionen), z. B. Na<sup>+</sup>, Mg<sup>2+</sup>, Al<sup>3+</sup>.</li>
+        <li>Die abgegebenen Elektronen gehören keinem bestimmten Rumpf mehr. Sie bewegen sich frei zwischen den Rümpfen: das <b>Elektronengas</b>.</li>
+        <li>Die positiven Rümpfe und das negative Elektronengas ziehen sich gegenseitig an, und zwar in alle Richtungen. Diese Anziehung ist die <b>Metallbindung</b>.</li>
+      </ol>
+      <p class="info-tip">Andere Bezeichnungen: Metallionen = Atomrümpfe, freie Elektronen = Elektronengas.</p>
+    </div>
+  </details>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-strom" aria-selected="true" aria-controls="box-strom">Elektrische Leitung</button>
+    <button role="tab" id="tab-waerme" aria-selected="false" aria-controls="box-waerme">Wärmeleitung</button>
+    <button role="tab" id="tab-verf" aria-selected="false" aria-controls="box-verf">Verformbarkeit</button>
+  </div>
+
+  <!-- ===== Elektrische Leitung ===== -->
+  <section class="taskbox" id="box-strom" role="tabpanel" aria-labelledby="tab-strom">
+    <canvas id="cv-strom" role="img" aria-label="Atomrümpfe im Elektronengas, wahlweise mit angelegter Spannung"></canvas>
+    <div class="row">
+      <button class="btn" id="s-on">Spannung anlegen</button>
+      <span class="wahl" role="group" aria-label="Metall">
+        <button data-metall="1" aria-pressed="true">Natrium</button><button data-metall="2" aria-pressed="false">Magnesium</button><button data-metall="3" aria-pressed="false">Aluminium</button>
+      </span>
+      <button class="btn-2" id="s-follow" aria-pressed="true">Ein Elektron verfolgen: an</button>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="row">
+      <label class="regler">Temperatur <input type="range" id="s-temp" min="-200" max="600" step="10" value="20"><output id="s-temp-out">20 °C</output></label>
+    </div>
+    <div class="messung">
+      <span>Strom</span>
+      <div class="balken" aria-hidden="true"><span id="s-bar" style="width:0"></span><i style="left:25%"></i></div>
+      <b id="s-val">0 %</b>
+    </div>
+    <p class="small" style="margin:4px 0 0">Strom im Modell, bezogen auf dasselbe Metall bei 20 °C (Strich = 100 %).</p>
+    <div class="status" id="s-status" aria-live="polite"></div>
+    <p class="grenze"><b>Modellgrenze:</b> Die Animation übertreibt die Wanderung zum Pluspol stark. In einem Kupferdraht kommen die Elektronen im Mittel nur Bruchteile eines Millimeters pro Sekunde voran. Dass die Lampe trotzdem sofort leuchtet, liegt daran, dass sich die Elektronen im ganzen Draht gleichzeitig in Bewegung setzen. Wie Elektronen genau abgelenkt werden, erklärt erst die Quantenphysik.</p>
+    <div class="fragen" id="q-strom"></div>
+  </section>
+
+  <!-- ===== Wärmeleitung ===== -->
+  <section class="taskbox" id="box-waerme" role="tabpanel" aria-labelledby="tab-waerme" hidden>
+    <canvas id="cv-waerme" role="img" aria-label="Wärmeleitung: links eine Heizplatte, rechts ein Messpunkt"></canvas>
+    <div class="row">
+      <span class="wahl" role="group" aria-label="Werkstoff">
+        <button data-modus="metall" aria-pressed="true">Metall (mit Elektronengas)</button><button data-modus="isolator" aria-pressed="false">Ohne freie Elektronen</button>
+      </span>
+      <button class="btn" id="w-start">Heizplatte einschalten</button>
+      <button class="btn-2" id="w-fast" aria-pressed="false">Zeitraffer ×5: aus</button>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="messung">
+      <span>Messpunkt</span>
+      <div class="balken" aria-hidden="true"><span id="w-bar" style="width:0;background:var(--heiss1)"></span><i style="left:22.2%"></i></div>
+      <b id="w-val">20 °C</b>
+    </div>
+    <p class="small" style="margin:4px 0 0">Heizplatte 200 °C. Gemessen wird die Zeit, bis der Messpunkt am rechten Rand 60 °C erreicht (Strich). Ohne freie Elektronen dauert es lange, nutzen Sie dort den Zeitraffer.</p>
+    <table class="erg" aria-label="Ihre Messungen">
+      <thead><tr><th>Werkstoff</th><th>Zeit bis 60 °C (Modellzeit)</th></tr></thead>
+      <tbody><tr><td>Metall (mit Elektronengas)</td><td id="w-erg-metall">–</td></tr><tr><td>Ohne freie Elektronen</td><td id="w-erg-isolator">–</td></tr></tbody>
+    </table>
+    <div class="status" id="w-status" aria-live="polite"></div>
+    <p class="grenze"><b>Modellgrenze:</b> Gezeigt ist nur ein winziger Ausschnitt aus wenigen Atomlagen. Die Zeiten sind Modellzeiten und keine echten Messwerte. Aussagekräftig ist nur der Vergleich der beiden Werkstoffe.</p>
+    <div class="fragen" id="q-waerme"></div>
+  </section>
+
+  <!-- ===== Verformbarkeit ===== -->
+  <section class="taskbox" id="box-verf" role="tabpanel" aria-labelledby="tab-verf" hidden>
+    <canvas id="cv-verf" role="img" aria-label="Zwei Gitterhälften gleiten entlang einer Gleitebene gegeneinander"></canvas>
+    <div class="row">
+      <button class="btn" id="v-step">Um einen Atomabstand verschieben</button>
+      <button class="btn-2" id="v-reset">Zurücksetzen</button>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="row">
+      <label class="regler">Verschiebung <input type="range" id="v-s" min="0" max="3" step="0.01" value="0"><output id="v-s-out">0,00</output></label>
+    </div>
+    <div class="status" id="v-status" aria-live="polite"></div>
+    <p class="grenze"><b>Modellgrenze:</b> Hier gleitet eine ganze Atomebene auf einmal. In echten Metallen wandert stattdessen eine Störung im Gitter (eine Versetzung) Schritt für Schritt durch den Kristall. Das braucht viel weniger Kraft. Mehr dazu beim Thema Verformung.</p>
+    <div class="fragen" id="q-verf"></div>
+  </section>
+
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const W=960;              // Modellbreite, alle Zeichnungen in diesen Koordinaten
+const TAU=Math.PI*2;
+const fmt=(x,d=1)=>x.toFixed(d).replace(".",",");
+
+// ---------- Farben aus CSS lesen (hell/dunkel) ----------
+const COL={};
+function readColors(){
+  const cs=getComputedStyle(document.body);
+  for(const k of ["ink","muted","card","line","electron","rumpf","rumpf-ink","heiss1","heiss2"])COL[k]=cs.getPropertyValue("--"+k).trim();
+}
+function rgb(hex){const h=hex.replace("#","");return [0,2,4].map(i=>parseInt(h.substr(i,2),16))}
+function mix(a,b,t){const A=rgb(a),B=rgb(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")})`}
+function alpha(hex,a){return `rgba(${rgb(hex).join(",")},${a})`}
+function heatColor(t){t=Math.max(0,Math.min(1,t));return t<.5?mix(COL.rumpf,COL.heiss1,t*2):mix(COL.heiss1,COL.heiss2,(t-.5)*2)}
+readColors();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",readColors);
+
+// ---------- Canvas in Modellkoordinaten ----------
+function makeCanvas(id,H){
+  const cv=$(id),ctx=cv.getContext("2d");
+  cv.style.aspectRatio=W+"/"+H;
+  return {ctx,H,fit(){
+    const w=cv.clientWidth;if(!w)return false;
+    const dpr=window.devicePixelRatio||1,pw=Math.round(w*dpr),ph=Math.round(w*H/W*dpr);
+    if(cv.width!==pw||cv.height!==ph){cv.width=pw;cv.height=ph}
+    ctx.setTransform(pw/W,0,0,pw/W,0,0);return true;
+  }};
+}
+// Dichteste Kugelpackung in 2D: jede zweite Reihe um einen halben Abstand versetzt
+function hexLattice(cols,rows,a,x0,yBottom){
+  const out=[];
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)
+    out.push({r,c,x:x0+c*a+(r%2?a/2:0),y:yBottom-r*a*0.866,p1:Math.random()*TAU,p2:Math.random()*TAU,f1:14+Math.random()*6,f2:14+Math.random()*6});
+  return out;
+}
+function circle(ctx,x,y,r,fill,stroke,lw){ctx.beginPath();ctx.arc(x,y,r,0,TAU);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.stroke()}}
+function text(ctx,s,x,y,color,size,align,weight){ctx.fillStyle=color;ctx.font=`${weight||600} ${size}px Barlow, system-ui, sans-serif`;ctx.textAlign=align||"center";ctx.textBaseline="middle";ctx.fillText(s,x,y)}
+function randDir(v){const a=Math.random()*TAU;return [v*Math.cos(a),v*Math.sin(a)]}
+
+// =====================================================================
+// 1) Elektrische Leitung
+// =====================================================================
+const S={H:420,metall:1,T:20,on:false,follow:true,t:0,el:[],trail:[],
+  xL:40,xR:920,yT:30,yB:392,a:64};
+S.ions=hexLattice(13,6,S.a,80,349);
+S.cv=makeCanvas("cv-strom",S.H);
+const SV0=200, SG0=0.3, SGT=5.7/293, SAE=260;      // Elektronengeschwindigkeit, Streurate, Beschleunigung durch die Spannung
+const sGamma=T=>SG0+SGT*(T+273.15);                // Streurate steigt mit der Temperatur (Rümpfe schwingen stärker)
+const sAmp=T=>4.2*Math.sqrt((T+273.15)/293);       // Schwingungsweite der Rümpfe
+const METALL={1:{sym:"Na",name:"Natrium",q:"+",smp:97.8},2:{sym:"Mg",name:"Magnesium",q:"2+",smp:650},3:{sym:"Al",name:"Aluminium",q:"3+",smp:660}};
+
+function sMakeElectrons(){
+  S.el=[];S.trail=[];
+  const n=S.ions.length*S.metall;
+  for(let i=0;i<n;i++){const [vx,vy]=randDir(SV0);S.el.push({x:S.xL+Math.random()*(S.xR-S.xL),y:S.yT+Math.random()*(S.yB-S.yT),vx,vy})}
+}
+function sStep(dt){
+  S.t+=dt;const g=sGamma(S.T),span=S.xR-S.xL;
+  for(const e of S.el){
+    if(S.on)e.vx+=SAE*dt;                         // Elektronen werden zum Pluspol (rechts) gezogen
+    e.x+=e.vx*dt;e.y+=e.vy*dt;
+    if(Math.random()<g*dt){[e.vx,e.vy]=randDir(SV0)}
+    if(e.y<S.yT){e.y=2*S.yT-e.y;e.vy=-e.vy}
+    if(e.y>S.yB){e.y=2*S.yB-e.y;e.vy=-e.vy}
+    if(e.x>S.xR||e.x<S.xL){e.x+=e.x>S.xR?-span:span;if(e===S.el[0])S.trail=[]}   // geschlossener Stromkreis
+  }
+  if(S.follow){S.trail.push([S.el[0].x,S.el[0].y]);if(S.trail.length>260)S.trail.shift()}
+}
+function sDraw(){
+  const {ctx}=S.cv;if(!S.cv.fit())return;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,S.H);
+  ctx.fillStyle=alpha(COL.electron,.08);ctx.fillRect(S.xL,S.yT,S.xR-S.xL,S.yB-S.yT);
+  if(S.on){
+    ctx.fillStyle=COL.ink;ctx.fillRect(14,S.yT,10,S.yB-S.yT);ctx.fillRect(W-24,S.yT,10,S.yB-S.yT);
+    text(ctx,"−",19,16,COL.ink,24,"center",700);text(ctx,"+",W-19,16,COL.ink,24,"center",700);
+    text(ctx,"Elektronen wandern zum Pluspol  →",W/2,14,COL.muted,15);
+  }
+  const amp=sAmp(S.T),q=METALL[S.metall].q;
+  for(const p of S.ions){
+    const x=p.x+amp*Math.sin(p.f1*S.t+p.p1),y=p.y+amp*Math.sin(p.f2*S.t+p.p2);
+    circle(ctx,x,y,22,COL.rumpf);text(ctx,q,x,y+1,COL["rumpf-ink"],18,"center",700);
+  }
+  if(S.follow&&S.trail.length>1){
+    ctx.beginPath();ctx.moveTo(...S.trail[0]);for(const p of S.trail)ctx.lineTo(...p);
+    ctx.strokeStyle=alpha(COL.ink,.55);ctx.lineWidth=1.6;ctx.stroke();
+  }
+  for(const e of S.el)circle(ctx,e.x,e.y,3.6,COL.electron);
+  if(S.follow)circle(ctx,S.el[0].x,S.el[0].y,6.5,COL.electron,COL.ink,2);
+}
+function sUpdateUI(){
+  const m=METALL[S.metall];
+  $("s-temp-out").textContent=S.T+" °C";
+  const I=S.on?sGamma(20)/sGamma(S.T):0;
+  $("s-bar").style.width=Math.min(100,I*25)+"%";
+  $("s-val").textContent=Math.round(I*100)+" %";
+  $("s-on").textContent=S.on?"Spannung abschalten":"Spannung anlegen";
+  $("s-follow").textContent="Ein Elektron verfolgen: "+(S.follow?"an":"aus");
+  $("s-follow").setAttribute("aria-pressed",S.follow);
+  document.querySelectorAll("[data-metall]").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.metall===S.metall));
+  let t=`${m.name}: Jedes Atom gibt ${S.metall===1?"sein Außenelektron":S.metall+" Außenelektronen"} an das Elektronengas ab. Übrig bleibt der Atomrumpf ${m.sym}${m.q.replace("+","⁺").replace("2","²").replace("3","³")}. `;
+  t+=S.on?"Mit Spannung wandern die Elektronen zusätzlich zur ungeordneten Bewegung langsam zum Pluspol. Diese gerichtete Bewegung ist der elektrische Strom."
+         :"Ohne Spannung bewegen sich die Elektronen ungeordnet in alle Richtungen. Im Mittel fließt kein Strom.";
+  if(S.on&&S.T>=100)t+=" Die Rümpfe schwingen stark und lenken die Elektronen oft ab: Der Strom wird kleiner.";
+  else if(S.on&&S.T<=-50)t+=" Die Rümpfe schwingen kaum, die Elektronen kommen zwischen zwei Ablenkungen weit: Der Strom wird größer.";
+  const st=$("s-status");st.textContent=t;
+  if(S.T>m.smp){const w=document.createElement("span");w.className="warn";w.textContent=`Hinweis: ${m.name} wäre bei ${S.T} °C schon geschmolzen (Schmelzpunkt ${fmt(m.smp,m.smp%1?1:0)} °C). Das Modell zeigt trotzdem ein festes Gitter.`;st.appendChild(w)}
+}
+$("s-on").addEventListener("click",()=>{S.on=!S.on;sUpdateUI()});
+$("s-follow").addEventListener("click",()=>{S.follow=!S.follow;S.trail=[];sUpdateUI()});
+$("s-temp").addEventListener("input",e=>{S.T=+e.target.value;sUpdateUI()});
+document.querySelectorAll("[data-metall]").forEach(b=>b.addEventListener("click",()=>{S.metall=+b.dataset.metall;sMakeElectrons();sUpdateUI()}));
+sMakeElectrons();sUpdateUI();
+
+// =====================================================================
+// 2) Wärmeleitung
+// =====================================================================
+const HW={H:420,modus:"metall",heat:false,fast:false,t:0,done:false,erg:{metall:null,isolator:null},
+  a:64,cols:13,rows:6,x0:96,yBottom:349,xL:68,xR:928,yT:30,yB:392,el:[]};
+HW.ions=hexLattice(HW.cols,HW.rows,HW.a,HW.x0,HW.yBottom);
+HW.ions.forEach(p=>p.th=0);
+HW.pairs=[];
+for(let i=0;i<HW.ions.length;i++)for(let j=i+1;j<HW.ions.length;j++){
+  const A=HW.ions[i],B=HW.ions[j];if(Math.hypot(A.x-B.x,A.y-B.y)<HW.a*1.1)HW.pairs.push([i,j]);
+}
+HW.cv=makeCanvas("cv-waerme",HW.H);
+// Gitter leitet langsam von Nachbar zu Nachbar; Elektronen tragen Energie weit und schnell
+const HKL=0.12, HV0=420, HG=3, HX=0.8, HCE=0.8, HZIEL=(60-20)/180;
+const hTemp=th=>20+180*th;
+
+function hReset(){
+  HW.t=0;HW.done=false;HW.heat=false;HW.ions.forEach(p=>p.th=0);HW.el=[];
+  if(HW.modus==="metall")for(let i=0;i<HW.ions.length;i++){const [vx,vy]=randDir(HV0);HW.el.push({x:HW.xL+Math.random()*(HW.xR-HW.xL),y:HW.yT+Math.random()*(HW.yB-HW.yT),vx,vy,th:0})}
+}
+function hNearest(x,y){
+  const r=Math.max(0,Math.min(HW.rows-1,Math.round((HW.yBottom-y)/(HW.a*0.866))));
+  const c=Math.max(0,Math.min(HW.cols-1,Math.round((x-HW.x0-(r%2?HW.a/2:0))/HW.a)));
+  return HW.ions[r*HW.cols+c];
+}
+function hSensor(){let s=0,n=0;for(const p of HW.ions)if(p.c===HW.cols-1){s+=p.th;n++}return s/n}
+function hStep(dt){
+  if(!HW.heat)return;
+  HW.t+=dt;
+  const d=new Float64Array(HW.ions.length);
+  for(const [i,j] of HW.pairs){const f=HKL*(HW.ions[j].th-HW.ions[i].th)*dt;d[i]+=f;d[j]-=f}
+  HW.ions.forEach((p,i)=>p.th+=d[i]);
+  for(const e of HW.el){
+    e.x+=e.vx*dt;e.y+=e.vy*dt;
+    if(e.x<HW.xL){e.x=2*HW.xL-e.x;e.vx=-e.vx}if(e.x>HW.xR){e.x=2*HW.xR-e.x;e.vx=-e.vx}
+    if(e.y<HW.yT){e.y=2*HW.yT-e.y;e.vy=-e.vy}if(e.y>HW.yB){e.y=2*HW.yB-e.y;e.vy=-e.vy}
+    if(Math.random()<HG*dt){                       // Stoß mit dem nächsten Rumpf: Energie wird ausgetauscht
+      [e.vx,e.vy]=randDir(HV0);
+      const p=hNearest(e.x,e.y),x=(e.th-p.th)*HX;e.th-=x;p.th+=x*HCE;
+    }
+  }
+  for(const p of HW.ions)if(p.c===0)p.th=1;     // Heizplatte hält die linke Reihe heiß
+  if(!HW.done&&hSensor()>=HZIEL){HW.done=true;HW.erg[HW.modus]=HW.t;hUpdateUI()}
+}
+function hDraw(){
+  const {ctx}=HW.cv;if(!HW.cv.fit())return;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,HW.H);
+  const met=HW.modus==="metall";
+  if(met){ctx.fillStyle=alpha(COL.electron,.08);ctx.fillRect(HW.xL,HW.yT,HW.xR-HW.xL,HW.yB-HW.yT)}
+  ctx.fillStyle=HW.heat?COL.heiss1:COL.line;ctx.fillRect(28,HW.yT,22,HW.yB-HW.yT);
+  text(ctx,HW.heat?"Heizplatte 200 °C":"Heizplatte aus",39,HW.yB+16,COL.muted,14,"left");
+  text(ctx,"Messpunkt",W-14,HW.yB+16,COL.muted,14,"right");
+  ctx.setLineDash([5,5]);ctx.strokeStyle=COL.muted;ctx.lineWidth=1.2;
+  const xs=HW.x0+(HW.cols-1)*HW.a+HW.a/2+30;ctx.beginPath();ctx.moveTo(xs-60,HW.yT-4);ctx.lineTo(xs-60,HW.yB+4);ctx.stroke();ctx.setLineDash([]);
+  for(const p of HW.ions){
+    const amp=1.2+6*p.th,x=p.x+amp*Math.sin(p.f1*HW.t+p.p1),y=p.y+amp*Math.sin(p.f2*HW.t+p.p2);
+    circle(ctx,x,y,22,heatColor(p.th));
+    if(met)text(ctx,"+",x,y+1,p.th>.55?"#1d2533":COL["rumpf-ink"],18,"center",700);
+  }
+  for(const e of HW.el){
+    const hot=Math.min(1,e.th*1.6);
+    if(hot>.08)circle(ctx,e.x,e.y,7,alpha(COL.heiss1,.45*hot));
+    circle(ctx,e.x,e.y,3.6,COL.electron);
+  }
+  text(ctx,"Modellzeit: "+fmt(HW.t)+" s",W-14,14,COL.muted,15,"right");
+}
+function hUpdateUI(){
+  const T=hTemp(hSensor());
+  $("w-val").textContent=Math.round(T)+" °C";
+  $("w-bar").style.width=Math.min(100,(T-20)/180*100)+"%";
+  $("w-start").textContent=HW.heat?"Neu starten":"Heizplatte einschalten";
+  $("w-fast").textContent="Zeitraffer ×5: "+(HW.fast?"an":"aus");
+  $("w-fast").setAttribute("aria-pressed",HW.fast);
+  document.querySelectorAll("[data-modus]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.modus===HW.modus));
+  for(const k of ["metall","isolator"])$("w-erg-"+k).textContent=HW.erg[k]==null?(HW.modus===k&&HW.heat?"läuft …":"–"):fmt(HW.erg[k])+" s";
+  const met=HW.modus==="metall";let t;
+  if(!HW.heat)t=met?"Ein Metall mit Atomrümpfen und Elektronengas. Schalten Sie die Heizplatte ein und beobachten Sie die Rümpfe und die Elektronen."
+                  :"Ein Werkstoff ohne freie Elektronen, z. B. Glas oder Keramik. Schalten Sie die Heizplatte ein und vergleichen Sie mit dem Metall.";
+  else if(met)t="Die Rümpfe an der Heizplatte schwingen stark. Die freien Elektronen nehmen dort Energie auf (gelber Schein) und tragen sie schnell durch das ganze Metall.";
+  else t="Ohne freie Elektronen wird die Wärme nur über die Schwingungen von Teilchen zu Teilchen weitergegeben. Das dauert deutlich länger.";
+  if(HW.done)t+=` Der Messpunkt hat 60 °C nach ${fmt(HW.erg[HW.modus])} s erreicht.`;
+  $("w-status").textContent=t;
+}
+document.querySelectorAll("[data-modus]").forEach(b=>b.addEventListener("click",()=>{HW.modus=b.dataset.modus;hReset();hUpdateUI()}));
+$("w-start").addEventListener("click",()=>{hReset();HW.heat=true;hUpdateUI()});
+$("w-fast").addEventListener("click",()=>{HW.fast=!HW.fast;hUpdateUI()});
+hReset();hUpdateUI();
+
+// =====================================================================
+// 3) Verformbarkeit
+// =====================================================================
+const V={H:500,s:0,ziel:null,t:0,a:56,cols:11,rows:6,x0:102,yBottom:330};
+V.cv=makeCanvas("cv-verf",V.H);
+V.ions=hexLattice(V.cols,V.rows,V.a,V.x0,V.yBottom);
+V.slipY=V.yBottom-2.5*V.a*0.866;
+V.lift=s=>V.a*0.134*(1-Math.cos(TAU*s))/2;      // Hinausheben aus der Mulde: bis Reihenabstand = Kugeldurchmesser
+// Elektronengas je Gitterhälfte, Koordinaten relativ zur Hälfte
+V.box={unten:{x1:V.x0-V.a/2-6,x2:V.x0+(V.cols-1)*V.a+V.a+6,y1:V.slipY,y2:V.yBottom+V.a/2},
+       oben:{x1:V.x0-V.a/2-6,x2:V.x0+(V.cols-1)*V.a+V.a+6,y1:V.yBottom-5*V.a*0.866-V.a/2,y2:V.slipY}};
+V.el=[];
+for(const [k,b] of Object.entries(V.box))for(let i=0;i<V.cols*3;i++){const [vx,vy]=randDir(120);V.el.push({k,x:b.x1+Math.random()*(b.x2-b.x1),y:b.y1+Math.random()*(b.y2-b.y1),vx,vy})}
+
+function vStep(dt){
+  V.t+=dt;
+  if(V.ziel!=null){const d=V.ziel-V.s,v=0.7*dt;if(Math.abs(d)<=v){V.s=V.ziel;V.ziel=null}else V.s+=Math.sign(d)*v;vUpdateUI()}
+  for(const e of V.el){
+    const b=V.box[e.k];e.x+=e.vx*dt;e.y+=e.vy*dt;
+    if(e.x<b.x1){e.x=2*b.x1-e.x;e.vx=-e.vx}if(e.x>b.x2){e.x=2*b.x2-e.x;e.vx=-e.vx}
+    if(e.y<b.y1){e.y=2*b.y1-e.y;e.vy=-e.vy}if(e.y>b.y2){e.y=2*b.y2-e.y;e.vy=-e.vy}
+    if(Math.random()<3*dt)[e.vx,e.vy]=randDir(120);
+  }
+}
+function vDraw(){
+  const {ctx}=V.cv;if(!V.cv.fit())return;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,V.H);
+  const dx=V.s*V.a,dy=-V.lift(V.s);
+  for(const [k,b] of Object.entries(V.box)){
+    const ox=k==="oben"?dx:0,oy=k==="oben"?dy:0;
+    ctx.fillStyle=alpha(COL.electron,.10);ctx.beginPath();ctx.roundRect(b.x1+ox,b.y1+oy,b.x2-b.x1,b.y2-b.y1,14);ctx.fill();
+  }
+  ctx.setLineDash([8,6]);ctx.strokeStyle=COL.muted;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(20,V.slipY);ctx.lineTo(W-20,V.slipY);ctx.stroke();ctx.setLineDash([]);
+  text(ctx,"Gleitebene",24,V.slipY-12,COL.muted,14,"left");
+  for(const p of V.ions){
+    const up=p.r>=3,x=p.x+(up?dx:0)+1.2*Math.sin(p.f1*V.t+p.p1),y=p.y+(up?dy:0)+1.2*Math.sin(p.f2*V.t+p.p2);
+    circle(ctx,x,y,V.a/2-1,COL.rumpf,COL.card,1.5);text(ctx,"+",x,y+1,COL["rumpf-ink"],18,"center",700);
+  }
+  for(const e of V.el){const up=e.k==="oben";circle(ctx,e.x+(up?dx:0),e.y+(up?dy:0),3.2,COL.electron)}
+  if(V.s>=0.95)text(ctx,"← Gleitstufe",V.box.unten.x2+10,V.slipY+18,COL.ink,14,"left");
+  // Energieberg
+  const px=(s)=>140+s*220,py0=448,ph=50;
+  ctx.strokeStyle=COL.line;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(px(0),py0);ctx.lineTo(px(3),py0);ctx.stroke();
+  ctx.beginPath();for(let i=0;i<=300;i++){const s=i/100,y=py0-ph*(1-Math.cos(TAU*s))/2;i?ctx.lineTo(px(s),y):ctx.moveTo(px(s),y)}
+  ctx.strokeStyle=COL.muted;ctx.lineWidth=2;ctx.stroke();
+  for(let k=0;k<=3;k++)text(ctx,String(k),px(k),py0+14,COL.muted,13);
+  text(ctx,"Energie",px(0)-12,py0-ph/2,COL.muted,14,"right");
+  text(ctx,"Verschiebung in Atomabständen",px(1.5),py0+34,COL.muted,13);
+  circle(ctx,px(V.s),py0-ph*(1-Math.cos(TAU*V.s))/2,7,COL.electron,COL.ink,2);
+}
+function vUpdateUI(){
+  $("v-s").value=V.s;$("v-s-out").textContent=fmt(V.s,2);
+  const n=Math.round(V.s),nah=Math.abs(V.s-n)<0.05;let t;
+  if(nah&&n===0)t="Ausgangslage: Jeder Rumpf der oberen Reihe liegt in einer Mulde zwischen zwei Rümpfen der Reihe darunter. Verschieben Sie die obere Hälfte mit dem Regler oder dem Knopf.";
+  else if(nah)t=`Um ${n} Atomabstand${n>1?"e":""} verschoben: Jeder Rumpf liegt wieder in einer Mulde und ist genauso vom Elektronengas umgeben wie vorher. Der Bindungszustand ist derselbe. Das Metall ist bleibend verformt, aber nicht gebrochen. Nur außen ist eine Stufe entstanden.`;
+  else t="Die oberen Rümpfe werden gerade über die unteren gehoben. Das kostet Kraft (Energieberg unten). Das Elektronengas hält die Rümpfe dabei weiter zusammen, es reißt nichts ab.";
+  $("v-status").textContent=t;
+  $("v-step").disabled=V.s>=3;
+}
+$("v-s").addEventListener("input",e=>{V.ziel=null;V.s=+e.target.value;vUpdateUI()});
+$("v-step").addEventListener("click",()=>{V.ziel=Math.min(3,Math.floor(V.s+0.05)+1)});
+$("v-reset").addEventListener("click",()=>{V.ziel=null;V.s=0;vUpdateUI()});
+vUpdateUI();
+
+// =====================================================================
+// Beobachtungsfragen
+// =====================================================================
+const FRAGEN={
+ strom:[
+  {q:"In welche Richtung bewegen sich die Elektronen im Mittel, wenn Spannung anliegt?",
+   o:["Zum Pluspol, zusätzlich zu ihrer ungeordneten Bewegung","Zum Minuspol","Gar nicht, sie bewegen sich weiter nur ungeordnet"],r:0,
+   w:"Elektronen sind negativ geladen und werden vom Pluspol angezogen. Die ungeordnete Bewegung bleibt, die Wanderung kommt hinzu. Die technische Stromrichtung (von + nach −) wurde festgelegt, bevor man die Elektronen kannte. Sie ist deshalb umgekehrt."},
+  {q:"Stellen Sie die Temperatur höher. Was passiert mit dem Strom, und warum?",
+   o:["Er wird kleiner, weil die stärker schwingenden Atomrümpfe die Elektronen öfter ablenken.","Er wird größer, weil sich die Elektronen schneller bewegen.","Er bleibt gleich, weil die Zahl der freien Elektronen gleich bleibt."],r:0,
+   w:"Der elektrische Widerstand von Metallen steigt mit der Temperatur. Deshalb hat zum Beispiel der Draht einer Glühlampe kalt einen viel kleineren Widerstand als im Betrieb."},
+  {q:"Aluminium hat 3 Außenelektronen. Welche Ladung trägt ein Atomrumpf im Aluminium?",
+   o:["3+","3−","Keine, der Rumpf ist neutral"],r:0,
+   w:"Jedes Aluminiumatom gibt seine 3 Außenelektronen an das Elektronengas ab. Dem Rumpf fehlen dann 3 negative Ladungen: Al³⁺. Das Metall als Ganzes bleibt neutral, denn die Elektronen sind ja noch da."}
+ ],
+ waerme:[
+  {q:"Messen Sie beide Werkstoffe. Warum erreicht die Wärme den Messpunkt im Metall schneller?",
+   o:["Die freien Elektronen nehmen an der heißen Seite Energie auf und tragen sie schnell weiter.","Die Atomrümpfe wandern von der heißen zur kalten Seite.","Das Metall ist von Anfang an wärmer."],r:0,
+   w:"Die Rümpfe bleiben an ihrem Platz und schwingen nur. Den größten Teil der Wärme transportieren im Metall die beweglichen Elektronen. Deshalb sind gute elektrische Leiter wie Kupfer, Silber und Aluminium auch gute Wärmeleiter."},
+  {q:"Ein Stahlgeländer und ein Holzgeländer stehen seit Stunden im gleichen Raum. Warum fühlt sich der Stahl kälter an?",
+   o:["Der Stahl leitet die Wärme schneller von der Hand weg.","Der Stahl ist tatsächlich kälter als das Holz.","Der Stahl gibt Kälte an die Hand ab."],r:0,
+   w:"Beide haben die gleiche Temperatur. Die Hand spürt aber, wie schnell sie Wärme verliert, und das geht beim Metall dank des Elektronengases viel schneller. „Kälte“ als Stoff, der abgegeben wird, gibt es nicht."}
+ ],
+ verf:[
+  {q:"Verschieben Sie um genau einen Atomabstand. Was hat sich im Inneren des Gitters geändert?",
+   o:["Nichts: Jeder Rumpf sitzt wieder in einer Mulde, der Bindungszustand ist derselbe wie vorher.","Die Rümpfe liegen jetzt genau übereinander.","Zwischen den beiden Hälften ist ein Spalt entstanden."],r:0,
+   w:"Nur außen ist eine Stufe entstanden, die Gleitstufe. Das Metall ist bleibend verformt, aber nicht beschädigt. Das passiert beim Biegen einer Büroklammer viele Millionen Mal."},
+  {q:"Warum bricht das Metall beim Verschieben nicht?",
+   o:["Das Elektronengas hält die Rümpfe in jeder Lage zusammen.","Die Rümpfe verformen sich und passen sich an.","Jedes Elektron sitzt fest zwischen zwei bestimmten Rümpfen."],r:0,
+   w:"Die Metallbindung hängt nicht an festen Partnern. Jeder Rumpf ist in jeder Lage von Elektronengas umgeben und wird von ihm angezogen. Deshalb sind Metalle verformbar (duktil)."}
+ ]
+};
+function renderFragen(key,id){
+  const box=$(id);box.innerHTML="<h3>Beobachtungsfragen</h3>";
+  FRAGEN[key].forEach((f,i)=>{
+    // Antworten gemischt anzeigen, damit die richtige nicht immer oben steht
+    const ord=f.o.map((_,k)=>k).sort(()=>Math.random()-.5);
+    const d=document.createElement("div");d.className="frage";
+    const name=`${key}-${i}`;
+    d.innerHTML=`<p>${i+1}. ${f.q}</p>`+ord.map(k=>`<label><input type="radio" name="${name}" value="${k}"><span>${f.o[k]}</span></label>`).join("")+
+      `<div class="row" style="margin-top:6px"><button class="btn-2">Prüfen</button></div><div class="fb" aria-live="polite"></div>`;
+    const fb=d.querySelector(".fb");
+    d.querySelector("button").addEventListener("click",()=>{
+      const sel=d.querySelector("input:checked");
+      if(!sel){fb.className="fb fb-hint";fb.textContent="Bitte wählen Sie zuerst eine Antwort.";return}
+      if(+sel.value===f.r){fb.className="fb fb-ok";fb.textContent="Richtig. "+f.w}
+      else{fb.className="fb fb-bad";fb.textContent="Noch nicht. Beobachten Sie das Modell noch einmal genau."}
+    });
+    d.addEventListener("change",()=>{fb.className="fb";fb.textContent=""});
+    box.appendChild(d);
+  });
+}
+renderFragen("strom","q-strom");renderFragen("waerme","q-waerme");renderFragen("verf","q-verf");
+
+// =====================================================================
+// Reiter, Pause und Animationsschleife
+// =====================================================================
+const SIMS={strom:{step:sStep,draw:sDraw},waerme:{step:dt=>hStep(dt),draw:hDraw},verf:{step:vStep,draw:vDraw}};
+let aktiv="strom",pause=false;
+function zeige(k){
+  aktiv=k;
+  for(const t of ["strom","waerme","verf"]){$("tab-"+t).setAttribute("aria-selected",t===k);$("box-"+t).hidden=t!==k}
+}
+for(const t of ["strom","waerme","verf"])$("tab-"+t).addEventListener("click",()=>zeige(t));
+document.querySelectorAll(".pause").forEach(b=>b.addEventListener("click",()=>{
+  pause=!pause;document.querySelectorAll(".pause").forEach(x=>x.textContent=pause?"Weiter":"Pause");
+}));
+let last=performance.now(),uiTick=0;
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(!pause){
+    let rest=dt*(aktiv==="waerme"&&HW.fast?5:1);
+    while(rest>1e-6){const h=Math.min(1/120,rest);SIMS[aktiv].step(h);rest-=h}
+    if(aktiv==="waerme"&&(uiTick+=dt)>0.2){uiTick=0;hUpdateUI()}
+  }
+  SIMS[aktiv].draw();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
