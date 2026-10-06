@@ -127,7 +127,6 @@
       <button class="btn-2" id="p-lines" aria-pressed="true">Gitterlinien: an</button>
       <button class="btn-2" id="p-ideal" aria-pressed="false">Idealplätze: aus</button>
       <button class="btn-2" id="p-reset">Zurücksetzen</button>
-      <button class="btn-2 pause">Pause</button>
     </div>
     <div class="status" id="p-status" aria-live="polite"></div>
     <details class="zahlen"><summary>Zahlen dazu</summary>
@@ -220,16 +219,11 @@
       <label class="regler">Abstand der Versetzungen <input type="range" id="k-d" min="4" max="20" step="1" value="10"><output id="k-d-out">10 Atomabstände</output></label>
       <b id="k-theta" style="font-size:1.1rem"></b>
       <button class="btn-2" id="k-reset2">Zurücksetzen</button>
-      <button class="btn-2 pause">Pause</button>
-    </div>
-    <div class="row" data-modus="zwilling" hidden>
-      <button class="btn-2 pause">Pause</button>
     </div>
     <div class="row" data-modus="phase" hidden>
       <span class="wahl" role="group" aria-label="Kohärenz" id="k-koh">
         <button data-p="koh" aria-pressed="true">kohärent</button><button data-p="teil" aria-pressed="false">teilkohärent</button><button data-p="inkoh" aria-pressed="false">inkohärent</button>
       </span>
-      <button class="btn-2 pause">Pause</button>
     </div>
     <div class="status" id="k-status" aria-live="polite"></div>
     <p class="grenze"><b>Modellgrenze:</b> Echte Körner sind räumlich und meist etwa 0,01 bis 0,1 mm groß, also Zehntausende bis Hunderttausende Atomabstände. Im Modell sind sie winzig, damit man die Atome noch sieht. Beim Erstarren wachsen die Körner oft verzweigt wie Tannenbäume (Dendriten), nicht gleichmäßig rund. Das Modell zeigt nur einen ebenen Schnitt, so wie ein Schliffbild. Zwillingsgrenze und Phasengrenze sind schematisch gezeichnet und zeigen kein bestimmtes Metallgitter.</p>
@@ -275,7 +269,6 @@
       <button class="btn" id="c-bend">Biegen</button>
       <button class="btn-2" id="c-anneal">Glühen</button><span class="ausblick">Ausblick</span>
       <button class="btn-2" id="c-reset">Neue Büroklammer</button>
-      <button class="btn-2 pause">Pause</button>
     </div>
     <p class="summe" id="c-count" style="margin-top:12px"></p>
     <div class="messung" style="grid-template-columns:auto 1fr">
@@ -1183,25 +1176,23 @@ renderFragen("punkt","q-punkt");renderFragen("vers","q-vers");renderFragen("korn
 // =====================================================================
 // Reiter, Pause und Animationsschleife
 // =====================================================================
-const SIMS={punkt:{step:pStep,draw:pDraw},vers:{step:dStep,draw:dDraw},korn:{step:kStep,draw:kDraw},verf:{step:dt=>{fStep(dt);cStep(dt)},draw:()=>{fDraw();cDraw()}}};
+// Pause hält nur die Abläufe an, die einen Pause-Knopf haben (Versetzung, Erstarren, Verfestigung)
+const SIMS={punkt:{step:pStep,draw:pDraw},vers:{step:dt=>{if(!pause)dStep(dt)},draw:dDraw},korn:{step:dt=>{if(!pause)kStep(dt)},draw:kDraw},verf:{step:dt=>{if(!pause)fStep(dt);cStep(dt)},draw:()=>{fDraw();cDraw()}}};
 const TABS=["punkt","vers","korn","verf"];
 let aktiv="punkt",pause=false;
+function setPause(p){pause=p;document.querySelectorAll(".pause").forEach(x=>x.textContent=p?"Weiter":"Pause")}
 function zeige(k){
-  aktiv=k;
+  aktiv=k;setPause(false);
   for(const t of TABS){$("tab-"+t).setAttribute("aria-selected",t===k);$("box-"+t).hidden=t!==k}
 }
 for(const t of TABS)$("tab-"+t).addEventListener("click",()=>zeige(t));
-document.querySelectorAll(".pause").forEach(b=>b.addEventListener("click",()=>{
-  pause=!pause;document.querySelectorAll(".pause").forEach(x=>x.textContent=pause?"Weiter":"Pause");
-}));
+document.querySelectorAll(".pause").forEach(b=>b.addEventListener("click",()=>setPause(!pause)));
 let last=performance.now(),uiTick=0;
 function frame(now){
   const dt=Math.min(0.05,(now-last)/1000);last=now;
-  if(!pause){
-    let rest=dt;
-    while(rest>1e-6){const h=Math.min(1/120,rest);SIMS[aktiv].step(h);rest-=h}
-    if(aktiv==="verf"&&(uiTick+=dt)>.2){uiTick=0;fUI()}
-  }
+  let rest=dt;
+  while(rest>1e-6){const h=Math.min(1/120,rest);SIMS[aktiv].step(h);rest-=h}
+  if(aktiv==="verf"&&!pause&&(uiTick+=dt)>.2){uiTick=0;fUI()}
   SIMS[aktiv].draw();
   requestAnimationFrame(frame);
 }
