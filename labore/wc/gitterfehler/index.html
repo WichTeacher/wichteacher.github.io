@@ -232,7 +232,7 @@
       <button class="btn-2 pause">Pause</button>
     </div>
     <div class="status" id="k-status" aria-live="polite"></div>
-    <p class="grenze"><b>Modellgrenze:</b> Echte Körner sind räumlich und meist etwa 0,01 bis 0,1 mm groß, also Zehntausende bis Hunderttausende Atomabstände. Im Modell sind sie winzig, damit man die Atome noch sieht. Beim Erstarren wachsen die Körner oft verzweigt wie Tannenbäume (Dendriten), nicht gleichmäßig rund. Das Modell zeigt nur einen ebenen Schnitt, so wie ein Schliffbild.</p>
+    <p class="grenze"><b>Modellgrenze:</b> Echte Körner sind räumlich und meist etwa 0,01 bis 0,1 mm groß, also Zehntausende bis Hunderttausende Atomabstände. Im Modell sind sie winzig, damit man die Atome noch sieht. Beim Erstarren wachsen die Körner oft verzweigt wie Tannenbäume (Dendriten), nicht gleichmäßig rund. Das Modell zeigt nur einen ebenen Schnitt, so wie ein Schliffbild. Zwillingsgrenze und Phasengrenze sind schematisch gezeichnet und zeigen kein bestimmtes Metallgitter.</p>
     <div class="fragen" id="q-korn"></div>
   </section>
 
@@ -744,7 +744,10 @@ function sceneDraw(sc){
   for(const l of sc.lines||[])line(ctx,l.x1,l.y1,l.x2,l.y2,COL[l.col],l.lw,l.dash);
   for(const a of sc.atoms)circle(ctx,a.x,a.y,a.r||14,COL[a.col],a.ring?COL["at-wahl"]:COL.card,a.ring?3.5:1.5);
   for(const m of sc.marks)perp(ctx,m.x,m.y,m.s||8,COL.ink,m.ang);
-  for(const l of sc.labels)text(ctx,l.s,l.x,l.y,COL.muted,15,l.align||"center");
+  for(const l of sc.labels){
+    if(l.bg){ctx.font="600 15px Barlow, system-ui, sans-serif";const w=ctx.measureText(l.s).width+12;ctx.fillStyle=COL.card;ctx.fillRect(l.x-w/2,l.y-11,w,22)}   // Beschriftung nicht auf den Atomen
+    text(ctx,l.s,l.x,l.y,COL.muted,15,l.align||"center");
+  }
 }
 // Kleinwinkelkorngrenze: zwei gegeneinander gekippte Gitter, getrennt durch eine senkrechte Grenze.
 // Linker Kristall um +θ/2, rechter um −θ/2 gedreht. Wo die Spaltenabstände an der Grenze nicht mehr passen,
@@ -791,7 +794,7 @@ function zwBuild(){
   }
   sc.tints.push({x:K.x1,y:K.y1,w:ZW.xb-K.x1,h:K.y2-K.y1,col:"at-ecke",a:.1},{x:ZW.xb,y:K.y1,w:K.x2-ZW.xb,h:K.y2-K.y1,col:"at-mitte",a:.1});
   sc.lines=[{x1:ZW.xb,y1:K.y1,x2:ZW.xb,y2:K.y2,col:"ink",lw:2,dash:[8,6]}];
-  sc.labels.push({x:ZW.xb,y:K.y1+10,s:"Spiegelachse"});
+  sc.labels.push({x:ZW.xb,y:K.y1+14,s:"Spiegelachse",bg:true});
   ZW.sc=sc;
 }
 // Phasengrenze: Phase 1 (links) und Phase 2 (rechts) mit verschiedenem Atomabstand
@@ -989,7 +992,7 @@ function fDraw(){
   ctx.globalAlpha=an?1:.35;
   arrow(ctx,400,540,24,COL["at-wahl"],4);arrow(ctx,560,420,F.H-24,COL["at-wahl"],4);ctx.globalAlpha=1;
   line(ctx,20,yS,W-20,yS,COL.muted,1.5,[8,6]);
-  text(ctx,"Gleitebene",14,yS-3*a-12,COL.muted,14,"left");
+  text(ctx,"Gleitebene",14,yS-14,COL.muted,14,"left");
   // Hindernisse
   if(F.mode==="kalt")for(const o of F.obst){
     const x=F.x0+o.x*a;
@@ -1015,7 +1018,7 @@ function fDraw(){
   }
 }
 function fUI(){
-  $("f-tau-out").textContent=F.tau;
+  $("f-tau").value=F.tau;$("f-tau-out").textContent=F.tau;
   document.querySelectorAll("#f-modus [data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===F.mode));
   // Balken: nötige Schubspannung je Modus (Modell), Strich = angelegte Schubspannung
   const bars=$("f-bars");
