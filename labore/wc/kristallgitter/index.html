@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kristallgitter – Labor</title>
+<meta name="description" content="Interaktives Labor: Elementarzellen krz, kfz und hdp in 3D drehen, dichteste Kugelpackungen stapeln, Gitterumwandlung des Eisens und Kohlenstoff in Zwischengitterlücken">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Atomfarben nach Okabe-Ito, ohne Rot und Grün (die bleiben der Rückmeldung richtig/falsch vorbehalten). */
+  :root{--at-ecke:#2F6DB5;--at-flaeche:#D98E04;--at-mitte:#7B5BB6;--at-neutral:#7D8B97;--at-wahl:#1D2533;--at-nachbar:#F2C94C;--luecke:#FFFFFF;--kohlenstoff:#2B2B2B;--kohlenstoff-rand:#2B2B2B}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--at-ecke:#5BA7E8;--at-flaeche:#F0B23E;--at-mitte:#B39AF0;--at-neutral:#93A1AD;--at-wahl:#E7EAF0;--at-nachbar:#E0B93A;--luecke:#D5DCE6;--kohlenstoff:#0B0B0B;--kohlenstoff-rand:#CFD6E0}}
+  :root[data-theme="dark"]{--at-ecke:#5BA7E8;--at-flaeche:#F0B23E;--at-mitte:#B39AF0;--at-neutral:#93A1AD;--at-wahl:#E7EAF0;--at-nachbar:#E0B93A;--luecke:#D5DCE6;--kohlenstoff:#0B0B0B;--kohlenstoff-rand:#CFD6E0}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
+  .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 16px}
+  .tabs button[aria-selected="true"]{background:var(--fach);border-color:var(--fach);color:var(--fach-ink)}
+  .taskbox{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:var(--card);padding:16px;margin-bottom:16px}
+  canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+  canvas.cv3d{aspect-ratio:1/1;touch-action:none;cursor:grab}
+  canvas.cv3d:active{cursor:grabbing}
+  button{touch-action:manipulation}
+  button:focus-visible,input:focus-visible,canvas:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .lab{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .lab .row:first-child{margin-top:0}
+  .wahl{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .wahl button{font:inherit;border:none;background:var(--card);color:var(--ink);padding:6px 12px;cursor:pointer}
+  .wahl button+button{border-left:1px solid var(--line)}
+  .wahl button[aria-pressed="true"]{background:var(--fach);color:var(--fach-ink);font-weight:600}
+  .regler{display:flex;align-items:center;gap:10px;flex:1;min-width:240px}
+  .regler input{flex:1;accent-color:var(--fach)}
+  .regler output{font-weight:700;min-width:5.5em;text-align:right}
+  .status{border-left:4px solid var(--fach);border-radius:6px;padding:6px 10px;margin-top:12px;min-height:3.4em;font-size:.97rem;background:var(--soft)}
+  .legende{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:10px;font-size:.92rem}
+  .punkt{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1px solid var(--line)}
+  .summe{margin-top:8px;font-weight:600}
+  dl.kenn{display:grid;grid-template-columns:minmax(0,11em) minmax(0,1fr);gap:4px 12px;margin:12px 0 0;font-size:.95rem}
+  dl.kenn dt{color:var(--muted);font-weight:600}
+  dl.kenn dd{margin:0}
+  dl.kenn dd.frei{color:var(--muted)}
+  details.rechnung{margin-top:8px;font-size:.92rem}
+  details.rechnung summary{cursor:pointer;font-weight:600;color:var(--fach)}
+  details.rechnung p{margin:6px 0 0}
+  .folge{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
+  .folge .fl-text{font-family:var(--font-head);font-weight:700;font-size:1.7rem;letter-spacing:.04em}
+  .badge{display:inline-block;border:2px solid var(--fach);color:var(--fach);border-radius:999px;padding:1px 12px;font-weight:700;min-height:1.7em}
+  .badge:empty{display:none}
+  .phasen{position:relative;margin:30px 0 40px}
+  .phasen-bar{display:flex;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .phasen-bar span{display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden}
+  .seg-a{background:color-mix(in srgb,var(--at-ecke) 40%,var(--card))}
+  .seg-g{background:color-mix(in srgb,var(--at-flaeche) 45%,var(--card))}
+  .seg-d{background:color-mix(in srgb,var(--at-ecke) 22%,var(--card))}
+  .seg-f{background:var(--soft)}
+  .marke769{position:absolute;top:-4px;bottom:-4px;border-left:2px dashed var(--ink)}
+  .marke769 span{position:absolute;top:100%;left:0;transform:translateX(-50%);font-size:.8rem;white-space:nowrap;color:var(--muted);margin-top:2px}
+  .marke-t{position:absolute;top:-4px;bottom:-4px;border-left:2px solid var(--ink)}
+  .marke-t::before{content:"";position:absolute;top:-10px;left:-8px;border:7px solid transparent;border-top:10px solid var(--ink)}
+  .phasen-leg{font-size:.88rem;color:var(--muted);margin:0}
+  table.erg{border-collapse:collapse;margin-top:12px;font-size:.92rem;width:100%}
+  table.erg th,table.erg td{border:1px solid var(--line);padding:4px 10px;text-align:left;vertical-align:top}
+  table.erg th{background:var(--soft);font-weight:600}
+  .grenze{font-size:.88rem;color:var(--muted);margin:12px 0 0}
+  .fragen h3{margin:18px 0 4px;font-size:1.2rem;color:var(--fach)}
+  .frage{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+  .frage p{margin:0 0 6px;font-weight:600}
+  .frage label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer}
+  .frage input{margin-top:.35em;accent-color:var(--fach)}
+  .frage .fb{margin-top:8px}
+  .frage .fb:empty{display:none}
+  .hinweis{margin-top:8px}
+  .hinweis:empty{display:none}
+
+  .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
+  .info summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px}
+  .info summary::-webkit-details-marker{display:none}
+  .info summary::before{content:"▸";color:var(--fach);font-size:1.2rem;transition:transform .15s}
+  .info[open] summary::before{transform:rotate(90deg)}
+  .info summary:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .info-body{padding:0 16px 14px}
+  .info-body ol,.info-body ul{margin:0;padding-left:1.3em}
+  .info-body li{margin:0 0 8px}
+  .info-body p{margin:10px 0 6px}
+  .info-tip{margin:6px 0 0;padding:8px 10px;background:var(--soft);border-radius:6px;font-weight:600}
+  .tabelle-rolle{overflow-x:auto}
+  .innen-info{margin:16px 0 0}
+  @media (max-width:780px){.lab{grid-template-columns:minmax(0,1fr)}}
+  @media (max-width:480px){.wrap{padding:12px 12px 40px}.taskbox{padding:10px}.tabs button{padding:6px 10px;font-size:.92rem}.regler{min-width:100%;gap:6px}.regler output{min-width:3.6em}.info summary{padding:10px 12px}.info-body{padding:0 12px 12px}dl.kenn{grid-template-columns:minmax(0,1fr)}dl.kenn dd{margin-bottom:4px}.wahl button{padding:6px 9px}.phasen-bar span{font-size:.78rem}}
+  @media print{
+    .tabs,.row,.no-print{display:none!important}
+    [role=tabpanel]{display:block!important}
+    .lab{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    .taskbox{border:none;padding:0}
+    .info{break-inside:avoid}
+  }
+</style>
+</head>
+<body data-fach="wc">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Werkstoffkunde &amp; Chemie</a></div>
+    <h1>Kristallgitter</h1>
+    <p>Elementarzellen krz, kfz und hdp · dichteste Kugelpackungen · Eisen und Kohlenstoff</p>
+  </header>
+
+  <details class="info">
+    <summary>Grundbegriffe: Kristall, Gitter, Elementarzelle</summary>
+    <div class="info-body">
+      <ol>
+        <li>Wenn eine Metallschmelze erstarrt, ordnen sich die Atome regelmäßig an. Ein Bereich mit einheitlicher Anordnung heißt <b>Kristall</b>. Im Metall nennt man ihn <b>Korn</b>, die Gesamtheit aller Körner das <b>Gefüge</b>.</li>
+        <li>Denkt man sich die Atommittelpunkte durch Linien verbunden, entsteht ein räumliches Muster: das <b>Kristallgitter</b>.</li>
+        <li>Die <b>Elementarzelle</b> ist der kleinste Baustein, aus dem sich das ganze Gitter durch lückenloses Aneinanderreihen aufbauen lässt. Sie ist ein gedachter Ausschnitt, kein eigenes Teilchen.</li>
+        <li>Die meisten Gebrauchsmetalle kristallisieren in einem von drei Gittern: <b>kubisch-raumzentriert (krz)</b>, <b>kubisch-flächenzentriert (kfz)</b> und <b>hexagonal dichteste Packung (hdp)</b>.</li>
+        <li>Manche Metalle wechseln im festen Zustand das Gitter, wenn sich die Temperatur ändert. Beim Eisen ist das die Grundlage für das Härten von Stahl.</li>
+      </ol>
+      <p class="info-tip">Drehen: mit der Maus ziehen oder mit dem Finger wischen. Atome anklicken: im Modus „Nachbarn“.</p>
+    </div>
+  </details>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-zellen" aria-selected="true" aria-controls="box-zellen">Elementarzellen</button>
+    <button role="tab" id="tab-stapeln" aria-selected="false" aria-controls="box-stapeln">Stapeln</button>
+    <button role="tab" id="tab-eisen" aria-selected="false" aria-controls="box-eisen">Eisen und Kohlenstoff</button>
+  </div>
+
+  <!-- ===== Elementarzellen ===== -->
+  <section class="taskbox" id="box-zellen" role="tabpanel" aria-labelledby="tab-zellen">
+    <div class="lab">
+      <div>
+        <canvas class="cv3d" id="cv-zellen" tabindex="0" role="img" aria-label="Elementarzelle"></canvas>
+        <div class="legende" id="z-legende"></div>
+        <div class="summe" id="z-summe" aria-live="polite"></div>
+      </div>
+      <div>
+        <div class="row">
+          <span class="wahl" role="group" aria-label="Gitter">
+            <button data-g="krz" title="kubisch-raumzentriert" aria-pressed="true">krz</button><button data-g="kfz" title="kubisch-flächenzentriert" aria-pressed="false">kfz</button><button data-g="hdp" title="hexagonal dichteste Packung" aria-pressed="false">hdp</button>
+          </span>
+          <span class="wahl" role="group" aria-label="Darstellung">
+            <button data-dar="kugel" aria-pressed="false">Kugelmodell</button><button data-dar="gitter" aria-pressed="true">Gittermodell</button>
+          </span>
+        </div>
+        <div class="row">
+          <span class="wahl" role="group" aria-label="Modus">
+            <button data-modus="zaehlen" aria-pressed="true">Zählen</button><button data-modus="nachbarn" aria-pressed="false">Nachbarn</button><button data-modus="ebene" aria-pressed="false">Dichteste Ebene</button>
+          </span>
+        </div>
+        <div class="row">
+          <button class="btn-2" id="z-reset">Ansicht zurücksetzen</button>
+          <button class="btn-2" id="z-auto" aria-pressed="false">Automatisch drehen: aus</button>
+          <button class="btn" id="z-summe-btn">Summe berechnen</button>
+          <button class="btn-2" id="z-ebene-btn" hidden>Nächste Ebenenlage (1/4)</button>
+        </div>
+        <div class="status" id="z-status" aria-live="polite"></div>
+        <dl class="kenn" id="z-kenn"></dl>
+        <details class="rechnung"><summary>So wird die Packungsdichte berechnet</summary><p id="z-rechnung"></p></details>
+      </div>
+    </div>
+    <p class="grenze"><b>Modellgrenze:</b> Atome sind keine harten Kugeln mit scharfem Rand. Das Kugelmodell zeigt, welche Atome sich berühren, das Gittermodell zeigt, wo die Atommittelpunkte liegen. Ein echter Kristall besteht aus Milliarden aneinandergereihter Elementarzellen und enthält Gitterfehler wie Leerstellen, Fremdatome und Versetzungen. Gezeigt ist das ideale hdp-Gitter (c/a = 1,633). Echte hdp-Metalle weichen davon ab, Zink zum Beispiel deutlich (c/a ≈ 1,86).</p>
+    <div class="fragen" id="q-zellen"></div>
+    <details class="info innen-info">
+      <summary>Vergleich der drei Gitter und Verformbarkeit</summary>
+      <div class="info-body">
+        <div class="tabelle-rolle">
+        <table class="erg" aria-label="Vergleich der drei Gitter">
+          <thead><tr><th></th><th>krz</th><th>kfz</th><th>hdp</th></tr></thead>
+          <tbody>
+            <tr><th>Atome je Zelle</th><td>2</td><td>4</td><td>6 (Prisma)</td></tr>
+            <tr><th>Koordinationszahl</th><td>8</td><td>12</td><td>12</td></tr>
+            <tr><th>Packungsdichte</th><td>68 %</td><td>74 %</td><td>74 %</td></tr>
+            <tr><th>dichtest gepackte Ebenen</th><td>keine</td><td>4 Lagen</td><td>1 Lage (Basisebene)</td></tr>
+            <tr><th>Gleitsysteme bei Raumtemperatur</th><td>12 (mit weiteren Ebenen bis 48)</td><td>12</td><td>3</td></tr>
+            <tr><th>Kaltumformbarkeit</th><td>gut, bei Kälte schlechter</td><td>sehr gut, auch bei Kälte</td><td>gering</td></tr>
+            <tr><th>Beispiele</th><td>α-Fe, Cr, W, Mo, V</td><td>γ-Fe, Al, Cu, Ni, Ag, Au, Pb</td><td>Mg, Zn, α-Ti, Co</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p>Metalle verformen sich bleibend, indem Atomebenen aufeinander abgleiten. Ein Gleitsystem ist eine Gleitebene zusammen mit einer Gleitrichtung. Am leichtesten gleiten dichtest gepackte Ebenen in Richtung der dichtesten Atomreihen: Die Ebenen sind dort am glattesten und die Gleitschritte am kürzesten.</p>
+        <ul>
+          <li><b>kfz:</b> Dichtest gepackte Ebenen gibt es in 4 verschiedenen Neigungen, jede mit 3 Gleitrichtungen: 12 Gleitsysteme, die schon bei kleiner Kraft gleiten, und das auch bei tiefen Temperaturen. kfz-Metalle wie Aluminium, Kupfer und austenitischer Stahl sind deshalb sehr gut kalt umformbar und werden auch in der Tieftemperaturtechnik eingesetzt.</li>
+          <li><b>krz:</b> Es gibt mindestens genauso viele Gleitsysteme wie bei kfz, aber keine dichtest gepackte Ebene. Das Gleiten braucht mehr Kraft, und bei sinkender Temperatur deutlich mehr. Unterhalb einer Übergangstemperatur können krz-Stähle deshalb spröde brechen (Kaltsprödigkeit).</li>
+          <li><b>hdp:</b> Die dichtest gepackte Ebene gibt es nur in einer Lage. Bei Raumtemperatur gleiten fast nur diese Basisebenen, das sind 3 Gleitsysteme. Körner, deren Basisebene ungünstig zur Kraft liegt, können kaum gleiten. hdp-Metalle wie Magnesium sind deshalb schlecht kalt umformbar und werden meist warm umgeformt.</li>
+        </ul>
+        <p class="info-tip">Nicht die bloße Anzahl der Gleitsysteme entscheidet, sondern wie leicht sie gleiten und ob es Gleitmöglichkeiten in genügend vielen Richtungen gibt.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== Stapeln ===== -->
+  <section class="taskbox" id="box-stapeln" role="tabpanel" aria-labelledby="tab-stapeln" hidden>
+    <div class="lab">
+      <div>
+        <canvas class="cv3d" id="cv-stapeln" tabindex="0" role="img" aria-label="Gestapelte Lagen dichtest gepackter Kugeln"></canvas>
+      </div>
+      <div>
+        <div class="row">
+          <button class="btn" data-lage="A">Lage A auflegen</button>
+          <button class="btn" data-lage="B">Lage B auflegen</button>
+          <button class="btn" data-lage="C">Lage C auflegen</button>
+          <button class="btn-2" id="s-weg">Oberste Lage entfernen</button>
+          <button class="btn-2" id="s-neu">Neu beginnen</button>
+        </div>
+        <div class="row">
+          <span class="wahl" role="group" aria-label="Ansicht">
+            <button data-ansicht="schraeg" aria-pressed="true">Schräg</button><button data-ansicht="oben" aria-pressed="false">Von oben</button><button data-ansicht="seite" aria-pressed="false">Von der Seite</button>
+          </span>
+          <button class="btn-2" id="s-mulden" aria-pressed="false">Mulden zeigen: aus</button>
+          <button class="btn-2" id="s-zelle" aria-pressed="false">Elementarzelle einblenden: aus</button>
+        </div>
+        <div class="folge"><span class="fl-text" id="s-folge">Stapelfolge: A</span><span class="badge" id="s-badge"></span></div>
+        <div class="status" id="s-status" aria-live="polite"></div>
+        <div class="hinweis fb-hint" id="s-hint" aria-live="polite"></div>
+      </div>
+    </div>
+    <p class="grenze"><b>Modellgrenze:</b> Ein echter Kristall wächst nicht Lage für Lage von unten nach oben, sondern aus der Schmelze in alle Richtungen. Das Stapeln ist ein Gedankenmodell, das zeigt, wie sich gleich große Kugeln am dichtesten packen lassen. Gezeigt ist nur ein kleiner Ausschnitt jeder Lage, in Wirklichkeit setzen sich die Lagen in alle Richtungen fort.</p>
+    <div class="fragen" id="q-stapeln"></div>
+  </section>
+
+  <!-- ===== Eisen und Kohlenstoff ===== -->
+  <section class="taskbox" id="box-eisen" role="tabpanel" aria-labelledby="tab-eisen" hidden>
+    <div class="lab">
+      <div>
+        <canvas class="cv3d" id="cv-eisen" tabindex="0" role="img" aria-label="Eisengitter"></canvas>
+        <div class="phasen" id="e-phasen" role="img" aria-label="Phasenleiste">
+          <div class="phasen-bar"><span class="seg-a" style="width:56.39%">α · krz</span><span class="seg-g" style="width:30.44%">γ · kfz</span><span class="seg-d" style="width:9.11%">δ</span><span class="seg-f" style="width:4.05%"></span></div>
+          <div class="marke769" style="left:47.41%"><span>769 °C</span></div>
+          <div class="marke-t" id="e-marke" style="left:0%"></div>
+        </div>
+        <p class="phasen-leg">α · krz: 20–911 °C · γ · kfz: 911–1392 °C · δ · krz: 1392–1536 °C · flüssig: ab 1536 °C</p>
+      </div>
+      <div>
+        <div class="row">
+          <label class="regler">Temperatur <input type="range" id="e-temp" min="20" max="1600" step="1" value="20"><output id="e-temp-out">20 °C</output></label>
+        </div>
+        <div class="row" id="e-schnell">
+          <button class="btn-2" data-t="20">20 °C</button><button class="btn-2" data-t="800">800 °C</button><button class="btn-2" data-t="1000">1000 °C</button><button class="btn-2" data-t="1450">1450 °C</button><button class="btn-2" data-t="1600">1600 °C</button>
+        </div>
+        <div class="row">
+          <span class="wahl" role="group" aria-label="Lücken">
+            <button data-luecke="keine" aria-pressed="true">Keine</button><button data-luecke="okt" aria-pressed="false">Oktaederlücken</button><button data-luecke="tet" aria-pressed="false">Tetraederlücken</button>
+          </span>
+        </div>
+        <div class="row">
+          <button class="btn-2" id="e-c" aria-pressed="false">Kohlenstoffatom einsetzen: aus</button>
+          <button class="btn-2" id="e-dur" aria-pressed="false">Kugeln durchsichtig: aus</button>
+        </div>
+        <div class="status" id="e-status" aria-live="polite"></div>
+        <dl class="kenn" id="e-kenn"></dl>
+      </div>
+    </div>
+    <details class="info innen-info">
+      <summary>Bezug zum Eisen-Kohlenstoff-Diagramm und zum Härten</summary>
+      <div class="info-body">
+        <ol>
+          <li>Im Eisen-Kohlenstoff-Diagramm heißt das α-Eisen mit gelöstem Kohlenstoff <b>Ferrit</b>, das γ-Eisen mit gelöstem Kohlenstoff <b>Austenit</b>.</li>
+          <li>Beim Härten wird Stahl so weit erwärmt, dass er ganz oder teilweise austenitisch ist. Der Kohlenstoff löst sich dabei im kfz-Gitter.</li>
+          <li>Wird der Stahl dann schnell abgekühlt (abgeschreckt), hat der Kohlenstoff keine Zeit, das Gitter zu verlassen. Das Gitter klappt trotzdem in eine krz-ähnliche Form um und wird durch den eingeschlossenen Kohlenstoff stark verzerrt. Dieses verspannte Gefüge heißt <b>Martensit</b> und ist sehr hart.</li>
+          <li>Wird langsam abgekühlt, wandert der Kohlenstoff aus dem Gitter heraus und bildet mit Eisen eigene Bereiche (Zementit, Fe₃C). Das Gefüge bleibt weicher.</li>
+        </ol>
+        <p class="info-tip">Ohne die Gitterumwandlung des Eisens ließe sich Stahl nicht durch Abschrecken härten.</p>
+      </div>
+    </details>
+    <p class="grenze"><b>Modellgrenze:</b> Die Temperaturen gelten für reines Eisen. In Stahl beginnt die Umwandlung je nach Kohlenstoffgehalt schon zwischen 723 °C und 911 °C. Die Eisenatome sind im Modell in beiden Gittern gleich groß und starr. Tatsächlich hängt der wirksame Atomradius vom Gitter ab, und die Atome weichen dem Kohlenstoff aus. Die Kohlenstoff-Anteile sind Massenanteile. Je nach Quelle stehen leicht andere Werte (z. B. 912 °C statt 911 °C, 1538 °C statt 1536 °C).</p>
+    <div class="fragen" id="q-eisen"></div>
+  </section>
+
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const TAU=Math.PI*2, SQ2=Math.SQRT2, SQ3=Math.sqrt(3);
+const CH=Math.sqrt(8/3);                  // ideales c/a beim hdp-Gitter, Sechseckkante a = 1
+const fmt=(x,d=1)=>x.toFixed(d).replace(".",",");
+
+// ---------- Farben aus CSS lesen (hell/dunkel) ----------
+const COL={};
+function readColors(){
+  const cs=getComputedStyle(document.body);
+  for(const k of ["ink","muted","card","line","soft","fach","at-ecke","at-flaeche","at-mitte","at-neutral","at-wahl","at-nachbar","luecke","kohlenstoff","kohlenstoff-rand"])COL[k]=cs.getPropertyValue("--"+k).trim();
+}
+function rgb(hex){const h=hex.replace("#","");return [0,2,4].map(i=>parseInt(h.substr(i,2),16))}
+function mix(a,b,t){const A=rgb(a),B=rgb(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")})`}
+function alpha(hex,a){return `rgba(${rgb(hex).join(",")},${a})`}
+function hell(hex){const [r,g,b]=rgb(hex);return (0.299*r+0.587*g+0.114*b)/255}   // Helligkeit 0…1
+const dunkel=()=>{const t=document.documentElement.dataset.theme;return t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches)};
+readColors();
+
+// ---------- Kugel-Sprites: einmal je Farbe gezeichnet, dann nur noch kopiert ----------
+const SPR=new Map();
+function sprite(col){
+  let c=SPR.get(col);if(c)return c;
+  c=document.createElement("canvas");c.width=c.height=128;
+  const g=c.getContext("2d"),R=60;
+  const gr=g.createRadialGradient(64-.35*R,64-.35*R,.1*R,64,64,R);
+  gr.addColorStop(0,mix(col,"#ffffff",.55));gr.addColorStop(.45,mix(col,col,0));gr.addColorStop(1,mix(col,"#000000",.45));
+  g.beginPath();g.arc(64,64,R,0,TAU);g.fillStyle=gr;g.fill();
+  g.strokeStyle=dunkel()?"rgba(0,0,0,0.5)":"rgba(0,0,0,0.25)";g.lineWidth=2;g.stroke();
+  SPR.set(col,c);return c;
+}
+function drawSphere(ctx,col,X,Y,R,a){
+  const old=ctx.globalAlpha;ctx.globalAlpha=old*a;
+  ctx.drawImage(sprite(col),X-R*128/120,Y-R*128/120,2*R*128/120,2*R*128/120);
+  ctx.globalAlpha=old;
+}
+function beschrifte(ctx,s,x,y,color,size,align,halo,a){
+  ctx.save();ctx.globalAlpha=a==null?1:a;
+  ctx.font=`600 ${size}px Barlow, system-ui, sans-serif`;ctx.textAlign=align||"center";ctx.textBaseline="middle";
+  if(halo){ctx.lineJoin="round";ctx.lineWidth=3;ctx.strokeStyle=COL.card;ctx.strokeText(s,x,y)}
+  ctx.fillStyle=color;ctx.fillText(s,x,y);ctx.restore();
+}
+
+// =====================================================================
+// 3D-Kern: Viewer (Drehen, Projektion, Tiefensortierung, Treffertest)
+// z zeigt nach oben, yaw dreht um z, pitch > 0 = Blick von schräg oben
+// =====================================================================
+const VIEWERS=[];
+let rafId=0,letzte=0;
+function kick(){if(!rafId)rafId=requestAnimationFrame(schleife)}
+function schleife(now){
+  rafId=0;const dt=Math.min(.05,(now-(letzte||now))/1000);letzte=now;
+  let weiter=false;
+  for(const v of VIEWERS){
+    if(v.auto&&v.cv.clientWidth){v.yaw+=.4*dt;v.dirty=true;weiter=true}
+    if(v.dirty){v.dirty=false;v.draw()}
+  }
+  if(weiter)kick();else letzte=0;
+}
+class Viewer{
+  constructor(id,opt){
+    this.cv=$(id);this.ctx=this.cv.getContext("2d");
+    this.build=opt.build;this.extent=opt.extent;this.D=opt.D||10;this.onClick=opt.onClick||null;
+    this.yaw0=.45;this.pitch0=.35;this.yaw=this.yaw0;this.pitch=this.pitch0;
+    this.auto=false;this.dirty=true;this.hits=[];this.drag=null;this.s=1;this.w=0;
+    new ResizeObserver(()=>this.zeichne()).observe(this.cv);
+    const cv=this.cv;
+    cv.addEventListener("pointerdown",e=>{cv.setPointerCapture(e.pointerId);this.drag={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,moved:false}});
+    cv.addEventListener("pointermove",e=>{
+      const d=this.drag;if(!d)return;
+      this.yaw+=(e.clientX-d.x)*.01;this.pitch=Math.max(-1.45,Math.min(1.45,this.pitch+(e.clientY-d.y)*.01));
+      d.x=e.clientX;d.y=e.clientY;
+      if(Math.hypot(e.clientX-d.sx,e.clientY-d.sy)>=6)d.moved=true;
+      this.zeichne();
+    });
+    cv.addEventListener("pointerup",e=>{
+      const d=this.drag;this.drag=null;if(!d||d.moved||!this.onClick)return;
+      const r=cv.getBoundingClientRect();this.onClick(e.clientX-r.left,e.clientY-r.top);
+    });
+    cv.addEventListener("pointercancel",()=>{this.drag=null});
+    cv.addEventListener("keydown",e=>{
+      const k={ArrowLeft:[-.1,0],ArrowRight:[.1,0],ArrowUp:[0,-.1],ArrowDown:[0,.1]}[e.key];if(!k)return;
+      e.preventDefault();this.yaw+=k[0];this.pitch=Math.max(-1.45,Math.min(1.45,this.pitch+k[1]));this.zeichne();
+    });
+    VIEWERS.push(this);
+  }
+  zeichne(){this.dirty=true;kick()}
+  zuruecksetzen(){this.yaw=this.yaw0;this.pitch=this.pitch0;this.zeichne()}
+  project(p){
+    const t=this.t,x1=p[0]*t.cy-p[1]*t.sy,y1=p[0]*t.sy+p[1]*t.cy;
+    const depth=y1*t.cp-p[2]*t.sp,up=y1*t.sp+p[2]*t.cp,f=this.D/(this.D+depth);
+    return {X:this.w/2+this.s*x1*f,Y:this.w/2-this.s*up*f,f,depth};
+  }
+  draw(){
+    const cv=this.cv,w=cv.clientWidth;if(!w)return;
+    const dpr=window.devicePixelRatio||1,pw=Math.round(w*dpr);
+    if(cv.width!==pw||cv.height!==pw){cv.width=pw;cv.height=pw}
+    const ctx=this.ctx;ctx.setTransform(pw/w,0,0,pw/w,0,0);
+    this.w=w;this.s=w/(typeof this.extent==="function"?this.extent():this.extent);
+    this.t={cy:Math.cos(this.yaw),sy:Math.sin(this.yaw),cp:Math.cos(this.pitch),sp:Math.sin(this.pitch)};
+    ctx.fillStyle=COL.card;ctx.fillRect(0,0,w,w);
+    // Alle Elemente mit Tiefe in eine Liste, weit entfernte zuerst zeichnen (Maler-Algorithmus)
+    const list=[];
+    for(const it of this.build()){
+      if(it.k==="s"){const pr=this.project(it.p);list.push({d:it.top?-1e9:pr.depth,it,pr})}
+      else if(it.k==="l"){
+        for(let i=0;i<6;i++){
+          const a=[0,1,2].map(j=>it.a[j]+(it.b[j]-it.a[j])*i/6),b=[0,1,2].map(j=>it.a[j]+(it.b[j]-it.a[j])*(i+1)/6);
+          const pa=this.project(a),pb=this.project(b);list.push({d:(pa.depth+pb.depth)/2,it,pa,pb});
+        }
+      }else if(it.k==="p"){
+        const pp=it.pts.map(q=>this.project(q));list.push({d:pp.reduce((s,q)=>s+q.depth,0)/pp.length,it,pp});
+      }else if(it.k==="d"){
+        const pp=[];for(let i=0;i<20;i++){const a=TAU*i/20;pp.push(this.project([it.p[0]+it.r*Math.cos(a),it.p[1]+it.r*Math.sin(a),it.p[2]]))}
+        list.push({d:this.project(it.p).depth-.001,it,pp,pc:this.project(it.p)});
+      }
+    }
+    list.sort((a,b)=>b.d-a.d);
+    this.hits=[];
+    for(const e of list){
+      const it=e.it;
+      if(it.k==="l"){
+        ctx.save();ctx.globalAlpha=it.alpha==null?1:it.alpha;ctx.strokeStyle=it.col;ctx.lineWidth=it.w;ctx.lineCap="round";
+        ctx.beginPath();ctx.moveTo(e.pa.X,e.pa.Y);ctx.lineTo(e.pb.X,e.pb.Y);ctx.stroke();ctx.restore();
+      }else if(it.k==="p"){
+        ctx.save();ctx.beginPath();e.pp.forEach((q,i)=>i?ctx.lineTo(q.X,q.Y):ctx.moveTo(q.X,q.Y));ctx.closePath();
+        ctx.globalAlpha=it.alpha;ctx.fillStyle=it.col;ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle=it.stroke;ctx.lineWidth=2;ctx.stroke();ctx.restore();
+      }else if(it.k==="d"){
+        ctx.save();ctx.beginPath();e.pp.forEach((q,i)=>i?ctx.lineTo(q.X,q.Y):ctx.moveTo(q.X,q.Y));ctx.closePath();
+        ctx.globalAlpha=it.alpha;ctx.fillStyle=it.col;ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle=COL.ink;ctx.lineWidth=1;ctx.stroke();ctx.restore();
+        if(it.label)beschrifte(ctx,it.label,e.pc.X,e.pc.Y+1,hell(it.col)>.6?"#1d2533":"#ffffff",12);
+      }else{
+        const pr=e.pr,R=Math.max(it.minPx||0,it.r*this.s*pr.f),a=it.alpha==null?1:it.alpha;
+        if(it.lueck){
+          ctx.save();ctx.beginPath();ctx.arc(pr.X,pr.Y,R,0,TAU);ctx.globalAlpha=.92;ctx.fillStyle=it.col;ctx.fill();
+          ctx.globalAlpha=1;ctx.setLineDash([4,3]);ctx.strokeStyle=COL.ink;ctx.lineWidth=1.5;ctx.stroke();ctx.restore();
+        }else{
+          drawSphere(ctx,it.col,pr.X,pr.Y,R,it.ghost?.25:a);
+          if(it.ghost){ctx.save();ctx.beginPath();ctx.arc(pr.X,pr.Y,R,0,TAU);ctx.setLineDash([4,3]);ctx.strokeStyle=COL.muted;ctx.lineWidth=1.2;ctx.stroke();ctx.restore()}
+          if(it.ring){ctx.save();ctx.beginPath();ctx.arc(pr.X,pr.Y,R+3,0,TAU);ctx.strokeStyle=it.ring;ctx.lineWidth=3;ctx.stroke();ctx.restore()}
+        }
+        if(it.rand){ctx.save();ctx.beginPath();ctx.arc(pr.X,pr.Y,R,0,TAU);ctx.strokeStyle=it.rand;ctx.lineWidth=2;ctx.stroke();ctx.restore()}
+        if(it.label){
+          const fa=(it.fade&&pr.depth>0?.45:1)*(a<1&&!it.ghost?Math.max(a,.4):1);
+          if(it.labelOut)beschrifte(ctx,it.label,pr.X+R+3,pr.Y,COL.ink,13,"left",true,fa);
+          else if(R>=9)beschrifte(ctx,it.label,pr.X,pr.Y+1,it.ghost?COL.ink:(hell(it.col)>.6?"#1d2533":"#ffffff"),Math.max(12,Math.min(15,R*.8)),"center",false,fa);
+        }
+        if(it.id!==undefined&&!it.ghost)this.hits.push({id:it.id,X:pr.X,Y:pr.Y,R:Math.max(R,it.hitPx||0)});
+      }
+    }
+  }
+  treffer(x,y){
+    for(let i=this.hits.length-1;i>=0;i--){const h=this.hits[i];if(Math.hypot(x-h.X,y-h.Y)<=h.R)return h.id}
+    return null;
+  }
+}
+
+// =====================================================================
+// Modelldaten: Atome der Elementarzellen (Würfelkante bzw. Sechseckkante a = 1)
+// =====================================================================
+const ANTEIL={"1/8":1/8,"1/2":1/2,"1":1,"1/6":1/6};
+const ECKEN=[];for(const x of [0,1])for(const y of [0,1])for(const z of [0,1])ECKEN.push([x,y,z]);
+const WKANTEN=[];
+for(let i=0;i<8;i++)for(let j=i+1;j<8;j++){let n=0;for(let k=0;k<3;k++)if(ECKEN[i][k]!==ECKEN[j][k])n++;if(n===1)WKANTEN.push([ECKEN[i],ECKEN[j]])}
+const HEXE=[[1,0],[.5,SQ3/2],[-.5,SQ3/2],[-1,0],[-.5,-SQ3/2],[.5,-SQ3/2]];
+const HKANTEN=[];
+HEXE.forEach((q,i)=>{const n=HEXE[(i+1)%6];
+  HKANTEN.push([[q[0],q[1],0],[n[0],n[1],0]],[[q[0],q[1],CH],[n[0],n[1],CH]],[[q[0],q[1],0],[q[0],q[1],CH]]);
+});
+const atomE=(p,typ,anteil)=>({p,typ,anteil});
+const GITTER={
+  krz:{name:"kubisch-raumzentriert",r:SQ3/4,c:[.5,.5,.5],vol:1,d:SQ3/2,
+    atome:[...ECKEN.map(p=>atomE(p,"ecke","1/8")),atomE([.5,.5,.5],"mitte","1")],
+    kanten:WKANTEN,vec:[[1,0,0],[0,1,0],[0,0,1]],basis:[[0,0,0],[.5,.5,.5]],ext:3.4,extN:4.4,
+    ebenen:[[[0,0,0],[1,1,0],[1,1,1],[0,0,1]]]},
+  kfz:{name:"kubisch-flächenzentriert",r:SQ2/4,c:[.5,.5,.5],vol:1,d:1/SQ2,
+    atome:[...ECKEN.map(p=>atomE(p,"ecke","1/8")),...[[.5,.5,0],[.5,.5,1],[.5,0,.5],[.5,1,.5],[0,.5,.5],[1,.5,.5]].map(p=>atomE(p,"flaeche","1/2"))],
+    kanten:WKANTEN,vec:[[1,0,0],[0,1,0],[0,0,1]],basis:[[0,0,0],[.5,.5,0],[.5,0,.5],[0,.5,.5]],ext:3.4,extN:4.4,
+    ebenen:[[[1,0,0],[0,1,0],[0,0,1]],[[0,0,0],[1,1,0],[1,0,1]],[[0,0,0],[1,1,0],[0,1,1]],[[0,0,0],[1,0,1],[0,1,1]]]},
+  hdp:{name:"hexagonal dichteste Packung",r:.5,c:[0,0,CH/2],vol:3*SQ3/2*CH,d:1,
+    atome:[...HEXE.map(q=>atomE([q[0],q[1],0],"ecke","1/6")),...HEXE.map(q=>atomE([q[0],q[1],CH],"ecke","1/6")),
+           atomE([0,0,0],"flaeche","1/2"),atomE([0,0,CH],"flaeche","1/2"),
+           atomE([.5,1/(2*SQ3),CH/2],"innen","1"),atomE([-.5,1/(2*SQ3),CH/2],"innen","1"),atomE([0,-1/SQ3,CH/2],"innen","1")],
+    kanten:HKANTEN,vec:[[1,0,0],[.5,SQ3/2,0],[0,0,CH]],basis:[[0,0,0],[.5,1/(2*SQ3),CH/2]],ext:4.4,extN:5.6,
+    ebenen:[HEXE.map(q=>[q[0],q[1],0])]}
+};
+const TYPCOL={ecke:"at-ecke",flaeche:"at-flaeche",mitte:"at-mitte",innen:"at-mitte"};
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+const kreuz=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const punkt=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+
+// Unendliches Gitter: Gitterpunkte aus Translationen, Nachbarn = alle Punkte im Abstand d (±1 %)
+function gitterpunkte(g){
+  const pts=[];
+  for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++)for(let k=-2;k<=2;k++){
+    const t=[0,1,2].map(m=>i*g.vec[0][m]+j*g.vec[1][m]+k*g.vec[2][m]);
+    for(const b of g.basis)pts.push([t[0]+b[0],t[1]+b[1],t[2]+b[2]]);
+  }
+  return pts;
+}
+for(const g of Object.values(GITTER))g.punkte=gitterpunkte(g);
+const NB={};
+function nachbarn(gk,i){
+  const key=gk+i;if(NB[key])return NB[key];
+  const g=GITTER[gk],p=g.atome[i].p;
+  const liste=g.punkte.filter(q=>Math.abs(dist(p,q)-g.d)<g.d*.01)
+    .map(q=>({q,idx:g.atome.findIndex(a=>dist(a.p,q)<1e-6)}))
+    .sort((u,v)=>u.q[2]-v.q[2]||u.q[1]-v.q[1]||u.q[0]-v.q[0]);
+  return NB[key]=liste;
+}
+// Atome der Zelle, die in der Ebene liegen (Abstand < 1e-6)
+function ebenenAtome(g,pl){
+  const n=kreuz(sub(pl[1],pl[0]),sub(pl[2],pl[0])),l=Math.hypot(...n);
+  const s=new Set();
+  g.atome.forEach((a,i)=>{if(Math.abs(punkt(n,sub(a.p,pl[0])))/l<1e-6)s.add(i)});
+  return s;
+}
+
+// =====================================================================
+// 1) Elementarzellen
+// =====================================================================
+const R1={g:"krz",dar:"gitter",modus:"zaehlen",sel:null,summe:false,ebene:0};
+const BEKANNT={atome:{},koord:{},beruehr:{}};      // je Gitter freigeschaltete Kennwerte
+const KENN={
+  krz:{atome:"2",koord:"8",beruehr:"der Raumdiagonalen",pd:"68 %",bsp:"α-Eisen (bis 911 °C), Chrom, Wolfram, Molybdän, Vanadium"},
+  kfz:{atome:"4",koord:"12",beruehr:"der Flächendiagonalen",pd:"74 %",bsp:"γ-Eisen (911–1392 °C), Aluminium, Kupfer, Nickel, Silber, Gold, Blei"},
+  hdp:{atome:"6 (Sechseckprisma)",koord:"12",beruehr:"der Sechseckkanten und zur Nachbarlage",pd:"74 %",bsp:"Magnesium, Zink, α-Titan, Cobalt"}
+};
+const RECHNUNG={
+  krz:`Die Kugeln berühren sich entlang der Raumdiagonalen: a · √3 = 4r, also a = 4r/√3. Packungsdichte = Volumen der Atome / Volumen der Zelle = 2 · (4/3)πr³ / a³ = π·√3/8 ≈ 0,68 = 68 %.`,
+  kfz:`Die Kugeln berühren sich entlang der Flächendiagonalen: a · √2 = 4r, also a = 2√2 · r. Packungsdichte = 4 · (4/3)πr³ / a³ = π/(3·√2) ≈ 0,74 = 74 %.`,
+  hdp:`Die Kugeln berühren sich entlang der Sechseckkanten: a = 2r. Im idealen Fall ist die Höhe c = 1,633 · a. Prismenvolumen = (3·√3/2) · a² · c. Packungsdichte = 6 · (4/3)πr³ / Prismenvolumen ≈ 0,74 = 74 %, genauso viel wie bei kfz.`
+};
+const LEGENDE={
+  krz:[["at-ecke","Eckatom: 8 × 1/8"],["at-mitte","Mittelatom (raumzentriert): 1 × 1"]],
+  kfz:[["at-ecke","Eckatom: 8 × 1/8"],["at-flaeche","Flächenatom: 6 × 1/2"]],
+  hdp:[["at-ecke","Eckatom: 12 × 1/6"],["at-flaeche","Atom in Grund- und Deckfläche: 2 × 1/2"],["at-mitte","Atom im Inneren: 3 × 1"]]
+};
+const SUMME={
+  krz:`8 · 1/8 + 1 · 1 = 1 + 1 = 2 Atome je Elementarzelle`,
+  kfz:`8 · 1/8 + 6 · 1/2 = 1 + 3 = 4 Atome je Elementarzelle`,
+  hdp:`12 · 1/6 + 2 · 1/2 + 3 · 1 = 2 + 1 + 3 = 6 Atome je Sechseckprisma`
+};
+const TXT1={
+  zaehlen:{
+    krz:`Kubisch-raumzentriert: Atome auf den 8 Würfelecken und eines in der Würfelmitte. Ein Eckatom gehört zu 8 Würfeln gleichzeitig, deshalb zählt es für diese Zelle nur zu 1/8. Das Mittelatom gehört ganz dazu.`,
+    kfz:`Kubisch-flächenzentriert: Atome auf den 8 Würfelecken und in der Mitte jeder der 6 Würfelflächen. Ein Flächenatom gehört zu 2 Würfeln, es zählt also zu 1/2.`,
+    hdp:`Hexagonal dichteste Packung als Sechseckprisma: Atome auf den 12 Ecken, in der Mitte von Grund- und Deckfläche und 3 Atome im Inneren. Ein Eckatom gehört hier zu 6 Prismen (3 nebeneinander, 2 übereinander), es zählt deshalb zu 1/6 und nicht zu 1/8.`},
+  zKugel:` Im Kugelmodell ragen die Kugeln über die Zelle hinaus. Gezählt wird nach der Lage des Atommittelpunkts.`,
+  zGitter:` Die Linien sind die Kanten der Elementarzelle, keine Bindungen.`,
+  nbLeer:`Klicken oder tippen Sie ein Atom an. Seine nächsten Nachbarn werden hervorgehoben und nummeriert. Nachbarn, die in angrenzenden Zellen liegen, erscheinen blass.`,
+  nb:{
+    krz:` Im krz-Gitter sind es 8: die Atome auf den Ecken des Würfels um das Mittelatom.`,
+    kfz:` Im kfz-Gitter sind es 12: 4 in der eigenen Ebene, 4 darüber, 4 darunter.`,
+    hdp:` Im hdp-Gitter sind es 12: 6 in der eigenen Lage, 3 darüber und 3 darunter.`},
+  ebene:{
+    krz:`Hervorgehoben ist die am dichtesten belegte Ebene im krz-Gitter. Sie ist nicht dichtest gepackt: Zwischen den Atomen bleiben Lücken. Solche Ebenen gibt es in 6 verschiedenen Lagen im Würfel.`,
+    kfz:`Hervorgehoben ist eine dichtest gepackte Ebene: Jedes Atom berührt in der Ebene 6 Nachbarn. Sie liegt schräg im Würfel, senkrecht zu einer Raumdiagonalen. Da der Würfel 4 Raumdiagonalen hat, gibt es 4 verschieden geneigte dichtest gepackte Ebenen. Schalten Sie mit „Nächste Ebenenlage“ weiter.`,
+    hdp:`Hervorgehoben ist die dichtest gepackte Ebene: die Grund- bzw. Deckfläche (Basisebene). Im hdp-Gitter gibt es nur diese eine Lage dichtest gepackter Ebenen, alle parallel zueinander.`}
+};
+function r1Status(){
+  const g=R1.g;
+  if(R1.modus==="zaehlen")return TXT1.zaehlen[g]+(R1.dar==="kugel"?TXT1.zKugel:TXT1.zGitter);
+  if(R1.modus==="nachbarn")return R1.sel==null?TXT1.nbLeer:`Das gewählte Atom hat ${nachbarn(g,R1.sel).length} nächste Nachbarn im gleichen Abstand. Das ist die Koordinationszahl.`+TXT1.nb[g];
+  return TXT1.ebene[g];
+}
+function r1Items(){
+  const g=GITTER[R1.g],c=g.c,kug=R1.dar==="kugel",P=p=>[p[0]-c[0],p[1]-c[1],p[2]-c[2]];
+  const rr=kug?g.r:.09,minPx=kug?0:7,items=[];
+  g.kanten.forEach(([a,b])=>items.push({k:"l",a:P(a),b:P(b),col:kug?COL.ink:COL.muted,alpha:kug?.6:1,w:kug?1.5:2}));
+  const pl=R1.modus==="ebene"?g.ebenen[R1.ebene]:null,inEbene=pl?ebenenAtome(g,pl):null;
+  const nb=R1.modus==="nachbarn"&&R1.sel!=null?nachbarn(R1.g,R1.sel):[];
+  g.atome.forEach((at,i)=>{
+    const it={k:"s",p:P(at.p),r:rr,minPx,id:i,hitPx:kug?0:14,fade:true,col:COL["at-neutral"]};
+    if(R1.modus==="zaehlen"){it.col=COL[TYPCOL[at.typ]];it.label=at.anteil;it.labelOut=!kug}
+    else if(R1.modus==="nachbarn"){
+      // Im Kugelmodell sind die Kugeln durchsichtig, sonst bliebe das gewählte Atom unter seinen Nachbarn verborgen
+      if(i===R1.sel){it.col=COL["at-wahl"];it.ring=COL.fach;it.minPx=Math.max(minPx,8)}
+      else{const n=nb.findIndex(x=>x.idx===i);if(n>=0){it.col=COL["at-nachbar"];it.label=String(n+1);it.labelOut=!kug;if(kug)it.alpha=.55}else if(kug&&R1.sel!=null)it.alpha=.2}
+    }else{
+      if(inEbene.has(i))it.col=COL["at-ecke"];else it.alpha=.4;
+    }
+    items.push(it);
+  });
+  nb.forEach((x,n)=>{
+    if(x.idx>=0)return;
+    items.push({k:"s",p:P(x.q),r:rr,minPx,col:COL["at-nachbar"],ghost:true,label:String(n+1),labelOut:!kug,fade:true});
+  });
+  if(pl)items.push({k:"p",pts:pl.map(P),col:COL.fach,alpha:.28,stroke:COL.fach});
+  if(R1.modus==="nachbarn"&&R1.sel!=null&&kug)nb.forEach(x=>items.push({k:"l",a:P(g.atome[R1.sel].p),b:P(x.q),col:COL.ink,alpha:.5,w:1.5}));
+  return items;
+}
+const V1=new Viewer("cv-zellen",{extent:()=>R1.modus==="nachbarn"?GITTER[R1.g].extN:GITTER[R1.g].ext,build:r1Items,
+  onClick:(x,y)=>{
+    if(R1.modus!=="nachbarn")return;
+    const id=V1.treffer(x,y);if(id==null)return;
+    R1.sel=id;BEKANNT.koord[R1.g]=true;r1Ui();
+  }});
+function r1Ui(){
+  const g=R1.g;
+  if(R1.modus!=="zaehlen")BEKANNT.atome[g]=BEKANNT.atome[g]||R1.modus==="nachbarn"||R1.modus==="ebene";
+  if(R1.dar==="kugel")BEKANNT.beruehr[g]=true;
+  if(R1.summe)BEKANNT.atome[g]=true;
+  document.querySelectorAll("[data-g]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.g===g));
+  document.querySelectorAll("[data-dar]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.dar===R1.dar));
+  document.querySelectorAll("#box-zellen [data-modus]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.modus===R1.modus));
+  $("z-summe-btn").hidden=R1.modus!=="zaehlen";
+  $("z-ebene-btn").hidden=!(R1.modus==="ebene"&&g==="kfz");
+  $("z-ebene-btn").textContent=`Nächste Ebenenlage (${R1.ebene+1}/4)`;
+  $("z-auto").textContent="Automatisch drehen: "+(V1.auto?"an":"aus");
+  $("z-auto").setAttribute("aria-pressed",V1.auto);
+  $("z-status").textContent=r1Status();
+  // Legende und Summe nur im Modus Zählen
+  const leg=$("z-legende");leg.innerHTML="";
+  if(R1.modus==="zaehlen")for(const [c,t] of LEGENDE[g])leg.insertAdjacentHTML("beforeend",`<span><span class="punkt" style="background:var(--${c})"></span>${t}</span>`);
+  $("z-summe").textContent=R1.modus==="zaehlen"&&R1.summe?SUMME[g]:"";
+  const k=KENN[g];
+  const zeile=(n,v,frei)=>`<dt>${n}</dt><dd${frei?"":' class="frei"'}>${frei?v:"?"}</dd>`;
+  $("z-kenn").innerHTML=`<dt>Name</dt><dd>${GITTER[g].name}</dd>`+
+    zeile("Atome je Elementarzelle",k.atome,BEKANNT.atome[g])+zeile("Koordinationszahl",k.koord,BEKANNT.koord[g])+
+    zeile("Kugeln berühren sich entlang",k.beruehr,BEKANNT.beruehr[g])+`<dt>Packungsdichte</dt><dd>${k.pd}</dd><dt>Beispiele</dt><dd>${k.bsp}</dd>`;
+  $("z-rechnung").textContent=RECHNUNG[g];
+  const modi={zaehlen:"Zählen",nachbarn:"Nachbarn",ebene:"Dichteste Ebene"};
+  $("cv-zellen").setAttribute("aria-label",`${g}-Elementarzelle im ${R1.dar==="kugel"?"Kugelmodell":"Gittermodell"}, Modus ${modi[R1.modus]}`);
+  V1.zeichne();
+}
+document.querySelectorAll("[data-g]").forEach(b=>b.addEventListener("click",()=>{R1.g=b.dataset.g;R1.sel=null;R1.summe=false;R1.ebene=0;r1Ui()}));
+document.querySelectorAll("[data-dar]").forEach(b=>b.addEventListener("click",()=>{R1.dar=b.dataset.dar;r1Ui()}));
+document.querySelectorAll("#box-zellen [data-modus]").forEach(b=>b.addEventListener("click",()=>{R1.modus=b.dataset.modus;R1.sel=null;r1Ui()}));
+$("z-reset").addEventListener("click",()=>V1.zuruecksetzen());
+$("z-auto").addEventListener("click",()=>{V1.auto=!V1.auto;r1Ui()});
+$("z-summe-btn").addEventListener("click",()=>{R1.summe=true;r1Ui()});
+$("z-ebene-btn").addEventListener("click",()=>{R1.ebene=(R1.ebene+1)%4;r1Ui()});
+
+// =====================================================================
+// 2) Stapeln
+// =====================================================================
+const H2=Math.sqrt(2/3);                                  // Abstand der Lagen bei Kugeldurchmesser 1
+const PLATZ={A:[0,0],B:[.5,1/(2*SQ3)],C:[0,1/SQ3]};      // Verschiebung der Plätze je Sorte
+const ST={stack:["A"],ansicht:"schraeg",mulden:false,zelle:false};
+function plaetze(sorte){
+  const out=[],[bx,by]=PLATZ[sorte];
+  for(let i=-5;i<=5;i++)for(let j=-5;j<=5;j++){
+    const x=bx+i+.5*j,y=by+SQ3/2*j;
+    if(Math.hypot(x,y)<=2.3+1e-9)out.push([x,y]);
+  }
+  return out;
+}
+function klassifiziere(s){
+  const n=s.length;if(n===1)return "eins";if(n===2)return "zwei";
+  let zwei=true,drei=s[0]!==s[1]&&s[1]!==s[2]&&s[0]!==s[2];
+  for(let i=2;i<n;i++)if(s[i]!==s[i-2])zwei=false;
+  for(let i=3;i<n;i++)if(s[i]!==s[i-3])drei=false;
+  return zwei?"hdp":drei?"kfz":"gemischt";
+}
+function zelleArt(s){
+  if(s.length>=3&&s[0]==="A"&&s[2]==="A")return "hdp";
+  if(s.length>=4&&s[0]==="A"&&s[3]==="A"&&s[1]!=="A"&&s[2]!=="A"&&s[1]!==s[2])return "kfz";
+  return null;
+}
+// Würfelpunkt (a = 1) in Stapelkoordinaten: Raumdiagonale zeigt nach oben
+function kfzAbbild(p,spiegel){
+  const u=[-1/SQ2,1/SQ2,0],v=[-1/Math.sqrt(6),-1/Math.sqrt(6),2/Math.sqrt(6)],w=[1/SQ3,1/SQ3,1/SQ3];
+  const q=[SQ2*punkt(p,u),SQ2*punkt(p,v),SQ2*punkt(p,w)];
+  if(spiegel)q[1]=-q[1];
+  return q;
+}
+const KFZ_FLAECHEN=[[.5,.5,0],[.5,.5,1],[.5,0,.5],[.5,1,.5],[0,.5,.5],[1,.5,.5]];
+// Zelle im Stapel: Atome (Stapelkoordinaten) und Kanten
+function zelleDaten(s){
+  const art=zelleArt(s);if(!art)return null;
+  if(art==="hdp"){
+    const sorte=s[1],atome=[],kanten=[];
+    for(const z of [0,2]){for(const q of HEXE)atome.push([q[0],q[1],z*H2]);atome.push([0,0,z*H2])}
+    for(const q of plaetze(sorte))if(Math.abs(Math.hypot(q[0],q[1])-1/SQ3)<1e-3)atome.push([q[0],q[1],H2]);
+    HEXE.forEach((q,i)=>{const n=HEXE[(i+1)%6];
+      kanten.push([[q[0],q[1],0],[n[0],n[1],0]],[[q[0],q[1],2*H2],[n[0],n[1],2*H2]],[[q[0],q[1],0],[q[0],q[1],2*H2]]);});
+    return {atome,kanten};
+  }
+  const sp=s[1]==="C";
+  return {atome:[...ECKEN,...KFZ_FLAECHEN].map(p=>kfzAbbild(p,sp)),kanten:WKANTEN.map(([a,b])=>[kfzAbbild(a,sp),kfzAbbild(b,sp)])};
+}
+const SORTCOL={A:"at-ecke",B:"at-flaeche",C:"at-mitte"};
+function r2Items(){
+  const items=[],zd=ST.zelle?zelleDaten(ST.stack):null,zm=(ST.stack.length-1)*H2/2,Z=p=>[p[0],p[1],p[2]-zm];   // Drehmitte: halbe Höhe des Stapels
+  const inZelle=(x,y,z)=>zd&&zd.atome.some(a=>Math.abs(a[0]-x)<1e-3&&Math.abs(a[1]-y)<1e-3&&Math.abs(a[2]-z)<1e-3);
+  ST.stack.forEach((sorte,n)=>{
+    for(const [x,y] of plaetze(sorte)){
+      const z=n*H2;
+      items.push({k:"s",p:Z([x,y,z]),r:.5,col:COL[SORTCOL[sorte]],label:sorte,alpha:zd&&!inZelle(x,y,z)?.2:1});
+    }
+  });
+  if(zd)zd.kanten.forEach(([a,b])=>items.push({k:"l",a:Z(a),b:Z(b),col:COL.ink,alpha:.9,w:2.5}));
+  if(ST.mulden){
+    const n=ST.stack.length-1,top=ST.stack[n];
+    for(const sorte of ["A","B","C"])if(sorte!==top)for(const [x,y] of plaetze(sorte))
+      items.push({k:"d",p:Z([x,y,n*H2+.15]),r:.18,col:COL[SORTCOL[sorte]],alpha:.9,label:sorte});
+  }
+  return items;
+}
+const V2=new Viewer("cv-stapeln",{extent:7,build:r2Items});
+V2.D=10;
+const TXT2={
+  eins:`Eine dichtest gepackte Lage: Jede Kugel berührt 6 Nachbarn. Zwischen den Kugeln liegen Mulden. Legen Sie eine zweite Lage auf. Schalten Sie „Mulden zeigen“ ein, um die möglichen Plätze zu sehen.`,
+  mulden:` Auf jeder Lage gibt es zwei Sorten Mulden, hier mit den Buchstaben der beiden anderen Lagen beschriftet. Eine neue Lage kann nur eine der beiden Sorten belegen.`,
+  zwei:`Die zweite Lage liegt in den Mulden der ersten. Jede Kugel hat jetzt 3 Nachbarn in der Lage darunter. Für die dritte Lage gibt es zwei Möglichkeiten: genau über der ersten Lage oder auf den Mulden, die noch frei sind.`,
+  gemischt:`Diese Folge ist weder rein hdp noch rein kfz. In echten Kristallen kommen solche Abweichungen als Stapelfehler vor.`,
+  gleich:`Eine Lage kann nicht direkt auf einer gleichen Lage liegen: Die Kugeln säßen genau aufeinander statt in den Mulden.`,
+  zHdp:` Hervorgehoben: das Sechseckprisma aus Reiter 1. Grund- und Deckfläche liegen in Lagen derselben Sorte, die 3 inneren Atome in der Lage dazwischen.`,
+  zKfz:` Hervorgehoben: der kfz-Würfel. Er steht auf einer Ecke, seine Raumdiagonale zeigt nach oben. Die dichtest gepackten Lagen liegen also schräg im Würfel.`,
+  ende:` Die Farben und Buchstaben bezeichnen nur die Lage der Plätze. Alle Kugeln sind gleiche Atome.`
+};
+function r2Status(){
+  const s=ST.stack,art=klassifiziere(s),folge=s.join(" ");
+  let t;
+  if(art==="eins")t=TXT2.eins;
+  else if(art==="zwei")t=TXT2.zwei;
+  else if(art==="hdp")t=`Stapelfolge mit zwei Lagen im Wechsel (${folge} …): Das ergibt die hexagonal dichteste Packung (hdp). Jede Kugel hat 12 Nachbarn, Packungsdichte 74 %.`;
+  else if(art==="kfz")t=`Stapelfolge mit drei Lagen im Wechsel (${folge} …): Das ergibt das kubisch-flächenzentrierte Gitter (kfz). Jede Kugel hat 12 Nachbarn, Packungsdichte 74 %.`;
+  else t=TXT2.gemischt;
+  if(ST.mulden)t+=TXT2.mulden;
+  if(ST.zelle){const za=zelleArt(s);if(za==="hdp")t+=TXT2.zHdp;else if(za==="kfz")t+=TXT2.zKfz}
+  if(s.length>=2)t+=TXT2.ende;
+  return t;
+}
+function r2Ui(){
+  const s=ST.stack,top=s[s.length-1],art=klassifiziere(s);
+  document.querySelectorAll("[data-lage]").forEach(b=>{b.disabled=b.dataset.lage===top||s.length>=6});
+  $("s-weg").disabled=s.length<=1;
+  if(!zelleArt(s))ST.zelle=false;
+  $("s-zelle").disabled=!zelleArt(s);
+  $("s-zelle").title=zelleArt(s)?"":"Erst eine passende Stapelfolge bauen";
+  $("s-zelle").textContent="Elementarzelle einblenden: "+(ST.zelle?"an":"aus");$("s-zelle").setAttribute("aria-pressed",ST.zelle);
+  $("s-mulden").textContent="Mulden zeigen: "+(ST.mulden?"an":"aus");$("s-mulden").setAttribute("aria-pressed",ST.mulden);
+  document.querySelectorAll("[data-ansicht]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.ansicht===ST.ansicht));
+  $("s-folge").textContent="Stapelfolge: "+s.join(" ")+(s.length<6?" …":"");
+  $("s-badge").textContent=art==="hdp"?"hdp":art==="kfz"?"kfz":art==="gemischt"?"Stapelfehler":"";
+  $("s-status").textContent=r2Status();
+  $("cv-stapeln").setAttribute("aria-label",`${s.length} gestapelte Lagen dichtest gepackter Kugeln, Folge ${s.join(" ")}`);
+  V2.zeichne();
+}
+function lageAuflegen(sorte){
+  const s=ST.stack;
+  if(sorte===s[s.length-1]){$("s-hint").textContent=TXT2.gleich;return}
+  if(s.length>=6)return;
+  $("s-hint").textContent="";s.push(sorte);r2Ui();
+}
+document.querySelectorAll("[data-lage]").forEach(b=>b.addEventListener("click",()=>lageAuflegen(b.dataset.lage)));
+$("s-weg").addEventListener("click",()=>{if(ST.stack.length>1)ST.stack.pop();$("s-hint").textContent="";r2Ui()});
+$("s-neu").addEventListener("click",()=>{ST.stack=["A"];$("s-hint").textContent="";r2Ui()});
+$("s-mulden").addEventListener("click",()=>{ST.mulden=!ST.mulden;r2Ui()});
+$("s-zelle").addEventListener("click",()=>{ST.zelle=!ST.zelle;r2Ui()});
+document.querySelectorAll("[data-ansicht]").forEach(b=>b.addEventListener("click",()=>{
+  ST.ansicht=b.dataset.ansicht;
+  V2.pitch=ST.ansicht==="oben"?Math.PI/2-.001:ST.ansicht==="seite"?0:.52;
+  V2.D=ST.ansicht==="oben"?1e5:10;        // von oben ohne Perspektive, damit man durch den Stapel sehen kann
+  r2Ui();
+}));
+
+// =====================================================================
+// 3) Eisen und Kohlenstoff
+// =====================================================================
+const FE={T:20,luecke:"keine",c:false,dur:false};
+const AE={krz:4/SQ3,kfz:2*SQ2};                          // Kantenlängen bei r(Fe) = 1
+const KANTENMITTEN=[[.5,0,0],[.5,1,0],[.5,0,1],[.5,1,1],[0,.5,0],[1,.5,0],[0,.5,1],[1,.5,1],[0,0,.5],[1,0,.5],[0,1,.5],[1,1,.5]];
+const FLAECHENMITTEN=[[.5,.5,0],[.5,.5,1],[.5,0,.5],[.5,1,.5],[0,.5,.5],[1,.5,.5]];
+const TETRA_KRZ=[];
+for(const f of [0,1]){
+  TETRA_KRZ.push([.5,.25,f],[.5,.75,f],[.25,.5,f],[.75,.5,f]);
+  TETRA_KRZ.push([.5,f,.25],[.5,f,.75],[.25,f,.5],[.75,f,.5]);
+  TETRA_KRZ.push([f,.5,.25],[f,.5,.75],[f,.25,.5],[f,.75,.5]);
+}
+const TETRA_KFZ=[];for(const x of [.25,.75])for(const y of [.25,.75])for(const z of [.25,.75])TETRA_KFZ.push([x,y,z]);
+const LUECKEN={
+  krz:{okt:{R:2/SQ3-1,pos:[...FLAECHENMITTEN,...KANTENMITTEN]},tet:{R:Math.sqrt(15)/3-1,pos:TETRA_KRZ}},
+  kfz:{okt:{R:SQ2-1,pos:[[.5,.5,.5],...KANTENMITTEN]},tet:{R:Math.sqrt(6)/2-1,pos:TETRA_KFZ}}
+};
+const R_C=.62, C_POS=[0,0,.5];                           // Kohlenstoff in der Kantenmitte: Oktaederlücke in beiden Gittern
+// Schmelze: feste Pseudo-Zufallspositionen, Mindestabstand 1,7 r
+function schmelze(){
+  let s=12345;const rnd=()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296};
+  const L=5.0,pts=[];let guard=0;
+  while(pts.length<30&&guard++<20000){
+    const p=[(rnd()-.5)*L,(rnd()-.5)*L,(rnd()-.5)*L];
+    if(pts.every(q=>dist(p,q)>=1.7))pts.push(p);
+  }
+  return pts;
+}
+const SCHMELZE=schmelze();
+function phase(T){return T<911?"alpha":T<1392?"gamma":T<1536?"delta":"fluessig"}
+function e3Items(){
+  const ph=phase(FE.T),items=[],a0=FE.dur?.35:1;
+  if(ph==="fluessig"){SCHMELZE.forEach(p=>items.push({k:"s",p,r:1,col:COL["at-neutral"],alpha:a0}));return items}
+  const g=ph==="gamma"?"kfz":"krz",a=AE[g],h=a/2,P=q=>[q[0]*a-h,q[1]*a-h,q[2]*a-h];
+  WKANTEN.forEach(([p,q])=>items.push({k:"l",a:P(p),b:P(q),col:COL.ink,alpha:.6,w:1.5}));
+  GITTER[g].atome.forEach(at=>items.push({k:"s",p:P(at.p),r:1,col:COL["at-neutral"],alpha:a0}));
+  if(FE.luecke!=="keine"){const L=LUECKEN[g][FE.luecke];L.pos.forEach(q=>items.push({k:"s",p:P(q),r:L.R,col:COL.luecke,lueck:true}))}
+  if(FE.c)items.push({k:"s",p:P(C_POS),r:R_C,col:COL.kohlenstoff,rand:COL["kohlenstoff-rand"],label:"C",top:true});
+  return items;
+}
+const V3=new Viewer("cv-eisen",{extent:()=>phase(FE.T)==='fluessig'?10.5:8,build:e3Items});
+V3.D=12;
+const TXT3={
+  basis:T=>T<769?`α-Eisen (Ferrit): kubisch-raumzentriert, Koordinationszahl 8. Eisen ist in diesem Bereich magnetisch.`
+    :T<911?`α-Eisen (Ferrit): kubisch-raumzentriert. Oberhalb von 769 °C ist Eisen nicht mehr magnetisch (Curie-Temperatur). Das Gitter ändert sich dabei nicht.`
+    :T<1392?`γ-Eisen (Austenit): Bei 911 °C ordnen sich die Atome im festen Zustand zum kubisch-flächenzentrierten Gitter um. Koordinationszahl 12, Packungsdichte 74 %. Das Eisen zieht sich bei der Umwandlung messbar etwas zusammen, obwohl es wärmer wird.`
+    :T<1536?`δ-Eisen: Ab 1392 °C ordnen sich die Atome wieder zum kubisch-raumzentrierten Gitter um. Für die Wärmebehandlung von Stahl spielt dieser Bereich kaum eine Rolle.`
+    :`Ab 1536 °C ist Eisen flüssig. Die Atome haben keine feste Ordnung mehr, es gibt kein Kristallgitter und keine Lücken.`,
+  luecke:{
+    krz:{okt:` Oktaederlücken im krz-Gitter: in den Flächenmitten und auf den Kantenmitten, 3 je Eisenatom. Hineinpassen würde eine Kugel mit nur 0,15 · r(Fe). Die Lücke ist flach gedrückt: Zwei Eisenatome sind sehr nah, die vier anderen weiter weg.`,
+         tet:` Tetraederlücken im krz-Gitter: 6 je Eisenatom, Platz für eine Kugel mit 0,29 · r(Fe). Im krz-Gitter gibt es also viele, aber kleine Lücken. Insgesamt sind 32 % des Raums leer.`},
+    kfz:{okt:` Oktaederlücken im kfz-Gitter: in der Würfelmitte und auf den Kantenmitten, 1 je Eisenatom. Platz für eine Kugel mit 0,41 · r(Fe): die größte Lücke, die es in Eisen gibt. Insgesamt sind nur 26 % des Raums leer.`,
+         tet:` Tetraederlücken im kfz-Gitter: 2 je Eisenatom, Platz für eine Kugel mit 0,22 · r(Fe).`}},
+  c:{
+    krz:` Ein Kohlenstoffatom ist etwa 0,6 · r(Fe) groß, die Oktaederlücke bietet nur 0,15 · r(Fe). Es muss die beiden nahen Eisenatome weit auseinanderdrücken. Deshalb löst α-Eisen höchstens 0,02 % Kohlenstoff, bei Raumtemperatur praktisch nichts.`,
+    kfz:` Auch hier ist das Kohlenstoffatom (etwa 0,6 · r(Fe)) größer als die Lücke (0,41 · r(Fe)). Es drückt seine Nachbarn aber viel weniger auseinander als im α-Eisen. Deshalb löst γ-Eisen bis zu 2,06 % Kohlenstoff (je nach Quelle auch 2,1 %).`}
+};
+function r3Status(){
+  const ph=phase(FE.T);let t=TXT3.basis(FE.T);
+  if(ph==="fluessig")return t;
+  const g=ph==="gamma"?"kfz":"krz";
+  if(FE.luecke!=="keine")t+=TXT3.luecke[g][FE.luecke];
+  if(FE.c)t+=TXT3.c[g];
+  return t;
+}
+function r3Kenn(){
+  const ph=phase(FE.T),z=(n,v)=>`<dt>${n}</dt><dd>${v}</dd>`;
+  if(ph==="fluessig")return z("Zustand","Schmelze")+z("Gitter","–")+z("Koordinationszahl","–")+z("Packungsdichte","–")+z("Größte Lücke","–")+z("Kohlenstoff löslich","–");
+  const kfz=ph==="gamma";
+  return z("Zustand",ph==="alpha"?"α-Eisen (Ferrit)":kfz?"γ-Eisen (Austenit)":"δ-Eisen")+z("Gitter",kfz?"kfz":"krz")+z("Koordinationszahl",kfz?"12":"8")+
+    z("Packungsdichte",kfz?"74 %":"68 %")+z("Größte Lücke",kfz?"Oktaederlücke 0,41 · r(Fe)":"Tetraederlücke 0,29 · r(Fe)")+
+    z("Kohlenstoff löslich",ph==="alpha"?"höchstens 0,02 % (bei 723 °C)":kfz?"bis 2,06 % (bei 1147 °C)":"gering");
+}
+function r3Ui(){
+  const fl=phase(FE.T)==="fluessig";
+  $("e-temp").value=FE.T;$("e-temp-out").textContent=FE.T+" °C";
+  $("e-marke").style.left=((FE.T-20)/1580*100)+"%";
+  document.querySelectorAll("[data-luecke]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.luecke===FE.luecke);b.disabled=fl});
+  $("e-c").textContent="Kohlenstoffatom einsetzen: "+(FE.c?"an":"aus");$("e-c").setAttribute("aria-pressed",FE.c);$("e-c").disabled=fl;
+  $("e-dur").textContent="Kugeln durchsichtig: "+(FE.dur?"an":"aus");$("e-dur").setAttribute("aria-pressed",FE.dur);
+  $("e-status").textContent=r3Status();
+  $("e-kenn").innerHTML=r3Kenn();
+  const ph=phase(FE.T);
+  $("e-phasen").setAttribute("aria-label",`Phasenleiste, aktuell ${FE.T} °C: ${{alpha:"α, krz",gamma:"γ, kfz",delta:"δ, krz",fluessig:"flüssig"}[ph]}`);
+  $("cv-eisen").setAttribute("aria-label",fl?"Schmelze: Eisenatome ohne feste Ordnung":`Eisengitter ${ph==="gamma"?"kfz":"krz"} bei ${FE.T} °C`);
+  V3.zeichne();
+}
+$("e-temp").addEventListener("input",e=>{FE.T=+e.target.value;r3Ui()});
+document.querySelectorAll("[data-t]").forEach(b=>b.addEventListener("click",()=>{FE.T=+b.dataset.t;r3Ui()}));
+document.querySelectorAll("[data-luecke]").forEach(b=>b.addEventListener("click",()=>{FE.luecke=b.dataset.luecke;if(FE.luecke!=="keine")FE.dur=true;r3Ui()}));
+$("e-c").addEventListener("click",()=>{FE.c=!FE.c;if(FE.c)FE.dur=true;r3Ui()});
+$("e-dur").addEventListener("click",()=>{FE.dur=!FE.dur;r3Ui()});
+
+// =====================================================================
+// Beobachtungsfragen
+// =====================================================================
+const FRAGEN={
+ zellen:[
+  {q:`Wählen Sie krz und den Modus „Zählen“. Sie sehen 9 Atome. Wie viele Atome gehören tatsächlich zu einer Elementarzelle?`,
+   o:[`2`,`9`,`5`],r:0,
+   w:`Die 8 Eckatome teilen sich jeweils 8 Würfel und zählen nur zu 1/8: zusammen 1 Atom. Dazu kommt das Mittelatom: 2 Atome je Zelle.`},
+  {q:`Wählen Sie kfz. Wie viele Atome gehören zu einer Elementarzelle?`,
+   o:[`4`,`14`,`8`],r:0,
+   w:`8 Eckatome · 1/8 = 1 und 6 Flächenatome · 1/2 = 3. Zusammen 4 Atome je Zelle.`},
+  {q:`Schalten Sie bei krz auf das Kugelmodell und drehen Sie den Würfel. Entlang welcher Linie berühren sich die Kugeln?`,
+   o:[`Entlang der Raumdiagonalen, über das Mittelatom`,`Entlang der Würfelkanten`,`Entlang der Flächendiagonalen`],r:0,
+   w:`Die Eckkugeln berühren sich untereinander nicht, sie berühren nur das Mittelatom. Deshalb gilt a · √3 = 4r. Beim kfz-Gitter berühren sich die Kugeln dagegen entlang der Flächendiagonalen.`},
+  {q:`Wählen Sie kfz und den Modus „Nachbarn“. Tippen Sie ein Atom an. Wie viele nächste Nachbarn hat es?`,
+   o:[`12`,`8`,`6`],r:0,
+   w:`Jedes Atom im kfz-Gitter hat 12 nächste Nachbarn, egal ob Sie ein Eck- oder ein Flächenatom wählen. Im Gitter sind alle Atome gleichwertig. Die Koordinationszahl 12 ist die höchste, die gleich große Kugeln erreichen können.`},
+  {q:`Warum ist die Packungsdichte von krz (68 %) kleiner als die von kfz (74 %)?`,
+   o:[`Jedes Atom hat im krz-Gitter nur 8 statt 12 berührende Nachbarn, dazwischen bleibt mehr Leerraum.`,`Die krz-Zelle enthält nur 2 statt 4 Atome.`,`Die Atome im krz-Gitter sind kleiner.`],r:0,
+   w:`Die Atomzahl je Zelle allein sagt nichts, denn die Zellen sind unterschiedlich groß. Entscheidend ist, wie eng die Kugeln liegen: Mit 8 Nachbarn bleibt mehr Raum frei als mit 12.`},
+  {q:`Wählen Sie hdp und den Modus „Zählen“. Warum zählt ein Eckatom hier nur zu 1/6 und nicht zu 1/8 wie beim Würfel?`,
+   o:[`An einer Sechseckecke stoßen 3 Prismen nebeneinander zusammen, und das in 2 Lagen übereinander: 6 Prismen.`,`Weil das Sechseck 6 Ecken hat.`,`Weil die hdp-Zelle 6 Atome enthält.`],r:0,
+   w:`An einer Würfelecke treffen sich 4 Würfel nebeneinander und 2 übereinander, also 8. An einer Sechseckecke (Winkel 120°) passen nur 3 Prismen nebeneinander, mal 2 Lagen ergibt 6.`}
+ ],
+ stapeln:[
+  {q:`Schalten Sie „Mulden zeigen“ ein. Auf einer Lage gibt es doppelt so viele Mulden wie Kugeln. Warum belegt die nächste Lage trotzdem nur jede zweite Mulde?`,
+   o:[`Benachbarte Mulden liegen so dicht beieinander, dass sich zwei Kugeln darin überschneiden würden.`,`Für mehr Kugeln fehlt die Anziehung.`,`Die übrigen Mulden sind schon von Elektronen besetzt.`],r:0,
+   w:`Zwei benachbarte Mulden liegen nur gut einen halben Kugeldurchmesser auseinander. Eine neue Lage belegt deshalb entweder alle B-Mulden oder alle C-Mulden.`},
+  {q:`Bauen Sie ABAB und danach ABCA. Schauen Sie jeweils „Von oben“. Bei welcher Stapelfolge können Sie durch den Stapel hindurchsehen?`,
+   o:[`Bei ABAB: Die C-Plätze bleiben in allen Lagen frei.`,`Bei ABCA: Jede Lage lässt Lücken.`,`Bei keiner: Dichteste Packungen sind von oben immer geschlossen.`],r:0,
+   w:`Bei ABAB werden immer nur die A- und B-Plätze belegt, über den C-Plätzen bleibt ein durchgehender Kanal. Bei ABC ist jeder Platz in irgendeiner Lage einmal belegt, von oben ist alles zu.`},
+  {q:`Welche Stapelfolge ergibt das kubisch-flächenzentrierte Gitter?`,
+   o:[`ABCABC …`,`ABAB …`,`AAAA …`],r:0,
+   w:`Schalten Sie bei ABCA „Elementarzelle einblenden“ ein: Der kfz-Würfel steht auf der Spitze. Die dichtest gepackten Lagen liegen senkrecht zu seiner Raumdiagonalen.`},
+  {q:`Wie viele nächste Nachbarn hat eine Kugel in einer mittleren Lage?`,
+   o:[`12: 6 in der eigenen Lage, 3 darüber, 3 darunter`,`6: nur die in der eigenen Lage`,`8: wie im krz-Gitter`],r:0,
+   w:`Das gilt für ABAB und für ABCABC gleichermaßen. Beide sind dichteste Kugelpackungen mit Koordinationszahl 12 und Packungsdichte 74 %.`},
+  {q:`kfz und hdp haben beide 74 % Packungsdichte. Trotzdem ist Kupfer (kfz) gut, Magnesium (hdp) schlecht kalt umformbar. Woran liegt das?`,
+   o:[`Im kfz-Würfel liegen dichtest gepackte Ebenen in 4 Neigungen, im hdp-Gitter nur in einer. Bei hdp fehlen Gleitmöglichkeiten in anderen Richtungen.`,`Im hdp-Gitter sind die Atome weniger dicht gepackt.`,`Kupfer hat mehr Gleitsysteme als jedes andere Gitter.`],r:0,
+   w:`Gleiten geht am leichtesten auf dichtest gepackten Ebenen. Das kfz-Gitter hat 4 Raumdiagonalen und damit 4 Scharen solcher Ebenen. Beim hdp-Gitter sind alle dichtesten Ebenen parallel. Die Anzahl der Gleitsysteme allein ist nicht entscheidend: krz hat sogar mehr als kfz.`}
+ ],
+ eisen:[
+  {q:`Erwärmen Sie das Eisen langsam von 20 °C auf 1000 °C. Was passiert bei 911 °C?`,
+   o:[`Die Atome ordnen sich im festen Zustand vom krz- in das kfz-Gitter um.`,`Das Eisen beginnt zu schmelzen.`,`Die Atome werden größer, das Gitter bleibt gleich.`],r:0,
+   w:`Das ist eine Gitterumwandlung im festen Zustand. Eisen schmilzt erst bei 1536 °C. Zwischen 911 °C und 1392 °C ist Eisen kubisch-flächenzentriert, darüber wieder kubisch-raumzentriert.`},
+  {q:`Vergleichen Sie bei 20 °C und 1000 °C die Lücken. Welche Aussage stimmt?`,
+   o:[`krz hat insgesamt mehr Leerraum, kfz hat die größere einzelne Lücke.`,`krz hat mehr Leerraum und auch die größeren Lücken.`,`kfz hat mehr Leerraum und mehr Lücken.`],r:0,
+   w:`Im krz-Gitter sind 32 % des Raums leer, verteilt auf viele kleine Lücken (höchstens 0,29 · r). Im kfz-Gitter sind es nur 26 %, aber in wenigen großen Lücken (Oktaederlücke 0,41 · r).`},
+  {q:`Setzen Sie bei 20 °C und bei 1000 °C ein Kohlenstoffatom ein. Warum löst γ-Eisen viel mehr Kohlenstoff als α-Eisen?`,
+   o:[`Die Oktaederlücke im kfz-Gitter ist größer. Das Kohlenstoffatom drückt die Nachbarn weniger auseinander.`,`Im kfz-Gitter gibt es mehr Lücken als im krz-Gitter.`,`Kohlenstoffatome werden bei hoher Temperatur kleiner.`],r:0,
+   w:`Die Zahl der Lücken ist nicht entscheidend, krz hat sogar mehr. Entscheidend ist die Größe der einzelnen Lücke. Kohlenstoff passt in keine Lücke ganz hinein, im kfz-Gitter aber viel besser.`},
+  {q:`Stahl wird aus dem Austenitgebiet abgeschreckt. Warum wird er hart?`,
+   o:[`Der gelöste Kohlenstoff kann nicht schnell genug heraus, das umklappende Gitter wird verzerrt und verspannt (Martensit).`,`Durch das Abschrecken wird der Kohlenstoff aus dem Stahl herausgedrückt.`,`Das kfz-Gitter bleibt bei Raumtemperatur erhalten, und kfz ist besonders hart.`],r:0,
+   w:`Im kfz-Gitter ist viel Kohlenstoff gelöst. Beim schnellen Abkühlen will das Gitter krz werden, der Kohlenstoff bleibt aber eingeschlossen. Das verzerrte Gitter behindert das Abgleiten der Atomebenen: Der Stahl ist hart, aber auch spröder.`}
+ ]
+};
+function renderFragen(key,id){
+  const box=$(id);box.innerHTML="<h3>Beobachtungsfragen</h3>";
+  FRAGEN[key].forEach((f,i)=>{
+    // Antworten gemischt anzeigen, damit die richtige nicht immer oben steht
+    const ord=f.o.map((_,k)=>k).sort(()=>Math.random()-.5);
+    const d=document.createElement("div");d.className="frage";
+    const name=`${key}-${i}`;
+    d.innerHTML=`<p>${i+1}. ${f.q}</p>`+ord.map(k=>`<label><input type="radio" name="${name}" value="${k}"><span>${f.o[k]}</span></label>`).join("")+
+      `<div class="row" style="margin-top:6px"><button class="btn-2">Prüfen</button></div><div class="fb" aria-live="polite"></div>`;
+    const fb=d.querySelector(".fb");
+    d.querySelector("button").addEventListener("click",()=>{
+      const sel=d.querySelector("input:checked");
+      if(!sel){fb.className="fb fb-hint";fb.textContent="Bitte wählen Sie zuerst eine Antwort.";return}
+      if(+sel.value===f.r){fb.className="fb fb-ok";fb.textContent="Richtig. "+f.w}
+      else{fb.className="fb fb-bad";fb.textContent="Noch nicht. Beobachten Sie das Modell noch einmal genau."}
+    });
+    d.addEventListener("change",()=>{fb.className="fb";fb.textContent=""});
+    box.appendChild(d);
+  });
+}
+renderFragen("zellen","q-zellen");renderFragen("stapeln","q-stapeln");renderFragen("eisen","q-eisen");
+
+// =====================================================================
+// Reiter, Farbwechsel, Start
+// =====================================================================
+const TABS={zellen:V1,stapeln:V2,eisen:V3};
+function zeige(k){
+  for(const t of Object.keys(TABS)){$("tab-"+t).setAttribute("aria-selected",t===k);$("box-"+t).hidden=t!==k}
+  TABS[k].zeichne();
+}
+for(const t of Object.keys(TABS))$("tab-"+t).addEventListener("click",()=>zeige(t));
+// Hell/dunkel: Farben neu lesen, Sprites verwerfen, alles neu zeichnen
+function farbenNeu(){readColors();SPR.clear();VIEWERS.forEach(v=>v.zeichne())}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",farbenNeu);
+new MutationObserver(farbenNeu).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+r1Ui();r2Ui();r3Ui();
+</script>
+</body>
+</html>
