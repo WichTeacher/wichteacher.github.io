@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gitterfehler und Versetzungen – Labor</title>
+<meta name="description" content="Interaktives Labor: Gitterfehler im Metall – Leerstellen, Fremdatome, wandernde Versetzungen, Korngrenzen und wie sie Metalle fester machen">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Atomfarben wie im Labor Kristallgitter (Okabe-Ito, ohne Rot und Grün:
+     die bleiben der Rückmeldung richtig/falsch vorbehalten). */
+  :root{--at-ecke:#2F6DB5;--at-flaeche:#D98E04;--at-mitte:#7B5BB6;--at-neutral:#7D8B97;--at-wahl:#1D2533;--at-nachbar:#F2C94C;--kohlenstoff:#2B2B2B;--kohlenstoff-rand:#2B2B2B}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--at-ecke:#5BA7E8;--at-flaeche:#F0B23E;--at-mitte:#B39AF0;--at-neutral:#93A1AD;--at-wahl:#E7EAF0;--at-nachbar:#E0B93A;--kohlenstoff:#0B0B0B;--kohlenstoff-rand:#CFD6E0}}
+  :root[data-theme="dark"]{--at-ecke:#5BA7E8;--at-flaeche:#F0B23E;--at-mitte:#B39AF0;--at-neutral:#93A1AD;--at-wahl:#E7EAF0;--at-nachbar:#E0B93A;--kohlenstoff:#0B0B0B;--kohlenstoff-rand:#CFD6E0}
+
+  [hidden]{display:none!important}
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
+  .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 16px}
+  .tabs button[aria-selected="true"]{background:var(--fach);border-color:var(--fach);color:var(--fach-ink)}
+  .taskbox{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:var(--card);padding:16px;margin-bottom:16px}
+  canvas{width:100%;display:block;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+  button{touch-action:manipulation}
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .wahl{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .wahl button{font:inherit;border:none;background:var(--card);color:var(--ink);padding:6px 12px;cursor:pointer}
+  .wahl button+button{border-left:1px solid var(--line)}
+  .wahl button[aria-pressed="true"]{background:var(--fach);color:var(--fach-ink);font-weight:600}
+  .regler{display:flex;align-items:center;gap:10px;flex:1;min-width:240px}
+  .regler input{flex:1;accent-color:var(--fach)}
+  .regler output{font-weight:700;min-width:5.5em;text-align:right}
+  .status{border-left:4px solid var(--fach);border-radius:6px;padding:6px 10px;margin-top:12px;min-height:3.4em;font-size:.97rem;background:var(--soft)}
+  .status .warn{display:block;margin-top:4px;color:var(--hint-ink);background:var(--hint-bg);border-left:4px solid var(--hint);padding:4px 8px;border-radius:4px}
+  .messung{display:grid;grid-template-columns:auto 1fr auto;gap:6px 12px;align-items:center;margin-top:12px}
+  .balken{height:16px;border-radius:8px;background:var(--soft);border:1px solid var(--line);position:relative;overflow:hidden}
+  .balken span{position:absolute;left:0;top:0;bottom:0;background:var(--fach);transition:width .3s}
+  .balken i{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+  .messung b{font-family:var(--font-head);font-size:1.25rem}
+  .messung .aus{opacity:.55}
+  .grenze{font-size:.88rem;color:var(--muted);margin:12px 0 0}
+  .einleitung{margin:0 0 12px}
+  .legende{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:10px;font-size:.92rem}
+  .punkt{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1px solid var(--line)}
+  .punkt.leer{background:transparent;border:2px dashed var(--muted)}
+  .summe{margin:8px 0 0;font-weight:600;font-size:.95rem}
+  .ausblick{display:inline-block;border:2px solid var(--fach);color:var(--fach);border-radius:999px;padding:0 10px;font-size:.85rem;font-weight:700}
+  details.zahlen{margin-top:10px;font-size:.93rem;border:1px solid var(--line);border-radius:8px;padding:6px 12px;background:var(--card)}
+  details.zahlen summary{cursor:pointer;font-weight:600;color:var(--fach)}
+  details.zahlen p{margin:6px 0 2px}
+  .fragen h3{margin:18px 0 4px;font-size:1.2rem;color:var(--fach)}
+  .frage{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+  .frage p{margin:0 0 6px;font-weight:600}
+  .frage label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer}
+  .frage input{margin-top:.35em;accent-color:var(--fach)}
+  .frage .fb{margin-top:8px}
+  .frage .fb:empty{display:none}
+
+  .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
+  .info summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px}
+  .info summary::-webkit-details-marker{display:none}
+  .info summary::before{content:"▸";color:var(--fach);font-size:1.2rem;transition:transform .15s}
+  .info[open] summary::before{transform:rotate(90deg)}
+  .info-body{padding:0 16px 14px}
+  .info-body ol{margin:0;padding-left:1.3em}
+  .info-body li{margin:0 0 8px}
+  .info-body ul{margin:4px 0 0;padding-left:1.2em}
+  .info-tip{margin:6px 0 0;padding:8px 10px;background:var(--soft);border-radius:6px;font-weight:600}
+  .info-in{margin:0 0 12px;border-radius:8px}
+  @media (max-width:480px){.wrap{padding:12px 12px 40px}.taskbox{padding:10px}.tabs button{padding:6px 10px;font-size:.92rem}.regler{min-width:100%;gap:6px}.regler output{min-width:3.6em}.info summary{padding:10px 12px}.info-body{padding:0 12px 12px}.wahl button{padding:6px 9px;font-size:.92rem}}
+</style>
+</head>
+<body data-fach="wc">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Werkstoffkunde &amp; Chemie</a></div>
+    <h1>Gitterfehler und Versetzungen</h1>
+    <p>Punktfehler · Versetzungen · Korngrenzen · Verfestigung</p>
+  </header>
+
+  <details class="info">
+    <summary>Idealkristall und Realkristall</summary>
+    <div class="info-body">
+      <ol>
+        <li>In einem <b>Idealkristall</b> sitzt jedes Atom genau auf seinem Gitterplatz, und das Muster wiederholt sich ohne jede Störung. Solche Kristalle gibt es in der Technik nicht.</li>
+        <li>Jeder echte Kristall, der <b>Realkristall</b>, enthält <b>Gitterfehler</b> (auch Gitterbaufehler). Man ordnet sie nach ihrer Ausdehnung:
+          <ul>
+            <li><b>0-dimensional – Punktfehler:</b> betreffen einzelne Gitterplätze (Leerstellen, Zwischengitteratome, Fremdatome).</li>
+            <li><b>1-dimensional – Linienfehler:</b> Versetzungen.</li>
+            <li><b>2-dimensional – Flächenfehler:</b> Korngrenzen, Zwillingsgrenzen, Phasengrenzen, Stapelfehler.</li>
+            <li><b>3-dimensional – Volumenfehler:</b> Poren, Lunker, Einschlüsse, Ausscheidungen.</li>
+          </ul>
+        </li>
+        <li>„Fehler“ heißt hier nur: Abweichung vom idealen Muster. Viele Gitterfehler sind erwünscht. Ohne Versetzungen wären Metalle kaum plastisch verformbar, und fast alle Verfahren, die Metalle fester machen, beruhen darauf, die Bewegung der Versetzungen zu behindern.</li>
+      </ol>
+      <p class="info-tip">Die Kugeln stehen für Atome, genauer für Atomrümpfe im Elektronengas (siehe Labor <a href="../metallbindung/">Metallbindung</a>). Gezeigt ist immer ein ebener Schnitt durch das Gitter.</p>
+      <p class="info-tip">Vereinfachung: Die Gitter sind hier als quadratischer Schnitt gezeichnet, wie es in Lehrbüchern üblich ist. Echte Metalle haben ein krz-, kfz- oder hdp-Gitter (siehe Labor <a href="../kristallgitter/">Kristallgitter</a>).</p>
+    </div>
+  </details>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-punkt" aria-selected="true" aria-controls="box-punkt">Punktfehler</button>
+    <button role="tab" id="tab-vers" aria-selected="false" aria-controls="box-vers">Versetzung wandert</button>
+    <button role="tab" id="tab-korn" aria-selected="false" aria-controls="box-korn">Korngrenzen</button>
+    <button role="tab" id="tab-verf" aria-selected="false" aria-controls="box-verf">Verfestigung</button>
+  </div>
+
+  <!-- ===== Punktfehler ===== -->
+  <section class="taskbox" id="box-punkt" role="tabpanel" aria-labelledby="tab-punkt">
+    <p class="einleitung">Wählen Sie einen Punktfehler und beobachten Sie, wie sich die Nachbaratome verschieben.</p>
+    <canvas id="cv-punkt" role="img" aria-label="Ebener Gitterausschnitt mit einem Punktfehler, die Nachbaratome sind verschoben"></canvas>
+    <div class="legende" id="p-leg"></div>
+    <div class="row">
+      <span class="wahl" role="group" aria-label="Punktfehler" id="p-wahl">
+        <button data-z="ideal" aria-pressed="true">Idealgitter</button><button data-z="vac" aria-pressed="false">Leerstelle</button><button data-z="self" aria-pressed="false">Eigen-Zwischengitteratom</button><button data-z="subL" aria-pressed="false">Substitutionsatom (größer)</button><button data-z="subS" aria-pressed="false">Substitutionsatom (kleiner)</button><button data-z="einl" aria-pressed="false">Einlagerungsatom</button>
+      </span>
+    </div>
+    <div class="row">
+      <span class="small">Beispiele:</span>
+      <span class="wahl" role="group" aria-label="Beispiel" id="p-bsp">
+        <button data-b="c" aria-pressed="false">Kohlenstoff in Eisen</button><button data-b="cr" aria-pressed="false">Chrom oder Nickel in Eisen</button><button data-b="mn" aria-pressed="false">Mangan in Eisen</button>
+      </span>
+    </div>
+    <div class="row">
+      <button class="btn" id="p-swap" hidden>Platzwechsel</button>
+      <button class="btn-2" id="p-lines" aria-pressed="true">Gitterlinien: an</button>
+      <button class="btn-2" id="p-ideal" aria-pressed="false">Idealplätze: aus</button>
+      <button class="btn-2" id="p-reset">Zurücksetzen</button>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="status" id="p-status" aria-live="polite"></div>
+    <details class="zahlen"><summary>Zahlen dazu</summary>
+      <p><b>Leerstellen (Größenordnung):</b> Kurz unter dem Schmelzpunkt ist etwa jeder zehntausendste Gitterplatz leer, je nach Metall bis etwa jeder tausendste. Bei Raumtemperatur ist praktisch keiner leer.</p>
+      <p><b>Atomradien (rund):</b> Eisenatom etwa 0,12 nm, Kohlenstoffatom etwa 0,07 nm. Die Lücken im Eisengitter sind nur etwa 0,02 bis 0,05 nm groß.</p>
+    </details>
+    <p class="grenze"><b>Modellgrenze:</b> Gezeigt ist ein ebener Ausschnitt mit wenigen Dutzend Atomen. Damit man etwas sieht, enthält er viel mehr Fehler als ein echtes Metall, und die Verzerrungen sind übertrieben gezeichnet. Atome sind keine harten Kugeln. Wie groß ein Atom ist, hängt davon ab, wie man es misst. Ein Platzwechsel dauert in Wirklichkeit nur einen winzigen Bruchteil einer Sekunde und passiert bei hoher Temperatur in jeder Sekunde unvorstellbar oft.</p>
+    <div class="fragen" id="q-punkt"></div>
+  </section>
+
+  <!-- ===== Versetzung wandert ===== -->
+  <section class="taskbox" id="box-vers" role="tabpanel" aria-labelledby="tab-vers" hidden>
+    <p class="einleitung">Im Labor <a href="../metallbindung/">Metallbindung</a> ist eine ganze Atomebene auf einmal abgeglitten. In echten Metallen läuft das anders: Eine Störung im Gitter, die Versetzung, wandert Schritt für Schritt durch den Kristall.</p>
+    <details class="info info-in">
+      <summary>Was ist eine Versetzung?</summary>
+      <div class="info-body">
+        <ol>
+          <li>Eine <b>Stufenversetzung</b> kann man sich als <b>eingeschobene Halbebene</b> vorstellen: Eine Reihe von Atomebenen endet mitten im Kristall. Die Kante, an der sie endet, ist die <b>Versetzungslinie</b>. Im Bild sieht man sie von vorn als Punkt (Zeichen ⊥).</li>
+          <li>Unter einer <b>Schubspannung</b> wandert die Versetzung entlang der <b>Gleitebene</b>. Dabei werden immer nur die Bindungen direkt an der Versetzung umgeordnet.</li>
+          <li>Tritt die Versetzung an der Oberfläche aus, ist der Kristall um genau einen Atomabstand abgeglitten. Es bleibt eine <b>Gleitstufe</b>. Viele tausend solcher Stufen ergeben die bleibende (plastische) Verformung.</li>
+          <li>Neben der Stufenversetzung gibt es die <b>Schraubenversetzung</b> (Bild: Wendeltreppe). Echte Versetzungen sind meist gekrümmte Linien und eine Mischung aus beiden.</li>
+        </ol>
+        <p class="info-tip">Bild zum Merken: Einen schweren Teppich verschiebt man leichter, wenn man eine Falte hindurchschiebt, als wenn man ihn als Ganzes zieht.</p>
+      </div>
+    </details>
+    <div class="row" style="margin-top:0">
+      <span class="wahl" role="group" aria-label="Modus" id="v-modus">
+        <button data-m="versetzung" aria-pressed="true">Mit Versetzung</button><button data-m="ebene" aria-pressed="false">Ganze Ebene auf einmal</button>
+      </span>
+    </div>
+    <canvas id="cv-vers" role="img" aria-label="Zwei Kristallhälften mit Gleitebene, in der oberen Hälfte wandert eine Stufenversetzung" style="margin-top:12px"></canvas>
+    <div class="row">
+      <button class="btn" id="v-stress">Schubspannung anlegen</button>
+      <button class="btn" id="v-step">Einen Schritt weiter</button>
+      <button class="btn" id="v-auto">Ganz durchlaufen lassen</button>
+      <button class="btn" id="v-more">Weitere Versetzung</button>
+      <button class="btn-2" id="v-follow" aria-pressed="false">Atom verfolgen: aus</button>
+      <button class="btn-2" id="v-reset">Zurücksetzen</button>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="row" id="v-q-row" hidden>
+      <label class="regler">Verschiebung <input type="range" id="v-q" min="0" max="1" step="0.01" value="0"><output id="v-q-out">0,00</output></label>
+    </div>
+    <div class="legende"><span>gestrichelte Linie: Gleitebene</span><span>Pfeile: Schubspannung</span><span>⊥ Versetzung</span><span><i class="punkt" style="background:var(--at-ecke)"></i>eingeschobene Halbebene</span></div>
+    <p class="summe" id="v-count"></p>
+    <div class="status" id="v-status" aria-live="polite"></div>
+    <div class="messung" style="grid-template-columns:auto 1fr">
+      <span id="v-b1-l">Mit Versetzung</span><div class="balken" aria-hidden="true"><span id="v-b1" style="width:7%"></span></div>
+      <span id="v-b2-l">Ganze Ebene</span><div class="balken" aria-hidden="true"><span id="v-b2" style="width:100%"></span></div>
+    </div>
+    <p class="small" style="margin:4px 0 0">Nötige Schubspannung (Modell, nur zum Vergleich)</p>
+    <details class="zahlen"><summary>Zahlen dazu</summary>
+      <p><b>Theoretische Schubfestigkeit (Größenordnung):</b> Gleitet eine ganze Atomebene auf einmal ab, müsste das Metall erst bei einigen tausend N/mm² Schubspannung fließen. Reine Metallkristalle gleiten tatsächlich schon bei Schubspannungen unter etwa 1 N/mm², also bei einem winzigen Bruchteil davon.</p>
+    </details>
+    <p class="grenze"><b>Modellgrenze:</b> Gezeigt ist ein ebener Schnitt durch ein vereinfachtes Gitter. Die Versetzungslinie steht senkrecht zum Bildschirm und reicht in Wirklichkeit tief in den Kristall hinein, meist gekrümmt. Schraubenversetzungen lassen sich in einem ebenen Schnitt nicht zeigen. Der Balken zeigt nur, welcher Fall mehr Spannung braucht. Der echte Unterschied ist viel größer, als ein Bildschirm darstellen kann. Wie schnell echte Versetzungen laufen, hängt stark von Spannung und Temperatur ab. Die Animation zeigt nur Einzelschritte.</p>
+    <div class="fragen" id="q-vers"></div>
+  </section>
+
+  <!-- ===== Korngrenzen ===== -->
+  <section class="taskbox" id="box-korn" role="tabpanel" aria-labelledby="tab-korn" hidden>
+    <details class="info info-in">
+      <summary>Körner und Korngrenzen</summary>
+      <div class="info-body">
+        <ol>
+          <li>Beim Erstarren einer Schmelze bilden sich an vielen Stellen gleichzeitig kleine Kristalle, die <b>Keime</b>. Jeder wächst zu einem <b>Korn</b> (Kristallit). Die Gitter der Körner sind zufällig unterschiedlich ausgerichtet.</li>
+          <li>Wo zwei Körner aufeinandertreffen, entsteht eine <b>Korngrenze</b>. Sie ist kein Spalt: Die Körner sind fest miteinander verbunden, nur die Ausrichtung des Gitters wechselt in einer wenige Atomlagen dünnen Übergangszone.</li>
+          <li><b>Großwinkelkorngrenze:</b> Die Gitter sind um mehr als etwa 15° gegeneinander verdreht. <b>Kleinwinkelkorngrenze:</b> weniger als etwa 15°; sie besteht aus übereinander aufgereihten Versetzungen.</li>
+          <li>Weitere Flächenfehler: <b>Zwillingsgrenze</b> (die Gitter beiderseits sind spiegelbildlich), <b>Phasengrenze</b> (Grenze zwischen zwei Bereichen mit unterschiedlicher Zusammensetzung oder Gitterstruktur) und <b>Stapelfehler</b> (die Stapelfolge der Atomlagen ist an einer Stelle gestört, z. B. ABCAB|ABC; siehe Labor <a href="../kristallgitter/">Kristallgitter</a>).</li>
+        </ol>
+        <p class="info-tip">Viele Körner zusammen bilden das <b>Gefüge</b>. Unter dem Mikroskop sieht man es im Schliffbild.</p>
+      </div>
+    </details>
+    <div class="row" style="margin-top:0">
+      <span class="wahl" role="group" aria-label="Modus" id="k-modus">
+        <button data-m="erstarren" aria-pressed="true">Erstarren</button><button data-m="klein" aria-pressed="false">Kleinwinkelkorngrenze</button><button data-m="zwilling" aria-pressed="false">Zwillingsgrenze</button><button data-m="phase" aria-pressed="false">Phasengrenze</button>
+      </span>
+    </div>
+    <canvas id="cv-korn" role="img" aria-label="Ebener Schnitt durch ein Gefüge mit Körnern und Korngrenzen" style="margin-top:12px"></canvas>
+    <div class="row" data-modus="erstarren">
+      <label class="regler">Zahl der Keime <input type="range" id="k-keime" min="2" max="30" step="1" value="6"><output id="k-keime-out">6 Keime</output></label>
+    </div>
+    <div class="row" data-modus="erstarren">
+      <button class="btn" id="k-start">Erstarren starten</button>
+      <button class="btn" id="k-step">Einen Schritt weiter</button>
+      <button class="btn-2" id="k-reset">Zurücksetzen</button>
+      <button class="btn-2 pause">Pause</button>
+      <b id="k-count" style="margin-left:8px"></b>
+    </div>
+    <div class="row" data-modus="klein" hidden>
+      <label class="regler">Abstand der Versetzungen <input type="range" id="k-d" min="4" max="20" step="1" value="10"><output id="k-d-out">10 Atomabstände</output></label>
+      <b id="k-theta" style="font-size:1.1rem"></b>
+      <button class="btn-2" id="k-reset2">Zurücksetzen</button>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="row" data-modus="zwilling" hidden>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="row" data-modus="phase" hidden>
+      <span class="wahl" role="group" aria-label="Kohärenz" id="k-koh">
+        <button data-p="koh" aria-pressed="true">kohärent</button><button data-p="teil" aria-pressed="false">teilkohärent</button><button data-p="inkoh" aria-pressed="false">inkohärent</button>
+      </span>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="status" id="k-status" aria-live="polite"></div>
+    <p class="grenze"><b>Modellgrenze:</b> Echte Körner sind räumlich und meist etwa 0,01 bis 0,1 mm groß, also Zehntausende bis Hunderttausende Atomabstände. Im Modell sind sie winzig, damit man die Atome noch sieht. Beim Erstarren wachsen die Körner oft verzweigt wie Tannenbäume (Dendriten), nicht gleichmäßig rund. Das Modell zeigt nur einen ebenen Schnitt, so wie ein Schliffbild.</p>
+    <div class="fragen" id="q-korn"></div>
+  </section>
+
+  <!-- ===== Verfestigung ===== -->
+  <section class="taskbox" id="box-verf" role="tabpanel" aria-labelledby="tab-verf" hidden>
+    <details class="info info-in">
+      <summary>Warum Hindernisse ein Metall fester machen</summary>
+      <div class="info-body">
+        <ol>
+          <li>Ein Metall verformt sich bleibend, wenn Versetzungen laufen. <b>Je schwerer die Versetzungen laufen, desto fester ist das Metall.</b> Alle Verfestigungsmechanismen beruhen auf Hindernissen für Versetzungen.</li>
+          <li><b>Kaltverfestigung:</b> Beim Umformen unterhalb der Rekristallisationstemperatur entstehen sehr viele neue Versetzungen. Sie behindern sich gegenseitig.</li>
+          <li><b>Mischkristallverfestigung:</b> Gelöste Fremdatome verzerren das Gitter und bremsen die Versetzungen.</li>
+          <li><b>Feinkornhärtung:</b> Versetzungen stauen sich an Korngrenzen. Je feiner das Korn, desto mehr Korngrenzen.</li>
+          <li>Ausblick: Bei der <b>Ausscheidungshärtung</b> bremsen feinste Teilchen einer zweiten Phase die Versetzungen. Sie wird beim Thema Wärmebehandlung behandelt.</li>
+        </ol>
+        <p class="info-tip">Festigkeit hat meist einen Preis: Wer Versetzungen bremst, nimmt dem Metall oft Verformbarkeit. Die Ausnahme ist das Feinkorn.</p>
+      </div>
+    </details>
+    <div class="row" style="margin-top:0">
+      <span class="wahl" role="group" aria-label="Modus" id="f-modus">
+        <button data-m="rein" aria-pressed="true">Reines Metall</button><button data-m="kalt" aria-pressed="false">Kaltverfestigt</button><button data-m="misch" aria-pressed="false">Mischkristall</button><button data-m="fein" aria-pressed="false">Feinkorn</button>
+      </span>
+    </div>
+    <canvas id="cv-verf" role="img" aria-label="Eine Versetzung läuft entlang der Gleitebene auf Hindernisse zu" style="margin-top:12px"></canvas>
+    <div class="legende" id="f-leg"></div>
+    <div class="row">
+      <label class="regler">Schubspannung (Modell) <input type="range" id="f-tau" min="0" max="100" step="1" value="0"><output id="f-tau-out">0</output></label>
+    </div>
+    <div class="row">
+      <button class="btn-2" id="f-reset">Zurücksetzen</button>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="status" id="f-status" aria-live="polite"></div>
+    <div class="messung" id="f-bars" style="grid-template-columns:auto 1fr"></div>
+    <p class="small" style="margin:4px 0 0">Nötige Schubspannung (Modell, nur zum Vergleich). Der Strich zeigt die angelegte Schubspannung.</p>
+
+    <h3 style="margin:20px 0 6px;font-size:1.2rem;color:var(--fach)">Büroklammer im Modell</h3>
+    <canvas id="cv-clip" role="img" aria-label="Eine Büroklammer wird an einer Stelle hin und her gebogen"></canvas>
+    <div class="row">
+      <button class="btn" id="c-bend">Biegen</button>
+      <button class="btn-2" id="c-anneal">Glühen</button><span class="ausblick">Ausblick</span>
+      <button class="btn-2" id="c-reset">Neue Büroklammer</button>
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <p class="summe" id="c-count" style="margin-top:12px"></p>
+    <div class="messung" style="grid-template-columns:auto 1fr">
+      <span>Versetzungsdichte</span><div class="balken" aria-hidden="true"><span id="c-b1" style="width:5%;background:var(--at-mitte)"></span></div>
+      <span>Festigkeit</span><div class="balken" aria-hidden="true"><span id="c-b2" style="width:15%;background:var(--at-ecke)"></span></div>
+      <span>verbleibende Verformbarkeit</span><div class="balken" aria-hidden="true"><span id="c-b3" style="width:100%;background:var(--at-flaeche)"></span></div>
+    </div>
+    <div class="status" id="c-status" aria-live="polite"></div>
+    <details class="zahlen"><summary>Zahlen dazu</summary>
+      <p><b>Größenordnung:</b> Geglühtes Metall enthält etwa 10 bis 1 000 km Versetzungslinien pro Kubikzentimeter, stark kaltverformtes etwa 1 bis 10 Millionen km – ein Vielfaches des Erdumfangs in einem Würfelzucker.</p>
+    </details>
+    <p class="grenze"><b>Modellgrenze:</b> Gezeigt ist eine einzelne Versetzung in einem ebenen Schnitt. In einem echten Metall laufen Millionen Versetzungen gleichzeitig auf vielen Gleitebenen, und die Hindernisse wirken räumlich. Die Spannungswerte im Modell sind keine echten Werkstoffkennwerte, aussagekräftig ist nur der Vergleich. Wie viel ein Mechanismus bringt, hängt stark vom Werkstoff ab. In technischen Legierungen wirken meist mehrere Mechanismen zugleich.</p>
+    <div class="fragen" id="q-verf"></div>
+  </section>
+
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const W=960;              // Modellbreite, alle Zeichnungen in diesen Koordinaten
+const TAU=Math.PI*2;
+const fmt=(x,d=1)=>x.toFixed(d).replace(".",",");
+const clamp=(x,a,b)=>x<a?a:x>b?b:x;
+
+// ---------- Farben aus CSS lesen (hell/dunkel) ----------
+const COL={};
+function readColors(){
+  const cs=getComputedStyle(document.body);
+  for(const k of ["ink","muted","card","line","soft","fach","at-ecke","at-flaeche","at-mitte","at-neutral","at-wahl","at-nachbar","kohlenstoff","kohlenstoff-rand"])COL[k]=cs.getPropertyValue("--"+k).trim();
+}
+function rgb(hex){const h=hex.replace("#","");return [0,2,4].map(i=>parseInt(h.substr(i,2),16))}
+function mix(a,b,t){const A=rgb(a),B=rgb(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")})`}
+function alpha(hex,a){return `rgba(${rgb(hex).join(",")},${a})`}
+readColors();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",readColors);
+new MutationObserver(readColors).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+// ---------- Canvas in Modellkoordinaten ----------
+function makeCanvas(id,H){
+  const cv=$(id),ctx=cv.getContext("2d");
+  cv.style.aspectRatio=W+"/"+H;
+  return {ctx,H,fit(){
+    const w=cv.clientWidth;if(!w)return false;
+    const dpr=window.devicePixelRatio||1,pw=Math.round(w*dpr),ph=Math.round(w*H/W*dpr);
+    if(cv.width!==pw||cv.height!==ph){cv.width=pw;cv.height=ph}
+    ctx.setTransform(pw/W,0,0,pw/W,0,0);return true;
+  }};
+}
+function circle(ctx,x,y,r,fill,stroke,lw){ctx.beginPath();ctx.arc(x,y,r,0,TAU);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.stroke()}}
+function text(ctx,s,x,y,color,size,align,weight){ctx.fillStyle=color;ctx.font=`${weight||600} ${size}px Barlow, system-ui, sans-serif`;ctx.textAlign=align||"center";ctx.textBaseline="middle";ctx.fillText(s,x,y)}
+function line(ctx,x1,y1,x2,y2,color,lw,dash){ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.setLineDash(dash||[]);ctx.stroke();ctx.setLineDash([])}
+// Versetzungszeichen ⊥: Der Stiel ist die eingeschobene Halbebene, ang dreht um (x,y)
+function perp(ctx,x,y,s,color,ang){
+  ctx.save();ctx.translate(x,y);ctx.rotate(ang||0);ctx.lineCap="round";
+  for(const [c,lw] of [[COL.card,7],[color,3]]){
+    ctx.strokeStyle=c;ctx.lineWidth=lw;ctx.beginPath();ctx.moveTo(-s,0);ctx.lineTo(s,0);ctx.moveTo(0,0);ctx.lineTo(0,-1.6*s);ctx.stroke();
+  }
+  ctx.restore();
+}
+function arrow(ctx,x1,x2,y,color,lw){
+  const d=Math.sign(x2-x1);line(ctx,x1,y,x2,y,color,lw);
+  ctx.beginPath();ctx.moveTo(x2,y);ctx.lineTo(x2-d*12,y-8);ctx.lineTo(x2-d*12,y+8);ctx.closePath();ctx.fillStyle=color;ctx.fill();
+}
+// Verschiebung eines Gitterplatzes (gx,gy) durch einen Defekt bei (cx,cy): fällt wie 1/Abstand ab
+function verz(gx,gy,d){
+  const dx=gx-d.cx,dy=gy-d.cy,r=Math.hypot(dx,dy);if(r<.01)return [0,0];
+  const u=clamp(d.A/r,-.3,.3);
+  return [dx/r*u,dy/r*u];
+}
+// Stufe 0 → 1 mit glattem Übergang (Gleitprofil einer Versetzung)
+function sstep(u){u=clamp(u,0,1);return u*u*(3-2*u)}
+// Anteil der Verschiebung der Spalte u in der Höhe h über der Gleitebene, wenn der Versetzungskern bei xi liegt.
+// Links vom Kern (u < xi) ist die obere Hälfte um einen Atomabstand abgeglitten, rechts davon nicht.
+// Weiter oben ist der Übergang breiter (die Verspannung klingt mit dem Abstand ab).
+function gleit(u,h,xi){const Wd=2.2+.4*h;return sstep(.5-(u-xi)/(2*Wd))}
+
+// =====================================================================
+// 1) Punktfehler
+// =====================================================================
+const P={H:470,a:62,cols:12,rows:7,x0:139,y0:50,state:"ideal",bsp:null,grid:true,ideal:false,swaps:0,t:0,atoms:[],vac:null,extra:null,hl:null,hlT:0};
+P.cv=makeCanvas("cv-punkt",P.H);
+const PU={cx:5,cy:3,ex:5.5,ey:3.5};          // Lage des Defekts: Gitterplatz bzw. Mitte einer Gitterlücke
+const PRM={                                    // Radius (in Atomabständen) und Stärke der Verzerrung
+  ideal:{},vac:{A:-.10},self:{A:.15,r:.43},subL:{A:.08,r:.48,sym:"Zn"},subS:{A:-.07,r:.38,sym:"Ni"},einl:{A:.12,r:.29}
+};
+const PBSP={c:{state:"einl"},cr:{state:"subL",A:.006,r:.435,sym:"Cr"},mn:{state:"subL",A:-.006,r:.425,sym:"Mn"}};
+const R0=.43;                                  // Radius der Wirtsatome in Atomabständen
+const PTEXT={
+  ideal:"Idealgitter: Jedes Atom sitzt auf seinem Gitterplatz, alle Abstände sind gleich. Wählen Sie einen Punktfehler und vergleichen Sie.",
+  vac:"Leerstelle: Ein Gitterplatz ist unbesetzt. Die Nachbaratome rücken ein wenig in die Lücke nach. Leerstellen gibt es in jedem Metall. Ihre Zahl steigt mit der Temperatur stark an.",
+  self:"Zwischengitteratom: Ein Atom derselben Sorte sitzt zwischen den Gitterplätzen. Es ist viel zu groß für die Lücke und drückt die Nachbarn stark auseinander. Deshalb kommt dieser Fehler in Metallen kaum vor. Er entsteht vor allem durch energiereiche Strahlung, z. B. in Reaktorwerkstoffen.",
+  subL:"Substitutionsatom (Austauschatom): Ein Fremdatom besetzt einen regulären Gitterplatz. Es ist etwas größer als die Wirtsatome und drückt die Nachbarn leicht nach außen. Fremdatome, die so eingebaut sind, bilden einen Substitutionsmischkristall. Beispiel: Zink in Kupfer (Messing).",
+  subS:"Substitutionsatom (Austauschatom): Das Fremdatom ist etwas kleiner als die Wirtsatome. Die Nachbarn rücken leicht nach innen. Beispiel: Nickel in Kupfer. Kupfer und Nickel sind in jedem Verhältnis mischbar (z. B. Konstantan, Kupfer-Nickel-Rohre im Schiffbau). Auch eine kleine Verzerrung reicht, um die Bewegung von Versetzungen zu bremsen (Reiter Verfestigung).",
+  einl:"Einlagerungsatom: Ein sehr kleines Fremdatom sitzt in einer Lücke zwischen den Wirtsatomen. Das geht nur mit kleinen Atomen wie Kohlenstoff, Stickstoff oder Wasserstoff. So entsteht ein Einlagerungsmischkristall. Beispiel: Kohlenstoff im Eisen. Das Kohlenstoffatom ist zwar viel kleiner als ein Eisenatom, aber größer als die Lücke. Es drückt die Nachbarn deutlich auseinander."
+};
+const PSUB="Substitutionsatom (Austauschatom): Ein Fremdatom besetzt einen regulären Gitterplatz.";
+const PSWAP="Ein Nachbaratom ist in die Leerstelle gesprungen. Dadurch ist die Leerstelle um einen Platz in die Gegenrichtung gewandert. Über solche Platzwechsel bewegen sich Atome im festen Metall: Das ist die Diffusion.";
+const PBTEXT={
+  c:"Stahl ist Eisen mit gelöstem Kohlenstoff. Weil die Lücken so klein sind, kann Eisen bei Raumtemperatur nur sehr wenig Kohlenstoff lösen. Den Rest findet man in anderen Gefügebestandteilen. Mehr dazu beim Eisen-Kohlenstoff-Diagramm.",
+  cr:"Chrom- und Nickelatome sind fast genauso groß wie Eisenatome und besetzen reguläre Gitterplätze. In nichtrostendem Stahl sind das zusammen oft mehr als ein Viertel aller Atome.",
+  mn:"Mangan und Silizium sitzen ebenfalls auf Gitterplätzen und machen Baustähle fester (Mischkristallverfestigung)."
+};
+function pParams(){const b=P.bsp?PBSP[P.bsp]:null;return Object.assign({},PRM[P.state],b&&b.A!==undefined?b:{})}
+function pPos(gx,gy){return [P.x0+gx*P.a,P.y0+gy*P.a]}
+// Gitter neu aufbauen; die gezeichneten Lagen der Atome bleiben erhalten, damit die Verschiebung weich verläuft
+function pBuild(){
+  const alt=new Map(P.atoms.map(a=>[a.gx+","+a.gy,a]));
+  P.atoms=[];P.extra=null;P.vac=null;P.hl=null;
+  const prm=pParams();
+  for(let gy=0;gy<P.rows;gy++)for(let gx=0;gx<P.cols;gx++){
+    const o=alt.get(gx+","+gy),[x,y]=pPos(gx,gy);
+    const at={gx,gy,x:o?o.x:x,y:o?o.y:y,r:R0,p1:Math.random()*TAU,p2:Math.random()*TAU,f1:3+Math.random()*2,f2:3+Math.random()*2,disp:0};
+    if(gx===PU.cx&&gy===PU.cy){
+      if(P.state==="vac"){P.vac={gx,gy};continue}
+      if(P.state==="subL"||P.state==="subS"){at.r=prm.r;at.sym=prm.sym;at.fremd=true}
+    }
+    P.atoms.push(at);
+  }
+  if(P.state==="self"||P.state==="einl"){const [x,y]=pPos(PU.ex,PU.ey);P.extra={x,y,r:prm.r,c:P.state==="einl",fade:0}}
+}
+function pDefect(){
+  if(P.state==="ideal")return null;
+  const A=pParams().A;
+  if(P.state==="vac")return {cx:P.vac.gx,cy:P.vac.gy,A};
+  if(P.state==="self"||P.state==="einl")return {cx:PU.ex,cy:PU.ey,A};
+  return {cx:PU.cx,cy:PU.cy,A};
+}
+function pStep(dt){
+  P.t+=dt;if(P.hlT>0)P.hlT-=dt;
+  const d=pDefect(),k=1-Math.exp(-dt*7);
+  for(const a of P.atoms){
+    const [bx,by]=pPos(a.gx,a.gy),[vx,vy]=d?verz(a.gx,a.gy,d):[0,0];
+    a.disp=Math.hypot(vx,vy);
+    a.x+=(bx+vx*P.a-a.x)*k;a.y+=(by+vy*P.a-a.y)*k;
+  }
+  if(P.extra)P.extra.fade=Math.min(1,P.extra.fade+dt*2);
+}
+function pDraw(){
+  const {ctx}=P.cv;if(!P.cv.fit())return;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,P.H);
+  const j=(a)=>[a.x+1.1*Math.sin(a.f1*P.t+a.p1),a.y+1.1*Math.sin(a.f2*P.t+a.p2)];
+  const map=new Map();P.atoms.forEach(a=>map.set(a.gx+","+a.gy,a));
+  if(P.ideal){
+    for(let gy=0;gy<P.rows;gy++)for(let gx=0;gx<P.cols;gx++){const [x,y]=pPos(gx,gy);circle(ctx,x,y,3.5,alpha(COL.muted,.8))}
+  }
+  if(P.grid){
+    ctx.strokeStyle=alpha(COL.muted,.75);ctx.lineWidth=2;ctx.beginPath();
+    for(const a of P.atoms)for(const [dx,dy] of [[1,0],[0,1]]){const b=map.get((a.gx+dx)+","+(a.gy+dy));if(b){const A=j(a),B=j(b);ctx.moveTo(A[0],A[1]);ctx.lineTo(B[0],B[1])}}
+    ctx.stroke();
+  }
+  if(P.vac){const [x,y]=pPos(P.vac.gx,P.vac.gy);ctx.setLineDash([6,5]);circle(ctx,x,y,R0*P.a,null,COL.muted,2.2);ctx.setLineDash([])}
+  for(const a of P.atoms)if(a.disp>.05&&!a.fremd){const [x,y]=j(a);circle(ctx,x,y,R0*P.a+4,alpha(COL["at-nachbar"],.7))}
+  for(const a of P.atoms){
+    const [x,y]=j(a),r=a.r*P.a;
+    if(a.fremd){circle(ctx,x,y,r,COL["at-flaeche"],COL.card,1.5);text(ctx,a.sym,x,y+1,"#1d2533",Math.round(r*.7),"center",700)}
+    else circle(ctx,x,y,r,COL["at-neutral"],P.hl===a&&P.hlT>0?COL["at-wahl"]:COL.card,P.hl===a&&P.hlT>0?3.5:1.5);
+  }
+  if(P.extra){
+    const e=P.extra,r=e.r*P.a;ctx.globalAlpha=e.fade;
+    if(e.c){circle(ctx,e.x,e.y,r,COL.kohlenstoff,COL["kohlenstoff-rand"],2);text(ctx,"C",e.x,e.y+1,"#ffffff",18,"center",700)}
+    else circle(ctx,e.x,e.y,r,COL["at-neutral"],COL["at-wahl"],4);
+    ctx.globalAlpha=1;
+  }
+}
+function pSwap(){
+  if(P.state!=="vac"||!P.vac)return;
+  const v=P.vac,c=P.atoms.filter(a=>Math.abs(a.gx-v.gx)+Math.abs(a.gy-v.gy)===1&&a.gx>=1&&a.gx<=P.cols-2&&a.gy>=1&&a.gy<=P.rows-2);
+  if(!c.length)return;
+  const a=c[Math.floor(Math.random()*c.length)],alt={gx:a.gx,gy:a.gy};
+  a.gx=v.gx;a.gy=v.gy;P.vac=alt;P.swaps++;P.hl=a;P.hlT=1.4;pUI();
+}
+function pSet(z,b){P.state=z;P.bsp=b||null;P.swaps=0;pBuild();pUI()}
+function pUI(){
+  document.querySelectorAll("#p-wahl [data-z]").forEach(b=>b.setAttribute("aria-pressed",!P.bsp&&b.dataset.z===P.state));
+  document.querySelectorAll("#p-bsp [data-b]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.b===P.bsp));
+  $("p-swap").hidden=P.state!=="vac";
+  $("p-lines").textContent="Gitterlinien: "+(P.grid?"an":"aus");$("p-lines").setAttribute("aria-pressed",P.grid);
+  $("p-ideal").textContent="Idealplätze: "+(P.ideal?"an":"aus");$("p-ideal").setAttribute("aria-pressed",P.ideal);
+  let t=P.bsp&&P.state==="subL"?PSUB:PTEXT[P.state];
+  if(P.state==="vac"&&P.swaps>0)t+=" "+PSWAP;
+  if(P.bsp)t+=" "+PBTEXT[P.bsp];
+  $("p-status").textContent=t;
+  const leg=[["at-neutral","Wirtsatom"]];
+  if(P.state==="subL"||P.state==="subS")leg.push(["at-flaeche","Fremdatom auf Gitterplatz"]);
+  if(P.state==="einl")leg.push(["kohlenstoff","Kohlenstoff (Einlagerung)"]);
+  if(P.state==="self")leg.push(["at-neutral","Eigen-Zwischengitteratom (dicker Rand)"]);
+  leg.push(["at-nachbar","verschobene Nachbarn"]);
+  $("p-leg").innerHTML=leg.map(([c,s])=>`<span><i class="punkt" style="background:var(--${c})"></i>${s}</span>`).join("")+(P.state==="vac"?`<span><i class="punkt leer"></i>Leerstelle</span>`:"");
+}
+document.querySelectorAll("#p-wahl [data-z]").forEach(b=>b.addEventListener("click",()=>pSet(b.dataset.z)));
+document.querySelectorAll("#p-bsp [data-b]").forEach(b=>b.addEventListener("click",()=>pSet(PBSP[b.dataset.b].state,b.dataset.b)));
+$("p-swap").addEventListener("click",pSwap);
+$("p-lines").addEventListener("click",()=>{P.grid=!P.grid;pUI()});
+$("p-ideal").addEventListener("click",()=>{P.ideal=!P.ideal;pUI()});
+$("p-reset").addEventListener("click",()=>pSet("ideal"));
+pBuild();pUI();
+
+// =====================================================================
+// 2) Versetzung wandert
+// =====================================================================
+const D={H:500,a:52,N:13,Ru:4,Rl:4,x0:125,yS:250,mode:"versetzung",phase:"ruhe",k:0,xi:0,ziel:null,v:1.25,auto:false,schritte:0,tk:"ruhe",
+  q:0,qziel:null,follow:false,fj:9,trail:[],t:0};
+D.cv=makeCanvas("cv-vers",D.H);
+const D_XIRUHE=-3.5,D_XI1=3,D_XILETZT=D.N-2,D_XIAUS=D.N+2.5,D_KMAX=3;
+D.xi=D_XIRUHE;
+// Gleitverschiebung der oberen Spalte j in Reihe i (Reihe 0 liegt direkt über der Gleitebene), in Atomabständen
+function dShift(j,i){return D.mode==="ebene"?D.q:D.k+gleit(j,i,D.xi)}
+function dUpper(j,i){return [D.x0+(j+dShift(j,i))*D.a,D.yS-(i+.5)*D.a]}
+function dLower(k,i){return [D.x0+k*D.a,D.yS+(i+.5)*D.a]}
+const DTEXT={
+  ruhe:"Ein unverformter Kristall. Die gestrichelte Linie ist die Gleitebene. Legen Sie eine Schubspannung an: Die obere Hälfte wird nach rechts gedrückt, die untere nach links.",
+  neu:"Links ist die obere Hälfte schon um einen Atomabstand verrutscht, rechts noch nicht. Dazwischen hat sich oben eine zusätzliche Halbebene gebildet: eine Stufenversetzung (⊥). Es ist kein Atom dazugekommen, die Atome sind nur anders angeordnet.",
+  schritt:"Die Versetzung ist einen Atomabstand weitergewandert. Dafür haben nur die Atome direkt an der Versetzung ihre Bindungspartner gewechselt. Der übrige Kristall ist unverändert.",
+  aus:"Die Versetzung ist rechts ausgetreten. Die obere Hälfte ist jetzt überall um genau einen Atomabstand nach rechts verschoben. Außen ist eine Gleitstufe entstanden. Im Inneren sieht das Gitter wieder aus wie vorher: bleibend verformt, aber nicht beschädigt.",
+  weitere:"Jede weitere Versetzung vergrößert die Gleitstufe um einen Atomabstand. Sichtbare Gleitlinien auf einer polierten Metalloberfläche entstehen aus Hunderten bis Tausenden solcher Schritte.",
+  follow:"Das markierte Atom bewegt sich nur, während die Versetzung vorbeiläuft, und insgesamt um genau einen Atomabstand. Es wandert nicht mit.",
+  e0:"Zum Vergleich: Die ganze obere Hälfte soll auf einmal abgleiten, wie im Labor Metallbindung.",
+  e1:"Jetzt müssen alle Bindungen in der Gleitebene gleichzeitig umgeordnet werden. Die nötige Schubspannung ist viel höher (Balken).",
+  e2:"Das Ergebnis ist dasselbe wie mit der Versetzung: Gleitstufe von einem Atomabstand. Der Weg dorthin braucht aber ein Vielfaches an Kraft. Rechnet man so, müsste ein Metall erst bei sehr hoher Schubspannung fließen (Zahlen dazu unten). Reine Metallkristalle gleiten tatsächlich schon bei einem winzigen Bruchteil davon. Das zeigt: In echten Metallen gleiten Versetzungen."
+};
+function dNext(){
+  if(D.phase!=="aktiv"||D.ziel!=null)return;
+  const n=D.xi+1;D.ziel=n>D_XILETZT?D_XIAUS:n;D.v=1.25;
+}
+function dStress(){
+  if(D.mode==="ebene"){D.qziel=1;dUI();return}
+  if(D.phase!=="ruhe"||D.k!==0)return;
+  D.phase="aktiv";D.xi=D_XIRUHE;D.ziel=D_XI1;D.v=2.5;D.schritte=0;dUI();
+}
+function dMore(){
+  if(D.phase!=="aus"||D.k>=D_KMAX)return;
+  D.phase="aktiv";D.xi=D_XIRUHE;D.ziel=D_XI1;D.v=2.5;D.schritte=0;dUI();
+}
+function dReset(){D.phase="ruhe";D.k=0;D.xi=D_XIRUHE;D.ziel=null;D.auto=false;D.schritte=0;D.tk="ruhe";D.q=0;D.qziel=null;D.trail=[];dUI()}
+function dStep(dt){
+  D.t+=dt;
+  if(D.mode==="versetzung"&&D.ziel!=null){
+    const d=D.ziel-D.xi,s=D.v*dt;
+    if(Math.abs(d)<=s){
+      D.xi=D.ziel;D.ziel=null;
+      if(D.xi>=D_XIAUS-1e-9){D.phase="aus";D.k++;D.xi=D_XIRUHE;D.auto=false;D.tk="aus"}
+      else if(D.xi===D_XI1&&D.schritte===0)D.tk=D.k===0?"neu":"weitere";
+      else{D.schritte++;D.tk="schritt"}
+      dUI();
+      if(D.auto&&D.phase==="aktiv")dNext();
+    }else D.xi+=Math.sign(d)*s;
+  }
+  if(D.mode==="ebene"&&D.qziel!=null){
+    const d=D.qziel-D.q,s=.4*dt;
+    if(Math.abs(d)<=s){D.q=D.qziel;D.qziel=null}else D.q+=Math.sign(d)*s;
+    $("v-q").value=D.q;dUI();
+  }
+  if(D.follow){const [x,y]=dUpper(D.fj,0);D.trail.push([x,y]);if(D.trail.length>500)D.trail.shift()}
+}
+function dDraw(){
+  const {ctx}=D.cv;if(!D.cv.fit())return;
+  const a=D.a,yS=D.yS,r=a*.32;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,D.H);
+  // Schubspannungspfeile: oben nach rechts, unten nach links
+  const an=D.phase!=="ruhe"||D.k>0||D.q>0||D.qziel!=null;
+  ctx.globalAlpha=an?1:.35;
+  arrow(ctx,400,540,26,COL["at-wahl"],4);arrow(ctx,560,420,D.H-26,COL["at-wahl"],4);
+  text(ctx,"Schubspannung",690,26,COL.muted,15,"left");text(ctx,"Schubspannung",270,D.H-26,COL.muted,15,"right");
+  ctx.globalAlpha=1;
+  line(ctx,20,yS,W-20,yS,COL.muted,1.5,[8,6]);
+  text(ctx,"Gleitebene",14,yS-14,COL.muted,14,"left");
+  // Atompositionen
+  const up=[],lo=[];
+  for(let i=0;i<D.Ru;i++){up.push([]);for(let j=0;j<D.N;j++)up[i].push(dUpper(j,i))}
+  for(let i=0;i<D.Rl;i++){lo.push([]);for(let k=0;k<D.N;k++)lo[i].push(dLower(k,i))}
+  // Gitterlinien in beiden Hälften
+  ctx.strokeStyle=alpha(COL.muted,.55);ctx.lineWidth=1.6;ctx.beginPath();
+  for(const grp of [up,lo])for(let i=0;i<grp.length;i++)for(let j=0;j<D.N;j++){
+    if(j+1<D.N){ctx.moveTo(...grp[i][j]);ctx.lineTo(...grp[i][j+1])}
+    if(i+1<grp.length){ctx.moveTo(...grp[i][j]);ctx.lineTo(...grp[i+1][j])}
+  }
+  ctx.stroke();
+  // Bindungen über die Gleitebene: je gedehnter, desto kräftiger
+  for(let j=0;j<D.N;j++){
+    const [xu,yu]=up[0][j],kk=Math.round((xu-D.x0)/a);if(kk<0||kk>=D.N)continue;
+    const [xl,yl]=lo[0][kk],dx=xu-xl;if(Math.abs(dx)>.75*a)continue;
+    const L=Math.hypot(dx,yl-yu),st=clamp((L-a)/(a*(Math.sqrt(1.25)-1)),0,1);
+    line(ctx,xu,yu,xl,yl,mix(COL.muted,COL["at-flaeche"],st),1.6+2.8*st);
+  }
+  // Atome
+  const core=D.mode==="versetzung"&&D.phase==="aktiv";
+  if(core)for(let i=0;i<2;i++)for(let j=0;j<D.N;j++){
+    const f=gleit(j,i,D.xi);if(f>.05&&f<.95)circle(ctx,up[i][j][0],up[i][j][1],r+5,alpha(COL["at-nachbar"],i?.3:.6));
+  }
+  for(let i=0;i<D.Rl;i++)for(let k=0;k<D.N;k++)circle(ctx,lo[i][k][0],lo[i][k][1],r,COL["at-neutral"],COL.card,1.5);
+  for(let i=0;i<D.Ru;i++)for(let j=0;j<D.N;j++){
+    const t=core?Math.max(0,1-Math.abs(j-D.xi)):0;
+    circle(ctx,up[i][j][0],up[i][j][1],r,t>0?mix(COL["at-neutral"],COL["at-ecke"],t):COL["at-neutral"],COL.card,1.5);
+  }
+  // Versetzungszeichen und Atom verfolgen
+  if(core&&D.xi>-.2&&D.xi<D.N-.8)perp(ctx,D.x0+(D.xi+.5)*a,yS,9,COL.ink);
+  if(D.follow){
+    if(D.trail.length>1){ctx.beginPath();ctx.moveTo(...D.trail[0]);for(const p of D.trail)ctx.lineTo(...p);ctx.strokeStyle=alpha(COL.ink,.55);ctx.lineWidth=1.8;ctx.stroke()}
+    const [x,y]=up[0][D.fj];circle(ctx,x,y,r+4,null,COL["at-wahl"],3.5);
+  }
+  // Gleitstufe rechts und Gegenstufe links
+  const n=D.mode==="ebene"?Math.round(D.q*100)/100:D.k;
+  if(n>=.99){
+    const xr0=D.x0+(D.N-1)*a+r,xr1=D.x0+(D.N-1+n)*a+r,xl0=D.x0-r,xl1=D.x0+n*a-r;
+    line(ctx,xr0,yS+8,xr1,yS+8,COL.ink,2.5);line(ctx,xr0,yS+2,xr0,yS+14,COL.ink,2.5);line(ctx,xr1,yS+2,xr1,yS+14,COL.ink,2.5);
+    text(ctx,"Gleitstufe: "+Math.round(n)+(Math.round(n)===1?" Atomabstand":" Atomabstände"),W-12,yS+30,COL.ink,15,"right");
+    line(ctx,xl0,yS-8,xl1,yS-8,COL.ink,2.5);line(ctx,xl0,yS-14,xl0,yS-2,COL.ink,2.5);line(ctx,xl1,yS-14,xl1,yS-2,COL.ink,2.5);
+    text(ctx,"Gegenstufe",12,yS+30,COL.ink,15,"left");
+  }
+}
+function dUI(){
+  const ev=D.mode==="versetzung";
+  $("v-stress").hidden=false;$("v-step").hidden=!ev;$("v-auto").hidden=!ev;$("v-more").hidden=!ev;$("v-q-row").hidden=ev;
+  $("v-stress").disabled=ev?!(D.phase==="ruhe"&&D.k===0):D.q>=1||D.qziel!=null;
+  $("v-step").disabled=!(D.phase==="aktiv"&&D.ziel==null);
+  $("v-auto").disabled=!(D.phase==="aktiv"&&D.ziel==null)||D.auto;
+  $("v-more").disabled=!(D.phase==="aus"&&D.k<D_KMAX);
+  $("v-follow").textContent="Atom verfolgen: "+(D.follow?"an":"aus");$("v-follow").setAttribute("aria-pressed",D.follow);
+  document.querySelectorAll("#v-modus [data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===D.mode));
+  $("v-q-out").textContent=fmt(D.q,2);
+  $("v-b1-l").style.fontWeight=ev?700:400;$("v-b2-l").style.fontWeight=ev?400:700;
+  $("v-b1").style.opacity=ev?1:.45;$("v-b2").style.opacity=ev?.45:1;
+  $("v-count").textContent=`Atome: obere Hälfte ${D.N*D.Ru}, untere Hälfte ${D.N*D.Rl}. Die Zahl bleibt immer gleich.`;
+  let t;
+  if(ev)t=DTEXT[D.tk];
+  else t=D.q<=0?DTEXT.e0:D.q<1?DTEXT.e1:DTEXT.e2;
+  if(D.follow)t+=" "+DTEXT.follow;
+  $("v-status").textContent=t;
+}
+document.querySelectorAll("#v-modus [data-m]").forEach(b=>b.addEventListener("click",()=>{D.mode=b.dataset.m;dReset()}));
+$("v-stress").addEventListener("click",dStress);
+$("v-step").addEventListener("click",()=>{D.auto=false;dNext()});
+$("v-auto").addEventListener("click",()=>{D.auto=true;dNext();dUI()});
+$("v-more").addEventListener("click",dMore);
+$("v-follow").addEventListener("click",()=>{D.follow=!D.follow;D.trail=[];dUI()});
+$("v-reset").addEventListener("click",dReset);
+$("v-q").addEventListener("input",e=>{D.qziel=null;D.q=+e.target.value;dUI()});
+dUI();
+
+// =====================================================================
+// 3) Korngrenzen
+// =====================================================================
+const K={H:470,mode:"erstarren",x1:20,y1:20,x2:940,y2:450};
+K.cv=makeCanvas("cv-korn",K.H);
+// ---- Erstarren: Keime wachsen, Körner stoßen aneinander (Voronoi-Zellen) ----
+const E={a:15,keime:6,prog:0,ziel:null,gebaut:false,nuc:[],polys:[],atoms:[],fluessig:[],Rmax:1,n:0};
+const GRAINCOL=["at-ecke","at-flaeche","at-mitte","at-neutral"];
+// Zelle eines Keims: Rechteck, gekürzt an den Mittelsenkrechten zu allen anderen Keimen.
+// Jede Ecke trägt die Nummer der Kante bis zur nächsten Ecke (-1 = Rand, sonst Nachbarkorn).
+function voronoi(nuc,x1,y1,x2,y2){
+  return nuc.map((c,gi)=>{
+    let poly=[{x:x1,y:y1,n:-1},{x:x2,y:y1,n:-1},{x:x2,y:y2,n:-1},{x:x1,y:y2,n:-1}];
+    nuc.forEach((o,oi)=>{
+      if(oi===gi)return;
+      const mx=(c.x+o.x)/2,my=(c.y+o.y)/2,nx=o.x-c.x,ny=o.y-c.y,f=p=>(p.x-mx)*nx+(p.y-my)*ny,out=[];
+      for(let i=0;i<poly.length;i++){
+        const p=poly[i],q=poly[(i+1)%poly.length],fp=f(p),fq=f(q);
+        const cut=()=>{const t=fp/(fp-fq);return {x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t}};
+        if(fp<=0&&fq<=0)out.push({x:p.x,y:p.y,n:p.n});
+        else if(fp<=0){out.push({x:p.x,y:p.y,n:p.n});const I=cut();out.push({x:I.x,y:I.y,n:oi})}
+        else if(fq<=0){const I=cut();out.push({x:I.x,y:I.y,n:p.n})}
+      }
+      poly=out;
+    });
+    return poly;
+  });
+}
+// Lagen werden gleichmäßig verteilt (je Keim das Kandidatenfeld mit dem größten Abstand zu den bisherigen)
+function eBuild(){
+  const a=E.a,n=E.keime;
+  E.nuc=[];
+  for(let g=0;g<n;g++){
+    let best=null,bd=-1;
+    for(let c=0;c<14;c++){
+      const p={x:K.x1+40+Math.random()*(K.x2-K.x1-80),y:K.y1+40+Math.random()*(K.y2-K.y1-80)};
+      const d=E.nuc.length?Math.min(...E.nuc.map(o=>Math.hypot(o.x-p.x,o.y-p.y))):1e9;
+      if(d>bd){bd=d;best=p}
+    }
+    E.nuc.push(best);
+  }
+  E.polys=voronoi(E.nuc,K.x1,K.y1,K.x2,K.y2);
+  // Orientierung: Nachbarn sollen sich möglichst stark unterscheiden (Gitter ist 90°-symmetrisch)
+  const nb=E.polys.map(p=>new Set(p.filter(v=>v.n>=0).map(v=>v.n)));
+  const ang=[],cand=[];for(let k=0;k<12;k++)cand.push(k*7.5);
+  const dist=(x,y)=>{const d=Math.abs(x-y)%90;return Math.min(d,90-d)};
+  E.nuc.forEach((c,g)=>{
+    let best=[],bs=-1;
+    for(const t of cand){
+      const m=Math.min(90,...[...nb[g]].filter(o=>ang[o]!==undefined).map(o=>dist(t,ang[o])));
+      if(m>bs+1e-9){bs=m;best=[t]}else if(Math.abs(m-bs)<1e-9)best.push(t);
+    }
+    ang[g]=best[Math.floor(Math.random()*best.length)];
+  });
+  E.ang=ang;
+  // Atome: je Korn ein gedrehtes Quadratgitter mit dem Keim als Gitterpunkt
+  const cells=new Map(),all=[],near=(x,y)=>{let bi=0,bd=1e9;E.nuc.forEach((c,i)=>{const d=Math.hypot(c.x-x,c.y-y);if(d<bd){bd=d;bi=i}});return [bi,bd]};
+  const hash=.74*a;
+  E.nuc.forEach((c,g)=>{
+    const th=ang[g]*Math.PI/180,cs=Math.cos(th),sn=Math.sin(th);
+    for(let i=-70;i<=70;i++)for(let j=-40;j<=40;j++){
+      const x=c.x+(i*cs-j*sn)*a,y=c.y+(i*sn+j*cs)*a;
+      if(x<K.x1+3||x>K.x2-3||y<K.y1+3||y>K.y2-3)continue;
+      const [gi,d]=near(x,y);if(gi!==g)continue;
+      all.push({x,y,g,d});
+    }
+  });
+  all.sort((p,q)=>p.d-q.d);
+  E.atoms=[];
+  for(const p of all){
+    const kx=Math.floor(p.x/hash),ky=Math.floor(p.y/hash);let ok=true;
+    for(let dx=-1;dx<=1&&ok;dx++)for(let dy=-1;dy<=1&&ok;dy++){
+      const l=cells.get((kx+dx)+","+(ky+dy));if(l)for(const q of l)if(Math.hypot(q.x-p.x,q.y-p.y)<.74*a){ok=false;break}
+    }
+    if(!ok)continue;
+    const key=kx+","+ky;if(!cells.has(key))cells.set(key,[]);cells.get(key).push(p);E.atoms.push(p);
+  }
+  // Schmelze: ungeordnete Punkte auf grobem Raster
+  E.fluessig=[];
+  for(let x=K.x1+a/2;x<K.x2;x+=a)for(let y=K.y1+a/2;y<K.y2;y+=a){const [g,d]=near(x,y);E.fluessig.push({x,y,g,d,p1:Math.random()*TAU,p2:Math.random()*TAU})}
+  E.Rmax=Math.max(...E.atoms.map(p=>p.d),...E.fluessig.map(p=>p.d))+1;
+  E.prog=0;E.ziel=null;E.gebaut=true;
+}
+function eStep(dt){
+  if(E.ziel!=null){
+    const d=E.ziel-E.prog,s=dt/8;
+    if(Math.abs(d)<=s){E.prog=E.ziel;E.ziel=null}else E.prog+=Math.sign(d)*s;
+    kUI();
+  }
+}
+function eDraw(){
+  const {ctx}=K.cv;if(!K.cv.fit())return;
+  const R=E.prog*E.Rmax,t=performance.now()/1000;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,K.H);
+  // Schmelze
+  ctx.fillStyle=alpha(COL["at-neutral"],.45);
+  for(const p of E.fluessig){if(p.d<=R)continue;ctx.beginPath();ctx.arc(p.x+3*Math.sin(2.1*t+p.p1),p.y+3*Math.sin(1.7*t+p.p2),3.2,0,TAU);ctx.fill()}
+  // Körner: Tönung wächst als Kreis um den Keim, begrenzt durch die Zelle
+  E.polys.forEach((poly,g)=>{
+    ctx.save();ctx.beginPath();poly.forEach((v,i)=>i?ctx.lineTo(v.x,v.y):ctx.moveTo(v.x,v.y));ctx.closePath();ctx.clip();
+    ctx.beginPath();ctx.arc(E.nuc[g].x,E.nuc[g].y,R,0,TAU);ctx.fillStyle=alpha(COL[GRAINCOL[g%4]],.15);ctx.fill();
+    ctx.restore();
+  });
+  for(const p of E.atoms)if(p.d<=R)circle(ctx,p.x,p.y,4.6,COL[GRAINCOL[p.g%4]]);
+  // Korngrenzen: nur dort, wo beide Körner schon angekommen sind
+  E.polys.forEach((poly,g)=>{
+    ctx.save();ctx.beginPath();ctx.arc(E.nuc[g].x,E.nuc[g].y,R,0,TAU);ctx.clip();
+    ctx.strokeStyle=COL.ink;ctx.lineWidth=2.6;ctx.beginPath();
+    poly.forEach((v,i)=>{if(v.n>=0){const w=poly[(i+1)%poly.length];ctx.moveTo(v.x,v.y);ctx.lineTo(w.x,w.y)}});
+    ctx.stroke();ctx.restore();
+  });
+  ctx.strokeStyle=COL.line;ctx.lineWidth=2;ctx.strokeRect(K.x1,K.y1,K.x2-K.x1,K.y2-K.y1);
+  if(E.prog<=0)for(const c of E.nuc){circle(ctx,c.x,c.y,9,COL.card,COL["at-wahl"],3);circle(ctx,c.x,c.y,3,COL["at-wahl"])}
+}
+// ---- Szenen mit festen Atomen (Kleinwinkel-, Zwillings-, Phasengrenze) ----
+function sceneNew(){return {atoms:[],links:[],tints:[],marks:[],labels:[],map:new Map()}}
+function sceneAtom(sc,key,x,y,col,extra){const i=sc.atoms.length;sc.atoms.push(Object.assign({x,y,col},extra||{}));sc.map.set(key,i);return i}
+function sceneLink(sc,k1,k2){const a=sc.map.get(k1),b=sc.map.get(k2);if(a!==undefined&&b!==undefined)sc.links.push([a,b])}
+function sceneDraw(sc){
+  const {ctx}=K.cv;if(!K.cv.fit())return;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,K.H);
+  for(const t of sc.tints){ctx.fillStyle=alpha(COL[t.col],t.a);ctx.fillRect(t.x,t.y,t.w,t.h)}
+  ctx.strokeStyle=alpha(COL.muted,.7);ctx.lineWidth=1.6;ctx.beginPath();
+  for(const [i,j] of sc.links){ctx.moveTo(sc.atoms[i].x,sc.atoms[i].y);ctx.lineTo(sc.atoms[j].x,sc.atoms[j].y)}
+  ctx.stroke();
+  for(const l of sc.lines||[])line(ctx,l.x1,l.y1,l.x2,l.y2,COL[l.col],l.lw,l.dash);
+  for(const a of sc.atoms)circle(ctx,a.x,a.y,a.r||14,COL[a.col],a.ring?COL["at-wahl"]:COL.card,a.ring?3.5:1.5);
+  for(const m of sc.marks)perp(ctx,m.x,m.y,m.s||8,COL.ink,m.ang);
+  for(const l of sc.labels)text(ctx,l.s,l.x,l.y,COL.muted,15,l.align||"center");
+}
+// Kleinwinkelkorngrenze: zwei gegeneinander gekippte Gitter, getrennt durch eine senkrechte Grenze.
+// Linker Kristall um +θ/2, rechter um −θ/2 gedreht. Wo die Spaltenabstände an der Grenze nicht mehr passen,
+// bleibt eine Spalte „übrig“: dort endet eine Halbebene, also sitzt dort eine Stufenversetzung.
+const KW={a:22,xb:480,yc:235,D:10,theta:0,sc:null};
+function kwBuild(){
+  const a=KW.a,D=KW.D,th=2*Math.asin(1/(2*D)),sc=sceneNew();KW.theta=th;
+  const cand=[];
+  for(const [side,phi] of [["L",th/2],["R",-th/2]]){
+    const c=Math.cos(phi),s=Math.sin(phi);
+    for(let i=-70;i<=70;i++)for(let j=-40;j<=40;j++){
+      const X=(i*c-j*s)*a,Y=(i*s+j*c)*a,x=KW.xb+X,y=KW.yc+Y;
+      if(x<K.x1+8||x>K.x2-8||y<K.y1+8||y>K.y2-8)continue;
+      if(side==="L"?X>a:X<-a)continue;               // jedes Gitter reicht höchstens eine Spalte über die Grenze
+      cand.push({side,i,j,x,y,k:Math.abs(X)+Math.random()*1e-3});
+    }
+  }
+  cand.sort((p,q)=>p.k-q.k);
+  const acc=[];
+  for(const p of cand){if(acc.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<.74*a))continue;acc.push(p)}
+  for(const p of acc)sceneAtom(sc,p.side+"|"+p.i+"|"+p.j,p.x,p.y,p.side==="L"?"at-ecke":"at-flaeche",{r:.36*a});
+  for(const p of acc){sceneLink(sc,p.side+"|"+p.i+"|"+p.j,p.side+"|"+(p.i+1)+"|"+p.j);sceneLink(sc,p.side+"|"+p.i+"|"+p.j,p.side+"|"+p.i+"|"+(p.j+1))}
+  sc.tints.push({x:K.x1,y:K.y1,w:KW.xb-K.x1,h:K.y2-K.y1,col:"at-ecke",a:.08},{x:KW.xb,y:K.y1,w:K.x2-KW.xb,h:K.y2-K.y1,col:"at-flaeche",a:.08});
+  // Versetzungen: Abstand der Spaltenlücke wächst um 2·tan(θ/2)·y; alle halbe Periode eine Halbebene
+  const Y1=a/Math.cos(th/2)/(2*Math.tan(th/2));KW.Y1=Y1;
+  for(let k=-20;k<=20;k++){const y=KW.yc+(k+.5)*Y1;if(y>K.y1+14&&y<K.y2-8)sc.marks.push({x:KW.xb,y:y+6,s:9});}
+  sc.labels.push({x:KW.xb,y:K.y1-0,s:""});
+  KW.sc=sc;
+}
+// Zwillingsgrenze: Gitter rechts ist das Spiegelbild des Gitters links (Spiegelachse senkrecht)
+const ZW={a:42,xb:480,yc:235,s:.3,sc:null};
+function zwBuild(){
+  const sc=sceneNew(),a=ZW.a;
+  const id=(side,m,n)=>m===0?"A|"+n:side+"|"+m+"|"+n;
+  for(let m=0;m<=10;m++)for(let n=-12;n<=12;n++){
+    const y=ZW.yc+n*a+ZW.s*m*a;if(y<K.y1+36||y>K.y2-14)continue;
+    for(const side of m===0?["A"]:["L","R"]){
+      const x=ZW.xb+(side==="L"?-1:1)*m*a;
+      sceneAtom(sc,id(side,m,n),x,y,"at-neutral",{r:.34*a,ring:m===0});
+    }
+  }
+  for(let m=0;m<=10;m++)for(let n=-12;n<=12;n++)for(const side of ["L","R"]){
+    sceneLink(sc,id(side,m,n),id(side,m,n+1));sceneLink(sc,id(side,m,n),id(side,m+1,n));
+  }
+  sc.tints.push({x:K.x1,y:K.y1,w:ZW.xb-K.x1,h:K.y2-K.y1,col:"at-ecke",a:.1},{x:ZW.xb,y:K.y1,w:K.x2-ZW.xb,h:K.y2-K.y1,col:"at-mitte",a:.1});
+  sc.lines=[{x1:ZW.xb,y1:K.y1,x2:ZW.xb,y2:K.y2,col:"ink",lw:2,dash:[8,6]}];
+  sc.labels.push({x:ZW.xb,y:K.y1+10,s:"Spiegelachse"});
+  ZW.sc=sc;
+}
+// Phasengrenze: Phase 1 (links) und Phase 2 (rechts) mit verschiedenem Atomabstand
+const PG={xb:480,sc:{}};
+function pgBuild(v){
+  const sc=sceneNew(),xb=PG.xb;
+  sc.tints.push({x:K.x1,y:K.y1,w:xb-K.x1,h:K.y2-K.y1,col:"at-ecke",a:.08},{x:xb,y:K.y1,w:K.x2-xb,h:K.y2-K.y1,col:"at-flaeche",a:.08});
+  sc.lines=[{x1:xb,y1:K.y1,x2:xb,y2:K.y2,col:"ink",lw:2.4}];
+  sc.labels.push({x:xb-110,y:K.y1+12,s:"Phase 1"},{x:xb+110,y:K.y1+12,s:"Phase 2"});
+  const r=14;
+  if(v==="koh"){
+    // gleicher Reihenabstand, aber unterschiedlicher Abstand in der Reihe: die Reihen laufen durch
+    for(let j=0;j<11;j++){
+      const y=58+j*37;
+      for(let m=0;m<=10;m++)sceneAtom(sc,"L|"+m+"|"+j,xb-20-40*m,y,"at-ecke",{r});
+      for(let n=0;n<=9;n++)sceneAtom(sc,"R|"+n+"|"+j,xb+23+46*n,y,"at-flaeche",{r});
+      sceneLink(sc,"L|0|"+j,"R|0|"+j);
+    }
+    for(let j=0;j<11;j++){
+      for(let m=0;m<=10;m++){sceneLink(sc,"L|"+m+"|"+j,"L|"+(m+1)+"|"+j);sceneLink(sc,"L|"+m+"|"+j,"L|"+m+"|"+(j+1))}
+      for(let n=0;n<=9;n++){sceneLink(sc,"R|"+n+"|"+j,"R|"+(n+1)+"|"+j);sceneLink(sc,"R|"+n+"|"+j,"R|"+n+"|"+(j+1))}
+    }
+  }else if(v==="teil"){
+    // 12 Reihen links, 10 Reihen rechts: an zwei Stellen endet links eine Reihe an der Grenze (⊣)
+    const match=[];for(let k=0;k<10;k++)match.push(Math.round(k*11/9));
+    for(let j=0;j<12;j++){const y=58+j*34;for(let m=0;m<=10;m++)sceneAtom(sc,"L|"+m+"|"+j,xb-20-40*m,y,"at-ecke",{r})}
+    for(let k=0;k<10;k++){const y=58+k*41.5;for(let n=0;n<=9;n++)sceneAtom(sc,"R|"+n+"|"+k,xb+23+46*n,y,"at-flaeche",{r})}
+    for(let j=0;j<12;j++)for(let m=0;m<=10;m++){sceneLink(sc,"L|"+m+"|"+j,"L|"+(m+1)+"|"+j);sceneLink(sc,"L|"+m+"|"+j,"L|"+m+"|"+(j+1))}
+    for(let k=0;k<10;k++)for(let n=0;n<=9;n++){sceneLink(sc,"R|"+n+"|"+k,"R|"+(n+1)+"|"+k);sceneLink(sc,"R|"+n+"|"+k,"R|"+n+"|"+(k+1))}
+    match.forEach((j,k)=>sceneLink(sc,"L|0|"+j,"R|0|"+k));
+    for(let j=0;j<12;j++)if(!match.includes(j))sc.marks.push({x:xb+3,y:58+j*34,s:9,ang:-Math.PI/2});
+  }else{
+    // inkohärent: rechts ein um 28° gedrehtes Gitter mit anderem Abstand, die Ebenen laufen nicht durch
+    const cand=[],th=28*Math.PI/180,c=Math.cos(th),s=Math.sin(th);
+    for(let m=0;m<=12;m++)for(let j=0;j<11;j++){const x=xb-20-40*m,y=58+j*37;if(x>K.x1+10)cand.push({side:"L",i:m,j,x,y,k:Math.abs(x-xb)})}
+    for(let i=-30;i<=30;i++)for(let j=-30;j<=30;j++){
+      const x=xb+30+(i*c-j*s)*46,y=K.y1+205+(i*s+j*c)*46;
+      if(x>xb-14&&x<K.x2-10&&y>K.y1+10&&y<K.y2-10)cand.push({side:"R",i,j,x,y,k:Math.abs(x-xb)});
+    }
+    cand.sort((p,q)=>p.k-q.k);
+    const acc=[];for(const p of cand){if(acc.some(q=>Math.hypot(q.x-p.x,q.y-p.y)<34))continue;acc.push(p)}
+    for(const p of acc)sceneAtom(sc,p.side+"|"+p.i+"|"+p.j,p.x,p.y,p.side==="L"?"at-ecke":"at-flaeche",{r});
+    for(const p of acc){sceneLink(sc,p.side+"|"+p.i+"|"+p.j,p.side+"|"+(p.i+1)+"|"+p.j);sceneLink(sc,p.side+"|"+p.i+"|"+p.j,p.side+"|"+p.i+"|"+(p.j+1))}
+  }
+  PG.sc[v]=sc;
+}
+const KTEXT={
+  e0:"Eine Schmelze kurz vor dem Erstarren. Stellen Sie die Zahl der Keime ein und lassen Sie die Schmelze erstarren.",
+  e1:"Jeder Keim wächst mit seinem eigenen, zufällig ausgerichteten Gitter in die Schmelze hinein.",
+  eg:"Erstarrt: wenige, große Körner (Grobkorn). Wo zwei Körner aufeinandergestoßen sind, liegen Großwinkelkorngrenzen.",
+  ef:"Erstarrt: viele, kleine Körner (Feinkorn) und damit viel mehr Korngrenzen. Feinkorn erreicht man z. B. durch rasches Abkühlen oder durch Zusätze, die viele Keime bilden oder das Wachsen der Körner bremsen.",
+  k:"Mehrere Stufenversetzungen liegen übereinander. Jede kippt das Gitter um einen kleinen Betrag. Zusammen bilden sie eine Kleinwinkelkorngrenze. Kippwinkel: {x}°.",
+  kg:"Weit auseinanderliegende Versetzungen ergeben nur einen kleinen Kippwinkel.",
+  kk:"Die Versetzungen liegen so eng, dass man sie kaum noch unterscheiden kann. Ab etwa 15° spricht man von einer Großwinkelkorngrenze. Sie lässt sich nicht mehr als Reihe von Versetzungen beschreiben.",
+  z:"Zwillingsgrenze: Das Gitter auf der einen Seite ist das Spiegelbild des Gitters auf der anderen. Die Atome an der Grenze gehören zu beiden Seiten. Zwillingsgrenzen erscheinen im Schliffbild oft als gerade Linien, z. B. in geglühtem Kupfer, Messing oder austenitischem Stahl.",
+  koh:"Kohärente Phasengrenze: Die Gitterebenen laufen ohne Unterbrechung durch die Grenze, nur die Abstände ändern sich etwas. Das Gitter ist dafür in der Umgebung verspannt.",
+  teil:"Teilkohärente Phasengrenze: Die Gitterebenen laufen größtenteils durch. Weil die Abstände nicht genau passen, ist in regelmäßigen Abständen eine Versetzung eingebaut.",
+  inkoh:"Inkohärente Phasengrenze: Die Gitter der beiden Phasen passen nicht zusammen, die Gitterebenen laufen nicht durch. Beispiel: Grenze zwischen dem Grundgitter und einem groben Einschluss."
+};
+K.pg="koh";
+function kUI(){
+  document.querySelectorAll("#k-modus [data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===K.mode));
+  document.querySelectorAll("#k-koh [data-p]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===K.pg));
+  document.querySelectorAll("[data-modus]").forEach(r=>r.hidden=r.dataset.modus!==K.mode);
+  $("k-keime-out").textContent=E.keime+" Keime";$("k-d-out").textContent=KW.D+" Atomabstände";
+  let t="";
+  if(K.mode==="erstarren"){
+    const fertig=E.prog>=1;
+    $("k-count").textContent=fertig?"Zahl der Körner: "+E.nuc.length:"";
+    $("k-start").disabled=E.prog>=1||E.ziel!=null;$("k-step").disabled=E.prog>=1||E.ziel!=null;
+    t=E.prog<=0?KTEXT.e0:fertig?(E.keime<=8?KTEXT.eg:KTEXT.ef):KTEXT.e1;
+  }else if(K.mode==="klein"){
+    const g=KW.theta*180/Math.PI;
+    $("k-theta").textContent="Kippwinkel: "+fmt(g,1)+"°";
+    t=KTEXT.k.replace("{x}",fmt(g,1));
+    if(g<5)t+=" "+KTEXT.kg;else if(KW.D<=4)t+=" "+KTEXT.kk;
+  }else if(K.mode==="zwilling")t=KTEXT.z;
+  else t=KTEXT[K.pg];
+  $("k-status").textContent=t;
+}
+function kSetMode(m){K.mode=m;kUI()}
+function eNeu(){eBuild();kUI()}
+function kStep(dt){if(K.mode==="erstarren")eStep(dt)}
+function kDraw(){
+  if(K.mode==="erstarren")eDraw();
+  else sceneDraw(K.mode==="klein"?KW.sc:K.mode==="zwilling"?ZW.sc:PG.sc[K.pg]);
+}
+document.querySelectorAll("#k-modus [data-m]").forEach(b=>b.addEventListener("click",()=>kSetMode(b.dataset.m)));
+document.querySelectorAll("#k-koh [data-p]").forEach(b=>b.addEventListener("click",()=>{K.pg=b.dataset.p;if(!PG.sc[K.pg])pgBuild(K.pg);kUI()}));
+$("k-keime").addEventListener("input",e=>{E.keime=+e.target.value;eNeu()});
+$("k-start").addEventListener("click",()=>{if(E.prog<1){E.ziel=1;kUI()}});
+$("k-step").addEventListener("click",()=>{if(E.ziel==null&&E.prog<1){E.ziel=Math.min(1,(Math.floor(E.prog*8+1e-6)+1)/8);kUI()}});
+$("k-reset").addEventListener("click",eNeu);
+$("k-d").addEventListener("input",e=>{KW.D=+e.target.value;kwBuild();kUI()});
+$("k-reset2").addEventListener("click",()=>{$("k-d").value=10;KW.D=10;kwBuild();kUI()});
+eBuild();kwBuild();zwBuild();pgBuild("koh");kUI();
+
+// =====================================================================
+// 4) Verfestigung
+// =====================================================================
+const F={H:430,a:52,N:13,Ru:3,Rl:3,x0:100,yS:215,mode:"rein",tau:0,cores:[],obst:[],atoms:[],t:0,msg:0,TP:8};
+F.cv=makeCanvas("cv-verf",F.H);
+const F_XIAUS=F.N+2.3;                           // ab hier hat der Versetzungskern den Kristall verlassen
+const FMODI={
+  rein:{n:1,obst:[],name:"Reines Metall"},
+  kalt:{n:1,obst:[{x:5,s:35},{x:8,s:60},{x:10.5,s:45}],name:"Kaltverfestigt"},
+  misch:{n:1,obst:[{x:4,s:40},{x:7.5,s:60},{x:9,s:50}],name:"Mischkristall"},
+  fein:{n:2,obst:[{x:6.5,s:60},{x:10,s:60}],name:"Feinkorn"}
+};
+const FTEXT={
+  rein:"Reines, geglühtes Metall: wenige Versetzungen, kaum Hindernisse. Schon eine kleine Schubspannung reicht, und die Versetzung läuft bis zum Rand durch. Das Metall ist weich und gut verformbar, z. B. Reinaluminium oder weichgeglühtes Kupfer.",
+  kalt:"Kaltverfestigt: Viele Versetzungen auf sich kreuzenden Gleitebenen versperren sich gegenseitig den Weg. Die Versetzung bleibt stecken, erst eine deutlich höhere Schubspannung schiebt sie weiter. Streckgrenze und Zugfestigkeit steigen, die Bruchdehnung sinkt.",
+  misch:"Mischkristall: Die gelösten Fremdatome verzerren das Gitter. An jeder Verzerrung wird die Versetzung gebremst. Je mehr Fremdatome und je größer der Größenunterschied, desto stärker die Wirkung. Einlagerungsatome wie Kohlenstoff wirken besonders stark.",
+  fein:"Feinkorn: Die Versetzung läuft bis zur nächsten Korngrenze und staut sich dort, weil die Gleitebenen im Nachbarkorn anders liegen. Je kleiner die Körner, desto kürzer der freie Weg und desto höher die Streckgrenze. Gleichzeitig bleibt der Werkstoff zäh. Beispiel: Feinkornbaustahl.",
+  haengt:"Die Versetzung hängt an einem Hindernis fest. Erhöhen Sie die Schubspannung.",
+  los:"Die Spannung reicht: Die Versetzung hat sich vom Hindernis gelöst und läuft weiter."
+};
+// Atome des Modells: Gitter aus Spalten/Reihen, in der Feinkorn-Ansicht rechts zwei gedrehte Nachbarkörner
+function fBuild(){
+  const m=FMODI[F.mode],a=F.a;
+  F.obst=m.obst.map(o=>Object.assign({},o));
+  F.cores=[];for(let c=0;c<m.n;c++)F.cores.push({xi:3-2.6*c,aus:false});
+  F.msg=0;F.blocked=false;
+  F.atoms=[];F.foreign=[];F.lines=[];F.tints=[];
+  const ub=F.mode==="fein"?[6.5,10]:[F.N+5];
+  const fremd={"4|0":{r:.52,A:.08,col:"at-flaeche"},"9|0":{r:.42,A:-.07,col:"at-flaeche",lower:true}};
+  for(const up of [true,false])for(let i=0;i<3;i++)for(let j=0;j<F.N;j++){
+    if(j+.5>ub[0]&&F.mode==="fein")continue;                       // rechts davon: gedrehte Nachbarkörner
+    const at={u:j,y:F.yS+(up?-1:1)*(i+.5)*a,up,col:"at-neutral",r:.32};
+    if(F.mode==="misch"&&i===0){
+      const f=fremd[j+"|0"];
+      if(f&&f.lower===!up||f&&f.lower===undefined&&up){at.col=f.col;at.r=f.r*.68;F.foreign.push({u:j,y:at.y,A:f.A})}
+    }
+    F.atoms.push(at);
+  }
+  if(F.mode==="misch"){                                           // Kohlenstoff in einer Lücke der Gleitebene
+    F.atoms.push({u:7.5,y:F.yS,up:false,col:"kohlenstoff",r:.25,c:true});F.foreign.push({u:7.5,y:F.yS,A:.11});
+  }
+  if(F.mode==="fein"){
+    const cand=[],grains=[{x1:ub[0],x2:ub[1],th:24,col:"at-flaeche"},{x1:ub[1],x2:F.N-.5,th:-17,col:"at-mitte"}];
+    grains.forEach((g,gi)=>{
+      const c=Math.cos(g.th*Math.PI/180),s=Math.sin(g.th*Math.PI/180),px=F.x0+(g.x1+g.x2)/2*a;
+      for(let i=-12;i<=12;i++)for(let j=-8;j<=8;j++){
+        const x=px+(i*c-j*s)*a*.98,y=F.yS+(i*s+j*c)*a*.98,u=(x-F.x0)/a;
+        if(u>g.x1+.1&&u<g.x2-.1&&Math.abs(y-F.yS)<3*a-4&&Math.abs(y-F.yS)>.22*a)cand.push({u,y,up:y<F.yS,col:g.col,r:.3,k:Math.min(Math.abs(u-g.x1),Math.abs(u-g.x2)),g:gi});
+      }
+    });
+    // Atome dicht an der Korngrenze und Doppelungen aussortieren
+    const acc=[];
+    cand.sort((p,q)=>q.k-p.k);
+    for(const p of cand){if(acc.some(q=>Math.hypot((q.u-p.u)*a,q.y-p.y)<.72*a))continue;acc.push(p)}
+    for(const p of F.atoms.filter(q=>q.u>ub[0]-1.2))acc.push(p);
+    for(const p of acc)if(p.g!==undefined)F.atoms.push(p);
+    F.tints=[{x1:F.x0-a/2,x2:F.x0+ub[0]*a,col:"at-ecke"},{x1:F.x0+ub[0]*a,x2:F.x0+ub[1]*a,col:"at-flaeche"},{x1:F.x0+ub[1]*a,x2:F.x0+(F.N-.5)*a,col:"at-mitte"}];
+  }
+}
+// Verschiebung eines Atoms der oberen Hälfte durch alle Versetzungskerne (in Atomabständen)
+function fShift(u,y){
+  const h=Math.max(0,(F.yS-y)/F.a-.5);let s=0;
+  for(const c of F.cores)s+=c.aus?1:gleit(u,h,c.xi);
+  return s;
+}
+function fPos(at){
+  let x=F.x0+at.u*F.a,y=at.y;
+  if(at.up)x+=fShift(at.u,at.y)*F.a;
+  if(F.foreign.length&&!at.c){
+    for(const f of F.foreign){if(f.u===at.u&&f.y===at.y)continue;const [vx,vy]=verz(at.u,at.y/F.a,{cx:f.u,cy:f.y/F.a,A:f.A});x+=vx*F.a;y+=vy*F.a}
+  }
+  return [x,y];
+}
+function fStep(dt){
+  F.t+=dt;if(F.msg>0)F.msg-=dt;
+  F.blocked=false;
+  F.cores.forEach((c,ci)=>{
+    if(c.aus)return;
+    let lim=F_XIAUS;
+    for(const o of F.obst)if(F.tau<o.s&&c.xi<o.x-1.3+1e-9)lim=Math.min(lim,o.x-1.3);
+    const hindernis=lim<F_XIAUS;
+    if(ci>0&&!F.cores[ci-1].aus)lim=Math.min(lim,F.cores[ci-1].xi-2.6);
+    if(F.tau>=F.TP){
+      const alt=c.xi;c.xi=Math.min(lim,c.xi+1.5*dt);
+      if(ci===0)for(const o of F.obst)if(alt<o.x-.4&&c.xi>=o.x-.4&&F.tau>=o.s)F.msg=3;
+    }
+    if(hindernis&&c.xi>=lim-1e-6&&ci===0)F.blocked=true;
+    if(c.xi>=F_XIAUS-1e-9){c.xi=F_XIAUS;c.aus=true}
+  });
+  if(F.cores[0]&&F.cores.every(c=>c.aus))F.blocked=false;
+}
+function fDraw(){
+  const {ctx}=F.cv;if(!F.cv.fit())return;
+  const a=F.a,yS=F.yS;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,F.H);
+  for(const t of F.tints){ctx.fillStyle=alpha(COL[t.col],.13);ctx.fillRect(t.x1,yS-3*a,t.x2-t.x1,6*a)}
+  const an=F.tau>0;
+  ctx.globalAlpha=an?1:.35;
+  arrow(ctx,400,540,24,COL["at-wahl"],4);arrow(ctx,560,420,F.H-24,COL["at-wahl"],4);ctx.globalAlpha=1;
+  line(ctx,20,yS,W-20,yS,COL.muted,1.5,[8,6]);
+  text(ctx,"Gleitebene",14,yS-3*a-12,COL.muted,14,"left");
+  // Hindernisse
+  if(F.mode==="kalt")for(const o of F.obst){
+    const x=F.x0+o.x*a;
+    line(ctx,x-1.2*a,yS+1.9*a,x+1.2*a,yS-1.9*a,COL.muted,1.8,[6,5]);
+    perp(ctx,x-.75*a,yS+1.2*a,7,COL["at-ecke"],-.5);perp(ctx,x+.75*a,yS-1.2*a,7,COL["at-ecke"],2.6);
+    circle(ctx,x,yS,13,alpha(COL["at-nachbar"],.5));
+  }
+  if(F.mode==="fein")for(const o of F.obst)line(ctx,F.x0+o.x*a,yS-3*a,F.x0+o.x*a,yS+3*a,COL.ink,3);
+  // Atome
+  for(const at of F.atoms){const [x,y]=fPos(at);at.px=x;at.py=y}
+  for(const at of F.atoms)if(at.col==="at-flaeche"&&F.mode==="misch")circle(ctx,at.px,at.py,at.r*a+6,alpha(COL["at-nachbar"],.5));
+  for(const at of F.atoms){
+    if(at.c){circle(ctx,at.px,at.py,at.r*a,COL.kohlenstoff,COL["kohlenstoff-rand"],2);text(ctx,"C",at.px,at.py+1,"#ffffff",16,"center",700)}
+    else circle(ctx,at.px,at.py,at.r*a,COL[at.col],COL.card,1.2);
+  }
+  // Versetzungskerne
+  for(const c of F.cores)if(!c.aus&&c.xi>-.2&&c.xi<F.N-.8)perp(ctx,F.x0+(c.xi+.5)*a,yS,9,COL.ink);
+  const ex=F.cores.filter(c=>c.aus).length;
+  if(ex>0){
+    const xr0=F.x0+(F.N-1)*a+.36*a,xr1=xr0+ex*a;
+    line(ctx,xr0,yS+8,xr1,yS+8,COL.ink,2.5);line(ctx,xr0,yS+2,xr0,yS+14,COL.ink,2.5);line(ctx,xr1,yS+2,xr1,yS+14,COL.ink,2.5);
+    text(ctx,"Gleitstufe: "+ex+(ex===1?" Atomabstand":" Atomabstände"),W-12,yS+30,COL.ink,15,"right");
+  }
+}
+function fUI(){
+  $("f-tau-out").textContent=F.tau;
+  document.querySelectorAll("#f-modus [data-m]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===F.mode));
+  // Balken: nötige Schubspannung je Modus (Modell), Strich = angelegte Schubspannung
+  const bars=$("f-bars");
+  if(!bars.dataset.fertig){
+    bars.innerHTML=Object.entries(FMODI).map(([k,m])=>`<span id="f-bl-${k}">${m.name}</span><div class="balken" aria-hidden="true"><span style="width:${k==="rein"?F.TP:Math.max(...m.obst.map(o=>o.s))}%"></span><i class="f-tick"></i></div>`).join("");
+    bars.dataset.fertig="1";
+  }
+  bars.querySelectorAll(".f-tick").forEach(t=>t.style.left=F.tau+"%");
+  for(const k of Object.keys(FMODI))$("f-bl-"+k).style.fontWeight=k===F.mode?700:400;
+  const leg=[["at-neutral","Matrixatom"]];
+  if(F.mode==="misch")leg.push(["at-flaeche","Fremdatom auf Gitterplatz"],["kohlenstoff","Kohlenstoff (Einlagerung)"]);
+  if(F.mode==="fein")leg.push(["at-flaeche","Nachbarkorn, anders ausgerichtet"],["at-mitte","übernächstes Korn"]);
+  if(F.mode==="kalt")leg.push(["at-ecke","sich kreuzende Versetzungen"]);
+  $("f-leg").innerHTML=leg.map(([c,s])=>`<span><i class="punkt" style="background:var(--${c})"></i>${s}</span>`).join("")+`<span>⊥ Versetzung</span>`;
+  const st=$("f-status");st.textContent=FTEXT[F.mode];
+  const add=t=>{const w=document.createElement("span");w.className="warn";w.textContent=t;st.appendChild(w)};
+  if(F.blocked)add(FTEXT.haengt);else if(F.msg>0)add(FTEXT.los);
+}
+function fSet(m){F.mode=m;fBuild();fUI()}
+document.querySelectorAll("#f-modus [data-m]").forEach(b=>b.addEventListener("click",()=>fSet(b.dataset.m)));
+$("f-tau").addEventListener("input",e=>{F.tau=+e.target.value;fUI()});
+$("f-reset").addEventListener("click",()=>fSet(F.mode));
+fBuild();fUI();
+
+// ---- Büroklammer im Modell ----
+const C={H:270,n:0,gebrochen:false,beta:0,t:0,flecken:[],rissT:0};
+C.cv=makeCanvas("cv-clip",C.H);
+const CDICHTE=[.05,.30,.52,.70,.84,.94,1],CFEST=[.15,.35,.52,.66,.78,.88,.95],CVERF=[1,.80,.58,.38,.20,.08,0];
+const CBRUCH=7;
+const CTEXT={
+  start:"Drücken Sie „Biegen“, um die Büroklammer hin und her zu biegen.",
+  b1:"Die Biegestelle wurde verformt. Dabei sind viele neue Versetzungen entstanden. Die Stelle ist jetzt fester, beim nächsten Biegen brauchen Sie mehr Kraft.",
+  b2:"Die Versetzungen sind so dicht, dass kaum noch eine laufen kann. Die Festigkeit ist stark gestiegen, die verbleibende Verformbarkeit fast aufgebraucht.",
+  bruch:"Gebrochen: Das Verformungsvermögen war aufgebraucht. An Stellen, an denen sich Versetzungen gestaut haben, sind feine Risse entstanden und bei jedem Biegen gewachsen. Dass die Biegestelle warm wird, stimmt übrigens: Der größte Teil der Umformarbeit wird zu Wärme.",
+  gluehen:"Geglüht: Oberhalb der Rekristallisationstemperatur bildet sich ein neues Gefüge mit wenigen Versetzungen. Das Metall ist wieder weich und verformbar. Das Verfahren heißt Rekristallisationsglühen und kommt beim Thema Wärmebehandlung."
+};
+C.tk="start";
+function cFlecken(){            // zufällige Versetzungslinien im Biegebereich, steigt mit der Versetzungsdichte
+  const n=Math.round(CDICHTE[Math.min(C.n,6)]*70);C.flecken=[];
+  for(let i=0;i<n;i++){const a=Math.random()*TAU,r=Math.sqrt(Math.random())*30,l=6+Math.random()*9,b=Math.random()*TAU;C.flecken.push([Math.cos(a)*r,Math.sin(a)*r,Math.cos(b)*l,Math.sin(b)*l])}
+}
+function cBend(){
+  if(C.gebrochen)return;
+  C.n++;if(C.n>=CBRUCH){C.gebrochen=true;C.n=CBRUCH;C.tk="bruch"}else C.tk=C.n<=2?"b1":"b2";
+  C.tgt=(C.n%2?-1:1)*.6;cFlecken();cUI();
+}
+function cAnneal(){if(C.gebrochen||C.n===0)return;C.n=0;C.tk="gluehen";C.tgt=0;cFlecken();cUI()}
+function cReset(){C.n=0;C.gebrochen=false;C.tk="start";C.tgt=0;C.beta=0;cFlecken();cUI()}
+function cStep(dt){C.t+=dt;C.beta+=((C.tgt||0)-C.beta)*(1-Math.exp(-dt*4));if(C.gebrochen)C.rissT=Math.min(1,C.rissT+dt*1.5);else C.rissT=0}
+function cDraw(){
+  const {ctx}=C.cv;if(!C.cv.fit())return;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W,C.H);
+  const px=480,py=135,len=210,dens=CDICHTE[Math.min(C.n,6)];
+  const wire=mix(COL["at-neutral"],COL["at-flaeche"],dens*.8);
+  const arm=(x0,y0,ang,l,col)=>{ctx.lineCap="round";line(ctx,x0,y0,x0+Math.cos(ang)*l,y0+Math.sin(ang)*l,col,12)};
+  arm(px,py,Math.PI,len,COL["at-neutral"]);
+  if(!C.gebrochen)arm(px,py,C.beta,len,COL["at-neutral"]);
+  else{const f=C.rissT;ctx.save();ctx.translate(px+30*f,py+34*f);arm(0,0,C.beta+.3*f*Math.sign(C.beta||1),len,COL["at-neutral"]);ctx.restore()}
+  // Biegestelle
+  circle(ctx,px,py,15,wire);
+  ctx.strokeStyle=alpha(COL.ink,.7);ctx.lineWidth=1.6;ctx.beginPath();
+  for(const [x,y,dx,dy] of C.flecken){ctx.moveTo(px+x-dx/2,py+y-dy/2);ctx.lineTo(px+x+dx/2,py+y+dy/2)}
+  ctx.stroke();
+  // Risse ab der fünften Biegung
+  if(C.n>=5){
+    const l=C.gebrochen?1:(C.n-4)/3;
+    ctx.strokeStyle=COL.ink;ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(px-3,py-17);
+    for(let k=1;k<=4;k++)ctx.lineTo(px-3+(k%2?6:-5),py-17+k*8*l);ctx.stroke();
+  }
+  text(ctx,"Biegestelle",px,py+64,COL.muted,15);
+  }
+function cUI(){
+  const i=Math.min(C.n,6);
+  $("c-b1").style.width=CDICHTE[i]*100+"%";$("c-b2").style.width=CFEST[i]*100+"%";$("c-b3").style.width=CVERF[i]*100+"%";
+  $("c-count").textContent=C.gebrochen?"Gebrochen nach "+CBRUCH+" Biegungen.":"Biegungen: "+C.n;
+  $("c-bend").disabled=C.gebrochen;$("c-anneal").disabled=C.gebrochen||C.n===0;
+  $("c-status").textContent=CTEXT[C.tk];
+}
+$("c-bend").addEventListener("click",cBend);$("c-anneal").addEventListener("click",cAnneal);$("c-reset").addEventListener("click",cReset);
+cFlecken();cUI();
+
+// =====================================================================
+// Beobachtungsfragen
+// =====================================================================
+const FRAGEN={
+ punkt:[
+  {q:"Wählen Sie „Einlagerungsatom“. Warum werden die Nachbaratome auseinandergedrückt, obwohl ein Kohlenstoffatom viel kleiner ist als ein Eisenatom?",
+   o:["Die Lücken zwischen den Eisenatomen sind noch kleiner als das Kohlenstoffatom.","Das Kohlenstoffatom stößt die Eisenatome elektrisch ab.","Das Kohlenstoffatom dehnt sich im Gitter aus."],r:0,
+   w:"Ein Kohlenstoffatom hat einen Radius von rund 0,07 nm, ein Eisenatom von rund 0,12 nm. Die Lücken im Eisengitter sind aber nur etwa 0,02 bis 0,05 nm groß. Jedes Kohlenstoffatom verzerrt deshalb das Gitter deutlich. Darum kann Eisen nur wenig Kohlenstoff lösen, und darum wirkt schon wenig Kohlenstoff stark verfestigend."},
+  {q:"Wählen Sie „Leerstelle“ und lösen Sie mehrere Platzwechsel aus. Was wandert dabei durch das Gitter?",
+   o:["Die Leerstelle, weil jeweils ein Nachbaratom in sie hineinspringt.","Ein einzelnes Atom, das ununterbrochen durch das ganze Gitter läuft.","Nichts, eine Leerstelle bleibt immer am selben Platz."],r:0,
+   w:"Jeder Sprung eines Atoms verschiebt die Leerstelle um einen Platz in die Gegenrichtung. Über solche Platzwechsel diffundieren Atome im festen Metall. Je heißer das Metall, desto mehr Leerstellen gibt es und desto häufiger springen die Atome. Darauf beruhen viele Wärmebehandlungen."},
+  {q:"Chrom und Nickel sitzen im Stahl auf regulären Gitterplätzen, Kohlenstoff in den Lücken. Woran liegt dieser Unterschied?",
+   o:["An der Atomgröße: Chrom und Nickel sind fast so groß wie Eisen, Kohlenstoff ist viel kleiner.","An der Menge: Was in kleinen Mengen zugegeben wird, lagert sich in die Lücken ein.","Am Schmelzpunkt: Elemente mit niedrigem Schmelzpunkt lagern sich ein."],r:0,
+   w:"Ein Fremdatom kann ein Wirtsatom nur ersetzen, wenn es ähnlich groß ist. Faustregel: Der Radius darf sich um höchstens etwa 15 % unterscheiden, sonst löst sich nur wenig davon. In die Lücken passen nur sehr kleine Atome wie Wasserstoff, Kohlenstoff und Stickstoff."}
+ ],
+ vers:[
+  {q:"Schieben Sie eine Versetzung ganz durch den Kristall. Um wie viel ist die obere Hälfte danach gegenüber der unteren verschoben?",
+   o:["Um genau einen Atomabstand.","Um so viele Atomabstände, wie die Versetzung Schritte gemacht hat.","Gar nicht, die Versetzung ist nur hindurchgelaufen."],r:0,
+   w:"Jede Versetzung, die austritt, hinterlässt eine Gleitstufe von genau einem Atomabstand (Fachbegriff für diese Verschiebung: Burgersvektor). Für eine bleibende Verformung, die man mit bloßem Auge sieht, müssen deshalb sehr viele Versetzungen durch den Kristall laufen. Beim Verformen entstehen ständig neue."},
+  {q:"Vergleichen Sie beide Modi. Warum braucht die wandernde Versetzung so viel weniger Kraft?",
+   o:["Es werden immer nur die Bindungen an der Versetzung umgeordnet, nicht alle in der Gleitebene gleichzeitig.","An der Versetzung ist der Kristall schon gerissen, dort hält nichts mehr.","Die Versetzung schiebt die Atome vor sich her wie ein Schneepflug."],r:0,
+   w:"Wie bei der Falte im Teppich: Man bewegt immer nur einen kleinen Bereich. Eine Versetzung ist kein Riss. Auch an der Versetzung halten alle Atome zusammen, sie sind nur etwas aus ihrer Lage verschoben."},
+  {q:"Schalten Sie „Atom verfolgen“ ein und lassen Sie eine Versetzung durchlaufen. Wie bewegt sich das markierte Atom?",
+   o:["Es rückt insgesamt um einen Atomabstand weiter, und nur, während die Versetzung vorbeiläuft.","Es wandert mit der Versetzung durch den ganzen Kristall.","Es bleibt völlig unbewegt."],r:0,
+   w:"Durch den Kristall wandert die Störung, nicht das Atom. Das ist wie bei einer La-Ola-Welle im Stadion: Die Welle läuft einmal herum, die Menschen bleiben auf ihren Plätzen."}
+ ],
+ korn:[
+  {q:"Lassen Sie die Schmelze einmal mit wenigen und einmal mit vielen Keimen erstarren. Was ändert sich?",
+   o:["Mit vielen Keimen entstehen viele kleine Körner und damit mehr Korngrenzen.","Mit vielen Keimen werden die Körner größer.","Die Zahl der Keime hat keinen Einfluss auf das Gefüge."],r:0,
+   w:"Jeder Keim wird zu einem Korn. Je mehr Keime, desto kleiner bleibt jedes Korn, weil es früher an seine Nachbarn stößt. Die Korngröße bestimmt Festigkeit und Zähigkeit mit (Reiter Verfestigung)."},
+  {q:"Vergrößern Sie bei der Kleinwinkelkorngrenze den Abstand der Versetzungen. Was passiert mit dem Kippwinkel?",
+   o:["Er wird kleiner.","Er wird größer.","Er bleibt gleich."],r:0,
+   w:"Jede Versetzung kippt das Gitter um einen kleinen Betrag. Liegen sie weiter auseinander, kommen auf dieselbe Länge weniger Versetzungen, und der Winkel wird kleiner."},
+  {q:"Welche Aussage über Korngrenzen stimmt?",
+   o:["Die Körner sind über die Korngrenze hinweg fest verbunden. Es wechselt nur die Ausrichtung des Gitters.","Zwischen zwei Körnern liegt ein feiner Spalt.","Alle Korngrenzen bestehen aus übereinander aufgereihten Stufenversetzungen."],r:0,
+   w:"Eine Korngrenze ist eine dünne, gestörte Übergangszone, kein Spalt. Nur Kleinwinkelkorngrenzen lassen sich als Reihe von Versetzungen beschreiben. Großwinkelkorngrenzen entstehen z. B. beim Erstarren, wenn Körner mit verschieden ausgerichteten Gittern aufeinandertreffen."},
+  {q:"Bei welcher Phasengrenze laufen die Gitterebenen ohne Unterbrechung durch die Grenze?",
+   o:["Bei der kohärenten.","Bei der teilkohärenten.","Bei der inkohärenten."],r:0,
+   w:"Kohärent heißt zusammenhängend: Die Gitterebenen setzen sich über die Grenze fort. Bei der teilkohärenten Grenze gleichen eingebaute Versetzungen die Fehlpassung aus, bei der inkohärenten passen die Gitter gar nicht zusammen."}
+ ],
+ verf:[
+  {q:"Versetzungen sind die Träger der plastischen Verformung. Warum wird ein Metall trotzdem fester, wenn beim Kaltumformen immer mehr Versetzungen entstehen?",
+   o:["Die vielen Versetzungen behindern sich gegenseitig und verhaken sich.","Die Atome werden beim Umformen dichter zusammengepresst.","Die Versetzungen werden zu Rissen und schwächen das Gitter."],r:0,
+   w:"Wenige Versetzungen laufen leicht. Viele Versetzungen auf sich kreuzenden Gleitebenen stauen sich und blockieren sich. Um sie weiterzubewegen, braucht es mehr Spannung. Die Dichte des Metalls ändert sich dabei praktisch nicht."},
+  {q:"Eine Büroklammer wird beim Hin- und Herbiegen an der Biegestelle immer schwerer zu biegen und bricht schließlich. Was passiert im Metall?",
+   o:["Die Versetzungsdichte steigt, bis kaum noch Versetzungen laufen können. Dann bilden sich Risse.","Durch die Reibung schmilzt das Metall an der Biegestelle an.","An der Biegestelle gehen Atome verloren, bis sie zu dünn ist."],r:0,
+   w:"Jedes Biegen verfestigt die Biegestelle weiter und verbraucht Verformungsvermögen. Irgendwann entstehen feine Risse, die bei jedem Biegen wachsen. Die Wärme, die man spürt, kommt aus der Umformarbeit, reicht aber bei Weitem nicht zum Schmelzen."},
+  {q:"Welcher Mechanismus erhöht die Festigkeit und erhält zugleich die Zähigkeit?",
+   o:["Feinkornhärtung","Kaltverfestigung","Mischkristallverfestigung"],r:0,
+   w:"Feines Korn erhöht die Streckgrenze und verbessert zugleich die Zähigkeit, z. B. bleibt Stahl auch bei tiefen Temperaturen zäh. Deshalb setzt man im Stahlbau Feinkornbaustähle ein. Bei der Kaltverfestigung dagegen sinkt die Verformbarkeit deutlich."},
+  {q:"Ein Kollege sagt: „Gitterfehler sind Fertigungsfehler. Ein guter Werkstoff hat keine.“ Was stimmt?",
+   o:["Das stimmt nicht: Ohne Versetzungen wären Metalle kaum verformbar, und Fremdatome, Versetzungen und Korngrenzen machen sie gezielt fester.","Das stimmt, denn jeder Gitterfehler senkt die Festigkeit.","Das stimmt, denn bei guter Fertigung lassen sich Gitterfehler ganz vermeiden."],r:0,
+   w:"Gitterfehler sind der Normalfall und meist gewollt. Legieren, Umformen und Wärmebehandeln heißt: gezielt mit Gitterfehlern arbeiten. Manche Fehler schaden aber tatsächlich, z. B. Poren und Einschlüsse oder Wasserstoff im Stahl (Wasserstoffversprödung)."},
+  {q:"Blei lässt sich bei Raumtemperatur immer wieder biegen, ohne nennenswert fester zu werden. Warum?",
+   o:["Für Blei ist Raumtemperatur schon oberhalb der Rekristallisationstemperatur. Es bildet sich laufend ein neues, weiches Gefüge.","Blei hat keine Versetzungen.","Blei ist kein Metall."],r:0,
+   w:"„Kalt“ heißt beim Umformen: unterhalb der Rekristallisationstemperatur. Faustregel: etwa 0,4 · Schmelztemperatur in Kelvin. Für Blei liegt sie unter 0 °C, für Stahl bei etwa 450 °C."}
+ ]
+};
+function renderFragen(key,id){
+  const box=$(id);box.innerHTML="<h3>Beobachtungsfragen</h3>";
+  FRAGEN[key].forEach((f,i)=>{
+    // Antworten gemischt anzeigen, damit die richtige nicht immer oben steht
+    const ord=f.o.map((_,k)=>k).sort(()=>Math.random()-.5);
+    const d=document.createElement("div");d.className="frage";
+    const name=`${key}-${i}`;
+    d.innerHTML=`<p>${i+1}. ${f.q}</p>`+ord.map(k=>`<label><input type="radio" name="${name}" value="${k}"><span>${f.o[k]}</span></label>`).join("")+
+      `<div class="row" style="margin-top:6px"><button class="btn-2">Prüfen</button></div><div class="fb" aria-live="polite"></div>`;
+    const fb=d.querySelector(".fb");
+    d.querySelector("button").addEventListener("click",()=>{
+      const sel=d.querySelector("input:checked");
+      if(!sel){fb.className="fb fb-hint";fb.textContent="Bitte wählen Sie zuerst eine Antwort.";return}
+      if(+sel.value===f.r){fb.className="fb fb-ok";fb.textContent="Richtig. "+f.w}
+      else{fb.className="fb fb-bad";fb.textContent="Noch nicht. Beobachten Sie das Modell noch einmal genau."}
+    });
+    d.addEventListener("change",()=>{fb.className="fb";fb.textContent=""});
+    box.appendChild(d);
+  });
+}
+renderFragen("punkt","q-punkt");renderFragen("vers","q-vers");renderFragen("korn","q-korn");renderFragen("verf","q-verf");
+
+// =====================================================================
+// Reiter, Pause und Animationsschleife
+// =====================================================================
+const SIMS={punkt:{step:pStep,draw:pDraw},vers:{step:dStep,draw:dDraw},korn:{step:kStep,draw:kDraw},verf:{step:dt=>{fStep(dt);cStep(dt)},draw:()=>{fDraw();cDraw()}}};
+const TABS=["punkt","vers","korn","verf"];
+let aktiv="punkt",pause=false;
+function zeige(k){
+  aktiv=k;
+  for(const t of TABS){$("tab-"+t).setAttribute("aria-selected",t===k);$("box-"+t).hidden=t!==k}
+}
+for(const t of TABS)$("tab-"+t).addEventListener("click",()=>zeige(t));
+document.querySelectorAll(".pause").forEach(b=>b.addEventListener("click",()=>{
+  pause=!pause;document.querySelectorAll(".pause").forEach(x=>x.textContent=pause?"Weiter":"Pause");
+}));
+let last=performance.now(),uiTick=0;
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(!pause){
+    let rest=dt;
+    while(rest>1e-6){const h=Math.min(1/120,rest);SIMS[aktiv].step(h);rest-=h}
+    if(aktiv==="verf"&&(uiTick+=dt)>.2){uiTick=0;fUI()}
+  }
+  SIMS[aktiv].draw();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
