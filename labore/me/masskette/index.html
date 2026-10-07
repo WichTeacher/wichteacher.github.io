@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maßketten und Schließmaß – Labor</title>
+<meta name="description" content="Interaktives Labor: Maßketten, Schließmaß und Worst Case – Spiel nachrechnen und ein Einzelmaß so tolerieren, dass das geforderte Spiel immer eingehalten wird">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Vergrößernde Maße: eigenes Blau, verkleinernde Maße: Fachfarbe (Orange).
+     Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
+  :root{--m-plus:#2F6DB5;--m-plus-bg:#dce8f6;--m-minus-bg:#fbe9d6;--st-bar:#2F6DB5}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--m-plus:#5BA7E8;--m-plus-bg:#1f3652;--m-minus-bg:#4a3321;--st-bar:#5BA7E8}}
+  :root[data-theme="dark"]{--m-plus:#5BA7E8;--m-plus-bg:#1f3652;--m-minus-bg:#4a3321;--st-bar:#5BA7E8}
+
+  [hidden]{display:none!important}
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
+  .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 16px;min-height:40px}
+  .tabs button[aria-selected="true"]{background:var(--fach);border-color:var(--fach);color:var(--fach-ink)}
+  .taskbox{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:var(--card);padding:16px;margin-bottom:16px}
+  button{touch-action:manipulation}
+  .btn,.btn-2{min-height:40px}
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .wahl{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .wahl button{font:inherit;border:none;background:var(--card);color:var(--ink);padding:6px 12px;cursor:pointer;min-height:40px}
+  .wahl button+button{border-left:1px solid var(--line)}
+  .wahl button[aria-pressed="true"]{background:var(--fach);color:var(--fach-ink);font-weight:600}
+  .regler{display:flex;align-items:center;gap:10px;flex:1;min-width:240px}
+  .regler input{flex:1;accent-color:var(--fach);min-height:40px}
+  .regler output{font-weight:700;min-width:5.5em;text-align:right}
+  .einleitung{margin:0 0 12px}
+  .grenze{font-size:.88rem;color:var(--muted);margin:12px 0 0}
+  .status{border-left:4px solid var(--fach);border-radius:6px;padding:6px 10px;margin-top:12px;font-size:.97rem;background:var(--soft)}
+  .status.fb-ok,.status.fb-bad{background:none}
+  .status.fb-ok{background:var(--ok-bg)}.status.fb-bad{background:var(--bad-bg)}
+  sub{font-size:.75em;line-height:0}
+  .formel{font-family:var(--font);white-space:normal}
+  details.zahlen{margin-top:10px;font-size:.95rem;border:1px solid var(--line);border-radius:8px;padding:6px 12px;background:var(--card)}
+  details.zahlen summary{cursor:pointer;font-weight:600;color:var(--fach);min-height:32px}
+  details.zahlen ol,details.zahlen ul{margin:6px 0 4px;padding-left:1.3em}
+  details.zahlen li{margin:0 0 4px}
+  .ausblick-tag{display:inline-block;border:2px solid var(--fach);color:var(--fach);border-radius:999px;padding:0 10px;font-size:.85rem;font-weight:700}
+
+  /* Grundlagen-Kasten */
+  .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
+  .info summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px;min-height:44px}
+  .info summary::-webkit-details-marker{display:none}
+  .info summary::before{content:"▸";color:var(--fach);font-size:1.2rem;transition:transform .15s}
+  .info[open] summary::before{transform:rotate(90deg)}
+  .info-body{padding:0 16px 14px}
+  .info-body ol,.info-body ul{margin:0;padding-left:1.3em}
+  .info-body li{margin:0 0 8px}
+  .info-tip{margin:6px 0 0;padding:8px 10px;background:var(--soft);border-radius:6px;font-weight:600}
+  .gl-form{margin:8px 0;padding:8px 12px;background:var(--soft);border-radius:8px;line-height:1.8}
+
+  /* Maßkettenschema */
+  svg.kette{display:block;width:100%;max-width:720px;margin:10px auto 0;height:auto}
+  svg.kette text{font-family:var(--font);font-size:14px;font-weight:600;fill:var(--ink)}
+  svg.kette .sb{font-size:10px}
+  svg.kette text.p{fill:var(--m-plus)}
+  svg.kette text.m{fill:var(--fach)}
+  svg.kette text.bad{fill:var(--bad)}
+  svg.kette .bl{fill:var(--soft);stroke:var(--muted);stroke-width:1.5}
+  svg.kette .bl.p{fill:var(--m-plus-bg);stroke:var(--m-plus)}
+  svg.kette .bl.m{fill:var(--m-minus-bg);stroke:var(--fach)}
+  svg.kette .bl.x{stroke-dasharray:5 3;stroke:var(--ink)}
+  svg.kette .dm{stroke:var(--muted);stroke-width:1.5;fill:none}
+  svg.kette .dm.p{stroke:var(--m-plus)}
+  svg.kette .dm.m{stroke:var(--fach)}
+  svg.kette .ah{fill:var(--muted)}
+  svg.kette .ah.p{fill:var(--m-plus)}
+  svg.kette .ah.m{fill:var(--fach)}
+  svg.kette .wand{stroke:var(--muted);stroke-width:1.5}
+  svg.kette .gap{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:4 3}
+  svg.kette .gap.bad{stroke:var(--bad)}
+  svg.kette .sl{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:4 3}
+  svg.kette .sl.bad{stroke:var(--bad)}
+  svg.kette .sd{stroke:var(--ink);stroke-width:2}
+  svg.kette .sd.bad{stroke:var(--bad)}
+  /* Bauteilskizze (Halbschnitt) */
+  svg.skz{margin-top:6px}
+  svg.skz .dm{stroke-width:1}
+  svg.skz .dm.s{stroke:var(--ink);stroke-width:1.8}
+  svg.skz .dm.s.bad{stroke:var(--bad)}
+  svg.skz .ah.s{fill:var(--ink)}
+  svg.skz .ah.s.bad{fill:var(--bad)}
+  svg.skz .el{stroke:var(--muted);stroke-width:.9;fill:none}
+  svg.skz .el.s{stroke:var(--ink);stroke-dasharray:4 3;stroke-width:1.2}
+  svg.skz .el.s.bad{stroke:var(--bad)}
+  svg.skz .pf{stroke:none}
+  svg.skz .po{fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+  svg.skz .rg{fill:var(--ink);stroke:var(--ink);stroke-width:1}
+  svg.skz .ball{fill:var(--card);stroke:var(--ink);stroke-width:1.4}
+  svg.skz .ax{stroke:var(--muted);stroke-width:1;stroke-dasharray:12 3 2 3;fill:none}
+  svg.skz .ov{stroke:var(--bad);stroke-width:1.5}
+  svg.skz text.pn{font-size:11px;font-weight:400;fill:var(--muted);paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
+  svg.skz text.pn.in{fill:var(--ink)}
+  .legende{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:8px;font-size:.92rem}
+  .chip{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:6px;vertical-align:-2px;border:2px solid var(--muted);background:var(--soft)}
+  .chip.p{border-color:var(--m-plus);background:var(--m-plus-bg)}
+  .chip.m{border-color:var(--fach);background:var(--m-minus-bg)}
+
+  /* Regler Stufe 1 */
+  .s1-reg{display:grid;grid-template-columns:minmax(0,12em) minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:6px 8px;border-left:5px solid var(--line);border-radius:4px;margin-top:6px}
+  .s1-reg.p{border-left-color:var(--m-plus)}
+  .s1-reg.m{border-left-color:var(--fach)}
+  .s1-reg input{width:100%;accent-color:var(--fach);min-height:40px}
+  .s1-reg output{font-weight:700;text-align:right;white-space:nowrap}
+  .s1-reg .nm{font-weight:600;line-height:1.25}
+  .s1-reg .nm small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+  .s1-reg .tag{font-size:.8rem;font-weight:700}
+  .s1-reg.p .tag{color:var(--m-plus)}
+  .s1-reg.m .tag{color:var(--fach)}
+  .sbar{position:relative;height:30px;border:1px solid var(--line);border-radius:8px;background:var(--soft);overflow:hidden;margin-top:12px}
+  .sbar i{position:absolute;top:0;bottom:0}
+  .sbar .req{background:var(--muted);opacity:.28}
+  .sbar .rng{top:6px;bottom:6px;border:2px dashed var(--ink);border-radius:4px}
+  .sbar .zero{width:2px;background:var(--ink);opacity:.7}
+  .sbar b{position:absolute;top:0;bottom:0;width:5px;margin-left:-2px;background:var(--fach);box-shadow:0 0 0 2px var(--card)}
+  .sbar-cap{font-size:.84rem;color:var(--muted);margin:4px 0 0}
+
+  /* Gegebene Maße, Felder */
+  .masse{list-style:none;margin:8px 0;padding:0}
+  .masse li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+  .masse .nm small{display:block;color:var(--muted);font-size:.82rem}
+  .masse .wert{font-weight:700;white-space:nowrap}
+  .masse .gesucht{font-style:italic;color:var(--fach);font-weight:700}
+  .rolle{font:inherit;font-weight:700;min-width:46px;min-height:40px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);cursor:pointer}
+  .rolle[data-v="+"]{border-color:var(--m-plus);color:var(--m-plus)}
+  .rolle[data-v="-"]{border-color:var(--fach);color:var(--fach)}
+  .rolle.ok{box-shadow:0 0 0 2px var(--ok)}
+  .rolle.bad{box-shadow:0 0 0 2px var(--bad)}
+  .rs{font-weight:700;min-width:1.2em;text-align:center}
+  .rs.ok{color:var(--ok)}.rs.bad{color:var(--bad)}
+  .feld{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .feld .lab{min-width:11em;font-weight:600}
+  .feld input[type="text"]{font:inherit;padding:8px 10px;min-height:44px;width:8.5em;max-width:100%;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+  .feld input.ok{border-color:var(--ok)}
+  .feld input.bad{border-color:var(--bad)}
+  .feld .fb{flex:1 1 100%;margin:0}
+  .fb:empty{display:none}
+  .fb>div{margin-top:6px}
+  .frage{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+  .frage p{margin:0 0 6px;font-weight:600}
+  .frage label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;cursor:pointer;min-height:36px}
+  .frage input{margin-top:.35em;accent-color:var(--fach)}
+  .kopfzeile{display:flex;gap:6px 14px;flex-wrap:wrap;align-items:baseline}
+  .kopfzeile b{font-family:var(--font-head);font-size:1.25rem;color:var(--fach)}
+  .zaehler{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;font-size:.92rem;color:var(--muted)}
+  .weg{margin-top:12px;padding:10px 12px;border:1px dashed var(--muted);border-radius:8px;background:var(--soft);font-size:.95rem}
+  .weg p{margin:4px 0}
+  .step{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:10px;background:var(--card)}
+  .step.aktiv{border:2px solid var(--fach)}
+  .step h3{margin:0 0 6px;font-size:1.1rem;color:var(--fach)}
+  .step.fertig{background:var(--soft);padding:6px 12px}
+  .step.fertig .zeile{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .step.fertig .zeile::before{content:"✓";color:var(--ok);font-weight:700}
+  .grenz{margin:6px 0;padding:6px 10px;background:var(--soft);border-radius:6px;font-size:.95rem}
+  .grenz div{padding:1px 0}
+  .fallzeile{display:flex;gap:8px 12px;align-items:center;flex-wrap:wrap;padding:4px 0;border-bottom:1px solid var(--line)}
+  .fallzeile .nm{min-width:7em;font-weight:600}
+
+  /* Histogramm Ausblick */
+  svg.hist{display:block;width:100%;max-width:720px;margin:10px auto 0;height:auto}
+  svg.hist text{font-family:var(--font);font-size:13px;font-weight:600;fill:var(--ink)}
+  svg.hist .bar{fill:var(--fach);opacity:.8}
+  svg.hist .wc{stroke:var(--ink);stroke-width:2;stroke-dasharray:5 3}
+  svg.hist .ax{stroke:var(--muted);stroke-width:1.5}
+
+  #selftest{white-space:pre-wrap;font:12px/1.4 monospace;background:var(--soft);padding:8px;margin:12px 0}
+
+  @media (max-width:480px){
+    .wrap{padding:12px 12px 40px}.taskbox{padding:10px}.tabs button{padding:6px 10px;font-size:.92rem}
+    .regler{min-width:100%;gap:6px}.info summary{padding:10px 12px}.info-body{padding:0 12px 12px}
+    .wahl button{padding:6px 9px;font-size:.92rem}
+    .s1-reg{grid-template-columns:minmax(0,1fr) auto}
+    .s1-reg input{grid-column:1 / -1;grid-row:2}
+    .feld .lab{min-width:100%}
+    .masse li{grid-template-columns:minmax(0,1fr) auto}
+    .masse li .rs{display:none}
+  }
+  @media print{
+    .tabs,.no-print,.wahl{display:none!important}
+    .taskbox{border:none;padding:0}
+    .info:not([open]) .info-body{display:none}
+    [hidden]{display:none!important}
+  }
+</style>
+</head>
+<body data-fach="me">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Maschinenelemente</a></div>
+    <h1>Maßketten und Schließmaß</h1>
+    <p>Maßkette · Schließmaß · Worst Case · ca. 90 min</p>
+  </header>
+
+  <details class="info">
+    <summary>Grundlagen: Maßkette, Maßgleichung, Schließmaß</summary>
+    <div class="info-body">
+      <ol>
+        <li>Beim Fügen mehrerer Bauteile addieren sich deren Maße und Toleranzen. Die <b>Maßkette</b> umfasst alle Maße, die das Ergebnis beeinflussen. Das Ergebnis ist das <b>Schließmaß S</b>. Es entsteht erst beim Zusammenbau, zum Beispiel als Spiel, als Überdeckung (Pressmaß) oder als Dichtspalt.</li>
+        <li>Jedes Maß der Kette wirkt entweder <b>vergrößernd (+)</b> oder <b>verkleinernd (−)</b> auf S. Vergrößernd heißt: Wird das Maß größer, wird S größer.
+          <div class="gl-form"><b>Maßgleichung:</b> S = Σ(vergrößernde Maße) − Σ(verkleinernde Maße)</div></li>
+        <li>Rechnung nach dem Min-Max-Prinzip (Worst Case): Man rechnet die beiden ungünstigsten Fälle.
+          <div class="gl-form"><b>Fall „locker“</b> (größtes Spiel): vergrößernde Maße am Höchstmaß, verkleinernde Maße am Mindestmaß.<br>
+          S<sub>o</sub> = Σ Höchstmaße(+) − Σ Mindestmaße(−)<br>
+          <b>Fall „fest“</b> (kleinstes Spiel): vergrößernde Maße am Mindestmaß, verkleinernde Maße am Höchstmaß.<br>
+          S<sub>u</sub> = Σ Mindestmaße(+) − Σ Höchstmaße(−)</div></li>
+        <li><b>Schließmaßtoleranz:</b> T<sub>S</sub> = S<sub>o</sub> − S<sub>u</sub> = Σ T<sub>i</sub>. Alle Toleranzen werden addiert, auch die der verkleinernden Maße. Das ist die Probe zu jeder Rechnung.</li>
+        <li><b>Umkehraufgabe</b> (ein Maß X ist gesucht, S soll zwischen S<sub>u</sub> und S<sub>o</sub> liegen):
+          <ul>
+            <li>Ist X vergrößernd, folgt X<sub>o</sub> aus S<sub>o</sub> und X<sub>u</sub> aus S<sub>u</sub>.</li>
+            <li>Ist X verkleinernd, folgt X<sub>o</sub> aus <b>S<sub>u</sub></b> und X<sub>u</sub> aus <b>S<sub>o</sub></b>. Das ist die häufigste Fehlerquelle.</li>
+            <li>Die Toleranz des gesuchten Maßes ist T<sub>X</sub> = T<sub>S</sub> − Σ T<sub>bekannt</sub>. Nur wenn T<sub>X</sub> &gt; 0 ist, gibt es eine Lösung. Sonst hilft nur eine konstruktive Änderung: engere Toleranzen bei den bekannten Maßen, eine Passscheibe oder eine Einstellmöglichkeit (z. B. Einstellmutter).</li>
+          </ul></li>
+      </ol>
+      <p class="info-tip">Merksatz: Größtes Spiel – vergrößernde Maße groß, verkleinernde Maße klein.</p>
+      <p class="info-tip">Literatur: Roloff/Matek Lehrbuch 2.2.5, Aufgabensammlung 2.7–2.13.</p>
+      <p class="info-tip">Lagerbreiten und Sicherungsringdicken sind Übungswerte. Für eine echte Konstruktion gelten Tabellenbuch bzw. Herstellerangaben.</p>
+    </div>
+  </details>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-1" aria-selected="true" aria-controls="box-1">1 Erkunden</button>
+    <button role="tab" id="tab-2" aria-selected="false" aria-controls="box-2">2 Schritt für Schritt</button>
+    <button role="tab" id="tab-3" aria-selected="false" aria-controls="box-3">3 Training</button>
+    <button role="tab" id="tab-4" aria-selected="false" aria-controls="box-4">4 Maß auslegen</button>
+  </div>
+
+  <!-- ===== Stufe 1 ===== -->
+  <section class="taskbox" id="box-1" role="tabpanel" aria-labelledby="tab-1">
+    <p class="einleitung">Verschieben Sie die Maße einer Baugruppe innerhalb ihrer Toleranz und beobachten Sie, was mit dem Schließmaß S passiert.</p>
+    <div class="row" style="margin-top:0"><span class="wahl" role="group" aria-label="Baugruppe" id="s1-wahl"></span></div>
+    <p class="einleitung" id="s1-text" style="margin-top:12px"></p>
+    <details class="zahlen" open>
+      <summary>Leitfragen</summary>
+      <ol>
+        <li>Verschieben Sie jedes Maß einzeln an die Grenzen seiner Toleranz. Welche Maße machen S größer, welche machen S kleiner?</li>
+        <li>Stellen Sie von Hand das größtmögliche und das kleinstmögliche S ein. Wie müssen die einzelnen Maße dazu stehen?</li>
+        <li>Wie groß ist der Unterschied zwischen größtem und kleinstem S? Vergleichen Sie ihn mit den Toleranzen der Einzelmaße.</li>
+      </ol>
+      <p class="small" style="margin:4px 0 2px">Zur Kontrolle: „Rollen einfärben“ zeigt, welche Maße vergrößernd und welche verkleinernd wirken. „Grenzen einblenden“ zeigt den rechnerisch möglichen Bereich.</p>
+    </details>
+    <div id="s1-svg"></div>
+    <div class="legende" id="s1-leg"></div>
+    <div id="s1-reg"></div>
+    <div class="row no-print">
+      <button class="btn" id="s1-locker">Fall locker</button>
+      <button class="btn" id="s1-fest">Fall fest</button>
+      <button class="btn-2" id="s1-zufall">Zufall</button>
+      <button class="btn-2" id="s1-mitte">↺ Mitte</button>
+    </div>
+    <div class="row no-print">
+      <button class="btn-2" id="s1-fx" aria-pressed="true"></button>
+      <button class="btn-2" id="s1-rollen" aria-pressed="false">Rollen einfärben: aus</button>
+      <button class="btn-2" id="s1-grenzen" aria-pressed="false">Grenzen einblenden: aus</button>
+    </div>
+    <div class="status" id="s1-status" aria-live="polite"></div>
+    <div class="sbar" id="s1-bar" aria-hidden="true"></div>
+    <p class="sbar-cap" id="s1-cap"></p>
+    <p class="grenze"><b>Modellgrenze:</b> Darstellung nicht maßstäblich. Die Toleranzen sind überhöht gezeichnet, damit man die Bewegung sieht. Die Zahlen sind echt. Gezeigt ist ein Maßkettenschema, kein maßgetreuer Schnitt: Die obere Reihe sind die vergrößernden, die untere Reihe die verkleinernden Maße.</p>
+  </section>
+
+  <!-- ===== Stufe 2 ===== -->
+  <section class="taskbox" id="box-2" role="tabpanel" aria-labelledby="tab-2" hidden>
+    <p class="einleitung">Rechnen Sie die Aufgaben Schritt für Schritt. Jeder Schritt wird sofort geprüft. Die ersten drei Aufgaben sind direkte Aufgaben (Spiel nachrechnen), die letzten drei Umkehraufgaben (Maß auslegen).</p>
+    <div class="row" style="margin-top:0"><span class="wahl" role="group" aria-label="Aufgabe" id="s2-wahl"></span></div>
+    <div id="s2-body"></div>
+  </section>
+
+  <!-- ===== Stufe 3 ===== -->
+  <section class="taskbox" id="box-3" role="tabpanel" aria-labelledby="tab-3" hidden>
+    <p class="einleitung">Zufallsaufgaben: Rechnen Sie das Spiel nach. Alle Werte in mm, Komma oder Punkt, auf 0,01 mm genau.</p>
+    <div id="s3-body"></div>
+  </section>
+
+  <!-- ===== Stufe 4 ===== -->
+  <section class="taskbox" id="box-4" role="tabpanel" aria-labelledby="tab-4" hidden>
+    <p class="einleitung">Zufallsaufgaben: Ein Maß ist gesucht. Bestimmen Sie Nennmaß und Abmaße so, dass das geforderte Schließmaß immer eingehalten wird. Manche Forderungen lassen sich nicht erfüllen.</p>
+    <div id="s4-body"></div>
+  </section>
+
+  <!-- ===== Ausblick ===== -->
+  <details class="info" id="ausblick">
+    <summary>Ausblick: Worst Case gegen Zufall <span class="ausblick-tag">nicht prüfungsrelevant</span></summary>
+    <div class="info-body">
+      <p>Der Worst Case ist der ungünstigste Fall: Alle Teile liegen gleichzeitig an der jeweils schlechtesten Grenze. In der Serie ist das sehr selten. Hier werden Baugruppen am Computer „zufällig montiert“. Angenommen wird, dass die Fertigung die Maße glockenförmig um die Toleranzmitte streut und fast alle Teile innerhalb der Toleranz liegen.</p>
+      <p class="info-tip">Für Aufgaben und Leistungsnachweise gilt weiter: Es wird der Worst Case gerechnet. Dieser Abschnitt erklärt nur, warum man in der Praxis manchmal weitere Toleranzen zulässt.</p>
+      <div class="row no-print">
+        <span class="wahl" role="group" aria-label="Baugruppe" id="ab-wahl">
+          <button data-t="B1" aria-pressed="true">Zahnradwelle</button><button data-t="B4" aria-pressed="false">Zwischenrad</button>
+        </span>
+      </div>
+      <div class="row no-print">
+        <button class="btn" id="ab-100">100 Baugruppen montieren</button>
+        <button class="btn" id="ab-1000">1000 Baugruppen montieren</button>
+        <button class="btn-2" id="ab-neu">Zurücksetzen</button>
+      </div>
+      <div id="ab-svg"></div>
+      <div class="status" id="ab-status" aria-live="polite">Noch keine Baugruppe montiert.</div>
+      <details class="zahlen">
+        <summary>Fragen zum Nachdenken</summary>
+        <ul>
+          <li>Wie viele der montierten Baugruppen erreichen S<sub>o</sub> oder S<sub>u</sub>? Was bedeutet das für die Aussage „Worst Case“?</li>
+          <li>Wer nur nach Worst Case toleriert, bekommt eine sichere, aber teure Konstruktion. Welchen Preis haben engere Toleranzen in der Fertigung?</li>
+          <li>Welche Annahme über die Fertigung steckt in dieser Simulation, und wann stimmt sie nicht?</li>
+        </ul>
+      </details>
+    </div>
+  </details>
+
+  <div id="selftest" hidden></div>
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../">Startseite</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+"use strict";
+// ---------- Fehler sichtbar machen (Selbsttest) ----------
+window.onerror=function(msg,src,line){
+  document.documentElement.setAttribute("data-jserr",String(msg)+" @"+line);
+  const el=document.getElementById("selftest");
+  if(el){el.hidden=false;el.textContent+="\nJS-FEHLER: "+msg+" (Zeile "+line+")"}
+};
+
+const $=id=>document.getElementById(id);
+const MI="−";
+const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+
+// ---------- Speicher (nur Komfort, Seite läuft auch ohne) ----------
+const LS={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+};
+
+// ---------- Zahlen: intern ganze µm ----------
+function fm(u){                      // µm → "12,34" (höchstens 2 Nachkommastellen)
+  const neg=u<0,a=Math.abs(u);let s;
+  if(a%10===0){const n=a/10,ip=Math.floor(n/100),fp=n%100;s=String(ip);if(fp)s+=","+String(fp).padStart(2,"0").replace(/0$/,"")}
+  else s=(a/1000).toFixed(3).replace(".",",");
+  return (neg&&a!==0?MI:"")+s;
+}
+const fa=u=>u===0?"0":(u>0?"+":MI)+fm(Math.abs(u));
+const par=u=>u<0?"("+fm(u)+")":fm(u);
+function tolText(l){
+  if(l.o===-l.u&&l.o>0)return fm(l.N)+" ±"+fm(l.o);
+  return fm(l.N)+" "+fa(l.o)+"/"+fa(l.u);
+}
+function parseMM(str){               // → {empty}|{bad}|{prec}|{v}
+  let s=String(str==null?"":str).trim().replace(/[−–—]/g,"-").replace(/mm$/i,"").replace(/\s+/g,"").replace(",",".");
+  if(s==="")return {empty:true};
+  if(!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s))return {bad:true};
+  const v=Math.round(parseFloat(s)*1000);
+  if(v%10!==0)return {prec:true};
+  return {v:v===0?0:v};
+}
+// ---------- Formelzeichen ----------
+const symH=s=>s.length>1?s[0]+"<sub>"+s.slice(1)+"</sub>":s;
+const limH=(s,k)=>s.length>1?s[0]+"<sub>"+s.slice(1)+","+k+"</sub>":s+"<sub>"+k+"</sub>";
+const svgSym=s=>s.length>1?s[0]+'<tspan class="sb" dy="3">'+s.slice(1)+'</tspan><tspan dy="-3"></tspan>':s;
+
+// ---------- Rechenkern ----------
+function calc(links){
+  let SN=0,So=0,Su=0,T=0;
+  for(const l of links){
+    SN+=l.sign*l.N;T+=l.o-l.u;
+    if(l.sign>0){So+=l.N+l.o;Su+=l.N+l.u}else{So-=l.N+l.u;Su-=l.N+l.o}
+  }
+  return {SN,So,Su,TS:So-Su,sumT:T};
+}
+function inv(links,xid,req){
+  let Ko=0,Ku=0,Tk=0,x=null;
+  for(const l of links){
+    if(l.id===xid){x=l;continue}
+    Tk+=l.o-l.u;
+    if(l.sign>0){Ko+=l.N+l.o;Ku+=l.N+l.u}else{Ko-=l.N+l.u;Ku-=l.N+l.o}
+  }
+  const TX=(req.So-req.Su)-Tk;
+  let Xo,Xu;
+  if(x.sign>0){Xu=req.Su-Ku;Xo=req.So-Ko}else{Xo=Ku-req.Su;Xu=Ko-req.So}
+  return {Ko,Ku,Tk,TX,Xo,Xu,x,solvable:TX>0};
+}
+
+// ---------- Vorlagen (feste Beispiele) ----------
+const L=(id,sym,name,sign,N,o,u,kind)=>({id,sym,name,sign,N,o,u,kind:kind||"aus"});
+const TPL={
+  B1:{key:"B1",title:"Zahnradwelle",S:"S",Sname:"Axialspiel",spiel:true,fx:20,req:null,
+    text:"Auf einer Welle (d = 25 mm) sitzen von der Wellenschulter aus nacheinander Zahnradnabe, Distanzhülse, Rillenkugellager 6205 und Sicherungsring. a ist der Abstand von der Schulter bis zur äußeren Nutflanke. Zwischen Sicherungsring und Nutflanke bleibt das Axialspiel S.",
+    links:[L("a","a","Nutabstand der Welle",1,58300,100,0,"in"),L("n","n","Nabenbreite Zahnrad",-1,30000,0,-100),L("h","h","Distanzhülse",-1,12000,50,-50),L("B","B","Lagerbreite 6205",-1,15000,0,-120,"std"),L("s","s","Sicherungsring 25×1,2",-1,1200,0,-60,"std")]},
+  B2:{key:"B2",title:"Lager mit Sicherungsring",S:"S",Sname:"Axialspiel",spiel:true,fx:20,req:null,
+    text:"Ein Rillenkugellager (Breite B) wird mit einem Sicherungsring (Dicke s) in einer Wellennut gesichert. a ist der Abstand von der Wellenschulter bis zur äußeren Nutflanke.",
+    links:[L("a","a","Nutabstand der Welle",1,29000,30,0,"in"),L("B","B","Lagerbreite",-1,27000,0,-100,"std"),L("s","s","Sicherungsring",-1,2000,0,-70,"std")]},
+  B3:{key:"B3",title:"Ritzelwelle zwischen Buchsen",S:"S",Sname:"Spiel",spiel:true,fx:20,req:[200,400],
+    text:"Eine Ritzelwelle läuft zwischen zwei Anlaufbuchsen. L ist der Abstand der Buchsen, l die Länge des Ritzels. Das Spiel S soll 0,2 bis 0,4 mm betragen.",
+    links:[L("L","L","Abstand der Buchsen",1,30000,0,-100,"in"),L("l","l","Länge des Ritzels",-1,30000,-300,-400)]},
+  B4:{key:"B4",title:"Zwischenrad mit Anlaufscheiben",S:"S",Sname:"Axialspiel",spiel:true,fx:20,req:null,
+    text:"Ein Zwischenrad (Breite b) läuft mit zwei Anlaufscheiben (Dicke s₁ und s₂) in einem Gehäuse der Weite G. Das Axialspiel S bleibt übrig.",
+    links:[L("G","G","Gehäuseweite",1,42000,100,0,"in"),L("s1","s1","Anlaufscheibe links",-1,1000,0,-50,"std"),L("b","b","Breite Zwischenrad",-1,39800,0,-100),L("s2","s2","Anlaufscheibe rechts",-1,1000,0,-50,"std")]},
+  B5:{key:"B5",title:"Lagerdeckel mit Flachdichtung",S:"sD",Sname:"Dichtspalt",spiel:false,fx:2,req:[1900,2300],
+    text:"Ein Lager (Breite b) sitzt in einem Gehäuse der Tiefe t. Der Lagerdeckel hat einen Ansatz der Länge l. Zwischen Deckelflansch und Gehäuse bleibt der Dichtspalt s<sub>D</sub> für die Flachdichtung. Er soll 1,9 bis 2,3 mm betragen. Hier ist das Schließmaß kein Spiel.",
+    links:[L("l","l","Länge des Deckelansatzes",1,7000,300,100),L("b","b","Lagerbreite",1,18000,0,-100,"std"),L("t","t","Gehäusetiefe",-1,23000,100,0,"in")]},
+  B6:{key:"B6",title:"Riemenscheibe mit Sicherungsring",S:"S",Sname:"Axialspiel",spiel:true,fx:20,req:[100,200],
+    text:"Eine Riemenscheibe (Nabenbreite R) wird mit einem Sicherungsring (Dicke s) auf einem Wellenabsatz gesichert. x ist der Abstand zwischen Absatz und Nutflanke. Das Spiel S soll 0,1 bis 0,2 mm betragen.",
+    links:[L("x","x","Abstand Absatz–Nutflanke",1,26600,400,200,"in"),L("R","R","Nabenbreite Riemenscheibe",-1,25100,100,-100),L("s","s","Sicherungsring",-1,1500,0,-60,"std")]}
+};
+const TORD=["B1","B2","B3","B4","B5","B6"];
+const XC={B1:["a","n","h"],B2:["a"],B3:["L","l"],B4:["G","b"],B5:["l","t"],B6:["x","R"]};
+const cloneLinks=ls=>ls.map(l=>Object.assign({},l));
+
+// ---------- Maßkettenschema (SVG) ----------
+let svgCount=0;
+function chainSVG(links,o){
+  o=o||{};const uid=++svgCount;
+  const xl=30,avail=262,y1=34,y2=84,hh=36;
+  const plus=links.filter(l=>l.sign>0),minus=links.filter(l=>l.sign<0);
+  const dev=id=>(o.dev&&o.dev[id])||0;
+  const fx=o.dev?(o.fx||1):1;
+  const k=avail/Math.max(sum(plus,l=>l.N),sum(minus,l=>l.N));
+  const w1=plus.map(l=>k*(l.N+fx*dev(l.id)));
+  const L1=sum(w1,w=>w);
+  let G,Sreal=null;
+  if(o.dev){Sreal=sum(links,l=>l.sign*(l.N+dev(l.id)));G=fx*k*Sreal}else G=12;
+  const w2raw=minus.map(l=>k*(l.N+fx*dev(l.id)));
+  const c=(L1-G)/sum(w2raw,w=>w);
+  const w2=w2raw.map(w=>w*c);
+  const e1=xl+L1,e2=xl+(L1-G);
+  const bad=Sreal!==null&&Sreal<0;
+  let s=`<svg class="kette" viewBox="0 0 400 196" role="img" aria-label="Maßkettenschema: obere Reihe vergrößernde Maße, untere Reihe verkleinernde Maße, rechts das Schließmaß">`;
+  s+=`<defs><pattern id="h${uid}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" style="stroke:var(--muted);stroke-width:2"/></pattern></defs>`;
+  s+=`<rect x="${xl-14}" y="${y1}" width="14" height="${y2+hh-y1}" fill="url(#h${uid})"/><line class="wand" x1="${xl}" y1="${y1}" x2="${xl}" y2="${y2+hh}"/>`;
+  const lane=(arr,ws,y,top)=>{
+    let x=xl;
+    arr.forEach((l,i)=>{
+      const w=ws[i],role=o.roles?(l.sign>0?"p":"m"):"";
+      const unk=o.unk===l.id;
+      s+=`<rect class="bl ${role}${unk?" x":""}" x="${x.toFixed(1)}" y="${y}" width="${w.toFixed(1)}" height="${hh}"/>`;
+      const dy=top?26:y+hh+8;
+      s+=`<line class="dm ${role}" x1="${x.toFixed(1)}" y1="${dy}" x2="${(x+w).toFixed(1)}" y2="${dy}"/>`;
+      s+=`<line class="dm ${role}" x1="${x.toFixed(1)}" y1="${dy-4}" x2="${x.toFixed(1)}" y2="${dy+4}"/><line class="dm ${role}" x1="${(x+w).toFixed(1)}" y1="${dy-4}" x2="${(x+w).toFixed(1)}" y2="${dy+4}"/>`;
+      if(w>=10){
+        const ex=l.sign>0?x+w:x,d=l.sign>0?-1:1;
+        s+=`<polygon class="ah ${role}" points="${ex.toFixed(1)},${dy} ${(ex+d*6).toFixed(1)},${dy-3.5} ${(ex+d*6).toFixed(1)},${dy+3.5}"/>`;
+      }
+      const ty=top?dy-7:dy+19;
+      const lab=(o.roles?(l.sign>0?"+ ":MI+" "):"")+svgSym(l.sym)+(unk?"?":"");
+      let tx=x+w/2,anc="middle";
+      if(w<30){if(i===0){tx=x+2;anc="start"}else{tx=x+w-4;anc="end"}}
+      s+=`<text class="${role}" x="${tx.toFixed(1)}" y="${ty}" text-anchor="${anc}">${lab}</text>`;
+      x+=w;
+    });
+  };
+  lane(plus,w1,y1,true);
+  lane(minus,w2,y2,false);
+  const lo=Math.min(e1,e2),hi=Math.max(e1,e2);
+  const yb=y2+hh;
+  s+=`<rect class="gap${bad?" bad":""}" x="${lo.toFixed(1)}" y="${y2}" width="${Math.max(hi-lo,0.5).toFixed(1)}" height="${hh}" ${bad?`fill="url(#h${uid})"`:""}/>`;
+  s+=`<line class="sl${bad?" bad":""}" x1="${e1.toFixed(1)}" y1="${yb}" x2="${e1.toFixed(1)}" y2="172"/><line class="sl${bad?" bad":""}" x1="${e2.toFixed(1)}" y1="${yb}" x2="${e2.toFixed(1)}" y2="172"/>`;
+  s+=`<line class="sd${bad?" bad":""}" x1="${lo.toFixed(1)}" y1="168" x2="${Math.max(hi,lo+2).toFixed(1)}" y2="168"/>`;
+  const sy=o.S||"S";
+  s+=`<text class="${bad?"bad":""}" x="${(Math.max(hi,lo+2)+10).toFixed(1)}" y="173">${svgSym(sy)}${o.Sq?" = ?":""}${bad?" ✗":""}</text>`;
+  s+=`</svg>`;
+  return s;
+}
+
+// ---------- Bauteilskizze (Halbschnitt, selbst gezeichnet, nicht maßstäblich in Radialrichtung) ----------
+// Axiale Breiten und Überhöhung genau wie im Maßkettenschema (gleiche Formeln).
+const PCFG={
+  B1:{xl:44,av:288,alt:"Schnittskizze Zahnradwelle: Welle mit Schulter, Zahnradnabe, Distanzhülse, Rillenkugellager und Sicherungsring. Bemaßt sind a, n, h, B, s und das Axialspiel S zwischen Lager und Sicherungsring."},
+  B2:{xl:44,av:288,alt:"Schnittskizze Lager mit Sicherungsring: Welle mit Schulter, Rillenkugellager und Sicherungsring in der Nut. Bemaßt sind a, B, s und das Axialspiel S."},
+  B3:{xl:50,av:286,alt:"Schnittskizze Ritzelwelle zwischen zwei Buchsen im Gehäuse. Bemaßt sind der Buchsenabstand L, die Ritzellänge l und das Spiel S."},
+  B4:{xl:36,av:300,alt:"Schnittskizze Zwischenrad mit zwei Anlaufscheiben im Gehäuse. Bemaßt sind die Gehäuseweite G, die Scheiben s1 und s2, die Radbreite b und das Axialspiel S."},
+  B5:{xl:64,av:268,alt:"Schnittskizze Lagerdeckel mit Flachdichtung: Lager an der Gehäuseschulter, Deckel mit Zentrierbund. Bemaßt sind die Tiefe t, die Bundlänge l, die Lagerbreite b und die Dichtungsdicke sD."},
+  B6:{xl:44,av:288,alt:"Schnittskizze Riemenscheibe mit Sicherungsring auf einer Welle mit Absatz. Bemaßt sind x, R, s und das Axialspiel S."}
+};
+function partSVG(tpl,links,o){
+  o=o||{};
+  const cfg=PCFG[tpl];if(!cfg)return "";
+  const uid=++svgCount;
+  const T=TPL[tpl];
+  const by={};links.forEach(l=>by[l.id]=l);
+  const plus=links.filter(l=>l.sign>0),minus=links.filter(l=>l.sign<0);
+  const dev=id=>(o.dev&&o.dev[id])||0;
+  const fx=o.dev?(o.fx||1):1;
+  const tolMax=l=>fx*Math.max(l.o,l.u,0);                  // Reserve, damit die Skizze rechts nie abgeschnitten wird
+  const k=cfg.av/Math.max(sum(plus,l=>l.N+tolMax(l)),sum(minus,l=>l.N+tolMax(l)));
+  const wr=l=>Math.max(1.5,k*(l.N+fx*dev(l.id)));
+  const W={};
+  plus.forEach(l=>W[l.id]=wr(l));
+  const L1=sum(plus,l=>W[l.id]);
+  let G,Sreal=null;
+  if(o.dev){Sreal=sum(links,l=>l.sign*(l.N+dev(l.id)));G=fx*k*Sreal}else G=12;
+  // dünne Teile (Ring, Anlaufscheiben): Mindestbreite 8 px, Abweichung überhöht dazu
+  const thin=minus.filter(l=>["s","s1","s2"].includes(l.id));
+  let fsum=0;thin.forEach(l=>{W[l.id]=10+Math.max(-3,Math.min(8,k*fx*dev(l.id)));fsum+=W[l.id]});
+  const raw={};minus.filter(l=>!thin.includes(l)).forEach(l=>raw[l.id]=wr(l));
+  const c=(L1-G-fsum)/sum(Object.keys(raw),id=>raw[id]);
+  Object.keys(raw).forEach(id=>W[id]=raw[id]*c);
+  let xmaxR=400;
+  const bad=Sreal!==null&&Sreal<0;
+  const role=id=>o.roles?(by[id].sign>0?"p":"m"):"";
+  const xl=cfg.xl,ya=176,y1=26,y2=56;
+  const f=v=>v.toFixed(1);
+  const PT=a=>a.map(p=>f(p[0])+","+f(p[1])).join(" ");
+  const pat=(id,ang,sp,col,sw,cross)=>`<pattern id="hp${id}_${uid}" width="${sp}" height="${sp}" patternUnits="userSpaceOnUse" patternTransform="rotate(${ang})"><rect width="${sp}" height="${sp}" style="fill:var(--card)"/><line x1="0" y1="0" x2="0" y2="${sp}" style="stroke:${col};stroke-width:${sw}"/>${cross?`<line x1="0" y1="0" x2="${sp}" y2="0" style="stroke:${col};stroke-width:${sw}"/>`:""}</pattern>`;
+  const shape=(pts,h,closed)=>{const q=closed===false?pts:pts.concat([pts[0]]);return `<polygon class="pf" points="${PT(pts)}" fill="url(#hp${h}_${uid})"/><polyline class="po" points="${PT(q)}"/>`};
+  const box=(x,y,w,h,hp)=>shape([[x,y],[x+w,y],[x+w,y+h],[x,y+h]],hp);
+  // Verzahnung nach DIN ISO 2203: Kopf- und Fußlinie breit, Teilkreislinie Strich-Punkt, Zähne ungeschnitten
+  const pitch=(x,w,y)=>`<line class="ax" x1="${f(x-5)}" y1="${f(y)}" x2="${f(x+w+5)}" y2="${f(y)}"/>`;
+  const teeth=(x,w,yF,th)=>shape([[x,yF-th],[x+w,yF-th],[x+w,yF],[x,yF]],"a")+pitch(x,w,yF-th/2);
+  const gear=(x,w,yT,yB,hp)=>box(x,yT,w,yB-yT,hp)+teeth(x,w,yT,10);
+  const bgap=w=>Math.max(14,Math.min(24,w*.22));          // radialer Abstand der Ringe (Kugeldurchmesser)
+  const btop=(yB,w,rh)=>{rh=rh||22;return yB-2*rh-bgap(w)};  // Oberkante Außenring
+  const bearing=(x,w,yB,hi,ho,rh)=>{
+    rh=rh||22;const g=bgap(w);
+    let r=box(x,yB-rh,w,rh,hi)+box(x,yB-2*rh-g,w,rh,ho);
+    if(w>=16)r+=`<circle class="ball" cx="${f(x+w/2)}" cy="${f(yB-rh-g/2)}" r="${f(Math.min(g/2,w/2-2))}"/>`;
+    return r;
+  };
+  const chip=(cx,cy,t)=>`<rect x="${f(cx-30)}" y="${f(cy-9)}" width="60" height="15" rx="3" style="fill:var(--card);stroke:var(--ink);stroke-width:.8"/><text class="pn in" x="${f(cx)}" y="${f(cy+2)}" text-anchor="middle" style="stroke:none">${t}</text>`;
+  const pulley=(x,w,yB)=>{
+    const ctr=w>=60?[x+w*.3,x+w*.7]:(w>=26?[x+w/2]:[]);
+    const p=[[x,yB],[x,92]];
+    ctr.forEach(cx=>p.push([cx-8,92],[cx,104],[cx+8,92]));
+    p.push([x+w,92],[x+w,yB]);
+    return shape(p,"b");
+  };
+  const nmT=(x,y,t,anc,cl)=>`<text class="pn${cl?" "+cl:""}" x="${f(x)}" y="${y}" text-anchor="${anc||"middle"}">${t}</text>`;
+  const lab=id=>svgSym(by[id].sym)+(o.unk===id?"?":"");
+  const sy=o.S||"S";
+  const sTxt=svgSym(sy)+(bad?" ✗":"");
+  // Maßlinien
+  const seen={};let dh="";
+  function dim(x1,x2,y,txt,cls,e1,e2,lx,isS){
+    if(x2<x1){const t=x1;x1=x2;x2=t}
+    const kc=isS?("s"+(bad?" bad":"")):cls;
+    const wd=x2-x1,narrow=wd<22,ex=narrow?10:0;
+    let h="";
+    [[x1,e1],[x2,e2]].forEach(([xx,ee])=>{
+      const key=y+"|"+Math.round(xx*2);
+      if(ee!=null&&!seen[key]){seen[key]=1;h+=`<line class="el${isS?" s"+(bad?" bad":""):""}" x1="${f(xx)}" y1="${y+3}" x2="${f(xx)}" y2="${ee}"/>`}
+    });
+    h+=`<line class="dm ${kc}" x1="${f(x1-ex)}" y1="${y}" x2="${f(x2+ex)}" y2="${y}"/>`;
+    const ah=(tx,d)=>`<polygon class="ah ${kc}" points="${f(tx)},${y} ${f(tx+d*6)},${y-2.5} ${f(tx+d*6)},${y+2.5}"/>`;
+    h+=narrow?ah(x1,-1)+ah(x2,1):ah(x1,1)+ah(x2,-1);
+    const cx=(x1+x2)/2,tcls=isS?(bad?"bad":""):cls;
+    if(narrow){
+      const tx=cx+(lx||0);
+      h+=`<line class="el" x1="${f(tx)}" y1="${y-12}" x2="${f(cx)}" y2="${y-1}"/><text class="${tcls}" x="${f(tx)}" y="${y-15}" text-anchor="middle">${txt}</text>`;
+    }else h+=`<text class="${tcls}" x="${f(cx)}" y="${y-5}" text-anchor="middle">${txt}</text>`;
+    dh+=h;
+  }
+  let parts="",extra="";
+  const ovl=(x,y,w,h)=>{extra+=`<rect class="ov" x="${f(x)}" y="${y}" width="${f(Math.max(w,1))}" height="${h}" fill="url(#hpx_${uid})"/>`};
+  if(tpl==="B1"||tpl==="B2"||tpl==="B6"){
+    const fr=tpl==="B6"?"x":"a";
+    const items=tpl==="B1"?["n","h","B"]:tpl==="B2"?["B"]:["R"];
+    const xs={};let x=xl;
+    items.forEach(id=>{xs[id]=x;x+=W[id]});
+    const xBe=x,xr=xBe+G,xe=xl+L1,ws=W.s;
+    const g=Math.max(0,Math.min(3,G)),gx0=xr-g,ys=142;
+    parts+=shape([[xl-16,ya],[xl-16,88],[xl,88],[xl,ys],[gx0,ys],[gx0,148],[xe,148],[xe,ys],[xe+18,ys],[xe+18,ya]],"a",false);
+    if(tpl==="B1"){
+      parts+=gear(xs.n,W.n,100,ys,"b")+box(xs.h,114,W.h,28,"c")+bearing(xs.B,W.B,ys,"b","c");
+      parts+=nmT(xs.n+W.n/2,188,"Zahnrad")+nmT(xs.h+W.h/2,188,"Hülse")+nmT(xs.B+W.B/2,188,"Lager");
+    }else if(tpl==="B2"){
+      parts+=bearing(xs.B,W.B,ys,"b","c")+nmT(xs.B+W.B/2,188,"Lager");
+    }else{
+      parts+=pulley(xs.R,W.R,ys)+nmT(xs.R+W.R/2,188,"Riemenscheibe");
+    }
+    parts+=nmT(xe+22,188,"Welle","start");xmaxR=xe+56;
+    parts+=`<rect class="rg" x="${f(xr)}" y="130" width="${f(ws)}" height="18"/>`;
+    parts+=nmT(xe+4,136,"Ring","start","in");
+    if(bad){const a=xr,b=Math.min(xBe,xe);ovl(a,118,b-a,30)}
+    const bt=Math.round(btop(ys,W.B||0));
+    const tops=tpl==="B1"?[90,90,bt,bt]:tpl==="B2"?[bt,bt]:[92,92];
+    parts+=nmT(xl-2,82,"Schulter","end");
+    const bx=[xl];items.forEach(id=>bx.push(bx[bx.length-1]+W[id]));
+    const topB=tops[tops.length-1];
+    dim(xBe,xr,y2,sTxt,"",topB,130,bad?-14:-7,true);
+    items.forEach((id,i)=>dim(bx[i],bx[i+1],y2,lab(id),role(id),tops[i],tops[i+1]));
+    dim(xr,xe,y2,lab("s"),role("s"),130,142,bad?14:7);
+    dim(xl,xe,y1,lab(fr),role(fr),88,142);
+  }else if(tpl==="B3"){
+    const bw=26,wl=W.l,xb=xl+L1;
+    const x0=xl-bw-12,x1=xb+bw+12;
+    parts+=shape([[x0,ya],[x0,152],[xl,152],[xl,102],[xl+wl,102],[xl+wl,152],[x1,152],[x1,ya]],"a",false);
+    parts+=`<line class="po" x1="${f(xl)}" y1="112" x2="${f(xl+wl)}" y2="112"/>`+pitch(xl,wl,107);
+    parts+=box(xl-bw-8,70,xb-xl+2*bw+16,28,"e")+box(xl-bw,98,bw,54,"b")+box(xb,98,bw,54,"b");
+    parts+=chip((xl+xb)/2,88,"Gehäuse")+nmT(xl+wl/2,188,"Ritzel")+nmT(xl-bw/2,188,"Buchse")+nmT(xb+bw/2,188,"Buchse");
+    xmaxR=x1+4;
+    if(bad){const a=xb,b=xl+wl;ovl(a,112,b-a,40)}
+    dim(xl+wl,xb,y2,sTxt,"",102,98,0,true);
+    dim(xl,xl+wl,y2,lab("l"),role("l"),102,102);
+    dim(xl,xb,y1,lab("L"),role("L"),98,98);
+  }else if(tpl==="B4"){
+    const xe=xl+L1,xa=xl,xB=xa+W.s1,xs2=xB+W.b,xS=xs2+W.s2;
+    parts+=shape([[xl-30,ya],[xl-30,150],[xe+30,150],[xe+30,ya]],"a",false);
+    parts+=shape([[xl-16,66],[xe+16,66],[xe+16,150],[xe,150],[xe,90],[xl,90],[xl,150],[xl-16,150]],"f");
+    parts+=box(xa,112,W.s1,38,"d")+gear(xB,W.b,106,150,"b")+box(xs2,112,W.s2,38,"d");
+    parts+=chip((xl+xe)/2,81,"Gehäuse")+nmT(xB+W.b/2,188,"Zwischenrad")+nmT(6,188,"Achse","start");
+    xmaxR=xe+34;
+    const c1=xa+W.s1/2,c2=xs2+W.s2/2,dot=(cx)=>`<circle cx="${f(cx)}" cy="131" r="1.8" style="fill:var(--ink)"/>`;
+    parts+=`<line class="el" x1="${f(c1)}" y1="131" x2="${f(c1)}" y2="180"/>`+dot(c1)+nmT(Math.max(c1-2,44),188,"Anlaufscheibe","start");
+    parts+=`<line class="el" x1="${f(c2)}" y1="131" x2="${f(c2)}" y2="180"/>`+dot(c2)+nmT(c2+2,188,"Anlaufscheibe","end");
+    if(bad){ovl(xe,90,xS-xe,60)}
+    dim(xS,xe,y2,sTxt,"",112,90,bad?12:7,true);
+    dim(xa,xB,y2,lab("s1"),role("s1"),90,96,9);
+    dim(xB,xs2,y2,lab("b"),role("b"),96,96);
+    dim(xs2,xS,y2,lab("s2"),role("s2"),96,112,bad?-16:-7);
+    dim(xl,xe,y1,lab("G"),role("G"),90,90);
+  }else if(tpl==="B5"){
+    const x0=xl,fw=18,xs=x0+W.l+W.b,xf=x0+G,ys=156,rh=16,ht=68;
+    const yo=Math.round(btop(ys,W.b,rh));
+    xmaxR=xs+46;
+    parts+=shape([[x0+W.l-12,ya],[x0+W.l-12,ys],[xs+40,ys],[xs+40,ya]],"a",false);
+    parts+=shape([[xf,ht],[xs+18,ht],[xs+18,yo+24],[xs,yo+24],[xs,yo],[xf,yo]],"e");
+    parts+=bearing(xs-W.b,W.b,ys,"g","g",rh);
+    parts+=shape([[x0-fw,ht-6],[x0,ht-6],[x0,yo],[x0+W.l,yo],[x0+W.l,yo+rh],[x0,yo+rh],[x0,yo+rh+8],[x0-fw,yo+rh+8]],"b");
+    if(G>0.5)parts+=box(x0,ht,G,yo-ht,"k");
+    const dcx=x0+Math.max(G,0)/2,dy=ht+8;
+    parts+=nmT(x0-fw-4,dy,"Dichtung","end")+`<line class="el" x1="${f(x0-fw-2)}" y1="${f(dy-3)}" x2="${f(dcx)}" y2="${f(dy-3)}"/><circle cx="${f(dcx)}" cy="${f(dy-3)}" r="1.8" style="fill:var(--ink)"/>`;
+    parts+=nmT(x0-fw-4,yo+rh,"Deckel","end");
+    parts+=chip((x0+W.l+xs)/2,ht+(yo-ht)/2+1,"Gehäuse");
+    parts+=nmT(xs-W.b*0.78,ys-rh-bgap(W.b)/2+4,"Lager","middle","in");
+    parts+=nmT(x0+W.l-10,188,"Welle","start");
+    if(bad){ovl(xf,ht,x0-xf,yo-ht)}
+    dim(x0,xf,y1,sTxt,"",ht-6,ht,0,true);
+    dim(xf,xs,y1,lab("t"),role("t"),ht,yo);
+    dim(x0,x0+W.l,y2,lab("l"),role("l"),ht-6,yo);
+    dim(x0+W.l,xs,y2,lab("b"),role("b"),yo,yo);
+  }
+  const vw=Math.round(Math.max(400,xmaxR));
+  let s=`<svg class="kette skz" viewBox="0 0 ${vw} 196" role="img" aria-label="${cfg.alt}">`;
+  s+=`<defs>${pat("a",45,8,"none",0)}${pat("b",-45,4.5,"var(--ink)",.9)}${pat("c",45,4.5,"var(--ink)",.9)}${pat("d",45,3,"var(--ink)",.8)}${pat("e",45,9,"var(--muted)",1.1)}${pat("f",-45,9,"var(--muted)",1.1)}${pat("g",0,4,"var(--ink)",.9)}${pat("k",0,3.5,"var(--ink)",.8,true)}${pat("x",45,4,"var(--bad)",1.6)}</defs>`;
+  s+=parts+`<line class="ax" x1="4" y1="${ya}" x2="${vw-4}" y2="${ya}"/>`+extra+dh;
+  if(bad)s+=`<text class="bad" x="${vw-4}" y="14" text-anchor="end">${T.spiel?"✗ Überdeckung":"✗ Dichtung nicht möglich"}</text>`;
+  s+=`</svg>`;
+  return s;
+}
+function ketteMit(tpl,links,o){return partSVG(tpl,links,o)+chainSVG(links,o)}
+
+// ---------- Generator für Zufallsaufgaben ----------
+function mk(seed){
+  let a=seed>>>0;
+  const f=()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296};
+  f.int=(x,y)=>x+Math.floor(f()*(y-x+1));
+  f.pick=arr=>arr[Math.floor(f()*arr.length)];
+  f.chance=p=>f()<p;
+  return f;
+}
+function free(R,kind,force){
+  let T,sym;
+  if(force){T=R.pick([100,200]);sym=true}
+  else{T=R.pick([50,100,150,200]);sym=(T===100||T===200)&&R.chance(.2)}
+  if(sym)return {o:T/2,u:-T/2};
+  return kind==="in"?{o:T,u:0}:{o:0,u:-T};
+}
+const RING=[1200,1200,1500,1500,1750];
+const GEN={
+  B1(R,P){
+    const i=R.int(0,4),Bn=(14+i)*1000,sn=RING[i];
+    const n=R.int(20,45)*1000,h=R.int(5,20)*1000,a=n+h+Bn+sn+P.SN;
+    const fs=P.klemm?R.int(0,2):-1;
+    const ta=free(R,"in",fs===0),tn=free(R,"aus",fs===1),th=free(R,"aus",fs===2);
+    return [L("a","a","Nutabstand der Welle",1,a,ta.o,ta.u,"in"),L("n","n","Nabenbreite Zahnrad",-1,n,tn.o,tn.u),L("h","h","Distanzhülse",-1,h,th.o,th.u),L("B","B","Lagerbreite "+(6204+i),-1,Bn,0,-120,"std"),L("s","s","Sicherungsring",-1,sn,0,-60,"std")];
+  },
+  B2(R,P){
+    const i=R.int(0,4),Bn=(14+i)*1000,sn=RING[i];
+    const ta=free(R,"in",P.klemm);
+    return [L("a","a","Nutabstand der Welle",1,Bn+sn+P.SN,ta.o,ta.u,"in"),L("B","B","Lagerbreite "+(6204+i),-1,Bn,0,-120,"std"),L("s","s","Sicherungsring",-1,sn,0,-60,"std")];
+  },
+  B3(R,P){
+    const Ln=R.int(20,80)*1000,ln=Ln-P.SN,fs=P.klemm?R.int(0,1):-1;
+    const tL=free(R,"in",fs===0),tl=free(R,"aus",fs===1);
+    return [L("L","L","Abstand der Buchsen",1,Ln,tL.o,tL.u,"in"),L("l","l","Länge des Ritzels",-1,ln,tl.o,tl.u)];
+  },
+  B4(R,P){
+    const G=R.int(20,80)*1000,s1=R.pick([1000,1500,2000]),s2=R.pick([1000,1500,2000]),b=G-s1-s2-P.SN;
+    const fs=P.klemm?R.int(0,1):-1;
+    const tG=free(R,"in",fs===0),tb=free(R,"aus",fs===1);
+    return [L("G","G","Gehäuseweite",1,G,tG.o,tG.u,"in"),L("s1","s1","Anlaufscheibe links",-1,s1,0,-50,"std"),L("b","b","Breite Zwischenrad",-1,b,tb.o,tb.u),L("s2","s2","Anlaufscheibe rechts",-1,s2,0,-50,"std")];
+  },
+  B5(R,P){
+    const i=R.int(0,4),bn=(14+i)*1000,t=R.int(Math.max(15,14+i+4),30)*1000,l=t+P.SN-bn;
+    const tt=free(R,"in"),tl=free(R,"aus");
+    return [L("l","l","Länge des Deckelansatzes",1,l,tl.o,tl.u),L("b","b","Lagerbreite "+(6204+i),1,bn,0,-120,"std"),L("t","t","Gehäusetiefe",-1,t,tt.o,tt.u,"in")];
+  },
+  B6(R,P){
+    const s=R.pick([1200,1500]),Rn=R.int(150,400)*100,x=Rn+s+P.SN,fs=P.klemm?R.int(0,1):-1;
+    const tx=free(R,"in",fs===0),tR=free(R,"aus",fs===1);
+    return [L("x","x","Abstand Absatz–Nutflanke",1,x,tx.o,tx.u,"in"),L("R","R","Nabenbreite Riemenscheibe",-1,Rn,tR.o,tR.u),L("s","s","Sicherungsring",-1,s,0,-60,"std")];
+  }
+};
+// Falsche Rechenwege (Fehlerbilder), nur Werte, die sich von der richtigen Lösung unterscheiden
+function dCands(links,c){
+  const sn=c.SN;
+  const out={};
+  out.sn=[{v:sum(links,l=>l.N),code:"F1"}];
+  out.so=[{v:sum(links,l=>l.N+l.o),code:"F1"},{v:sum(links,l=>l.sign*(l.N+l.o)),code:"F2o"},{v:c.Su,code:"F3"}];
+  out.su=[{v:sum(links,l=>l.N+l.u),code:"F1"},{v:sum(links,l=>l.sign*(l.N+l.u)),code:"F2u"},{v:c.So,code:"F3"}];
+  if(sn!==0){out.so.push({v:c.So-sn,code:"F8"},{v:c.So+sn,code:"F8"});out.su.push({v:c.Su-sn,code:"F8"},{v:c.Su+sn,code:"F8"})}
+  const tp=sum(links.filter(l=>l.sign>0),l=>l.o-l.u),tm=sum(links.filter(l=>l.sign<0),l=>l.o-l.u);
+  out.ts=[{v:Math.abs(tp-tm),code:"F4"}];
+  return out;
+}
+function correctOf(f,c){return {sn:c.SN,so:c.So,su:c.Su,ts:c.TS}[f]}
+function distinct(list,correct){
+  const seen=new Map();
+  for(const x of list){
+    if(x.v===correct)continue;
+    if(seen.has(x.v)&&seen.get(x.v)!==x.code)return false;
+    seen.set(x.v,x.code);
+  }
+  return true;
+}
+function distinctD(dc,c){return Object.keys(dc).every(f=>distinct(dc[f],correctOf(f,c)))}
+function entryCands(x,r,N){
+  const oc=r.Xo-N,uc=r.Xu-N;
+  return {
+    o:{correct:oc,list:[{v:r.Xo,code:"F6"},{v:r.Xu,code:"F6"},{v:-oc,code:"F7"},{v:uc,code:"F5"}]},
+    u:{correct:uc,list:[{v:r.Xu,code:"F6"},{v:r.Xo,code:"F6"},{v:-uc,code:"F7"},{v:oc,code:"F5"}]}
+  };
+}
+function buildD(tpl,R){
+  const T=TPL[tpl];
+  const klemm=T.spiel&&R.chance(.12);
+  const SN=klemm?0:R.pick(T.spiel?[0,100,200,300]:[1500,2000,2500,3000]);
+  const links=GEN[tpl](R,{SN,klemm});
+  const c=calc(links),dc=dCands(links,c);
+  let ok=true;
+  if(links.some(l=>l.N+l.u<=0))ok=false;
+  if(T.spiel&&c.So>1000)ok=false;
+  if(c.TS<100||c.TS>800)ok=false;
+  if(!distinctD(dc,c))ok=false;
+  if(klemm&&c.Su>=0)ok=false;
+  return {tpl,mode:"d",links,c,dc,klemm,ok};
+}
+function buildI(tpl,R,xsign){
+  const T=TPL[tpl];
+  const SN=R.pick(T.spiel?[0,100,200,300]:[1500,2000,2500,3000]);
+  const links=GEN[tpl](R,{SN,klemm:false});
+  const cands=XC[tpl].filter(id=>!xsign||links.find(l=>l.id===id).sign===xsign);
+  const xid=R.pick(cands.length?cands:XC[tpl]);
+  const x=links.find(l=>l.id===xid);
+  const Tk=sum(links.filter(l=>l.id!==xid),l=>l.o-l.u);
+  const roll=R.chance(1/6),unl=roll&&Tk>=40;
+  const Su=T.spiel?R.pick([0,50,100,200]):SN-R.pick([100,200]);
+  let So,TXw;
+  if(unl){const d=R.int(1,Math.floor(Math.min(150,Tk-20)/10))*10;So=Su+Tk-d;TXw=-d}
+  else{TXw=R.int(2,20)*10;So=Su+Tk+TXw}
+  const req={Su,So};
+  const r=inv(links,xid,req);
+  const pickLow=R.chance(.5);
+  let ok=true,ec=null;
+  if(r.solvable){
+    x.N=Math.round((pickLow?r.Xu:r.Xo)/100)*100;
+    x.o=r.Xo-x.N;x.u=r.Xu-x.N;
+    ec=entryCands(x,r,x.N);
+    if(r.Xu<=0||x.N<=0||Math.abs(x.o)>800||Math.abs(x.u)>800)ok=false;
+    if(!distinct(ec.o.list,ec.o.correct)||!distinct(ec.u.list,ec.u.correct))ok=false;
+  }else{
+    if(So-Su<20)ok=false;
+  }
+  if(T.spiel&&So>1000)ok=false;
+  if(links.some(l=>l.id!==xid&&l.N+l.u<=0))ok=false;
+  return {tpl,mode:"i",links,xid,req,r,unl:!r.solvable,ec,ok};
+}
+function genTask(seed,mode,xsign){
+  const tpl=TORD[seed%6];
+  let best=null;
+  for(let at=0;at<20;at++){
+    const R=mk(seed*7919+at*104729+(mode==="d"?1:2));
+    const t=mode==="d"?buildD(tpl,R):buildI(tpl,R,xsign);
+    t.seed=seed;t.attempts=at+1;
+    if(t.ok)return t;
+    best=t;
+  }
+  best.degenerate=true;return best;
+}
+
+// ---------- Formeltexte / Rechenwege ----------
+function eqH(links,S){
+  return symH(S)+" = "+links.map((l,i)=>(i?(l.sign>0?" + ":" "+MI+" "):(l.sign<0?MI:""))+symH(l.sym)).join("");
+}
+function limExprH(links,S,which){      // which "o" oder "u"
+  return limH(S,which)+" = "+links.map((l,i)=>{
+    const g=(which==="o")===(l.sign>0)?"o":"u";
+    return (i?(l.sign>0?" + ":" "+MI+" "):(l.sign<0?MI:""))+limH(l.sym,g);
+  }).join("");
+}
+function limNum(links,which){
+  const terms=links.map(l=>{const g=(which==="o")===(l.sign>0)?"o":"u";return {s:l.sign,v:l.N+(g==="o"?l.o:l.u)}});
+  return numExpr(terms);
+}
+function numExpr(terms){
+  return terms.map((t,i)=>(i?(t.s>0?" + ":" "+MI+" "):(t.s<0?MI:""))+fm(t.v)).join("");
+}
+function wegDirect(links,S){
+  const c=calc(links);
+  const T=links.map(l=>fm(l.o-l.u)).join(" + ");
+  let h=`<p><b>Maßgleichung:</b> ${eqH(links,S)}</p>`;
+  h+=`<p>${limH(S,"N")} = ${numExpr(links.map(l=>({s:l.sign,v:l.N})))} = <b>${fm(c.SN)} mm</b></p>`;
+  h+=`<p><b>Fall locker:</b> ${limExprH(links,S,"o")}<br>= ${limNum(links,"o")} = <b>${fm(c.So)} mm</b></p>`;
+  h+=`<p><b>Fall fest:</b> ${limExprH(links,S,"u")}<br>= ${limNum(links,"u")} = <b>${fm(c.Su)} mm</b></p>`;
+  h+=`<p><b>Probe:</b> T<sub>S</sub> = ${fm(c.So)} ${MI} ${par(c.Su)} = <b>${fm(c.TS)} mm</b>; Σ T<sub>i</sub> = ${T} = ${fm(c.sumT)} mm ✓</p>`;
+  h+=`<p><b>Ergebnis:</b> ${symH(S)} = ${fm(c.Su)} … ${fm(c.So)} mm`+(c.Su<0?`. Im Fall „fest“ ist S negativ: Es entsteht eine Überdeckung, die Teile klemmen.`:c.Su>0?`. Es bleibt immer Spiel.`:`.`)+`</p>`;
+  return h;
+}
+function wegInverse(links,xid,req,S){
+  const r=inv(links,xid,req),x=r.x;
+  const known=links.filter(l=>l.id!==xid);
+  const kT=w=>known.map(l=>{const g=(w==="o")===(l.sign>0)?l.o:l.u;return {s:l.sign,v:l.N+g}});
+  let h=`<p><b>Maßgleichung:</b> ${eqH(links,S)}</p>`;
+  h+=`<p>${symH(x.sym)} ist ${x.sign>0?"vergrößernd (+)":"verkleinernd ("+MI+")"}. Alle übrigen Maße zusammengefasst: ${symH(S)} = K ${x.sign>0?"+":MI} ${symH(x.sym)}</p>`;
+  h+=`<p>K<sub>o</sub> (Höchstmaße der vergrößernden, Mindestmaße der verkleinernden) = ${numExpr(kT("o"))} = <b>${fm(r.Ko)} mm</b><br>K<sub>u</sub> (Mindestmaße der vergrößernden, Höchstmaße der verkleinernden) = ${numExpr(kT("u"))} = <b>${fm(r.Ku)} mm</b></p>`;
+  const tk=known.map(l=>fm(l.o-l.u)).join(" + ");
+  h+=`<p><b>Toleranz des gesuchten Maßes:</b> T<sub>X</sub> = T<sub>S</sub> ${MI} Σ T<sub>bekannt</sub> = (${fm(req.So)} ${MI} ${par(req.Su)}) ${MI} (${tk}) = ${fm(req.So-req.Su)} ${MI} ${fm(r.Tk)} = <b>${fm(r.TX)} mm</b></p>`;
+  if(!r.solvable){
+    h+=`<p><b>T<sub>X</sub> ist nicht positiv: Die Forderung ist nicht erfüllbar.</b> Schon die bekannten Maße verbrauchen die ganze Toleranz. Auswege: engere Toleranzen bei den bekannten Maßen, eine Passscheibe oder eine Einstellmöglichkeit (z. B. Einstellmutter).</p>`;
+    return h;
+  }
+  if(x.sign>0){
+    h+=`<p>${symH(x.sym)} ist vergrößernd:<br>${limH(x.sym,"u")} = ${limH(S,"u")} ${MI} K<sub>u</sub> = ${fm(req.Su)} ${MI} ${par(r.Ku)} = <b>${fm(r.Xu)} mm</b><br>${limH(x.sym,"o")} = ${limH(S,"o")} ${MI} K<sub>o</sub> = ${fm(req.So)} ${MI} ${par(r.Ko)} = <b>${fm(r.Xo)} mm</b></p>`;
+  }else{
+    h+=`<p>${symH(x.sym)} ist verkleinernd, deshalb vertauschen sich die Fälle:<br>${limH(x.sym,"o")} = K<sub>u</sub> ${MI} ${limH(S,"u")} = ${par(r.Ku)} ${MI} ${par(req.Su)} = <b>${fm(r.Xo)} mm</b><br>${limH(x.sym,"u")} = K<sub>o</sub> ${MI} ${limH(S,"o")} = ${par(r.Ko)} ${MI} ${par(req.So)} = <b>${fm(r.Xu)} mm</b></p>`;
+  }
+  const N=x.N;
+  h+=`<p><b>Eintragung</b> (Nennmaß ${fm(N)} gewählt): ${symH(x.sym)} = ${fm(N)} ${fa(r.Xo-N)}/${fa(r.Xu-N)}, denn ${fm(N)} ${fa(r.Xo-N)} = ${fm(r.Xo)} und ${fm(N)} ${fa(r.Xu-N)} = ${fm(r.Xu)}. Ein anderes Nennmaß mit gleichen Grenzmaßen ist ebenso richtig.</p>`;
+  const probe=links.map(l=>l.id===xid?Object.assign({},l,{N,o:r.Xo-N,u:r.Xu-N}):l);
+  const pc=calc(probe);
+  h+=`<p><b>Probe:</b> ${symH(S)} = ${fm(pc.Su)} … ${fm(pc.So)} mm ✓</p>`;
+  return h;
+}
+
+// ---------- Rückmeldung ----------
+const HINT={
+  F1:"Prüfen Sie die Maßgleichung: Welche Maße machen das Schließmaß kleiner, wenn sie größer werden?",
+  F2o:"Größtes Spiel: vergrößernde Maße groß, verkleinernde Maße <b>klein</b>.",
+  F2u:"Kleinstes Spiel: vergrößernde Maße klein, verkleinernde Maße <b>groß</b>.",
+  F3:"Höchst- und Mindestschließmaß sind vertauscht. Welcher Fall ist „locker“?",
+  F4:"Toleranzen werden immer addiert. Jede Abweichung kann das Spiel vergrößern <b>oder</b> verkleinern.",
+  F8:"Das Nennmaß des Schließmaßes ist hier nicht 0.",
+  prec:"Auf 0,01 mm genau angeben, Zwischenergebnisse nicht runden.",
+  inv:"Bitte eine Zahl eingeben, z. B. 0,25 oder −0,1.",
+  gen:"Das stimmt noch nicht. Rechnen Sie noch einmal mit den Grenzmaßen und runden Sie keine Zwischenergebnisse."
+};
+function chkNum(str,correct,cands){
+  const p=parseMM(str);
+  if(p.empty)return {st:"empty"};
+  if(p.bad)return {st:"inv"};
+  if(p.prec)return {st:"prec"};
+  if(p.v===correct)return {st:"ok"};
+  const c=(cands||[]).find(c=>c.v===p.v&&c.v!==correct);
+  return {st:"bad",code:c?c.code:null};
+}
+function fbHTML(res,hints){
+  hints=hints||{};
+  if(res.st==="ok")return `<div class="fb-ok">richtig</div>`;
+  if(res.st==="empty")return "";
+  if(res.st==="inv")return `<div class="fb-hint">${HINT.inv}</div>`;
+  if(res.st==="prec")return `<div class="fb-bad">Stimmt noch nicht.</div><div class="fb-hint">${HINT.prec}</div>`;
+  const h=(res.code&&(hints[res.code]||HINT[res.code]))||hints.gen||HINT.gen;
+  return `<div class="fb-bad">Stimmt noch nicht.</div><div class="fb-hint">${h}</div>`;
+}
+function setFB(inp,fb,res,hints){
+  if(inp){inp.classList.remove("ok","bad");if(res.st==="ok")inp.classList.add("ok");else if(res.st!=="empty")inp.classList.add("bad")}
+  if(fb)fb.innerHTML=fbHTML(res,hints);
+}
+function entryResult(inp,corr,cands,N){
+  const res=chkNum(inp,corr,cands);
+  return res;
+}
+
+// =====================================================================
+// Stufe 1: Erkunden
+// =====================================================================
+const S1={tpl:"B1",dev:{},fx:true,roles:false,range:false};
+function s1Mid(){
+  const T=TPL[S1.tpl];S1.dev={};
+  T.links.forEach(l=>{S1.dev[l.id]=Math.round((l.o+l.u)/2/10)*10});
+}
+function s1Select(k){
+  S1.tpl=k;s1Mid();S1.range=false;S1.roles=false;
+  document.querySelectorAll("#s1-wahl button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.t===k));
+  const T=TPL[k];
+  $("s1-text").innerHTML=T.text;
+  $("s1-reg").innerHTML=T.links.map(l=>`<div class="s1-reg" data-id="${l.id}"><div class="nm">${symH(l.sym)} ${l.name}<small>${tolText(l)} mm</small><span class="tag"></span></div><input type="range" min="${l.N+l.u}" max="${l.N+l.o}" step="10" value="${l.N+S1.dev[l.id]}" data-id="${l.id}" aria-label="${l.sym} ${l.name}"><output></output></div>`).join("");
+  $("s1-reg").querySelectorAll("input").forEach(inp=>inp.addEventListener("input",()=>{
+    const l=T.links.find(x=>x.id===inp.dataset.id);S1.dev[l.id]=+inp.value-l.N;s1Update();
+  }));
+  s1Update();
+}
+function s1Update(){
+  const T=TPL[S1.tpl],links=T.links;
+  const fx=S1.fx?T.fx:1;
+  const S=sum(links,l=>l.sign*(l.N+S1.dev[l.id]));
+  const c=calc(links);
+  $("s1-svg").innerHTML=ketteMit(S1.tpl,links,{dev:S1.dev,fx:fx,roles:S1.roles,S:T.S});
+  $("s1-leg").innerHTML=S1.roles?`<span><i class="chip p"></i>+ vergrößernd (obere Reihe)</span><span><i class="chip m"></i>${MI} verkleinernd (untere Reihe)</span>`:`<span><i class="chip"></i>obere Reihe / untere Reihe: Maße der Baugruppe</span>`;
+  $("s1-reg").querySelectorAll(".s1-reg").forEach(row=>{
+    const l=links.find(x=>x.id===row.dataset.id),d=S1.dev[l.id];
+    row.className="s1-reg"+(S1.roles?(l.sign>0?" p":" m"):"");
+    row.querySelector("output").textContent=fm(l.N+d)+" mm ("+fa(d)+")";
+    row.querySelector(".tag").textContent=S1.roles?(l.sign>0?"+ vergrößernd":MI+" verkleinernd"):"";
+  });
+  const req=T.req;
+  let msg=`${symH(T.S)} = <b>${fm(S)} mm</b>`,cls="status";
+  if(T.spiel&&S<0){cls="status fb-bad";msg+=` – Überdeckung, nicht montierbar`}
+  else if(req){
+    if(S>=req[0]&&S<=req[1]){cls="status fb-ok";msg+=` liegt im geforderten Bereich ${fm(req[0])} … ${fm(req[1])} mm`}
+    else{cls="status fb-bad";msg+=` liegt außerhalb des geforderten Bereichs ${fm(req[0])} … ${fm(req[1])} mm`}
+  }else if(T.spiel&&S>=0){msg+=` – Spiel, die Teile lassen sich fügen`}
+  $("s1-status").className=cls;$("s1-status").innerHTML=msg;
+  // Skala
+  let lo=Math.min(c.Su,0,req?req[0]:0),hi=Math.max(c.So,req?req[1]:c.So);
+  if(!T.spiel)lo=Math.min(c.Su,req?req[0]:c.Su);
+  const pad=(hi-lo)*.08;lo-=pad;hi+=pad;
+  const pos=v=>((v-lo)/(hi-lo)*100).toFixed(2);
+  let b="";
+  if(req)b+=`<i class="req" style="left:${pos(req[0])}%;width:${(pos(req[1])-pos(req[0])).toFixed(2)}%"></i>`;
+  if(S1.range)b+=`<i class="rng" style="left:${pos(c.Su)}%;width:${(pos(c.So)-pos(c.Su)).toFixed(2)}%"></i>`;
+  if(T.spiel)b+=`<i class="zero" style="left:${pos(0)}%"></i>`;
+  b+=`<b style="left:${pos(S)}%"></b>`;
+  $("s1-bar").innerHTML=b;
+  let cap="Strich: aktuelles S"+(T.spiel?"; senkrechte Linie: S = 0":"")+(req?"; grau hinterlegt: geforderter Bereich":"")+".";
+  if(S1.range)cap+=` Gestrichelt: rechnerisch möglich ${fm(c.Su)} … ${fm(c.So)} mm.`;
+  $("s1-cap").textContent=cap;
+  $("s1-fx").textContent="Toleranzen überhöht darstellen: "+(S1.fx?"an (×"+T.fx+")":"aus");
+  $("s1-fx").setAttribute("aria-pressed",S1.fx);
+  $("s1-rollen").textContent="Rollen einfärben: "+(S1.roles?"an":"aus");$("s1-rollen").setAttribute("aria-pressed",S1.roles);
+  $("s1-grenzen").textContent="Grenzen einblenden: "+(S1.range?"an":"aus");$("s1-grenzen").setAttribute("aria-pressed",S1.range);
+}
+function s1SetAll(fn){
+  TPL[S1.tpl].links.forEach(l=>{S1.dev[l.id]=fn(l)});
+  document.querySelectorAll("#s1-reg input").forEach(inp=>{const l=TPL[S1.tpl].links.find(x=>x.id===inp.dataset.id);inp.value=l.N+S1.dev[l.id]});
+  s1Update();
+}
+function s1Init(){
+  $("s1-wahl").innerHTML=["B1","B3","B4","B5"].map(k=>`<button data-t="${k}" aria-pressed="false">${TPL[k].title}</button>`).join("");
+  $("s1-wahl").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>s1Select(b.dataset.t)));
+  $("s1-locker").addEventListener("click",()=>{S1.range=true;s1SetAll(l=>l.sign>0?l.o:l.u)});
+  $("s1-fest").addEventListener("click",()=>{S1.range=true;s1SetAll(l=>l.sign>0?l.u:l.o)});
+  $("s1-zufall").addEventListener("click",()=>s1SetAll(l=>Math.round((l.u+Math.random()*(l.o-l.u))/10)*10));
+  $("s1-mitte").addEventListener("click",()=>s1SetAll(l=>Math.round((l.o+l.u)/2/10)*10));
+  $("s1-fx").addEventListener("click",()=>{S1.fx=!S1.fx;s1Update()});
+  $("s1-rollen").addEventListener("click",()=>{S1.roles=!S1.roles;s1Update()});
+  $("s1-grenzen").addEventListener("click",()=>{S1.range=!S1.range;s1Update()});
+  s1Select("B1");
+}
+
+// =====================================================================
+// Stufe 2: Schritt für Schritt
+// =====================================================================
+const S2T=[
+  {tpl:"B3",mode:"d",label:"B3 direkt"},
+  {tpl:"B4",mode:"d",label:"B4 direkt"},
+  {tpl:"B1",mode:"d",label:"B1 direkt"},
+  {tpl:"B5",mode:"i",x:"l",label:"B5 Umkehr"},
+  {tpl:"B3",mode:"i",x:"l",label:"B3 Umkehr"},
+  {tpl:"B2",mode:"i",x:"a",label:"B2 Umkehr",req:[0,100]}
+];
+S2T.forEach(t=>{
+  const T=TPL[t.tpl];t.links=cloneLinks(T.links);t.S=T.S;
+  if(t.mode==="i"){
+    t.req=t.req?{Su:t.req[0],So:t.req[1]}:{Su:T.req[0],So:T.req[1]};
+    t.r=inv(t.links,t.x,t.req);
+    if(t.tpl==="B2"){t.links.find(l=>l.id==="a").N=29000}
+  }
+  t.title=T.title;
+});
+const S2={ti:0,st:{}};
+function s2st(i){
+  return S2.st[i]||(S2.st[i]={step:0,roles:{},eq:null,sn:"",fo:{},fu:{},so:"",su:"",ts:"",bew:null,tx:"",erf:null,ausw:[],xf:null,xo:"",xu:"",en:null,eo:"",eu:"",fb:{},tries:{},weg:false,done:false});
+}
+function s2steps(t){
+  if(t.mode==="d")return ["roles","eq","sn","fo","so","fu","su","ts","bew"];
+  return ["roles","eq","tx","erf"].concat(t.r.solvable?["xf","xo","xu","en"]:["ausw"]);
+}
+function eqOptions(t){
+  const lk=t.links,S=t.S;
+  const plus=lk.filter(l=>l.sign>0),minus=lk.filter(l=>l.sign<0);
+  const correct=eqH(lk,S);
+  const allPlus=symH(S)+" = "+lk.map(l=>symH(l.sym)).join(" + ");
+  const flip=symH(S)+" = "+minus.map((l,i)=>(i?" + ":"")+symH(l.sym)).join("")+plus.map(l=>" "+MI+" "+symH(l.sym)).join("");
+  const opts=[{h:correct,ok:true},{h:allPlus,code:"F1"},{h:flip,code:"F1"}];
+  const perm=[[1,0,2],[2,1,0],[0,2,1]][S2.ti%3];
+  return perm.map(i=>opts[i]);
+}
+function s2table(t){
+  let h=`<ul class="masse">`;
+  t.links.forEach(l=>{
+    const unk=t.mode==="i"&&l.id===t.x;
+    h+=`<li><span class="nm">${symH(l.sym)} ${l.name}</span><span class="wert${unk?" gesucht":""}">${unk?"gesucht":tolText(l)+" mm"}</span></li>`;
+  });
+  h+=`</ul>`;
+  if(t.mode==="i")h+=`<p><b>Forderung:</b> ${symH(t.S)} = ${fm(t.req.Su)} … ${fm(t.req.So)} mm</p>`;
+  return h;
+}
+function s2limList(t,which){      // Grenzmaße der Glieder für Fall which
+  return `<div class="grenz">`+t.links.map(l=>{
+    const g=(which==="o")===(l.sign>0)?"o":"u";
+    return `<div>${limH(l.sym,g)} = ${fm(l.N+(g==="o"?l.o:l.u))} mm</div>`;
+  }).join("")+`</div>`;
+}
+function s2limKnown(t){
+  return `<div class="grenz">`+t.links.filter(l=>l.id!==t.x).map(l=>`<div>${limH(l.sym,"o")} = ${fm(l.N+l.o)} mm, ${limH(l.sym,"u")} = ${fm(l.N+l.u)} mm</div>`).join("")+`</div>`;
+}
+function s2field(key,label,st,unit){
+  return `<div class="feld"><label class="lab" for="s2f-${key}">${label}</label><input type="text" inputmode="decimal" autocomplete="off" id="s2f-${key}" data-k="${key}" value="${st[key]==null?"":String(st[key]).replace(/"/g,"&quot;")}"> <span>${unit||"mm"}</span><div class="fb" id="s2fb-${key}"></div></div>`;
+}
+function s2radio(key,q,opts,st){
+  return `<div class="frage"><p>${q}</p>`+opts.map((o,i)=>`<label><input type="radio" name="s2r-${key}" value="${i}" data-k="${key}" ${st[key]===i?"checked":""}><span>${o}</span></label>`).join("")+`<div class="fb" id="s2fb-${key}"></div></div>`;
+}
+function s2fall(t,st,w){
+  const m=st[w];
+  return t.links.map(l=>`<div class="fallzeile"><span class="nm">${symH(l.sym)} <small class="small">(${l.sign>0?"+":MI})</small></span><span class="wahl" role="group" aria-label="Grenzmaß ${l.sym}"><button data-act="fall" data-w="${w}" data-id="${l.id}" data-v="o" aria-pressed="${m[l.id]==="o"}">Höchstmaß</button><button data-act="fall" data-w="${w}" data-id="${l.id}" data-v="u" aria-pressed="${m[l.id]==="u"}">Mindestmaß</button></span></div>`).join("");
+}
+function s2defs(t,st){
+  const c=t.mode==="d"?calc(t.links):null;
+  const r=t.mode==="i"?t.r:null;
+  const S=t.S,Sh=symH(S);
+  const D={};
+  D.roles={
+    title:"Maße einordnen",
+    html:()=>`<p>Wird das Maß größer, wird ${Sh} größer (<b>+ vergrößernd</b>) oder kleiner (<b>${MI} verkleinernd</b>)? Antippen schaltet zwischen ?, + und ${MI} um.</p>`+t.links.map(l=>`<div class="fallzeile"><span class="nm">${symH(l.sym)} ${l.name}</span><button class="rolle" data-act="role" data-id="${l.id}" data-v="${st.roles[l.id]||"?"}" aria-label="Wirkung von ${l.sym}">${(st.roles[l.id]||"?")==="-"?MI:(st.roles[l.id]||"?")}</button></div>`).join(""),
+    check:()=>{
+      const wrong=t.links.filter(l=>(st.roles[l.id]||"?")!==(l.sign>0?"+":"-"));
+      if(!wrong.length)return {ok:true};
+      const anyMinusAsPlus=wrong.some(l=>l.sign<0&&st.roles[l.id]==="+");
+      return {ok:false,html:`<div class="fb-bad">Nicht alle Einordnungen stimmen: ${wrong.map(l=>symH(l.sym)).join(", ")}.</div><div class="fb-hint">${anyMinusAsPlus||wrong.some(l=>!st.roles[l.id])?HINT.F1:"Prüfen Sie: Wenn dieses Maß größer wird, wird das Schließmaß dann größer oder kleiner?"}</div>`};
+    },
+    sum:()=>t.links.map(l=>(l.sign>0?"+ ":MI+" ")+symH(l.sym)).join(", ")
+  };
+  D.eq={
+    title:"Maßgleichung",
+    html:()=>s2radio("eq","Welche Maßgleichung gehört zu dieser Baugruppe?",eqOptions(t).map(o=>`<span class="formel">${o.h}</span>`),st),
+    check:()=>{
+      const o=eqOptions(t)[st.eq];
+      if(st.eq==null)return {ok:false,html:`<div class="fb-hint">Bitte eine Gleichung auswählen.</div>`};
+      if(o.ok)return {ok:true};
+      return {ok:false,html:`<div class="fb-bad">Diese Gleichung passt nicht zu Ihrer Einordnung.</div><div class="fb-hint">${HINT.F1}</div>`};
+    },
+    sum:()=>eqH(t.links,S)
+  };
+  if(t.mode==="d"){
+    D.sn={title:`Nennmaß des Schließmaßes ${limH(S,"N")}`,
+      html:()=>`<p>Rechnen Sie mit den Nennmaßen der Maßgleichung.</p>`+s2field("sn",limH(S,"N")+" =",st),
+      check:()=>fieldCheck("sn",c.SN,dCands(t.links,c).sn),sum:()=>`${limH(S,"N")} = ${fm(c.SN)} mm`};
+    D.fo={title:"Fall „locker“ (größtes Spiel)",
+      html:()=>`<p>Welches Grenzmaß nimmt jedes Glied, damit ${limH(S,"o")} möglichst groß wird?</p>`+s2fall(t,st,"fo"),
+      check:()=>fallCheck("fo","o"),sum:()=>"Fall locker: vergrößernde Maße Höchstmaß, verkleinernde Mindestmaß"};
+    D.so={title:`Höchstschließmaß ${limH(S,"o")}`,
+      html:()=>`<p>Mit diesen Grenzmaßen:</p>`+s2limList(t,"o")+s2field("so",limH(S,"o")+" =",st),
+      check:()=>fieldCheck("so",c.So,dCands(t.links,c).so),sum:()=>`${limH(S,"o")} = ${fm(c.So)} mm`};
+    D.fu={title:"Fall „fest“ (kleinstes Spiel)",
+      html:()=>`<p>Welches Grenzmaß nimmt jedes Glied, damit ${limH(S,"u")} möglichst klein wird?</p>`+s2fall(t,st,"fu"),
+      check:()=>fallCheck("fu","u"),sum:()=>"Fall fest: vergrößernde Maße Mindestmaß, verkleinernde Höchstmaß"};
+    D.su={title:`Mindestschließmaß ${limH(S,"u")}`,
+      html:()=>`<p>Mit diesen Grenzmaßen:</p>`+s2limList(t,"u")+s2field("su",limH(S,"u")+" =",st),
+      check:()=>fieldCheck("su",c.Su,dCands(t.links,c).su),sum:()=>`${limH(S,"u")} = ${fm(c.Su)} mm`};
+    D.ts={title:"Schließmaßtoleranz T<sub>S</sub>",
+      html:()=>`<p>${"T<sub>S</sub>"} = ${limH(S,"o")} ${MI} ${limH(S,"u")}</p>`+s2field("ts","T<sub>S</sub> =",st),
+      check:()=>fieldCheck("ts",c.TS,dCands(t.links,c).ts,`<div class="fb-ok" style="margin-top:6px">Probe: Σ T<sub>i</sub> = ${t.links.map(l=>fm(l.o-l.u)).join(" + ")} = ${fm(c.sumT)} mm = T<sub>S</sub></div>`),
+      sum:()=>`T<sub>S</sub> = ${fm(c.TS)} mm = Σ T<sub>i</sub>`};
+    D.bew={title:"Bewertung",
+      html:()=>s2radio("bew",`${fm(c.Su)} … ${fm(c.So)} mm: Was bedeutet das für die Montage?`,["Es bleibt in jedem Fall Spiel. Die Teile lassen sich immer fügen.","Im ungünstigsten Fall klemmt es (Überdeckung).","Die Toleranzen heben sich gegenseitig auf, das Spiel ist immer gleich groß."],st),
+      check:()=>{
+        const corr=c.Su>0?0:1;
+        if(st.bew==null)return {ok:false,html:`<div class="fb-hint">Bitte eine Antwort auswählen.</div>`};
+        if(st.bew===corr)return {ok:true};
+        return {ok:false,html:`<div class="fb-bad">Nein.</div><div class="fb-hint">${st.bew===2?HINT.F4:"Entscheidend ist der Fall „fest“: Ist "+limH(S,"u")+" positiv oder negativ?"}</div>`};
+      },sum:()=>c.Su>0?"Es bleibt immer Spiel":"Im ungünstigsten Fall klemmt es"};
+  }else{
+    D.tx={title:"Toleranz des gesuchten Maßes",
+      html:()=>`<p>Gesucht ist ${symH(t.x)}. Forderung: ${Sh} = ${fm(t.req.Su)} … ${fm(t.req.So)} mm. Wie viel Toleranz bleibt für ${symH(t.x)}?<br>T<sub>X</sub> = T<sub>S</sub> ${MI} Σ T<sub>bekannt</sub>. Das Ergebnis darf auch negativ sein.</p>`+s2field("tx","T<sub>X</sub> =",st),
+      check:()=>fieldCheck("tx",r.TX,[{v:t.req.So-t.req.Su,code:"txA"},{v:-r.TX,code:"txB"},{v:r.Tk,code:"txC"}],null,{txA:"Von der geforderten Schließmaßtoleranz müssen noch die Toleranzen aller bekannten Maße abgezogen werden.",txB:"Prüfen Sie das Vorzeichen: Ist T<sub>S</sub> größer oder kleiner als Σ T<sub>bekannt</sub>?",txC:"Das ist nur die Summe der bekannten Toleranzen. Ziehen Sie sie von T<sub>S</sub> ab."}),
+      sum:()=>`T<sub>X</sub> = ${fm(r.TX)} mm`};
+    D.erf={title:"Ist die Forderung erfüllbar?",
+      html:()=>s2radio("erf","Lässt sich die Forderung mit einer Toleranz für "+symH(t.x)+" erfüllen?",["Ja, T<sub>X</sub> ist positiv.","Nein, T<sub>X</sub> ist nicht positiv."],st),
+      check:()=>{
+        if(st.erf==null)return {ok:false,html:`<div class="fb-hint">Bitte eine Antwort auswählen.</div>`};
+        const corr=r.solvable?0:1;
+        if(st.erf===corr)return {ok:true};
+        return {ok:false,html:`<div class="fb-bad">Nein.</div><div class="fb-hint">${r.solvable?"T<sub>X</sub> ist größer als 0, es gibt eine Lösung.":"Eine Toleranz kann nicht negativ sein. Was bedeutet das für die Fertigung?"}</div>`};
+      },sum:()=>r.solvable?"erfüllbar":"nicht erfüllbar"};
+    D.ausw={title:"Auswege",
+      html:()=>`<div class="frage"><p>Welche Maßnahmen helfen? (Mehrere möglich)</p>`+["Eine Passscheibe oder Einstellmutter vorsehen, damit beim Montieren eingestellt wird","Die Toleranzen der bekannten Maße enger wählen","Für das gesuchte Maß eine negative Toleranz vorschreiben","Auf die Allgemeintoleranz verweisen, dann stimmt es schon"].map((o,i)=>`<label><input type="checkbox" data-k="ausw" value="${i}" ${st.ausw.includes(i)?"checked":""}><span>${o}</span></label>`).join("")+`<div class="fb" id="s2fb-ausw"></div></div>`,
+      check:()=>{
+        const a=st.ausw.slice().sort().join(",");
+        if(a==="0,1")return {ok:true};
+        return {ok:false,html:`<div class="fb-bad">Noch nicht ganz.</div><div class="fb-hint">Gesucht sind Maßnahmen, die wirklich Toleranz schaffen oder das Spiel einstellbar machen. Eine negative Toleranz kann man nicht fertigen, und die Allgemeintoleranz ist meist weiter als die Forderung.</div>`};
+      },sum:()=>"Passscheibe/Einstellmutter, engere Toleranzen"};
+    D.xf={title:`Welcher Fall bestimmt ${limH(t.x,"o")}?`,
+      html:()=>s2radio("xf",`Das Höchstmaß ${limH(t.x,"o")} ergibt sich aus …`,[`dem Höchstschließmaß ${limH(S,"o")} (Fall locker)`,`dem Mindestschließmaß ${limH(S,"u")} (Fall fest)`],st),
+      check:()=>{
+        if(st.xf==null)return {ok:false,html:`<div class="fb-hint">Bitte eine Antwort auswählen.</div>`};
+        const corr=r.x.sign>0?0:1;
+        if(st.xf===corr)return {ok:true};
+        return {ok:false,html:`<div class="fb-bad">Nein.</div><div class="fb-hint">${r.x.sign<0?`${symH(t.x)} ist verkleinernd: Das größte ${symH(t.x)} führt zum <b>kleinsten</b> Spiel.`:`${symH(t.x)} ist vergrößernd: Das größte ${symH(t.x)} führt zum größten Schließmaß.`}</div>`};
+      },sum:()=>r.x.sign>0?`${limH(t.x,"o")} folgt aus ${limH(S,"o")}`:`${limH(t.x,"o")} folgt aus ${limH(S,"u")}`};
+    D.xo={title:`Höchstmaß ${limH(t.x,"o")}`,
+      html:()=>`<p>Grenzmaße der bekannten Maße:</p>`+s2limKnown(t)+s2field("xo",limH(t.x,"o")+" =",st),
+      check:()=>fieldCheck("xo",r.Xo,[{v:r.Xu,code:"sw"}],null,{sw:r.x.sign<0?`${symH(t.x)} ist verkleinernd: Das größte ${symH(t.x)} führt zum <b>kleinsten</b> Spiel.`:HINT.F3}),
+      sum:()=>`${limH(t.x,"o")} = ${fm(r.Xo)} mm`};
+    D.xu={title:`Mindestmaß ${limH(t.x,"u")}`,
+      html:()=>s2field("xu",limH(t.x,"u")+" =",st),
+      check:()=>fieldCheck("xu",r.Xu,[{v:r.Xo,code:"sw"}],null,{sw:r.x.sign<0?`${symH(t.x)} ist verkleinernd: Das kleinste ${symH(t.x)} führt zum <b>größten</b> Spiel.`:HINT.F3}),
+      sum:()=>`${limH(t.x,"u")} = ${fm(r.Xu)} mm`};
+    D.en={title:"Normgerechte Eintragung",
+      html:()=>`<p>Tragen Sie das Maß mit Nennmaß und Abmaßen ein. Das Nennmaß dürfen Sie ändern, die Grenzmaße müssen stimmen. Oberes und unteres Abmaß mit Vorzeichen.</p>`+s2field("en","Nennmaß N =",st)+s2field("eo","oberes Abmaß =",st)+s2field("eu","unteres Abmaß =",st),
+      check:()=>entryCheck(),sum:()=>`${symH(t.x)} = ${fm(r.Xu)} … ${fm(r.Xo)} mm`};
+  }
+  // Hilfsprüfer
+  function fieldCheck(key,corr,cands,okExtra,hints){
+    const inp=document.getElementById("s2f-"+key);
+    const res=chkNum(st[key],corr,cands);
+    if(res.st==="ok")return {ok:true,html:okExtra||""};
+    return {ok:false,html:fbHTML(res,hints)};
+  }
+  function fallCheck(key,which){
+    const m=st[key];
+    const bad=t.links.filter(l=>m[l.id]!==((which==="o")===(l.sign>0)?"o":"u"));
+    if(!bad.length)return {ok:true};
+    const hint=which==="o"?HINT.F2o:HINT.F2u;
+    return {ok:false,html:`<div class="fb-bad">Nicht alle Zuordnungen stimmen: ${bad.map(l=>symH(l.sym)).join(", ")}.</div><div class="fb-hint">${hint}</div>`};
+  }
+  function entryCheck(){
+    const pN=parseMM(st.en),po=parseMM(st.eo),pu=parseMM(st.eu);
+    if([pN,po,pu].some(p=>p.empty||p.bad))return {ok:false,html:`<div class="fb-hint">${HINT.inv}</div>`};
+    if([pN,po,pu].some(p=>p.prec))return {ok:false,html:`<div class="fb-hint">${HINT.prec}</div>`};
+    const go=pN.v+po.v,gu=pN.v+pu.v;
+    if(go===r.Xo&&gu===r.Xu)return {ok:true};
+    const ec=entryCands(r.x,r,pN.v);
+    let h="";
+    if(go<gu)h=HINT.F9;
+    else{
+      const c1=ec.o.list.find(c=>c.v===po.v&&c.v!==ec.o.correct),c2=ec.u.list.find(c=>c.v===pu.v&&c.v!==ec.u.correct);
+      const code=(c1&&c1.code)||(c2&&c2.code);
+      h=code?ENTRY_HINT[code]:HINT.gen;
+    }
+    return {ok:false,html:`<div class="fb-bad">Stimmt noch nicht: ${symH(t.x)} = ${fm(go)} … ${fm(gu)} mm erfüllt die Forderung nicht.</div><div class="fb-hint">${h}</div>`};
+  }
+  D.__checkEntry=entryCheck;
+  return D;
+}
+const ENTRY_HINT={
+  F5:"Oberes und unteres Abmaß scheinen vertauscht. Prüfen Sie, welcher Fall zum Höchstmaß gehört.",
+  F6:"Gefragt ist das Abmaß, also Grenzmaß minus Nennmaß.",
+  F7:"Liegt das Grenzmaß über oder unter dem Nennmaß?"
+};
+HINT.F9="Ihr Höchstmaß ist kleiner als Ihr Mindestmaß. Was bedeutet das für die Fertigung?";
+ENTRY_HINT.F9=HINT.F9;
+
+function s2render(){
+  const t=S2T[S2.ti],st=s2st(S2.ti);
+  const steps=s2steps(t),D=s2defs(t,st);
+  document.querySelectorAll("#s2-wahl button").forEach((b,i)=>{b.setAttribute("aria-pressed",i===S2.ti);b.textContent=(s2st(i).done?"✓ ":"")+S2T[i].label});
+  let h=`<h2 style="margin:14px 0 4px;font-size:1.3rem;color:var(--fach)">${t.title}</h2><p class="einleitung">${TPL[t.tpl].text.replace(/Das Spiel S soll 0,2 bis 0,4 mm betragen\.|Er soll 1,9 bis 2,3 mm betragen\.\s*/,"")}</p>`;
+  h+=ketteMit(t.tpl,t.links,{unk:t.mode==="i"?t.x:null,S:t.S,Sq:true});
+  h+=s2table(t);
+  const n=Math.min(st.step,steps.length-1);
+  for(let i=0;i<steps.length;i++){
+    const id=steps[i],d=D[id];
+    if(i<st.step){
+      h+=`<div class="step fertig"><div class="zeile"><span><b>${i+1}. ${d.title}:</b> <span class="formel">${d.sum()}</span></span></div></div>`;
+    }else if(i===st.step){
+      h+=`<div class="step aktiv" id="s2-aktiv"><h3>${i+1}. ${d.title}</h3>${d.html()}<div class="fb" id="s2fb-card">${st.fb[id]||""}</div><div class="row no-print"><button class="btn" data-act="chk" data-id="${id}">Prüfen</button>${(st.tries[id]||0)>=2?`<button class="btn-2" data-act="weg">Rechenweg zeigen</button>`:""}</div></div>`;
+    }
+  }
+  if(st.step>=steps.length){
+    st.done=true;
+    const ok=`<div class="fb-ok">Aufgabe geschafft.</div>`;
+    h+=`<div class="step aktiv">${ok}<div class="weg">${t.mode==="d"?wegDirect(t.links,t.S):wegInverse(t.links,t.x,t.req,t.S)}</div><div class="row no-print">${S2.ti<S2T.length-1?`<button class="btn" data-act="next">Nächste Aufgabe</button>`:`<span class="small">Das war die letzte Aufgabe. Weiter mit Reiter 3 und 4.</span>`}</div></div>`;
+  }
+  if(st.weg&&st.step<steps.length)h+=`<div class="weg">${t.mode==="d"?wegDirect(t.links,t.S):wegInverse(t.links,t.x,t.req,t.S)}</div>`;
+  $("s2-body").innerHTML=h;
+  document.querySelectorAll("#s2-wahl button").forEach((b,i)=>{b.textContent=(s2st(i).done?"✓ ":"")+S2T[i].label});
+}
+function s2init(){
+  $("s2-wahl").innerHTML=S2T.map((t,i)=>`<button data-i="${i}" aria-pressed="false">${t.label}</button>`).join("");
+  $("s2-wahl").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{S2.ti=+b.dataset.i;s2render()}));
+  const body=$("s2-body");
+  body.addEventListener("input",e=>{
+    const k=e.target.dataset.k;if(!k)return;const st=s2st(S2.ti);
+    if(e.target.type==="text")st[k]=e.target.value;
+  });
+  body.addEventListener("change",e=>{
+    const k=e.target.dataset.k;if(!k)return;const st=s2st(S2.ti);
+    if(e.target.type==="radio")st[k]=+e.target.value;
+    else if(e.target.type==="checkbox"){const v=+e.target.value;st[k]=e.target.checked?st[k].concat(v):st[k].filter(x=>x!==v)}
+  });
+  body.addEventListener("click",e=>{
+    const b=e.target.closest("[data-act]");if(!b)return;
+    const st=s2st(S2.ti),t=S2T[S2.ti],act=b.dataset.act;
+    if(act==="role"){
+      const cur=st.roles[b.dataset.id]||"?";st.roles[b.dataset.id]=cur==="?"?"+":cur==="+"?"-":"?";
+      b.dataset.v=st.roles[b.dataset.id];b.textContent=st.roles[b.dataset.id]==="-"?MI:st.roles[b.dataset.id];
+    }else if(act==="fall"){
+      st[b.dataset.w][b.dataset.id]=b.dataset.v;
+      b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.v===b.dataset.v));
+    }else if(act==="chk"){
+      const id=b.dataset.id,D=s2defs(t,st),res=D[id].check();
+      if(res.ok){st.step++;st.fb[id]="";st.weg=false;s2render()}
+      else{
+        st.tries[id]=(st.tries[id]||0)+1;st.fb[id]=res.html;
+        // Eingabefelder markieren
+        s2render();
+        const f=document.getElementById("s2-aktiv");if(f){const inp=f.querySelector("input[type=text]");if(inp&&["sn","so","su","ts","tx","xo","xu"].includes(id))inp.classList.add("bad")}
+      }
+    }else if(act==="weg"){st.weg=!st.weg;s2render()}
+    else if(act==="next"){S2.ti=Math.min(S2.ti+1,S2T.length-1);s2render()}
+  });
+  s2render();
+}
+
+// =====================================================================
+// Stufe 3 und 4: Training
+// =====================================================================
+function makeTrainer(mode,rootId,storeKey){
+  const root=$(rootId);
+  const Tr={mode,task:null,vals:{},roles:{},tries:0,wrong:false,counted:false,done:false,filter:"all",hist:[],weg:false,ausw:[],erfSolved:false,mont:null,
+    score:LS.get("masskette.v1",{})[storeKey]||{x:0,y:0}};
+  function save(){const o=LS.get("masskette.v1",{});o[storeKey]=Tr.score;LS.set("masskette.v1",o)}
+  function newSeed(){
+    for(let i=0;i<300;i++){
+      const seed=1000+Math.floor(Math.random()*9000);
+      if(Tr.filter!=="all"&&TORD[seed%6]!==Tr.filter)continue;
+      let xs=0;
+      if(mode==="i"&&Tr.hist.length>=2){
+        const signs=Tr.hist.filter(s=>s!==0);
+        if(!signs.includes(1))xs=1;else if(!signs.includes(-1))xs=-1;
+      }
+      const t=genTask(seed,mode,xs||undefined);
+      if(!t.ok&&i<299)continue;
+      if(xs&&mode==="i"&&t.links.find(l=>l.id===t.xid).sign!==xs&&i<299)continue;
+      return seed;
+    }
+    return 1000;
+  }
+  function load(seed){
+    Tr.task=genTask(seed,mode);
+    Tr.vals={};Tr.roles={};Tr.tries=0;Tr.wrong=false;Tr.counted=false;Tr.done=false;Tr.weg=false;Tr.ausw=[];Tr.erfSolved=false;Tr.mont=null;Tr.fbs={};Tr.rolefb={};
+    if(mode==="i"){Tr.vals.n=fm(Tr.task.links.find(l=>l.id===Tr.task.xid).N);
+      Tr.hist.push(Tr.task.links.find(l=>l.id===Tr.task.xid).sign)}
+    render();
+  }
+  function count(okFirst){
+    if(Tr.counted)return;Tr.counted=true;Tr.score.y++;if(okFirst)Tr.score.x++;save();
+  }
+  function render(){
+    const t=Tr.task,T=TPL[t.tpl],S=T.S,Sh=symH(S);
+    let h=`<div class="kopfzeile"><b>Aufgabe Nr. ${t.seed}</b><span class="small">${T.title}</span></div>`;
+    h+=`<div class="row no-print"><span class="small">Baugruppe:</span><span class="wahl" role="group" aria-label="Baugruppe wählen">`+[["all","Zufall"]].concat(TORD.map(k=>[k,k])).map(([k,n])=>`<button data-act="filter" data-k="${k}" aria-pressed="${Tr.filter===k}">${n}</button>`).join("")+`</span></div>`;
+    h+=`<p class="einleitung" style="margin-top:10px">${T.text.replace(/ (Das Spiel S soll|Er soll|Das Axialspiel S bleibt)[^.]*\./g,"").replace(/ Zwischen Sicherungsring[^.]*\./,"")}</p>`;
+    h+=ketteMit(t.tpl,t.links,{unk:mode==="i"?t.xid:null,S:S,Sq:true});
+    h+=`<ul class="masse">`+t.links.map(l=>{
+      const unk=mode==="i"&&l.id===t.xid;
+      const st=Tr.rolefb[l.id]||"";
+      const rv=Tr.roles[l.id]||"?";
+      return `<li><span class="nm">${symH(l.sym)} ${l.name}</span><span class="wert${unk?" gesucht":""}">${unk?"gesucht, N = "+fm(l.N)+" mm":tolText(l)+" mm"}</span><span style="display:flex;gap:4px;align-items:center"><button class="rolle ${st}" data-act="role" data-id="${l.id}" data-v="${rv}" aria-label="Wirkung von ${l.sym}: ${rv}">${rv==="-"?MI:rv}</button><span class="rs ${st}">${st==="ok"?"✓":st==="bad"?"✗":""}</span></span></li>`;
+    }).join("")+`</ul><p class="small" style="margin:0">Rechte Spalte: Wirkung auf ${Sh} einordnen (? → + → ${MI}).</p>`;
+    if(mode==="i")h+=`<p style="margin-top:10px"><b>Forderung:</b> ${Sh} = ${fm(t.req.Su)} … ${fm(t.req.So)} mm</p><p class="einleitung">Gesucht ist ${symH(t.xid)}. Bestimmen Sie Nennmaß und Abmaße so, dass die Forderung immer eingehalten wird. Ist das nicht möglich, wählen Sie „Forderung nicht erfüllbar“.</p>`;
+    else h+=`<p style="margin-top:10px" class="einleitung">Berechnen Sie ${Sh} für den Fall „locker“ und den Fall „fest“.</p>`;
+    if(mode==="d"){
+      h+=fld("sn",limH(S,"N")+" =")+fld("so",limH(S,"o")+" =")+fld("su",limH(S,"u")+" =")+fld("ts","T<sub>S</sub> =");
+      if(t.c.Su<0)h+=`<div class="frage"><p>Ist die Baugruppe in jedem Fall montierbar?</p><label><input type="radio" name="${rootId}-mont" value="1" data-k="mont" ${Tr.mont===1?"checked":""}><span>Ja</span></label><label><input type="radio" name="${rootId}-mont" value="0" data-k="mont" ${Tr.mont===0?"checked":""}><span>Nein</span></label><div class="fb" id="${rootId}-fb-mont">${Tr.fbs.mont||""}</div></div>`;
+    }else{
+      h+=fld("n","Nennmaß N =")+fld("o","oberes Abmaß =")+fld("u","unteres Abmaß =");
+      if(Tr.erfSolved&&t.unl)h+=`<div class="frage"><p>Forderung nicht erfüllbar – richtig. Welche Maßnahmen helfen? (Mehrere möglich)</p>`+["Eine Passscheibe oder Einstellmutter vorsehen","Die Toleranzen der bekannten Maße enger wählen","Für das gesuchte Maß eine negative Toleranz vorschreiben","Auf die Allgemeintoleranz verweisen"].map((o,i)=>`<label><input type="checkbox" data-k="ausw" value="${i}" ${Tr.ausw.includes(i)?"checked":""}><span>${o}</span></label>`).join("")+`<div class="fb" id="${rootId}-fb-ausw">${Tr.fbs.ausw||""}</div></div>`;
+    }
+    h+=`<div class="row no-print"><button class="btn" data-act="chk">${mode==="i"&&Tr.erfSolved&&t.unl?"Auswahl prüfen":"Prüfen"}</button>`+(mode==="i"?`<button class="btn-2" data-act="nein">Forderung nicht erfüllbar</button>`:"")+`<button class="btn-2" data-act="weg">Lösungsweg</button><button class="btn-2" data-act="neu">Neue Aufgabe</button></div>`;
+    h+=`<div class="fb" id="${rootId}-fb-all">${Tr.fbs.all||""}</div>`;
+    if(Tr.weg)h+=`<div class="weg">${mode==="d"?wegDirect(t.links,S):wegInverse(t.links,t.xid,t.req,S)}</div>`;
+    h+=`<div class="zaehler no-print"><span>${Tr.score.x} von ${Tr.score.y} Aufgaben beim ersten Versuch richtig</span><button class="btn-2" data-act="reset">Zähler zurücksetzen</button><label class="small">Aufgabe Nr. laden: <input type="text" inputmode="numeric" size="5" maxlength="5" style="width:5.5em;min-height:36px;font:inherit;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink)" data-k="nr"></label><button class="btn-2" data-act="laden">Laden</button></div>`;
+    root.innerHTML=h;
+    root.querySelectorAll("input[data-k]").forEach(inp=>{
+      if(inp.type==="text"&&inp.dataset.k!=="nr"){inp.value=Tr.vals[inp.dataset.k]||"";const st=Tr.fstate&&Tr.fstate[inp.dataset.k];if(st)inp.classList.add(st)}
+    });
+  }
+  function fld(k,label){
+    const fb=(Tr.fbs&&Tr.fbs[k])||"";
+    return `<div class="feld"><label class="lab" for="${rootId}-${k}">${label}</label><input type="text" inputmode="decimal" autocomplete="off" id="${rootId}-${k}" data-k="${k}"> <span>mm</span><div class="fb">${fb}</div></div>`;
+  }
+  function checkRoles(){
+    const t=Tr.task;let allOk=true;Tr.rolefb={};
+    t.links.forEach(l=>{
+      const v=Tr.roles[l.id]||"?";
+      if(v===(l.sign>0?"+":"-"))Tr.rolefb[l.id]="ok";else{Tr.rolefb[l.id]="bad";allOk=false}
+    });
+    return allOk;
+  }
+  function check(){
+    const t=Tr.task,S=TPL[t.tpl].S;
+    Tr.fbs={};Tr.fstate={};
+    let allOk=checkRoles();
+    let msgs="";
+    if(!allOk){msgs+=`<div class="fb-bad">Nicht alle Maße sind richtig eingeordnet.</div><div class="fb-hint">${HINT.F1}</div>`}
+    if(mode==="d"){
+      const c=t.c;
+      for(const [k,corr] of [["sn",c.SN],["so",c.So],["su",c.Su],["ts",c.TS]]){
+        const res=chkNum(Tr.vals[k],corr,t.dc[k]);
+        const hints={F2o:HINT.F2o,F2u:HINT.F2u};
+        if(k==="so")hints.F2o=HINT.F2o;
+        if(k==="su")hints.F2u=HINT.F2u;
+        Tr.fbs[k]=fbHTML(res,hints);
+        Tr.fstate[k]=res.st==="ok"?"ok":res.st==="empty"?"":"bad";
+        if(res.st!=="ok")allOk=false;
+      }
+      if(c.Su<0){
+        if(Tr.mont===null){allOk=false;Tr.fbs.mont=`<div class="fb-hint">Bitte beantworten.</div>`}
+        else if(Tr.mont===0)Tr.fbs.mont=`<div class="fb-ok">richtig: Im Fall „fest“ gibt es Überdeckung.</div>`;
+        else{allOk=false;Tr.fbs.mont=`<div class="fb-bad">Nein.</div><div class="fb-hint">Schauen Sie auf ${limH(S,"u")}: Ist es positiv?</div>`}
+      }
+    }else{
+      if(t.unl){
+        const pN=parseMM(Tr.vals.n),po=parseMM(Tr.vals.o),pu=parseMM(Tr.vals.u);
+        if(Tr.erfSolved){
+          const a=Tr.ausw.slice().sort().join(",");
+          if(a==="0,1"){Tr.fbs.ausw=`<div class="fb-ok">richtig</div>`}
+          else{allOk=false;Tr.fbs.ausw=`<div class="fb-bad">Noch nicht ganz.</div><div class="fb-hint">Gesucht sind Maßnahmen, die wirklich Toleranz schaffen oder das Maß einstellbar machen.</div>`}
+        }else{
+          allOk=false;
+          let hh="Prüfen Sie zuerst: Wie viel Toleranz bleibt für das gesuchte Maß? T<sub>X</sub> = T<sub>S</sub> "+MI+" Σ T<sub>bekannt</sub>. Gibt es überhaupt eine Lösung?";
+          if(!po.empty&&!pu.empty&&!po.bad&&!pu.bad&&!pN.bad&&!pN.empty&&po.v<pu.v)hh=HINT.F9;
+          Tr.fbs.all=`<div class="fb-bad">Mit diesen Werten stimmt die Forderung nicht.</div><div class="fb-hint">${hh}</div>`;
+        }
+      }else{
+        const r=t.r,x=t.links.find(l=>l.id===t.xid);
+        const pN=parseMM(Tr.vals.n),po=parseMM(Tr.vals.o),pu=parseMM(Tr.vals.u);
+        for(const [k,p] of [["n",pN],["o",po],["u",pu]]){
+          if(p.bad){Tr.fbs[k]=`<div class="fb-hint">${HINT.inv}</div>`;Tr.fstate[k]="bad";allOk=false}
+          else if(p.prec){Tr.fbs[k]=`<div class="fb-hint">${HINT.prec}</div>`;Tr.fstate[k]="bad";allOk=false}
+          else if(p.empty){allOk=false}
+        }
+        if(!pN.v&&pN.v!==0||pN.bad||pN.prec||po.bad||pu.bad||po.prec||pu.prec||pN.empty||po.empty||pu.empty){
+          if(allOk===false&&!Tr.fbs.all&&!(pN.bad||po.bad||pu.bad||pN.prec||po.prec||pu.prec))Tr.fbs.all=`<div class="fb-hint">Bitte Nennmaß und beide Abmaße eingeben.</div>`;
+        }else{
+          const Nv=pN.v,go=Nv+po.v,gu=Nv+pu.v;
+          const ec=entryCands(x,r,Nv);
+          const okO=po.v===ec.o.correct,okU=pu.v===ec.u.correct;
+          Tr.fstate.o=okO?"ok":"bad";Tr.fstate.u=okU?"ok":"bad";
+          Tr.fbs.o=okO?`<div class="fb-ok">richtig</div>`:`<div class="fb-bad">Stimmt noch nicht.</div>`;
+          Tr.fbs.u=okU?`<div class="fb-ok">richtig</div>`:`<div class="fb-bad">Stimmt noch nicht.</div>`;
+          if(!(okO&&okU)){
+            allOk=false;
+            let hh;
+            if(go<gu)hh=HINT.F9;
+            else{
+              const c1=ec.o.list.find(c=>c.v===po.v&&c.v!==ec.o.correct),c2=ec.u.list.find(c=>c.v===pu.v&&c.v!==ec.u.correct);
+              const code=(c1&&c1.code)||(c2&&c2.code);
+              hh=code?ENTRY_HINT[code]:(x.sign<0?"Prüfen Sie die Zuordnung der Fälle: "+symH(x.sym)+" ist verkleinernd.":HINT.gen);
+              if(x.sign<0&&code==="F5")hh=`${symH(x.sym)} ist verkleinernd: Das größte ${symH(x.sym)} führt zum <b>kleinsten</b> Spiel.`;
+            }
+            Tr.fbs.all=`<div class="fb-hint">${hh}</div>`;
+          }
+        }
+      }
+    }
+    Tr.tries++;
+    if(allOk){
+      Tr.done=true;
+      Tr.fbs.all=(Tr.fbs.all||"")+`<div class="fb-ok" style="margin-top:6px">Alles richtig.${mode==="d"?` Probe: T<sub>S</sub> = Σ T<sub>i</sub> ✓`:` Probe: ${symH(S)} liegt zwischen ${fm(t.req.Su)} und ${fm(t.req.So)} mm ✓`}</div>`;
+      count(!Tr.wrong&&Tr.tries===1&&!Tr.weg);
+    }else Tr.wrong=true;
+    render();
+  }
+  root.addEventListener("input",e=>{
+    const k=e.target.dataset.k;if(!k||e.target.type!=="text")return;
+    if(k==="nr")return;
+    Tr.vals[k]=e.target.value;
+  });
+  root.addEventListener("change",e=>{
+    const k=e.target.dataset.k;if(!k)return;
+    if(k==="mont")Tr.mont=+e.target.value;
+    else if(k==="ausw"){const v=+e.target.value;Tr.ausw=e.target.checked?Tr.ausw.concat(v):Tr.ausw.filter(x=>x!==v)}
+  });
+  root.addEventListener("click",e=>{
+    const b=e.target.closest("[data-act]");if(!b)return;
+    const act=b.dataset.act;
+    if(act==="role"){
+      const cur=Tr.roles[b.dataset.id]||"?";const nv=cur==="?"?"+":cur==="+"?"-":"?";Tr.roles[b.dataset.id]=nv;
+      b.dataset.v=nv;b.textContent=nv==="-"?MI:nv;b.className="rolle";const rs=b.nextElementSibling;if(rs){rs.className="rs";rs.textContent=""}
+      delete Tr.rolefb[b.dataset.id];
+    }else if(act==="chk")check();
+    else if(act==="nein"){
+      const t=Tr.task;
+      if(t.unl){
+        if(!Tr.erfSolved){Tr.erfSolved=true;Tr.fbs={all:`<div class="fb-ok">Richtig: T<sub>X</sub> = ${fm(t.r.TX)} mm ist nicht positiv, die Forderung ist nicht erfüllbar. Welche Auswege gibt es?</div>`};Tr.tries++;if(Tr.wrong)Tr.wrong=true}
+      }else{
+        Tr.wrong=true;Tr.tries++;
+        Tr.fbs={all:`<div class="fb-bad">Doch, die Forderung lässt sich erfüllen.</div><div class="fb-hint">Rechnen Sie T<sub>X</sub> = T<sub>S</sub> ${MI} Σ T<sub>bekannt</sub>: Ist das Ergebnis größer als 0?</div>`};
+      }
+      render();
+    }else if(act==="weg"){Tr.weg=!Tr.weg;if(Tr.weg){Tr.wrong=true;if(!Tr.done)count(false)}render()}
+    else if(act==="neu"){
+      if(!Tr.done&&!Tr.counted&&(Tr.tries>0))count(false);
+      load(newSeed());
+    }else if(act==="filter"){Tr.filter=b.dataset.k;load(newSeed())}
+    else if(act==="reset"){Tr.score={x:0,y:0};save();render()}
+    else if(act==="laden"){
+      const inp=root.querySelector("input[data-k=nr]");const n=parseInt(inp&&inp.value,10);
+      if(n>=1000&&n<=9999){Tr.filter="all";load(n)}
+    }
+  });
+  Tr.start=()=>load(newSeed());
+  Tr.load=load;
+  return Tr;
+}
+
+// =====================================================================
+// Ausblick: Worst Case gegen Zufall
+// =====================================================================
+const AB={tpl:"B1",n:0,counts:null,min:null,max:null};
+function gauss(){let u=0,v=0;while(u===0)u=Math.random();v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function abRender(){
+  const T=TPL[AB.tpl],c=calc(T.links);
+  const bins=24,lo=c.Su-c.TS*.12,hi=c.So+c.TS*.12;
+  const W=400,H=170,x0=10,x1=390,yb=130,yt=20;
+  const xp=v=>x0+(v-lo)/(hi-lo)*(x1-x0);
+  let s=`<svg class="hist" viewBox="0 0 400 170" role="img" aria-label="Verteilung des Schließmaßes bei zufällig montierten Baugruppen im Vergleich zu den Worst-Case-Grenzen">`;
+  if(AB.counts){
+    const mx=Math.max(...AB.counts,1),bw=(x1-x0)/bins;
+    AB.counts.forEach((n,i)=>{const h=(n/mx)*(yb-yt);s+=`<rect class="bar" x="${(x0+i*bw+1).toFixed(1)}" y="${(yb-h).toFixed(1)}" width="${(bw-2).toFixed(1)}" height="${h.toFixed(1)}"/>`});
+  }
+  s+=`<line class="ax" x1="${x0}" y1="${yb}" x2="${x1}" y2="${yb}"/>`;
+  s+=`<line class="wc" x1="${xp(c.Su).toFixed(1)}" y1="${yt-8}" x2="${xp(c.Su).toFixed(1)}" y2="${yb}"/><line class="wc" x1="${xp(c.So).toFixed(1)}" y1="${yt-8}" x2="${xp(c.So).toFixed(1)}" y2="${yb}"/>`;
+  s+=`<text x="${xp(c.Su).toFixed(1)}" y="${yb+18}" text-anchor="middle">S<tspan class="sb" dy="3" style="font-size:10px">u</tspan><tspan dy="-3"> = ${fm(c.Su)}</tspan></text>`;
+  s+=`<text x="${xp(c.So).toFixed(1)}" y="${yb+18}" text-anchor="middle">S<tspan class="sb" dy="3" style="font-size:10px">o</tspan><tspan dy="-3"> = ${fm(c.So)}</tspan></text>`;
+  s+=`<text x="${(x0+x1)/2}" y="${yb+38}" text-anchor="middle" style="font-weight:400">Schließmaß S in mm (gestrichelt: Worst Case)</text>`;
+  s+=`</svg>`;
+  $("ab-svg").innerHTML=s;
+  if(AB.n){
+    $("ab-status").innerHTML=`${AB.n} Baugruppen montiert. Kleinstes S: <b>${fm(AB.min)} mm</b>, größtes S: <b>${fm(AB.max)} mm</b>. Worst Case: ${fm(c.Su)} … ${fm(c.So)} mm. Außerhalb des Worst-Case-Bereichs liegt keine, denn jedes Teil liegt in seiner Toleranz.`;
+  }else $("ab-status").textContent="Noch keine Baugruppe montiert.";
+}
+function abSim(n){
+  const T=TPL[AB.tpl],c=calc(T.links);
+  const bins=24,lo=c.Su-c.TS*.12,hi=c.So+c.TS*.12;
+  if(!AB.counts)AB.counts=new Array(bins).fill(0);
+  for(let i=0;i<n;i++){
+    let S=0;
+    for(const l of T.links){
+      const mid=(l.o+l.u)/2,sg=(l.o-l.u)/6;
+      let d=mid+gauss()*sg;d=Math.max(l.u,Math.min(l.o,d));
+      S+=l.sign*(l.N+d);
+    }
+    const b=Math.min(bins-1,Math.max(0,Math.floor((S-lo)/(hi-lo)*bins)));AB.counts[b]++;
+    AB.min=AB.min==null?S:Math.min(AB.min,S);AB.max=AB.max==null?S:Math.max(AB.max,S);
+  }
+  AB.n+=n;AB.min=Math.round(AB.min/10)*10;AB.max=Math.round(AB.max/10)*10;
+  abRender();
+}
+function abReset(){AB.n=0;AB.counts=null;AB.min=null;AB.max=null;abRender()}
+function abInit(){
+  $("ab-100").addEventListener("click",()=>abSim(100));
+  $("ab-1000").addEventListener("click",()=>abSim(1000));
+  $("ab-neu").addEventListener("click",abReset);
+  $("ab-wahl").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+    AB.tpl=b.dataset.t;$("ab-wahl").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));abReset();
+  }));
+  abRender();
+}
+
+// =====================================================================
+// Reiter
+// =====================================================================
+function tabsInit(){
+  const tabs=[...document.querySelectorAll(".tabs button")];
+  tabs.forEach(b=>b.addEventListener("click",()=>{
+    tabs.forEach(x=>{const on=x===b;x.setAttribute("aria-selected",on);$(x.getAttribute("aria-controls")).hidden=!on});
+  }));
+}
+
+// =====================================================================
+// Selbsttest (nur mit ?selftest=1)
+// =====================================================================
+function selftest(){
+  const out=[];let fails=0;
+  const say=s=>out.push(s);
+  const ok=(c,msg)=>{if(!c){fails++;say("FEHLER: "+msg)}};
+  // feste Beispiele gegen die Planung
+  const T=k=>TPL[k].links;
+  let c=calc(T("B1"));ok(c.SN===100&&c.So===530&&c.Su===50&&c.TS===480&&c.sumT===480,"B1 "+JSON.stringify(c));say("B1: S_N="+c.SN+" So="+c.So+" Su="+c.Su+" TS="+c.TS+" (erwartet 100/530/50/480)");
+  c=calc(T("B4"));ok(c.So===500&&c.Su===200,"B4 "+JSON.stringify(c));say("B4: So="+c.So+" Su="+c.Su+" (erwartet 500/200)");
+  c=calc(T("B3"));ok(c.So===400&&c.Su===200,"B3 "+JSON.stringify(c));say("B3 (l=30 -0,3/-0,4): So="+c.So+" Su="+c.Su+" (erwartet 400/200)");
+  c=calc(T("B6"));ok(c.So===560&&c.Su===100,"B6 Archiv "+JSON.stringify(c));say("B6 Archivlösung x=26,6 +0,4/+0,2: So="+c.So+" Su="+c.Su+" (erwartet 560/100)");
+  c=calc(T("B2"));ok(c.So===200&&c.Su===0,"B2 "+JSON.stringify(c));say("B2 (a=29 +0,03/0): So="+c.So+" Su="+c.Su+" (erwartet 200/0)");
+  c=calc(T("B5"));ok(c.So===2300&&c.Su===1900,"B5 "+JSON.stringify(c));say("B5 (l=7 +0,3/+0,1): So="+c.So+" Su="+c.Su+" (erwartet 2300/1900)");
+  let r=inv(T("B2"),"a",{Su:0,So:200});ok(r.solvable&&r.Xu===29000&&r.Xo===29030,"B2 inv");say("B2 Umkehr: a="+r.Xu+"…"+r.Xo+" (erwartet 29000…29030)");
+  r=inv(T("B2"),"a",{Su:0,So:100});ok(!r.solvable&&r.TX===-70,"B2b inv "+r.TX);say("B2b: TX="+r.TX+" (erwartet -70, nicht lösbar)");
+  r=inv(T("B3"),"l",{Su:200,So:400});ok(r.solvable&&r.Xo===29700&&r.Xu===29600,"B3 inv");say("B3 Umkehr: l="+r.Xu+"…"+r.Xo+" (erwartet 29600…29700)");
+  r=inv(T("B5"),"l",{Su:1900,So:2300});ok(r.solvable&&r.Xo===7300&&r.Xu===7100,"B5 inv");say("B5 Umkehr: l="+r.Xu+"…"+r.Xo+" (erwartet 7100…7300)");
+  r=inv(T("B6"),"x",{Su:100,So:200});ok(!r.solvable&&r.Tk===260,"B6 inv "+r.Tk);say("B6 Kundenauftrag: ΣT="+r.Tk+" TX="+r.TX+" (erwartet 260, nicht lösbar)");
+  // Zufallsaufgaben
+  const corners=(links,fn)=>{
+    let mn=Infinity,mx=-Infinity;const n=links.length;
+    for(let m=0;m<(1<<n);m++){let S=0;links.forEach((l,i)=>{S+=l.sign*(l.N+((m>>i)&1?l.o:l.u))});mn=Math.min(mn,S);mx=Math.max(mx,S)}
+    return [mn,mx];
+  };
+  const stat={};
+  TORD.forEach((tpl,idx)=>{
+    // direkt
+    let n=0,bad=0,degen=0,klemm=0,attempts=0,ts_in=0;
+    for(let k=0;k<200;k++){
+      const seed=996+6*k+idx,t=genTask(seed,"d");n++;attempts+=t.attempts;
+      if(t.degenerate)degen++;
+      const [mn,mx]=corners(t.links);const cc=calc(t.links);
+      let good=t.ok&&t.tpl===tpl&&mn===cc.Su&&mx===cc.So&&cc.TS===cc.sumT&&cc.TS===mx-mn;
+      if(t.links.some(l=>l.N+l.u<=0))good=false;
+      if(TPL[tpl].spiel&&cc.So>1000)good=false;
+      if(!distinctD(t.dc,cc))good=false;
+      if(t.links.some(l=>l.N%10||l.o%10||l.u%10))good=false;
+      if(cc.Su<0)klemm++;
+      if(!good){bad++;if(bad<4)say("  schlechte direkte Aufgabe "+tpl+" Seed "+seed)}
+      // Deutung der Fehlerbilder: alle falschen Kandidaten tatsächlich falsch
+      for(const f of Object.keys(t.dc))for(const cd of t.dc[f])if(cd.v===correctOf(f,cc)){/* gleich richtig: wird ignoriert */}
+    }
+    ok(bad===0,"direkt "+tpl+": "+bad+" schlechte");
+    say(`Stufe 3 ${tpl}: ${n} Aufgaben, fehlerhaft ${bad}, Notlösung ${degen}, Su<0 in ${klemm}, mittl. Versuche ${(attempts/n).toFixed(2)}`);
+    // invers
+    let nI=0,badI=0,unl=0,plus=0,minus=0,degI=0;
+    for(let k=0;k<200;k++){
+      const seed=996+6*k+idx,t=genTask(seed,"i");nI++;if(t.degenerate)degI++;
+      const x=t.links.find(l=>l.id===t.xid);
+      let good=t.ok;
+      const r2=inv(t.links,t.xid,t.req);
+      if(t.unl){
+        unl++;
+        const Tk=r2.Tk;
+        good=good&&!r2.solvable&&(t.req.So-t.req.Su)<Tk&&(t.req.So-t.req.Su)>=20;
+      }else{
+        const [mn,mx]=corners(t.links);
+        good=good&&r2.solvable&&mn===t.req.Su&&mx===t.req.So&&x.N+x.o===r2.Xo&&x.N+x.u===r2.Xu&&r2.Xu>0;
+        good=good&&(t.req.So-t.req.Su)===r2.Tk+(r2.Xo-r2.Xu);
+      }
+      if(x.sign>0)plus++;else minus++;
+      if(TPL[tpl].spiel&&t.req.So>1000)good=false;
+      if(!good){badI++;if(badI<4)say("  schlechte Umkehraufgabe "+tpl+" Seed "+seed)}
+    }
+    ok(badI===0,"invers "+tpl+": "+badI+" schlechte");
+    say(`Stufe 4 ${tpl}: ${nI} Aufgaben, fehlerhaft ${badI}, Notlösung ${degI}, unlösbar ${unl}, X vergrößernd ${plus}, verkleinernd ${minus}`);
+  });
+
+  // ---- Oberfläche durchspielen: Stufe 2 ----
+  S2T.forEach((t,ti)=>{
+    S2.ti=ti;const st=s2st(ti);st.step=0;const steps=s2steps(t);let good=true;
+    const c=t.mode==="d"?calc(t.links):null,rr=t.mode==="i"?t.r:null;
+    for(const id of steps){
+      const D=s2defs(t,st);
+      t.links.forEach(l=>st.roles[l.id]=l.sign>0?"+":"-");
+      st.eq=eqOptions(t).findIndex(o=>o.ok);
+      st.fo={};st.fu={};t.links.forEach(l=>{st.fo[l.id]=l.sign>0?"o":"u";st.fu[l.id]=l.sign>0?"u":"o"});
+      if(c){st.sn=fm(c.SN);st.so=fm(c.So);st.su=fm(c.Su);st.ts=fm(c.TS);st.bew=c.Su>0?0:1}
+      if(rr){st.tx=fm(rr.TX);st.erf=rr.solvable?0:1;st.xf=rr.x.sign>0?0:1;st.xo=fm(rr.Xo);st.xu=fm(rr.Xu);st.ausw=[0,1];
+        const N=Math.round(rr.Xu/1000)*1000;st.en=fm(N);st.eo=fm(rr.Xo-N);st.eu=fm(rr.Xu-N)}
+      const res=D[id].check();
+      if(!res.ok){good=false;say("  Stufe 2 Aufgabe "+ti+" Schritt "+id+" abgelehnt: "+res.html)}
+      st.step++;
+    }
+    ok(good,"Stufe 2 Aufgabe "+ti);
+    s2render();
+    ok(/Aufgabe geschafft/.test($("s2-body").textContent),"Stufe 2 Abschluss "+ti);
+  });
+  say("Stufe 2: alle 6 Aufgaben mit richtigen Antworten durchgespielt");
+  // falsche Antworten liefern Hinweise
+  {
+    const t=S2T[2],st=s2st(2),c=calc(t.links),dc=dCands(t.links,c);
+    st.roles={};const D=s2defs(t,st);
+    st.fo={};t.links.forEach(l=>st.fo[l.id]="o");
+    ok(/klein/.test(D.fo.check().html),"Hinweis F2 Stufe 2");
+    st.so=fm(dc.so.find(x=>x.code==="F3").v);ok(/vertauscht/.test(D.so.check().html),"Hinweis F3");
+    st.ts=fm(dc.ts[0].v);ok(/addiert/.test(D.ts.check().html),"Hinweis F4");
+    st.so="0,529";ok(/0,01 mm genau/.test(D.so.check().html),"Hinweis Genauigkeit");
+    const t5=S2T[4],s5=s2st(4),D5=s2defs(t5,s5);s5.xo=fm(t5.r.Xu);ok(/verkleinernd/.test(D5.xo.check().html),"Hinweis F5 Stufe 2");
+    s5.en="30";s5.eo=fm(t5.r.Xo);s5.eu=fm(t5.r.Xu);ok(/Abmaß/.test(D5.en.check().html),"Hinweis F6 Stufe 2");
+  }
+  // ---- Oberfläche: Training Stufe 3 und 4 ----
+  [[TR3,"s3-body","d"],[TR4,"s4-body","i"]].forEach(([Tr,rid,md])=>{
+    const root=$(rid);let alleOk=0,n=0,hinw=0;
+    for(let k=0;k<40;k++){
+      Tr.load(996+6*(k%6)+Math.floor(k/6)+6*Math.floor(k/6)*0+ (k%6===0?0:0));
+      const t=Tr.task;
+      const click=sel=>root.querySelector(sel).click();
+      const setv=(key,v)=>{const el=root.querySelector('input[data-k="'+key+'"]');el.value=v;el.dispatchEvent(new Event("input",{bubbles:true}))};
+      const roles=()=>{t.links.forEach(l=>{const b=root.querySelector('[data-act="role"][data-id="'+l.id+'"]');const want=l.sign>0?"+":"-";let g=0;while(b.dataset.v!==want&&g++<3)b.click()})};
+      roles();
+      if(md==="d"){
+        setv("sn",fm(t.c.SN));setv("so",fm(t.c.So));setv("su",fm(t.c.Su));setv("ts",fm(t.c.TS));
+        if(t.c.Su<0){const rb=root.querySelector('input[data-k="mont"][value="0"]');rb.checked=true;rb.dispatchEvent(new Event("change",{bubbles:true}))}
+        click('[data-act="chk"]');
+      }else if(t.unl){
+        click('[data-act="nein"]');
+        ["0","1"].forEach(v=>{const cb=root.querySelector('input[data-k="ausw"][value="'+v+'"]');cb.checked=true;cb.dispatchEvent(new Event("change",{bubbles:true}))});
+        click('[data-act="chk"]');
+      }else{
+        const x=t.links.find(l=>l.id===t.xid);
+        setv("n",fm(x.N));setv("o",fm(t.r.Xo-x.N));setv("u",fm(t.r.Xu-x.N));click('[data-act="chk"]');
+      }
+      n++;if(/Alles richtig|richtig<\/div>/.test(root.innerHTML)&&Tr.done)alleOk++;else say("  "+rid+" Aufgabe "+t.seed+" nicht als richtig erkannt");
+    }
+    ok(alleOk===n,rid+": "+(n-alleOk)+" Aufgaben nicht erkannt");
+    say(rid+": "+alleOk+" von "+n+" Aufgaben mit richtigen Eingaben als richtig bewertet");
+  });
+  {
+    // Fehlerbilder in der Oberfläche
+    TR3.load(996+6*3+2); // beliebige Aufgabe
+    const t=TR3.task,root=$("s3-body");
+    const setv=(key,v)=>{const el=root.querySelector('input[data-k="'+key+'"]');el.value=v;el.dispatchEvent(new Event("input",{bubbles:true}))};
+    setv("so",fm(t.dc.so.find(x=>x.code==="F2o").v));setv("su",fm(t.dc.su.find(x=>x.code==="F2u").v));setv("ts",fm(t.dc.ts[0].v));setv("sn","");
+    root.querySelector('[data-act="chk"]').click();
+    const txt=root.textContent;
+    ok(/klein/.test(txt)&&/addiert/.test(txt),"Hinweise in Stufe 3 sichtbar");
+    say("Stufe 3: Fehlerbilder F2/F4 liefern Hinweis");
+  }
+  // Eingaberoutine
+  const pc=[["0,25",250],["-0,1",-100],["−0,1",-100],["+0,1",100],[".1",100],["0.30",300],[" 0 ",0],["12 mm",12000]];
+  pc.forEach(([s,v])=>ok(parseMM(s).v===v,"parse "+s));
+  ok(parseMM("0,029").prec===true,"parse prec");ok(parseMM("abc").bad===true,"parse bad");
+  say("Breite: scrollWidth="+document.documentElement.scrollWidth+" innerWidth="+innerWidth);
+  say(fails?`SELFTEST: FAIL (${fails} Fehler)`:"SELFTEST: PASS");
+  const el=$("selftest");el.hidden=false;el.textContent=out.join("\n");
+  document.documentElement.setAttribute("data-selftest",fails?"FAIL":"PASS");
+}
+
+// ---------- Start ----------
+const TR3=makeTrainer("d","s3-body","s3");
+const TR4=makeTrainer("i","s4-body","s4");
+tabsInit();s1Init();s2init();TR3.start();TR4.start();abInit();
+(function(){
+  const q=location.search;
+  if(/[?&]theme=dark/.test(q))document.documentElement.setAttribute("data-theme","dark");
+  if(/[?&]theme=light/.test(q))document.documentElement.setAttribute("data-theme","light");
+  const m=q.match(/[?&]tab=(\d)/);if(m){const b=$("tab-"+m[1]);if(b)b.click()}
+  if(/[?&]open=1/.test(q))document.querySelectorAll("details.info").forEach(d=>d.open=true);
+  const bgm=q.match(/[?&]bg=(B\d)/);
+  if(bgm&&TPL[bgm[1]]){const k=bgm[1];s1Select(k);[TR3,TR4].forEach(Tr=>{Tr.filter=k;Tr.start()});S2.ti=Math.max(0,S2T.findIndex(t=>t.tpl===k));s2render()}
+  if(/[?&]locker=1/.test(q)){S1.range=true;s1SetAll(l=>l.sign>0?l.o:l.u)}
+  if(/[?&](fest|ueber)=1/.test(q)){S1.range=true;s1SetAll(l=>l.sign>0?l.u:l.o)}
+  if(/[?&]ueber=1/.test(q)){ // nur Test: S künstlich negativ setzen
+    const T=TPL[S1.tpl],S=sum(T.links,l=>l.sign*(l.N+S1.dev[l.id])),m=T.links.find(l=>l.sign<0);
+    S1.dev[m.id]+=S+250;s1Update();
+  }
+  if(/[?&]selftest=1/.test(q))selftest();
+})();
+</script>
+</body>
+</html>
