@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toleranzklassen – Labor</title>
+<meta name="description" content="Interaktives Labor: Toleranzklassen nach ISO 286 – Grundabmaß, Toleranzgrad IT, Nennmaßbereich und Korrekturwert Δ einstellen, Toleranzfelder beobachten und Aufträge bearbeiten">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Bohrung: eigenes Blau, Welle: Fachfarbe (Orange).
+     Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
+  :root{--bore:#2F6DB5;--bore-bg:#dce8f6;--bore-ink:#ffffff;--shaft-bg:#fbe9d6}
+  body{--shaft:var(--fach)}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bore:#5BA7E8;--bore-bg:#1f3652;--bore-ink:#15181e;--shaft-bg:#4a3321}}
+  :root[data-theme="dark"]{--bore:#5BA7E8;--bore-bg:#1f3652;--bore-ink:#15181e;--shaft-bg:#4a3321}
+
+  [hidden]{display:none!important}
+  button{touch-action:manipulation}
+  .btn,.btn-2{min-height:40px}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .sub{margin:0 0 12px;color:var(--muted);font-size:.95rem}
+  code{background:var(--soft);border-radius:4px;padding:0 5px}
+  sub{font-size:.75em;line-height:0}
+  .einleitung{margin:0}
+
+  .lab{display:grid;grid-template-columns:minmax(0,350px) minmax(0,1fr);gap:16px}
+  .lab>.card,.two>.card{margin-bottom:0}
+  .lab{margin-bottom:16px}
+  @media (max-width:860px){.lab{grid-template-columns:1fr}.lab>.card{margin-bottom:0}}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media (max-width:860px){.two{grid-template-columns:1fr}}
+
+  fieldset{border:1px solid var(--line);border-radius:10px;padding:10px 12px 10px;margin:0 0 12px;min-width:0}
+  legend{font-weight:700;padding:0 6px}
+  fieldset.b legend{color:var(--bore)} fieldset.w legend{color:var(--shaft)}
+  .lbl{font-size:.92rem;margin:6px 0 4px;color:var(--muted)}
+  .seg{display:flex;flex-wrap:wrap;gap:4px}
+  .seg button{font:inherit;font-weight:600;min-width:42px;min-height:40px;padding:4px 8px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;cursor:pointer}
+  .seg button:hover{background:var(--soft)}
+  fieldset.b .seg button.on{background:var(--bore);border-color:var(--bore);color:var(--bore-ink)}
+  fieldset.w .seg button.on{background:var(--shaft);border-color:var(--shaft);color:var(--fach-ink)}
+  .nrow{display:flex;align-items:center;gap:10px}
+  .nrow input[type=number]{width:84px;min-height:40px;font:inherit;padding:4px 8px;border:2px solid var(--line);border-radius:6px;text-align:center;background:var(--card);color:var(--ink)}
+  input[type=range]{width:100%;accent-color:var(--fach);min-height:32px}
+  .range-info{font-size:.92rem;margin-top:4px}
+  .range-info b{color:var(--fach)}
+
+  .codes{display:flex;gap:10px 28px;flex-wrap:wrap;margin:4px 0 10px}
+  .code{display:flex;align-items:center;font-size:1.7rem;font-variant-numeric:tabular-nums}
+  .code .cap{font-size:.82rem;color:var(--muted);margin-right:8px}
+  .code .tol{display:inline-flex;flex-direction:column;font-size:.88rem;line-height:1.15;margin-left:6px}
+  .code.b .cls{color:var(--bore);font-weight:700} .code.w .cls{color:var(--shaft);font-weight:700}
+
+  svg.dia{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:10px}
+  .forms{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  @media (max-width:640px){.forms{grid-template-columns:1fr}}
+  .fbox{border-radius:10px;padding:10px 12px;font-size:.95rem;font-variant-numeric:tabular-nums}
+  .fbox.b{background:var(--bore-bg)} .fbox.w{background:var(--shaft-bg)}
+  .fbox h3{margin:0 0 6px;font-size:1.15rem}
+  .fbox.b h3{color:var(--bore)} .fbox.w h3{color:var(--shaft)}
+  .fbox div{margin:2px 0}
+  .fbox .note{font-size:.88rem;color:var(--ink);border-top:1px dashed var(--muted);padding-top:4px;margin-top:6px}
+  .delta{background:var(--card);border:1px dashed var(--muted);border-radius:6px;padding:2px 6px;display:inline-block}
+
+  .status{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+  .bar{flex:1;min-width:160px;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar>div{height:100%;width:0;background:var(--fach);transition:width .3s}
+  .score{font-weight:600;white-space:nowrap}
+  .task{border-top:1px solid var(--line);padding:12px 0}
+  .task:first-of-type{border-top:none}
+  .task .q{margin-bottom:8px}
+  .task .q b{color:var(--fach)}
+  .ant{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .task input[type=text],.task select{font:inherit;padding:8px 10px;min-height:44px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);max-width:100%}
+  .task input[type=text]{width:8.5em;text-align:center}
+  .task input.ok,.task select.ok{border-color:var(--ok)}
+  .task input.bad,.task select.bad{border-color:var(--bad)}
+  .rs{font-weight:700;min-width:1.2em;text-align:center;font-size:1.15rem}
+  .rs.ok{color:var(--ok)}.rs.bad{color:var(--bad)}
+  .state{display:inline-block;padding:4px 12px;border-radius:6px;border:2px dashed var(--line);color:var(--muted);font-size:.95rem}
+  .state.ok{border:2px solid var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:600}
+  .msg{margin-top:8px;font-size:.95rem}
+  .msg:empty{display:none}
+  .hbtn{min-height:36px;font-size:.9rem}
+  .done{margin-top:8px;font-weight:600;text-align:center;padding:12px 14px}
+  .done[hidden]{display:none!important}
+
+  #game{display:none}
+  #game.show{display:block}
+  .gbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;font-weight:600}
+  #cv{display:block;width:100%;max-width:520px;margin:0 auto;border-radius:10px;background:var(--soft);touch-action:none;cursor:none;border:1px solid var(--line)}
+
+  #selftest{white-space:pre-wrap;font:12px/1.4 monospace;background:var(--soft);padding:8px;margin:12px 0}
+  @media (max-width:480px){
+    .wrap{padding:12px 12px 40px}
+    .code{font-size:1.45rem}
+    .task input[type=text]{width:7.5em}
+  }
+  @media print{ #game{display:none!important} .fb-hint,.hbtn{display:none!important} svg.dia{border-color:#999} }
+</style>
+</head>
+<body data-fach="me">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Maschinenelemente</a></div>
+    <h1>Toleranzklassen nach ISO 286</h1>
+    <p>Grundabmaß · Toleranzgrad IT · Nennmaßbereich · ca. 15–20 min</p>
+  </header>
+
+  <div class="card">
+    <strong>So arbeiten Sie:</strong> Eine Toleranzklasse wie <b>H7</b> besteht aus einem <b>Buchstaben</b> (Grundabmaß → <em>Lage</em> des Toleranzfeldes zur Nulllinie)
+    und einer <b>Zahl</b> (Toleranzgrad IT → bestimmt zusammen mit dem Nennmaß die Größe des Toleranzfeldes). Stellen Sie Nennmaß, Buchstaben und Toleranzgrad ein und beobachten Sie,
+    wie sich die Toleranzfelder bewegen. Großbuchstaben = Bohrung, Kleinbuchstaben = Welle. Bei K, M, N (bis IT8) und P (bis IT7) kommt zum Grundabmaß ein
+    Korrekturwert <b>Δ</b> hinzu (im Roloff/Matek TB 2-3 als δ bezeichnet). Bearbeiten Sie danach die Aufträge unten.
+  </div>
+
+  <div class="lab">
+    <!-- ============ Einstellungen ============ -->
+    <div class="card">
+      <h2>Einstellungen</h2>
+      <div class="lbl">Nennmaß N (2 … 200 mm)</div>
+      <div class="nrow"><input type="number" id="Nn" min="2" max="200" step="1" value="40" aria-label="Nennmaß in mm"><span>mm</span></div>
+      <input type="range" id="Nr" min="2" max="200" step="1" value="40" aria-label="Nennmaß">
+      <div class="range-info" id="rinfo"></div>
+
+      <fieldset class="b" style="margin-top:12px">
+        <legend>Bohrung (Großbuchstabe)</legend>
+        <div class="lbl">Grundabmaß</div><div class="seg" id="bL"></div>
+        <div class="lbl">Toleranzgrad IT</div><div class="seg" id="bI"></div>
+      </fieldset>
+      <fieldset class="w">
+        <legend>Welle (Kleinbuchstabe)</legend>
+        <div class="lbl">Grundabmaß</div><div class="seg" id="wL"></div>
+        <div class="lbl">Toleranzgrad IT</div><div class="seg" id="wI"></div>
+      </fieldset>
+      <button class="btn-2" id="toStart" type="button">↺ Zurück zu Ø40 H7 / f7</button>
+    </div>
+
+    <!-- ============ Darstellung ============ -->
+    <div class="card">
+      <h2>Toleranzfelder</h2>
+      <div class="codes">
+        <div class="code b"><span class="cap">Bohrung</span>Ø<span id="cNB"></span>&nbsp;<span class="cls" id="cB"></span><span class="tol"><span id="cBo"></span><span id="cBu"></span></span></div>
+        <div class="code w"><span class="cap">Welle</span>Ø<span id="cNW"></span>&nbsp;<span class="cls" id="cW"></span><span class="tol"><span id="cWo"></span><span id="cWu"></span></span></div>
+      </div>
+      <svg class="dia" id="main" viewBox="0 0 520 380" role="img" aria-label="Toleranzfelder von Bohrung und Welle"></svg>
+      <p class="small">Die Skala (in µm) passt sich automatisch an. Die <b>dicke Kante</b> eines Feldes ist das <b>Grundabmaß</b> – die zur Nulllinie nächstgelegene Grenze.</p>
+      <div class="forms">
+        <div class="fbox b"><h3 id="hB">Bohrung</h3><div id="fB"></div></div>
+        <div class="fbox w"><h3 id="hW">Welle</h3><div id="fW"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h2>Übersicht: Lage aller Grundabmaße</h2>
+      <p class="sub">Alle Buchstaben beim aktuellen Nennmaß und Toleranzgrad. Ihre Auswahl ist hervorgehoben.</p>
+      <svg class="dia" id="over" viewBox="0 0 640 320" role="img" aria-label="Übersicht der Grundabmaße"></svg>
+    </div>
+    <div class="card">
+      <h2>Einfluss des Nennmaßes auf IT</h2>
+      <p class="sub">Grundtoleranz IT in µm über dem Nennmaß (Bohrung blau, Welle orange). Der Punkt zeigt Ihr aktuelles Nennmaß.</p>
+      <svg class="dia" id="itc" viewBox="0 0 480 300" role="img" aria-label="Grundtoleranz über Nennmaß"></svg>
+    </div>
+  </div>
+
+  <!-- ============ Aufträge ============ -->
+  <div class="card">
+    <h2>Experimentier-Aufträge</h2>
+    <p class="sub">Abmaße in mm mit Vorzeichen eingeben (z.&nbsp;B. <code>+0,025</code> oder <code>-0,018</code>; Null als <code>0</code>). Die Einheit „mm“ darf am Ende stehen. Bearbeiten Sie die Aufträge der Reihe nach.</p>
+    <div class="status">
+      <div class="bar"><div id="bar"></div></div>
+      <span class="score" id="score"></span>
+      <button class="btn-2 no-print" id="reset" type="button">Alles zurücksetzen</button>
+    </div>
+    <div id="tasks"></div>
+    <div class="fb-ok done" id="done" hidden>Alle Aufträge erledigt. Optional: kurzes Spiel zur Gut-/Ausschussprüfung.</div>
+  </div>
+
+  <div class="card" id="game">
+    <h2>Bonus: Qualitätsprüfer Ø40 H7</h2>
+    <p class="sub">Gemessene Bohrungen fallen vom Band. Fangen Sie nur <b>Gutteile</b> – also Istmaße von <b>40,000 bis 40,025 mm</b>.
+      Ausschuss lassen Sie fallen. Steuerung: Maus, Finger oder Pfeiltasten ← →. Dauer: 45 Sekunden.</p>
+    <div class="gbar"><span id="gInfo">Punkte: 0 · Zeit: 45 s</span><span id="gBest"></span>
+      <button class="btn" id="gStart" type="button">Spiel starten</button></div>
+    <canvas id="cv" width="520" height="440" aria-label="Spielfeld"></canvas>
+  </div>
+
+  <div id="selftest" hidden></div>
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../">Startseite</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+"use strict";
+// ---------- Fehler sichtbar machen (Selbsttest) ----------
+window.onerror=function(msg,src,line){
+  document.documentElement.setAttribute("data-jserr",String(msg)+" @"+line);
+  const el=document.getElementById("selftest");
+  if(el){el.hidden=false;el.textContent+="\nJS-FEHLER: "+msg+" (Zeile "+line+")"}
+};
+
+/* =====================================================================
+   ISO 286-1 – Tabellenwerte (µm) für Nennmaße bis 250 mm
+   ===================================================================== */
+const RANGES = [[0,3],[3,6],[6,10],[10,18],[18,30],[30,50],[50,80],[80,120],[120,180],[180,250]];
+const IT = {
+  5:[4,5,6,8,9,11,13,15,18,20],
+  6:[6,8,9,11,13,16,19,22,25,29],
+  7:[10,12,15,18,21,25,30,35,40,46],
+  8:[14,18,22,27,33,39,46,54,63,72],
+  9:[25,30,36,43,52,62,74,87,100,115],
+  10:[40,48,58,70,84,100,120,140,160,185],
+  11:[60,75,90,110,130,160,190,220,250,290]
+};
+// Grundabmaße Wellen
+const SH_e = [-14,-20,-25,-32,-40,-50,-60,-72,-85,-100];
+const SH_f = [-6,-10,-13,-16,-20,-25,-30,-36,-43,-50];
+const SH_g = [-2,-4,-5,-6,-7,-9,-10,-12,-14,-15];
+const SH_k = [0,1,1,1,2,2,2,3,3,4];          // nur IT4 … IT7, sonst 0
+const SH_m = [2,4,6,7,8,9,11,13,15,17];
+const SH_n = [4,8,10,12,15,17,20,23,27,31];
+const SH_p = [6,12,15,18,22,26,32,37,43,50];
+// Korrekturwert Δ (µm) für IT5 … IT8
+const DELTA = {
+  5:[0,1,2,3,3,4,5,5,6,6],
+  6:[0,3,3,3,4,5,6,7,7,9],
+  7:[0,4,6,7,8,9,11,13,15,17],
+  8:[0,6,7,9,12,14,16,19,23,26]
+};
+const BORES  = ["E","F","G","H","JS","K","M","N","P"];
+const SHAFTS = ["e","f","g","h","js","k","m","n","p"];
+const GRADES = [5,6,7,8,9,10,11];
+const NMIN = 2, NMAX = 200;
+
+const rIdx = N => RANGES.findIndex(([lo,hi]) => N>lo && N<=hi);
+const rText = i => i===0 ? "bis 3 mm" : `über ${RANGES[i][0]} bis ${RANGES[i][1]} mm`;
+const fu = u => u===0 ? "0" : (u>0?"+":"−") + String(Math.abs(u)).replace(".",",");        // µm mit Vorzeichen
+const fmm = u => { if (u===0) return "0"; const d = Math.abs(u)%1 ? 4 : 3;
+  return (u>0?"+":"−") + (Math.abs(u)/1000).toFixed(d).replace(".",","); };            // mm mit Vorzeichen
+
+const ISO_JS = "Nach ISO 286-2 wird bei JS7–JS11/js7–js11 auf gerade µm abgerundet (z. B. Ø40 JS7: ±12 µm statt ±12,5 µm). Roloff/Matek gibt ±IT/2 an.";
+const oddJS = (it,T) => it>=7 && T%2!==0;
+
+/* ---------- Wellen ---------- */
+function shaft(L, it, i){
+  const T = IT[it][i]; let es, ei, fd, lines = [];
+  const tab = {e:SH_e, f:SH_f, g:SH_g}[L];
+  if (tab){ es = tab[i]; ei = es - T; fd="es";
+    lines.push(`Grundabmaß (Tabelle): <b>es = ${fu(es)} µm</b>`, `ei = es − IT = ${fu(es)} − ${T} = <b>${fu(ei)} µm</b>`); }
+  else if (L==="h"){ es = 0; ei = -T; fd="es";
+    lines.push(`Grundabmaß: <b>es = 0</b> (Feld hängt unter der Nulllinie)`, `ei = es − IT = 0 − ${T} = <b>${fu(ei)} µm</b>`); }
+  else if (L==="js"){ es = T/2; ei = -T/2; fd=null;
+    lines.push(`Grundabmaß entfällt – Abmaße = ±IT/2: <b>es = +IT/2 = ${fu(es)} µm</b>`, `<b>ei = −IT/2 = ${fu(ei)} µm</b>`);
+    if (oddJS(it,T)) lines.push(`<span class="note">${ISO_JS}</span>`); }
+  else {
+    if (L==="k"){ ei = (it<=7) ? SH_k[i] : 0;
+      lines.push(`Grundabmaß (Tabelle): <b>ei = ${fu(ei)} µm</b>` + (it>7 ? " (bei k: für IT > 7 gilt ei = 0)" : "")); }
+    else { ei = {m:SH_m, n:SH_n, p:SH_p}[L][i]; lines.push(`Grundabmaß (Tabelle): <b>ei = ${fu(ei)} µm</b>`); }
+    es = ei + T; fd="ei";
+    lines.push(`es = ei + IT = ${fu(ei)} + ${T} = <b>${fu(es)} µm</b>`);
+  }
+  return {o:es, u:ei, fd, T, lines};
+}
+/* ---------- Bohrungen ---------- */
+function bore(L, it, i){
+  const T = IT[it][i]; let ES, EI, fd, lines = [];
+  if (L==="E"||L==="F"||L==="G"){ EI = -({E:SH_e,F:SH_f,G:SH_g}[L])[i]; ES = EI + T; fd="EI";
+    lines.push(`Grundabmaß (Tabelle): <b>EI = ${fu(EI)} µm</b> (= −es der Welle ${L.toLowerCase()})`, `ES = EI + IT = ${fu(EI)} + ${T} = <b>${fu(ES)} µm</b>`); }
+  else if (L==="H"){ EI = 0; ES = T; fd="EI";
+    lines.push(`Grundabmaß: <b>EI = 0</b> (Feld liegt auf der Nulllinie auf)`, `ES = EI + IT = 0 + ${T} = <b>${fu(ES)} µm</b>`); }
+  else if (L==="JS"){ ES = T/2; EI = -T/2; fd=null;
+    lines.push(`Grundabmaß entfällt – Abmaße = ±IT/2: <b>ES = +IT/2 = ${fu(ES)} µm</b>`, `<b>EI = −IT/2 = ${fu(EI)} µm</b>`);
+    if (oddJS(it,T)) lines.push(`<span class="note">${ISO_JS}</span>`); }
+  else {
+    fd = "ES";
+    const limit = (L==="P") ? 7 : 8;                     // Δ gilt: K, M, N bis IT8 · P bis IT7
+    const base = {K:-SH_k[i], M:-SH_m[i], N:-SH_n[i], P:-SH_p[i]}[L];
+    if (it <= limit){
+      const d = DELTA[it][i]; ES = base + d;
+      lines.push(`Grundabmaß: <b>ES = ${fu(base)} µm + Δ</b>`,
+        `<span class="delta">Δ = ${d} µm</span> (IT${it}, Bereich ${rText(i)})`,
+        `ES = ${fu(base)} + ${d} = <b>${fu(ES)} µm</b>`);
+    } else {
+      if (L==="K") ES = 0; else if (L==="N") ES = (i===0 ? -4 : 0); else ES = base;
+      lines.push(`Grundabmaß: <b>ES = ${fu(ES)} µm</b> – <span class="delta">ohne Δ</span> (Δ nur bis IT${limit})`);
+    }
+    EI = ES - T;
+    lines.push(`EI = ES − IT = ${fu(ES)} − ${T} = <b>${fu(EI)} µm</b>`);
+  }
+  return {o:ES, u:EI, fd, T, lines};
+}
+
+/* =====================================================================
+   Zustand
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const START = {N:40, bL:"H", bI:7, wL:"f", wI:7};
+let S = {...START};
+
+function buildSeg(id, list, key){
+  const box = $(id); box.innerHTML = "";
+  list.forEach(v=>{
+    const b = document.createElement("button"); b.type="button";
+    b.textContent = (key==="bI"||key==="wI") ? "IT"+v : v; b.dataset.v = v;
+    b.onclick = ()=>{ S[key] = (key==="bI"||key==="wI") ? +v : v; update(); };
+    box.appendChild(b);
+  });
+}
+buildSeg("bL", BORES, "bL"); buildSeg("bI", GRADES, "bI");
+buildSeg("wL", SHAFTS, "wL"); buildSeg("wI", GRADES, "wI");
+const setN = v => { v = Math.round(+v); if (v>=NMIN && v<=NMAX){ S.N = v; update(); } };
+$("Nr").addEventListener("input", e=>setN(e.target.value));
+$("Nn").addEventListener("input", e=>setN(e.target.value));
+$("Nn").addEventListener("blur", ()=>{ $("Nn").value = S.N; });
+$("toStart").onclick = ()=>{ S = {...START}; update(); };
+
+/* =====================================================================
+   Animation: Zielwerte → angezeigte Werte (weiches Nachführen)
+   ===================================================================== */
+let TGT = {}, DSP = null, animating = false, cur = null;
+function targets(){
+  const i = rIdx(S.N), B = bore(S.bL,S.bI,i), W = shaft(S.wL,S.wI,i);
+  const t = {Bo:B.o, Bu:B.u, Wo:W.o, Wu:W.u};
+  t.range = Math.max(20, Math.abs(B.o), Math.abs(B.u), Math.abs(W.o), Math.abs(W.u)) * 1.18;
+  let om = 20;
+  BORES.forEach(L=>{ const x = bore(L,S.bI,i); t["oB"+L+"o"]=x.o; t["oB"+L+"u"]=x.u; om=Math.max(om,Math.abs(x.o),Math.abs(x.u)); });
+  SHAFTS.forEach(L=>{ const x = shaft(L,S.wI,i); t["oW"+L+"o"]=x.o; t["oW"+L+"u"]=x.u; om=Math.max(om,Math.abs(x.o),Math.abs(x.u)); });
+  t.orange = om*1.12;
+  t.nx = S.N; t.itB = B.T; t.itW = W.T;
+  t.ymax = Math.max(IT[S.bI][9], IT[S.wI][9]) * 1.1;
+  return {t, i, B, W};
+}
+function update(){
+  cur = targets(); TGT = cur.t;
+  if (!DSP) DSP = {...TGT};
+  // Bedienelemente
+  $("Nr").value = S.N; if (document.activeElement !== $("Nn")) $("Nn").value = S.N;
+  [["bL","bL"],["bI","bI"],["wL","wL"],["wI","wI"]].forEach(([id,k])=>
+    [...$(id).children].forEach(b=>{ const on = String(S[k])===b.dataset.v; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); }));
+  $("rinfo").innerHTML = `Nennmaßbereich: <b>${rText(cur.i)}</b>`;
+  // Kurzzeichen & Formeln
+  const {B,W} = cur;
+  $("cNB").textContent = $("cNW").textContent = S.N;
+  $("cB").textContent = S.bL+S.bI; $("cW").textContent = S.wL+S.wI;
+  $("cBo").textContent = fmm(B.o); $("cBu").textContent = fmm(B.u);
+  $("cWo").textContent = fmm(W.o); $("cWu").textContent = fmm(W.u);
+  $("hB").textContent = `Bohrung Ø${S.N} ${S.bL}${S.bI}`;
+  $("hW").textContent = `Welle Ø${S.N} ${S.wL}${S.wI}`;
+  const note = l => l.startsWith('<span class="note">') ? `<div class="note">${l.replace(/<\/?span[^>]*>/g,"")}</div>` : `<div>${l}</div>`;
+  $("fB").innerHTML = `<div>IT${S.bI} (${rText(cur.i)}) = <b>${B.T} µm</b></div>` + B.lines.map(note).join("")
+    + `<div>→ Ø${S.N} ${S.bL}${S.bI} = ${S.N} <b>${fmm(B.o)} / ${fmm(B.u)}</b> mm</div>`;
+  $("fW").innerHTML = `<div>IT${S.wI} (${rText(cur.i)}) = <b>${W.T} µm</b></div>` + W.lines.map(note).join("")
+    + `<div>→ Ø${S.N} ${S.wL}${S.wI} = ${S.N} <b>${fmm(W.o)} / ${fmm(W.u)}</b> mm</div>`;
+  if (!animating){ animating = true; requestAnimationFrame(tick); }
+  checkStates();
+}
+let lastT = 0;
+function tick(now){
+  const dt = lastT ? Math.min(50, now-lastT) : 16; lastT = now;
+  const f = 1 - Math.pow(0.001, dt/450);          // ca. 0,45 s bis zum Ziel
+  let moving = false;
+  for (const k in TGT){
+    if (DSP[k]===undefined){ DSP[k]=TGT[k]; continue; }
+    const d = TGT[k]-DSP[k];
+    if (Math.abs(d) > 0.02){ DSP[k] += d*f; moving = true; } else DSP[k] = TGT[k];
+  }
+  drawMain(); drawOver(); drawIT();
+  if (moving) requestAnimationFrame(tick); else { animating = false; lastT = 0; }
+}
+window.addEventListener("resize", ()=>{ if (cur && DSP) drawOver(); });
+
+/* =====================================================================
+   Zeichnen (alle Farben über CSS-Variablen, damit hell/dunkel stimmt)
+   ===================================================================== */
+const CB="var(--bore)", CW="var(--shaft)", CN="var(--ink)", CM="var(--muted)";
+const txt = (x,y,s,c,a="start",w=600,fs=13,halo=false) => `<text x="${x}" y="${y}" style="fill:${c}${halo?";paint-order:stroke;stroke:var(--card);stroke-width:4px;stroke-linejoin:round":""}" font-size="${fs}" font-weight="${w}" text-anchor="${a}" dominant-baseline="middle">${s}</text>`;
+function niceStep(r){ const raw = r/3, p = Math.pow(10, Math.floor(Math.log10(raw))); const m = raw/p;
+  return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p; }
+const MARK = (k,c) => `<marker id="m${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" style="fill:${c}"/></marker>`;
+
+function drawMain(){
+  const rw = $("main").getBoundingClientRect().width, nar = rw>0 && rw<440;
+  const P = nar ? {vb:350,g0:40,g1:346,bx:92,sx:238,w:68,bc:126,sc:272} : {vb:520,g0:56,g1:512,bx:130,sx:360,w:96,bc:178,sc:408};
+  $("main").setAttribute("viewBox", `0 0 ${P.vb} 380`);
+  const H0 = 190, half = 165, k = half/DSP.range, y = u => H0 - u*k;
+  let s = `<defs>${MARK("B",CB)+MARK("W",CW)}</defs>`;
+  const st = niceStep(TGT.range);
+  for (let v = -Math.floor(DSP.range/st)*st; v <= DSP.range; v += st){
+    if (Math.abs(v) < 1e-9) continue;
+    s += `<line x1="${P.g0}" y1="${y(v)}" x2="${P.g1}" y2="${y(v)}" style="stroke:var(--line)"/>` + txt(P.g0-6, y(v), fu(Math.round(v)), CM, "end", 500, 12);
+  }
+  s += txt(8, 14, "µm", CM, "start", 600, 12);
+  s += `<line x1="${P.g0}" y1="${H0}" x2="${P.g1}" y2="${H0}" style="stroke:${CN}" stroke-width="1.5" stroke-dasharray="10 4 2 4"/>`;
+  s += txt(P.g0-6, H0, "0", CN, "end", 600, 13) + (nar ? txt(P.g0+3, H0+13, "Nulllinie", CN, "start", 600, 12, true) : txt(P.g1-2, H0-11, "Nulllinie", CN, "end", 600, 13, true));
+  const field = (x, w, o, u, col, mk, bg, fd, name, T) => {
+    let r = `<rect x="${x}" y="${y(o)}" width="${w}" height="${Math.max(1,y(u)-y(o))}" style="fill:${bg};stroke:${col}" stroke-width="2" rx="2"/>`;
+    if (fd){ const yy = fd.o ? y(o) : y(u);
+      r += `<line x1="${x-6}" y1="${yy}" x2="${x+w+6}" y2="${yy}" style="stroke:${col}" stroke-width="5" stroke-linecap="round"/>`;
+      if (Math.abs(yy-H0) > 3) r += `<line x1="${x+w+22}" y1="${H0}" x2="${x+w+22}" y2="${yy}" style="stroke:${col}" stroke-width="1.6" marker-end="url(#m${mk})"/>`;
+      r += txt(x+w+28, (H0+yy)/2 + (Math.abs(yy-H0)<14 ? (fd.o?-12:12) : 0), fd.label, col, "start", 700, 14);
+    }
+    const h = y(u)-y(o);
+    if (h > 16) r += `<line x1="${x-14}" y1="${y(o)}" x2="${x-14}" y2="${y(u)}" style="stroke:${col}" stroke-width="1.4" marker-end="url(#m${mk})" marker-start="url(#m${mk})"/>`;
+    r += txt(x-20, (y(o)+y(u))/2, `IT = ${T}`, col, "end", 600, 12, true);
+    r += txt(x+w/2, (y(o)+y(u))/2, name, col, "middle", 800, h>22?20:13);
+    return r;
+  };
+  const Bf = cur.B.fd ? {o: cur.B.fd==="ES", label: cur.B.fd} : null;
+  const Wf = cur.W.fd ? {o: cur.W.fd==="es", label: cur.W.fd} : null;
+  s += field(P.bx, P.w, DSP.Bo, DSP.Bu, CB, "B", "var(--bore-bg)", Bf, S.bL+S.bI, cur.B.T);
+  s += field(P.sx, P.w, DSP.Wo, DSP.Wu, CW, "W", "var(--shaft-bg)", Wf, S.wL+S.wI, cur.W.T);
+  s += txt(P.bc, 368, "Bohrung", CB, "middle", 700, 14) + txt(P.sc, 368, "Welle", CW, "middle", 700, 14);
+  $("main").innerHTML = s;
+}
+
+function drawOver(){
+  const svg = $("over"), wide = svg.getBoundingClientRect().width >= 440 || svg.getBoundingClientRect().width === 0;
+  const half = wide ? 108 : 66, k = half/DSP.orange;
+  let s = "", vb;
+  const panel = (x0, sp, bw, yOff, H0, lyr, list, pre, col, bg, sel, title) => {
+    const y = u => yOff + H0 - u*k;
+    s += txt(x0, yOff+16, title, col, "start", 700, wide?16:13);
+    s += `<line x1="${x0-8}" y1="${yOff+H0}" x2="${x0+(list.length-1)*sp+bw+8}" y2="${yOff+H0}" style="stroke:${CN}" stroke-width="1.3" stroke-dasharray="10 4 2 4"/>`;
+    list.forEach((L,j)=>{
+      const o = DSP["o"+pre+L+"o"], u = DSP["o"+pre+L+"u"], on = L===sel, x = x0+j*sp;
+      const top = y(o), h = Math.max(1.5, y(u)-y(o));
+      s += `<rect x="${x}" y="${top}" width="${bw}" height="${h}" style="fill:${on?col:bg};stroke:${col}" stroke-width="${on?2.5:1.2}" rx="2"/>`;
+      s += txt(x+bw/2, yOff+lyr, L, col, "middle", on?800:600, wide?(on?20:17):(on?16:14));
+    });
+  };
+  if (wide){
+    vb = "0 0 640 330";
+    panel(16, 33, 24, 0, 150, 292, BORES, "B", CB, "var(--bore-bg)", S.bL, `Bohrungen IT${S.bI}`);
+    s += `<line x1="324" y1="24" x2="324" y2="302" style="stroke:var(--line)" stroke-dasharray="4 4"/>`;
+    panel(342, 33, 24, 0, 150, 292, SHAFTS, "W", CW, "var(--shaft-bg)", S.wL, `Wellen IT${S.wI}`);
+    s += txt(320, 320, `Ø${S.N} · Bereich ${rText(cur.i)} · Nulllinie gestrichelt`, CM, "middle", 500, 15);
+  } else {
+    vb = "0 0 360 440";
+    panel(22, 36, 26, 0, 100, 188, BORES, "B", CB, "var(--bore-bg)", S.bL, `Bohrungen IT${S.bI}`);
+    panel(22, 36, 26, 208, 100, 188, SHAFTS, "W", CW, "var(--shaft-bg)", S.wL, `Wellen IT${S.wI}`);
+    s += txt(180, 428, `Ø${S.N} · Bereich ${rText(cur.i)}`, CM, "middle", 500, 12);
+  }
+  svg.setAttribute("viewBox", vb);
+  svg.innerHTML = s;
+}
+
+function drawIT(){
+  const x0=44, x1=468, yb=262, yt=24, X = n => x0 + n/200*(x1-x0), Y = u => yb - u/DSP.ymax*(yb-yt);
+  let s = "";
+  const st = niceStep(TGT.ymax);
+  for (let v=st; v<=DSP.ymax; v+=st) s += `<line x1="${x0}" y1="${Y(v)}" x2="${x1}" y2="${Y(v)}" style="stroke:var(--line)"/>` + txt(x0-6, Y(v), v, CM, "end", 500, 12);
+  [0,50,100,150,200].forEach(n=> s += `<line x1="${X(n)}" y1="${yb}" x2="${X(n)}" y2="${yb+5}" style="stroke:${CM}"/>` + txt(X(n), yb+17, n, CM, "middle", 500, 12));
+  s += `<line x1="${x0}" y1="${yb}" x2="${x1}" y2="${yb}" style="stroke:${CM}"/><line x1="${x0}" y1="${yt-6}" x2="${x0}" y2="${yb}" style="stroke:${CM}"/>`;
+  s += txt(x1, yb+35, "Nennmaß in mm", CM, "end", 500, 12) + txt(x0-6, yt-14, "IT in µm", CM, "start", 500, 12);
+  // Bereichsgrenzen
+  RANGES.forEach(([lo])=>{ if (lo>0 && lo<200) s += `<line x1="${X(lo)}" y1="${yt}" x2="${X(lo)}" y2="${yb}" style="stroke:var(--line)" stroke-dasharray="2 3"/>`; });
+  const step = (g, col, dash) => {
+    let d = ""; RANGES.forEach(([lo,hi],i)=>{ if (lo>=200) return; const h = Math.min(hi,200);
+      d += (d?"L":"M") + `${X(lo)},${Y(IT[g][i])} L${X(h)},${Y(IT[g][i])} `; });
+    return `<path d="${d}" fill="none" style="stroke:${col}" stroke-width="2.5" ${dash?'stroke-dasharray="7 5"':""}/>`;
+  };
+  s += step(S.bI, CB, false);
+  s += step(S.wI, CW, S.wI===S.bI);
+  // aktueller Bereich hervorheben
+  const [lo,hi] = RANGES[cur.i];
+  s += `<rect x="${X(lo)}" y="${yt}" width="${X(Math.min(hi,200))-X(lo)}" height="${yb-yt}" style="fill:var(--fach)" opacity=".14"/>`;
+  s += `<line x1="${X(DSP.nx)}" y1="${yt}" x2="${X(DSP.nx)}" y2="${yb}" style="stroke:${CN}" stroke-dasharray="3 3"/>`;
+  s += `<circle cx="${X(DSP.nx)}" cy="${Y(DSP.itB)}" r="6" style="fill:${CB};stroke:var(--card)" stroke-width="2"/>`;
+  s += `<circle cx="${X(DSP.nx)}" cy="${Y(DSP.itW)}" r="5" style="fill:${CW};stroke:var(--card)" stroke-width="2"/>`;
+  const left = X(DSP.nx) > x1-130, lx = left ? X(DSP.nx)-10 : X(DSP.nx)+10, la = left ? "end" : "start";
+  s += txt(lx, Y(DSP.itB)-14, `IT${S.bI} = ${cur.B.T} µm`, CB, la, 700, 13, true);
+  if (S.wI!==S.bI) s += txt(lx, Y(DSP.itW)+16, `IT${S.wI} = ${cur.W.T} µm`, CW, la, 700, 13, true);
+  $("itc").innerHTML = s;
+}
+
+/* =====================================================================
+   Aufträge
+   ===================================================================== */
+// Eingaben: Minuszeichen (−, –, -), Komma oder Punkt, optionale Einheit am Ende
+function parseNum(str){
+  let t = String(str).trim().replace(/[−–—]/g,"-").replace(/\s+/g,"");
+  let unit = "";
+  const m = t.match(/(mm|[µμ]m|um)$/i);
+  if (m){ unit = m[1].toLowerCase().replace("μ","µ").replace("um","µm"); t = t.slice(0, t.length-m[1].length); }
+  t = t.replace(",",".");
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(t)) return {ok:false};
+  return {ok:true, v:Number(t), plus:t[0]==="+", unit};
+}
+const EPS = 1e-9;
+function checkDev(ans, str){                      // Abmaß in mm, Vorzeichen Pflicht bei positiven Werten
+  if (String(str).trim()==="") return {st:"empty"};
+  const p = parseNum(str);
+  if (!p.ok) return {st:"bad"};
+  const um = Math.round(ans*1000);
+  if (p.unit==="µm" || p.unit==="mm" || p.unit==="")
+    if (Math.abs(p.v - um) < EPS) return {st:"bad", msg:"Der Wert stimmt in µm – bitte in mm angeben."};
+  if (p.unit==="µm") return {st:"bad"};
+  if (Math.abs(p.v - ans) < EPS){
+    if (p.v>0 && !p.plus) return {st:"bad", msg:"Der Betrag stimmt – aber positive Abmaße werden immer mit „+“ angegeben."};
+    return {st:"ok"};
+  }
+  return {st:"bad"};
+}
+function checkNum(ans, str){                      // Zahl in µm; „+“ und Einheit µm/um werden ignoriert
+  if (String(str).trim()==="") return {st:"empty"};
+  const p = parseNum(str);
+  if (!p.ok || p.unit==="mm") return {st:"bad"};
+  return Math.abs(p.v - ans) < EPS ? {st:"ok"} : {st:"bad"};
+}
+
+const TASKS = [
+  { type:"dev", q:"<b>1.</b> Startbeispiel <b>Ø40 H7</b>: Wie groß ist das obere Abmaß ES? (in mm)", ans:0.025,
+    hint:"Lesen Sie ES im blauen Formelkasten ab (in µm) und rechnen Sie in mm um: 25 µm = 0,025 mm. Positive Abmaße bekommen ein „+“." },
+  { type:"sel", q:"<b>2.</b> Was bedeutet der Großbuchstabe <b>H</b> bei einer Bohrung?",
+    opts:["Das Toleranzfeld liegt direkt auf der Nulllinie auf (EI = 0)","Die Bohrung hat keine Toleranz","Das Toleranzfeld liegt symmetrisch zur Nulllinie","H steht für „hohe Genauigkeit“"],
+    ans:"Das Toleranzfeld liegt direkt auf der Nulllinie auf (EI = 0)",
+    hint:"Schauen Sie, wo die dicke Kante (Grundabmaß) des blauen H-Feldes liegt." },
+  { type:"state", q:"<b>3.</b> Stellen Sie die Welle auf <b>h7</b> ein (Nennmaß 40 mm).",
+    cond:()=>S.wL==="h" && S.wI===7 && S.N===40, hint:"Welle: Buchstabe „h“ und Toleranzgrad „IT7“ anklicken." },
+  { type:"sel", q:"<b>4.</b> Vergleichen Sie Ø40 H7 und Ø40 h7. Was stellen Sie fest?",
+    opts:["h7 ist doppelt so groß wie H7","Beide sind gleich groß – H liegt über, h unter der Nulllinie","Beide liegen oberhalb der Nulllinie","H7 und h7 sind identisch"],
+    ans:"Beide sind gleich groß – H liegt über, h unter der Nulllinie",
+    hint:"Vergleichen Sie die Höhe (IT) und die Lage der beiden Felder. Bei h gilt es = 0." },
+  { type:"state", q:"<b>5.</b> Vergrößern Sie bei der Bohrung <b>H</b> den Toleranzgrad auf <b>IT9</b>.",
+    cond:()=>S.bL==="H" && S.bI===9, hint:"Bohrung: „H“ und „IT9“ anklicken und die Animation beobachten." },
+  { type:"sel", q:"<b>6.</b> Was hat sich bei H9 gegenüber H7 verändert?",
+    opts:["Nur EI hat sich verändert","Nur ES hat sich verändert – das Feld wächst nach oben, EI bleibt 0","Beide Abmaße haben sich gleichmäßig verändert","Nichts – nur die Bezeichnung"],
+    ans:"Nur ES hat sich verändert – das Feld wächst nach oben, EI bleibt 0",
+    hint:"Der Buchstabe (Grundabmaß) bestimmt die Lage – der ist gleich geblieben. Welche Kante hat sich bewegt?" },
+  { type:"num", q:"<b>7.</b> Stellen Sie das Nennmaß <b>120 mm</b> ein. Wie groß ist die Grundtoleranz <b>IT7</b> jetzt? (in µm)", ans:35,
+    hint:"Stellen Sie einen Toleranzgrad IT7 ein und lesen Sie im Diagramm „Einfluss des Nennmaßes“ ab. 120 mm gehört zum Bereich über 80 bis 120 mm." },
+  { type:"state", q:"<b>8.</b> Suchen Sie ein <b>anderes</b> Nennmaß als 40 mm, bei dem IT7 <b>genauso groß</b> ist wie bei Ø40 (25 µm).",
+    cond:()=>S.N>30 && S.N<=50 && S.N!==40, hint:"IT hängt nicht vom einzelnen Millimeter ab, sondern vom Nennmaßbereich. In welchem Bereich liegt 40 mm?" },
+  { type:"sel", q:"<b>9.</b> Welche Aussage zum Einfluss des Nennmaßes ist richtig?",
+    opts:["Die Toleranz hängt nur vom Toleranzgrad ab","Die Toleranz wächst mit jedem Millimeter gleichmäßig (linear)","Bei gleichem IT-Grad wächst die Toleranz stufenweise mit dem Nennmaßbereich"],
+    ans:"Bei gleichem IT-Grad wächst die Toleranz stufenweise mit dem Nennmaßbereich",
+    hint:"Betrachten Sie die Treppenform im Diagramm „Einfluss des Nennmaßes“." },
+  { type:"sel", q:"<b>10.</b> Stellen Sie die Welle <b>js6</b> ein. Wie liegt das Toleranzfeld?",
+    opts:["Symmetrisch zur Nulllinie (± IT/2)","Direkt unter der Nulllinie","Vollständig über der Nulllinie"], ans:"Symmetrisch zur Nulllinie (± IT/2)",
+    hint:"Bei js entfällt das Grundabmaß – schauen Sie auf es und ei im Formelkasten." },
+  { type:"state", q:"<b>11.</b> Stellen Sie die Bohrung <b>Ø40 K7</b> ein.",
+    cond:()=>S.N===40 && S.bL==="K" && S.bI===7, hint:"Nennmaß 40 mm, Bohrung „K“ und „IT7“." },
+  { type:"dev", q:"<b>12.</b> Wie groß ist das obere Abmaß ES bei Ø40 K7? (in mm)", ans:0.007,
+    hint:"Bei K bis IT8 setzt sich ES aus dem Grundabmaß und dem Korrekturwert Δ zusammen. Beide Werte stehen im Formelkasten bzw. in Roloff/Matek TB 2-3. Denken Sie an die Umrechnung von µm in mm und an das Vorzeichen." },
+  { type:"sel", q:"<b>13.</b> Stellen Sie nun <b>K9</b> ein. Was passiert mit dem Korrekturwert Δ?",
+    opts:["Δ wird größer, weil IT größer ist","Δ entfällt – er wird bei K, M, N nur bis IT8 addiert","Δ bleibt gleich 9 µm"],
+    ans:"Δ entfällt – er wird bei K, M, N nur bis IT8 addiert",
+    hint:"Schauen Sie in den blauen Formelkasten: Steht dort noch ein Δ?" },
+  { type:"sel", q:"<b>14.</b> Vergleichen Sie in der Übersicht die Bohrung <b>F</b> mit der Welle <b>f</b> (gleicher IT-Grad).",
+    opts:["F und f liegen beide unter der Nulllinie","F ist das Spiegelbild von f an der Nulllinie","F ist immer doppelt so groß wie f"],
+    ans:"F ist das Spiegelbild von f an der Nulllinie",
+    okNote:"Das Spiegelbild gilt für die Buchstaben A–H (EI = −es). Bei K–ZC gilt es wegen Δ nicht exakt.",
+    hint:"Stellen Sie für Bohrung und Welle denselben IT-Grad ein und vergleichen Sie die Lage von F und f in der Übersicht." }
+];
+
+// Prüfung eines Auftrags (ohne DOM)
+function check(t, v){
+  if (t.type==="dev") return checkDev(t.ans, v);
+  if (t.type==="num") return checkNum(t.ans, v);
+  if (t.type==="sel") return v==="" ? {st:"empty"} : (v===t.ans ? {st:"ok"} : {st:"bad"});
+  return {st:"empty"};
+}
+
+let items = [];
+function buildTasks(){
+  const box = $("tasks"); box.innerHTML = ""; items = [];
+  TASKS.forEach(t=>{
+    const d = document.createElement("div"); d.className="task";
+    d.innerHTML = `<div class="q">${t.q}</div>`;
+    const row = document.createElement("div"); row.className = "ant";
+    const msg = document.createElement("div"); msg.className = "msg"; msg.setAttribute("aria-live","polite");
+    const it = {t, msg, done:false, wrong:false, specific:null, rs:null};
+    if (t.type==="state"){
+      const st = document.createElement("span"); st.className="state"; st.textContent="noch nicht eingestellt";
+      const hb = document.createElement("button"); hb.className="btn-2 hbtn no-print"; hb.type="button"; hb.textContent="Tipp anzeigen";
+      hb.onclick = ()=>{ msg.innerHTML = msg.innerHTML ? "" : `<div class="fb-hint"><b>Tipp:</b> ${t.hint}</div>`; };
+      row.append(st, hb); it.el = st;
+    } else {
+      const rs = document.createElement("span"); rs.className = "rs"; rs.setAttribute("aria-hidden","true"); it.rs = rs;
+      if (t.type==="sel"){
+        const sel = document.createElement("select"); sel.setAttribute("aria-label","Antwort auswählen");
+        ["– bitte wählen –",...t.opts].forEach((o,i)=>{ const op=document.createElement("option"); op.value=i?o:""; op.textContent=o; sel.appendChild(op); });
+        sel.addEventListener("change",()=>judge(it, sel.value, true));
+        row.append(sel, rs); it.el = sel;
+      } else {
+        const inp = document.createElement("input"); inp.type="text"; inp.inputMode="text"; inp.autocomplete="off";
+        inp.setAttribute("aria-label","Antwort");
+        const unit = document.createElement("span"); unit.textContent = t.type==="num" ? "µm" : "mm";
+        inp.addEventListener("input",()=>judge(it, inp.value, false));
+        inp.addEventListener("blur",()=>judge(it, inp.value, true));
+        inp.addEventListener("keydown",e=>{ if(e.key==="Enter") judge(it, inp.value, true); });
+        row.append(inp, unit, rs); it.el = inp;
+      }
+    }
+    d.append(row, msg); box.appendChild(d); items.push(it);
+  });
+  checkStates(); progress();
+}
+function showMsg(it){
+  const t = it.t;
+  if (it.done){ it.msg.innerHTML = t.okNote ? `<div class="fb-ok">${t.okNote}</div>` : ""; }
+  else if (it.wrong){
+    it.msg.innerHTML = it.specific ? `<div class="fb-bad">${it.specific}</div>` : `<div class="fb-hint"><b>Tipp:</b> ${t.hint}</div>`;
+  } else it.msg.innerHTML = "";
+}
+function judge(it, v, showWrong){
+  it.el.classList.remove("ok","bad"); it.rs.className = "rs"; it.rs.textContent = "";
+  const r = check(it.t, v); it.specific = r.msg || null;
+  if (r.st==="empty"){ it.done=false; it.wrong=false; }
+  else if (r.st==="ok"){ it.done=true; it.wrong=false; it.el.classList.add("ok"); it.rs.classList.add("ok"); it.rs.textContent="✓"; }
+  else { it.done=false; if(showWrong || r.msg) it.wrong=true; if(it.wrong){ it.el.classList.add("bad"); it.rs.classList.add("bad"); it.rs.textContent="✗"; } }
+  showMsg(it);
+  progress();
+}
+function checkStates(){
+  items.forEach(it=>{
+    if (it.t.type!=="state" || it.done) return;
+    if (it.t.cond()){ it.done=true; it.el.classList.add("ok"); it.el.textContent="✓ erfüllt"; it.msg.innerHTML=""; }
+  });
+  progress();
+}
+let FORCE_GAME = false;
+function progress(){
+  if (!items.length) return;
+  const c = items.filter(i=>i.done).length, n = items.length, all = c===n;
+  $("score").textContent = `${c} / ${n} erledigt`;
+  $("bar").style.width = (c/n*100)+"%";
+  $("done").hidden = !all;
+  const g = $("game");
+  if (all && !g.classList.contains("show")){ g.classList.add("show"); drawIdle(); setTimeout(()=>g.scrollIntoView({behavior:"smooth",block:"start"}),200); }
+  if (!all && !FORCE_GAME){ g.classList.remove("show"); stopGame(); }
+}
+$("reset").addEventListener("click",()=>{ S = {...START}; buildTasks(); update(); window.scrollTo({top:0,behavior:"smooth"}); });
+
+/* =====================================================================
+   Bonus-Spiel: Qualitätsprüfer Ø40 H7 (40,000 … 40,025 mm)
+   ===================================================================== */
+const cv = $("cv"), ctx = cv.getContext("2d"), GW = cv.width, GH = cv.height;
+let game = null, best = 0, raf = 0;
+const cssv = n => getComputedStyle(document.body).getPropertyValue(n).trim();
+function pal(){ return {bg:cssv("--soft"), line:cssv("--line"), card:cssv("--card"), ink:cssv("--ink"), muted:cssv("--muted"),
+  fach:cssv("--fach"), fachInk:cssv("--fach-ink"), ok:cssv("--ok"), bad:cssv("--bad")}; }
+function stopGame(){ cancelAnimationFrame(raf); if (game) game.over = true; }
+function spawn(g, el){
+  const good = Math.random() < 0.5; let um;
+  if (good) um = Math.floor(Math.random()*26);                         // 0 … 25 µm
+  else um = Math.random()<0.5 ? -1 - Math.floor(Math.random()*18) : 26 + Math.floor(Math.random()*18);
+  g.items.push({um, good, x: 50+Math.random()*(GW-100), y:-20, s: 1.3 + el/45000*2.2 + Math.random()*0.7});
+}
+function startGame(){
+  stopGame(); game = {t0:performance.now(), dur:45000, score:0, items:[], spawn:0, px:GW/2, keys:{}, fx:[], over:false};
+  $("gStart").textContent = "Neu starten";
+  let last = performance.now();
+  const loop = now => {
+    const g = game; if (!g || g.over) return;
+    const dt = Math.min(50, now-last)/16.67; last = now;
+    const el = now-g.t0, left = Math.max(0, g.dur-el);
+    if (g.keys.ArrowLeft) g.px -= 7*dt; if (g.keys.ArrowRight) g.px += 7*dt;
+    g.px = Math.max(55, Math.min(GW-55, g.px));
+    g.spawn -= dt*16.67; if (g.spawn<=0){ spawn(g, el); g.spawn = Math.max(450, 950 - el/45000*450); }
+    const by = GH-34;
+    g.items.forEach(it=>{ it.y += it.s*dt;
+      if (!it.hit && it.y>by-14 && it.y<by+8 && Math.abs(it.x-g.px)<58){ it.hit = true; g.score += it.good?1:-1;
+        g.fx.push({x:it.x, y:by-30, t: it.good?"✓ +1 Gutteil":"✗ −1 Ausschuss", good:it.good, life:45}); } });
+    g.items = g.items.filter(it=>!it.hit && it.y<GH+20);
+    g.fx.forEach(f=>{ f.y -= .8*dt; f.life -= dt; }); g.fx = g.fx.filter(f=>f.life>0);
+    drawGame(g);
+    $("gInfo").textContent = `Punkte: ${g.score} · Zeit: ${Math.ceil(left/1000)} s`;
+    if (left<=0){ endGame(g); return; }
+    raf = requestAnimationFrame(loop);
+  };
+  raf = requestAnimationFrame(loop);
+}
+function gBg(P){ ctx.fillStyle=P.bg; ctx.fillRect(0,0,GW,GH); ctx.strokeStyle=P.line; ctx.lineWidth=1; ctx.globalAlpha=.6;
+  for(let x=0;x<GW;x+=26){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,GH);ctx.stroke();}
+  for(let y=0;y<GH;y+=26){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(GW,y);ctx.stroke();}
+  ctx.globalAlpha=1; }
+function drawGame(g){
+  const P = pal(); gBg(P); ctx.textAlign="center"; ctx.textBaseline="middle";
+  g.items.forEach(it=>{ ctx.fillStyle=P.card; ctx.strokeStyle=P.muted; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(it.x-40,it.y-16,80,32,8) : ctx.rect(it.x-40,it.y-16,80,32); ctx.fill(); ctx.stroke();
+    ctx.fillStyle=P.ink; ctx.font="bold 16px system-ui,sans-serif";
+    ctx.fillText((40+it.um/1000).toFixed(3).replace(".",","), it.x, it.y+1); });
+  const by = GH-34; ctx.fillStyle=P.fach;
+  ctx.beginPath(); ctx.moveTo(g.px-56,by-12); ctx.lineTo(g.px+56,by-12); ctx.lineTo(g.px+42,by+14); ctx.lineTo(g.px-42,by+14); ctx.closePath(); ctx.fill();
+  ctx.fillStyle=P.fachInk; ctx.font="bold 13px system-ui,sans-serif"; ctx.fillText("Ø40 H7", g.px, by+1);
+  g.fx.forEach(f=>{ ctx.globalAlpha=Math.max(0,f.life/45); ctx.fillStyle=f.good?P.ok:P.bad;
+    ctx.font="bold 18px system-ui,sans-serif"; ctx.fillText(f.t, f.x, f.y); ctx.globalAlpha=1; });
+}
+function endGame(g){
+  const P = pal();
+  g.over = true; if (g.score>best) best = g.score; $("gBest").textContent = `Bestwert: ${best}`;
+  ctx.globalAlpha=.88; ctx.fillStyle=P.card; ctx.fillRect(0,0,GW,GH); ctx.globalAlpha=1; ctx.fillStyle=P.ink; ctx.textAlign="center";
+  ctx.font="bold 30px system-ui,sans-serif"; ctx.fillText("Schicht beendet", GW/2, GH/2-30);
+  ctx.font="22px system-ui,sans-serif"; ctx.fillText(`Ihre Punkte: ${g.score}`, GW/2, GH/2+8);
+  ctx.font="16px system-ui,sans-serif"; ctx.fillStyle=P.muted;
+  ctx.fillText(g.score>=15 ? "Ausschuss zuverlässig erkannt." : "„Neu starten“ für eine weitere Schicht", GW/2, GH/2+40);
+}
+function drawIdle(){ const P = pal(); gBg(P); ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillStyle=P.ink;
+  ctx.font="bold 26px system-ui,sans-serif"; ctx.fillText("Qualitätsprüfer Ø40 H7", GW/2, GH/2-24);
+  ctx.font="16px system-ui,sans-serif"; ctx.fillStyle=P.muted;
+  ctx.fillText("Gutteile 40,000 … 40,025 fangen: +1 · Ausschuss: −1", GW/2, GH/2+10);
+  ctx.fillText("Klicken Sie auf „Spiel starten“", GW/2, GH/2+36); }
+const px = e => { const r = cv.getBoundingClientRect(); return (e.clientX-r.left)*(GW/r.width); };
+cv.addEventListener("pointermove", e=>{ if(game&&!game.over) game.px = px(e); });
+cv.addEventListener("pointerdown", e=>{ if(game&&!game.over) game.px = px(e); });
+window.addEventListener("keydown", e=>{ if(game&&!game.over&&(e.key==="ArrowLeft"||e.key==="ArrowRight")){ game.keys[e.key]=true; e.preventDefault(); } });
+window.addEventListener("keyup", e=>{ if(game) game.keys[e.key]=false; });
+$("gStart").addEventListener("click", startGame);
+
+/* =====================================================================
+   Selbsttest (nur mit ?selftest=1)
+   ===================================================================== */
+function selftest(){
+  const out = []; let fails = 0, n = 0;
+  const say = s => out.push(s);
+  const ok = (c, msg) => { n++; if (!c){ fails++; say("FEHLER: " + msg); } };
+
+  // ---- Referenz: Funktionen VOR dem Umbau (Zahlenwerte) ----
+  function shaftOld(L, it, i){
+    const T = IT[it][i]; let es, ei, fd;
+    const tab = {e:SH_e, f:SH_f, g:SH_g}[L];
+    if (tab){ es = tab[i]; ei = es - T; fd="es"; }
+    else if (L==="h"){ es = 0; ei = -T; fd="es"; }
+    else if (L==="js"){ es = T/2; ei = -T/2; fd=null; }
+    else { if (L==="k"){ ei = (it<=7) ? SH_k[i] : 0; } else { ei = {m:SH_m, n:SH_n, p:SH_p}[L][i]; } es = ei + T; fd="ei"; }
+    return {o:es, u:ei, fd, T};
+  }
+  function boreOld(L, it, i){
+    const T = IT[it][i]; let ES, EI, fd;
+    if (L==="F"||L==="G"){ EI = -(L==="F"?SH_f:SH_g)[i]; ES = EI + T; fd="EI"; }
+    else if (L==="H"){ EI = 0; ES = T; fd="EI"; }
+    else if (L==="JS"){ ES = T/2; EI = -T/2; fd=null; }
+    else { fd = "ES"; const limit = (L==="P") ? 7 : 8;
+      const base = {K:-SH_k[i], M:-SH_m[i], N:-SH_n[i], P:-SH_p[i]}[L];
+      if (it <= limit){ ES = base + DELTA[it][i]; }
+      else { if (L==="K") ES = 0; else if (L==="N") ES = (i===0 ? -4 : 0); else ES = base; }
+      EI = ES - T; }
+    return {o:ES, u:EI, fd, T};
+  }
+  let cmp = 0;
+  for (const it of GRADES) for (let i=0;i<RANGES.length;i++){
+    for (const L of SHAFTS){ const a = shaft(L,it,i), b = shaftOld(L,it,i); cmp++;
+      ok(a.o===b.o && a.u===b.u && a.fd===b.fd && a.T===b.T, `Welle ${L}${it} Bereich ${i}: neu ${a.o}/${a.u} alt ${b.o}/${b.u}`); }
+    for (const L of BORES){
+      const a = bore(L,it,i); cmp++;
+      if (L==="E"){ const e = shaft("e",it,i);
+        ok(a.u===-e.o && a.o===a.u+IT[it][i] && a.fd==="EI", `Bohrung E${it} Bereich ${i}: EI=${a.u} ES=${a.o}, es(e)=${e.o}`); }
+      else { const b = boreOld(L,it,i);
+        ok(a.o===b.o && a.u===b.u && a.fd===b.fd && a.T===b.T, `Bohrung ${L}${it} Bereich ${i}: neu ${a.o}/${a.u} alt ${b.o}/${b.u}`); }
+    }
+  }
+  say(`(a) Vergleich Alt/Neu: ${cmp} Kombinationen (Buchstabe × IT × Bereich) geprüft`);
+  // Nennmaßbereiche
+  for (let N=NMIN; N<=NMAX; N++){ const i = rIdx(N); ok(i>=0 && N>RANGES[i][0] && N<=RANGES[i][1], "Bereich N="+N); }
+  ok(rIdx(2)===0 && rIdx(3)===0 && rIdx(4)===1 && rIdx(200)===9, "Bereichsgrenzen");
+  // N9–N11 im Bereich bis 3 mm: ES = −4 gilt für N > 1 mm
+  ok(bore("N",9,0).o===-4 && bore("N",11,0).o===-4, "N9/N11 bis 3 mm: ES = −4");
+  // Spiegelbild A–H
+  for (const it of GRADES) for (let i=0;i<10;i++) for (const [B,s] of [["E","e"],["F","f"],["G","g"]]){
+    ok(bore(B,it,i).u===-shaft(s,it,i).o, `Spiegel ${B}/${s}`); }
+  // JS-Hinweis
+  const jsLine = x => x.lines.some(l=>l.includes("gerade µm"));
+  ok(jsLine(shaft("js",7,5)) && jsLine(bore("JS",7,5)), "JS7 Ø40 (IT 25): Hinweis fehlt");
+  ok(!jsLine(shaft("js",7,0)) && !jsLine(bore("JS",8,0)), "JS7 bis 3 (IT 10)/JS8 (IT 14): Hinweis fälschlich");
+  ok(!jsLine(shaft("js",6,4)) && !jsLine(shaft("js",5,1)), "JS5/JS6: kein Hinweis");
+  ok(shaft("js",7,5).o===12.5 && shaft("js",7,5).u===-12.5, "JS7 Ø40 bleibt ±IT/2");
+  ok(shaft("js",7,5).lines[0].includes("Grundabmaß entfällt – Abmaße = ±IT/2") && !shaft("js",7,5).lines[0].includes("kein Grundabmaß"), "JS-Text");
+
+  // ---- (b) Aufträge ----
+  const sv = {...S};
+  const T = TASKS;
+  const cs = (k, v, exp, label) => { const r = check(T[k-1], v); ok(r.st===exp, `Auftrag ${k} Eingabe „${v}“ → ${r.st}, erwartet ${exp} ${label||""}`); return r; };
+  const um = "Der Wert stimmt in µm – bitte in mm angeben.";
+  // Fakten
+  ok(T[0].ans*1000===bore("H",7,5).o, "A1 Lösung = ES(H7 Ø40)");
+  ok(bore("H",7,5).T===shaft("h",7,5).T && bore("H",7,5).u===0 && shaft("h",7,5).o===0, "A2/A4 H/h");
+  ok(bore("H",9,5).u===0 && bore("H",9,5).o===62 && bore("H",7,5).o===25, "A6 H9");
+  ok(IT[7][7]===T[6].ans, "A7 IT7 bei 120 mm");
+  ok(IT[7][rIdx(45)]===25 && IT[7][rIdx(40)]===25, "A8 IT7 Bereich 30–50");
+  ok(shaft("js",6,5).o===-shaft("js",6,5).u, "A10 js6 symmetrisch");
+  ok(Math.round(T[11].ans*1000)===bore("K",7,5).o && bore("K",7,5).lines.some(l=>l.includes("Δ = 9")), "A12 ES K7 Ø40 = Grundabmaß + Δ");
+  ok(!bore("K",9,5).lines.some(l=>/Δ = \d/.test(l)) && bore("K",9,5).lines.some(l=>l.includes("ohne")), "A13 K9 ohne Δ");
+  ok(bore("F",7,5).u===-shaft("f",7,5).o, "A14 F/f");
+  // 1 und 12: dev
+  for (const k of [1,12]){
+    const a = T[k-1].ans, us = Math.round(a*1000);
+    const mm = "+"+String(a).replace(".",","), mp = "+"+String(a);
+    cs(k, mm, "ok"); cs(k, mp, "ok"); cs(k, "+ "+String(a).replace(".",","), "ok"); cs(k, mm+" mm", "ok"); cs(k, mm+"mm", "ok"); cs(k, mm.replace("+","＋").replace("＋","+")+" MM", "ok");
+    let r = cs(k, String(a).replace(".",","), "bad", "(ohne +)"); ok(r.msg && r.msg.includes("„+“"), "noplus-Meldung A"+k);
+    r = cs(k, "+"+us, "bad", "(µm)"); ok(r.msg===um, "µm-Meldung +"+us);
+    r = cs(k, String(us), "bad", "(µm ohne +)"); ok(r.msg===um, "µm-Meldung "+us);
+    r = cs(k, "+"+us+" µm", "bad"); ok(r.msg===um, "µm-Meldung mit Einheit");
+    r = cs(k, "+"+us+" um", "bad"); ok(r.msg===um, "µm-Meldung um");
+    r = cs(k, "+"+us+" mm", "bad"); ok(r.msg===um, "µm-Zahl mit mm");
+    r = cs(k, "+"+String(a*2).replace(".",","), "bad"); ok(!r.msg, "falscher Wert ohne Sondermeldung");
+    cs(k, "-"+String(a).replace(".",","), "bad"); cs(k, "−"+String(a).replace(".",","), "bad"); cs(k, "–"+String(a).replace(".",","), "bad");
+    cs(k, "abc", "bad"); cs(k, "0", "bad"); cs(k, "", "empty"); cs(k, "   ", "empty"); cs(k, "+", "bad");
+  }
+  // Minuszeichen-Varianten im Parser
+  for (const m of ["-","−","–"]){ const p = parseNum(m+"0,018"); ok(p.ok && Math.abs(p.v+0.018)<1e-12, "Parser "+m); }
+  ok(parseNum("+0.025").plus && parseNum("0,025 mm").unit==="mm" && parseNum("25 µm").unit==="µm" && parseNum("25μm").unit==="µm" && parseNum("25 um").unit==="µm", "Parser Einheiten");
+  // 7
+  cs(7,"35","ok"); cs(7,"+35","ok"); cs(7,"35 µm","ok"); cs(7,"35µm","ok"); cs(7,"35 um","ok"); cs(7,"+35 µm","ok"); cs(7,"35,0","ok"); cs(7,"35.0","ok");
+  cs(7,"0,035","bad"); cs(7,"34","bad"); cs(7,"-35","bad"); cs(7,"35 mm","bad"); cs(7,"abc","bad"); cs(7,"","empty"); cs(7,"30","bad"); cs(7,"25","bad");
+  // Auswahl: richtig / alle falschen
+  for (const k of [2,4,6,9,10,13,14]){
+    const t = T[k-1]; cs(k, t.ans, "ok");
+    t.opts.filter(o=>o!==t.ans).forEach(o=>cs(k, o, "bad")); cs(k, "", "empty");
+  }
+  ok(T[13].okNote && T[13].okNote.includes("A–H") && T[13].okNote.includes("K–ZC") && T[13].okNote.includes("Δ"), "A14 Zusatzmeldung");
+  ok(!/\d\s*µm|Δ\s*=|\d,\d/.test(T[11].hint), "Tipp A12 enthält Zahlen: "+T[11].hint);
+  // Zustandsaufträge
+  const st = (k, s, exp) => { S = {...START, ...s}; const r = !!T[k-1].cond(); ok(r===exp, `Auftrag ${k} Zustand ${JSON.stringify(s)} → ${r}`); };
+  st(3,{},false); st(3,{wL:"h"},true); st(3,{wL:"h",N:41},false); st(3,{wL:"h",wI:6},false);
+  st(5,{},false); st(5,{bI:9},true); st(5,{bL:"G",bI:9},false);
+  st(8,{},false); st(8,{N:45},true); st(8,{N:31},true); st(8,{N:30},false); st(8,{N:51},false); st(8,{N:50},true);
+  st(11,{},false); st(11,{bL:"K"},true); st(11,{bL:"K",N:50},false);
+  S = sv;
+
+  // UI-Durchlauf: Eingabe in die Felder, ✓/✗ und Rückmeldung
+  buildTasks();
+  const q = k => items[k-1];
+  let inp = q(1).el; inp.value = "+25"; inp.dispatchEvent(new Event("input"));
+  ok(q(1).rs.textContent==="✗" && q(1).msg.textContent.includes(um), "UI A1 µm-Meldung sofort");
+  inp.value = "+0,025"; inp.dispatchEvent(new Event("input"));
+  ok(q(1).rs.textContent==="✓" && inp.classList.contains("ok") && q(1).msg.textContent==="", "UI A1 richtig");
+  inp = q(12).el; inp.value = "+7"; inp.dispatchEvent(new Event("input"));
+  ok(q(12).msg.textContent.includes("in µm"), "UI A12 µm");
+  inp.value = "+0,009"; inp.dispatchEvent(new Event("blur"));
+  ok(q(12).rs.textContent==="✗" && q(12).msg.textContent.includes("Tipp"), "UI A12 falsch + Tipp");
+  inp.value = "+0,007 mm"; inp.dispatchEvent(new Event("input"));
+  ok(q(12).rs.textContent==="✓", "UI A12 richtig");
+  const sel = q(14).el; sel.value = TASKS[13].ans; sel.dispatchEvent(new Event("change"));
+  ok(q(14).rs.textContent==="✓" && q(14).msg.textContent.includes("A–H"), "UI A14 ✓ + Hinweis");
+  sel.value = TASKS[13].opts[0]; sel.dispatchEvent(new Event("change"));
+  ok(q(14).rs.textContent==="✗" && q(14).msg.textContent.includes("Tipp"), "UI A14 ✗");
+  ok(document.querySelectorAll(".task .rs").length===items.filter(i=>i.t.type!=="state").length, "✓/✗-Platz an jedem Feld/jeder Auswahl");
+  // Alle Aufträge lösen → Abschlussmeldung und Spiel
+  items.forEach((it,idx)=>{ const t = it.t;
+    if (t.type==="dev"){ it.el.value = "+"+String(t.ans).replace(".",","); it.el.dispatchEvent(new Event("input")); }
+    else if (t.type==="num"){ it.el.value = String(t.ans); it.el.dispatchEvent(new Event("input")); }
+    else if (t.type==="sel"){ it.el.value = t.ans; it.el.dispatchEvent(new Event("change")); }
+    else { // Zustand herstellen
+      const map = {3:{wL:"h"},5:{bI:9},8:{N:45},11:{bL:"K"}}[idx+1]; S = {...START, ...map}; update(); } });
+  ok(items.every(i=>i.done), "alle Aufträge lösbar: " + items.map(i=>i.done?1:0).join(""));
+  ok(!$("done").hidden && $("done").textContent.startsWith("Alle Aufträge erledigt. Optional"), "Abschlussmeldung");
+  ok($("game").classList.contains("show"), "Bonusspiel eingeblendet");
+  // Spiel zeichnen (ohne Zeitablauf)
+  try {
+    drawIdle();
+    const g = {score:3, items:[{um:5,good:true,x:100,y:80},{um:-4,good:false,x:300,y:200}], px:250, fx:[{x:200,y:300,t:"✓ +1 Gutteil",good:true,life:30},{x:300,y:300,t:"✗ −1 Ausschuss",good:false,life:30}]};
+    drawGame(g); endGame({score:16,over:false}); drawIdle(); ok(true,"");
+  } catch(e){ ok(false, "Spiel zeichnen: "+e.message); }
+  // Zeichnungen enthalten E und keine festen Hex-Farben
+  update(); drawMain(); drawOver(); drawIT();
+  ok(/>E<\/text>/.test($("over").innerHTML), "Übersicht enthält E");
+  ok(!/#[0-9a-fA-F]{3,6}/.test($("main").innerHTML+$("over").innerHTML+$("itc").innerHTML), "keine festen Farben in den Diagrammen");
+  buildTasks(); S = {...START}; update();
+  FORCE_GAME = false; $("game").classList.remove("show");
+
+  say(`(b) Aufträge und Oberfläche geprüft`);
+  say(`Prüfungen insgesamt: ${n}`);
+  say(`ABWEICHUNGEN: ${fails}`);
+  say(`Breite: scrollWidth=${document.documentElement.scrollWidth} innerWidth=${innerWidth}`);
+  say(fails ? `SELFTEST: FAIL (${fails} Fehler)` : "SELFTEST: PASS");
+  const el = $("selftest"); el.hidden = false; el.textContent = out.join("\n");
+  document.documentElement.setAttribute("data-selftest", fails ? "FAIL" : "PASS");
+}
+
+/* ---------- Start ---------- */
+buildTasks();
+update();
+(function(){
+  const q = location.search;
+  if (/[?&]theme=dark/.test(q)) document.documentElement.setAttribute("data-theme","dark");
+  if (/[?&]theme=light/.test(q)) document.documentElement.setAttribute("data-theme","light");
+  const set = (re, f) => { const m = q.match(re); if (m) f(m[1]); };
+  // Testparameter für Screenshots: Einstellungen direkt setzen
+  set(/[?&]n=(\d+)/, v => setN(v));
+  set(/[?&]b=([A-Za-z]+)(\d+)?/, v => { if (BORES.includes(v)) { S.bL = v; update(); } });
+  set(/[?&]bi=(\d+)/, v => { if (GRADES.includes(+v)) { S.bI = +v; update(); } });
+  set(/[?&]w=([A-Za-z]+)/, v => { if (SHAFTS.includes(v)) { S.wL = v; update(); } });
+  set(/[?&]wi=(\d+)/, v => { if (GRADES.includes(+v)) { S.wI = +v; update(); } });
+  if (/[?&]spiel=1/.test(q)){ FORCE_GAME = true; $("game").classList.add("show"); drawIdle(); }
+  if (/[?&]spiel=start/.test(q)){ FORCE_GAME = true; $("game").classList.add("show"); startGame(); }
+  if (/[?&]fertig=1/.test(q)){
+    items.forEach((it,idx)=>{ const t = it.t;
+      if (t.type==="dev"){ it.el.value = "+"+String(t.ans).replace(".",","); it.el.dispatchEvent(new Event("input")); }
+      else if (t.type==="num"){ it.el.value = String(t.ans); it.el.dispatchEvent(new Event("input")); }
+      else if (t.type==="sel"){ it.el.value = t.ans; it.el.dispatchEvent(new Event("change")); }
+      else it.done = true; });
+    items.forEach(it=>{ if (it.t.type==="state"){ it.el.classList.add("ok"); it.el.textContent="✓ erfüllt"; } });
+    progress();
+  }
+  if (/[?&]falsch=1/.test(q)){
+    const a = items[0].el; a.value = "+25"; a.dispatchEvent(new Event("input"));
+    const b = items[11].el; b.value = "+0,009"; b.dispatchEvent(new Event("blur"));
+    const c = items[1].el; c.value = TASKS[1].opts[1]; c.dispatchEvent(new Event("change"));
+    const d = items[13].el; d.value = TASKS[13].ans; d.dispatchEvent(new Event("change"));
+  }
+  if (/[?&]selftest=1/.test(q)) selftest();
+})();
+</script>
+</body>
+</html>

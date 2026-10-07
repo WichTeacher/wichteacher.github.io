@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maße und Abmaße – Labor</title>
+<meta name="description" content="Interaktives Labor: Nennmaß, Abmaße, Grenzmaße, Maßtoleranz und Istmaß von Bohrung und Welle mit Reglern, Skizze und zehn Aufträgen">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Bohrung: eigenes Blau, Welle: Fachfarbe (Orange).
+     Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
+  :root{--bore:#2F6DB5;--bore-bg:#dce8f6;--shaft-bg:#fbe9d6}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bore:#5BA7E8;--bore-bg:#1f3652;--shaft-bg:#4a3321}}
+  :root[data-theme="dark"]{--bore:#5BA7E8;--bore-bg:#1f3652;--shaft-bg:#4a3321}
+
+  [hidden]{display:none!important}
+  button{touch-action:manipulation}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .btn,.btn-2{min-height:40px}
+  sub{font-size:.75em;line-height:0}
+  .einleitung{margin:0}
+  .lab{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px}
+  .lab>.card{margin-bottom:0}
+  @media (max-width:820px){.lab{grid-template-columns:minmax(0,1fr)}}
+  .lab+.card,.einleitung-card+.lab{margin-top:16px}
+
+  /* Regler */
+  fieldset{border:1px solid var(--line);border-radius:10px;padding:10px 12px 6px;margin:0 0 12px;min-width:0}
+  legend{font-weight:700;padding:0 6px}
+  fieldset.b legend{color:var(--bore)} fieldset.w legend{color:var(--fach)}
+  .ctl{margin-bottom:10px}
+  .ctl label{display:flex;justify-content:space-between;gap:8px;font-size:.95rem}
+  .ctl output{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  input[type=range]{width:100%;margin:4px 0 0;min-height:32px}
+  fieldset.b input[type=range]{accent-color:var(--bore)}
+  fieldset.w input[type=range]{accent-color:var(--fach)}
+  .nrow{display:flex;align-items:center;gap:10px}
+  input[type=number],input[type=text],select{font:inherit;padding:6px 8px;min-height:40px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+  .nrow input{width:100px;text-align:center}
+
+  /* Zeichnungsangabe */
+  .draw{display:flex;gap:8px 24px;flex-wrap:wrap;margin:6px 0 10px}
+  .dim{display:flex;align-items:center;font-size:1.6rem;font-variant-numeric:tabular-nums}
+  .dim .tol{display:inline-flex;flex-direction:column;font-size:.85rem;line-height:1.15;margin-left:4px;min-width:3.2em}
+  .dim .cap{font-size:.85rem;color:var(--muted);margin-right:8px}
+
+  svg#svg{width:100%;height:auto;display:block;background:var(--card);border:1px solid var(--line);border-radius:10px}
+  svg#svg text{font-family:var(--font)}
+
+  /* Formeln */
+  .forms{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:12px}
+  @media (max-width:600px){.forms{grid-template-columns:minmax(0,1fr)}}
+  .fbox{border-radius:10px;padding:10px 12px;font-size:.95rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+  .fbox.b{background:var(--bore-bg)} .fbox.w{background:var(--shaft-bg)}
+  .fbox h3{margin:0 0 6px;font-size:1.15rem}
+  .fbox div{margin:2px 0}
+  .verdict{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:20px;font-weight:700;font-size:.9rem}
+  .verdict.good{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok)}
+  .verdict.bad{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad)}
+
+  /* Aufträge */
+  .status{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0}
+  .bar{flex:1;min-width:140px;height:10px;background:var(--line);border-radius:6px;overflow:hidden}
+  .bar>div{height:100%;width:0;background:var(--ok);transition:width .3s}
+  .score{font-weight:600;white-space:nowrap}
+  .task{border-top:1px solid var(--line);padding:12px 0}
+  .task:first-of-type{border-top:none}
+  .task .q{margin-bottom:8px}
+  .task .q b:first-child{color:var(--fach)}
+  .ansrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .task input[type=text]{width:110px;text-align:center}
+  .task select{max-width:100%}
+  .state{display:inline-block;padding:4px 12px;border-radius:8px;border:2px dashed var(--line);color:var(--muted);font-size:.95rem}
+  .ans.ok,.state.ok{border-color:var(--ok);border-style:solid;background:var(--ok-bg);color:var(--ok)}
+  .ans.bad{border-color:var(--bad);background:var(--bad-bg)}
+  .mk{font-weight:700;min-width:1.2em}
+  .mk.ok{color:var(--ok)} .mk.bad{color:var(--bad)}
+  .hbtn{font-size:.88rem}
+  .hint,.note{display:none;margin-top:8px;font-size:.95rem}
+  .hint.show,.note.show{display:block}
+  .done{display:none;background:var(--ok-bg);border:2px solid var(--ok);color:var(--ok);border-radius:var(--radius);padding:12px 16px;font-weight:700;text-align:center;margin-top:8px}
+  .done.show{display:block}
+
+  #selftest{white-space:pre-wrap;font:12px/1.4 monospace;background:var(--soft);padding:8px;margin:12px 0}
+
+  @media (max-width:480px){
+    .wrap{padding:12px 12px 40px}
+    .card{padding:14px 12px}
+    .kopf{padding:12px 14px 14px}
+    .kopf h1{font-size:1.5rem}
+  }
+  @media (max-width:600px){svg#svg text{font-size:21px!important}svg#svg tspan{font-size:15px!important}}
+  @media print{
+    .no-print{display:none!important}
+  }
+</style>
+</head>
+<body data-fach="me">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Maschinenelemente</a></div>
+    <h1>Maße und Abmaße</h1>
+    <p>Nennmaß · Abmaße · Grenzmaße · Maßtoleranz · Istmaß · ca. 15 min</p>
+  </header>
+
+  <div class="card einleitung-card">
+    <p class="einleitung"><strong>So arbeiten Sie:</strong> Verändern Sie mit den Schiebereglern Abmaße und Istmaß von Bohrung und Welle. Das Nennmaß tragen Sie in das Feld ein. Beobachten Sie, wie sich Skizze, Zeichnungsangabe und Formeln verändern. Bearbeiten Sie anschließend die Aufträge unten. Richtige Lösungen werden sofort mit ✓ markiert.</p>
+  </div>
+
+  <div class="lab">
+    <!-- ================= Regler ================= -->
+    <div class="card">
+      <h2>Einstellungen</h2>
+      <div class="ctl">
+        <label for="N">Nennmaß N</label>
+        <div class="nrow"><input id="N" type="number" min="1" max="500" step="1" value="60" inputmode="numeric"> <span>mm</span></div>
+      </div>
+
+      <fieldset class="b">
+        <legend>Bohrung (Innenmaß)</legend>
+        <div class="ctl"><label for="ES"><span>oberes Abmaß ES</span> <output id="oES"></output></label>
+          <input type="range" id="ES" min="-290" max="300" step="10"></div>
+        <div class="ctl"><label for="EI"><span>unteres Abmaß EI</span> <output id="oEI"></output></label>
+          <input type="range" id="EI" min="-300" max="290" step="10"></div>
+        <div class="ctl"><label for="IB"><span>Istmaß I<sub>B</sub> (gemessen)</span> <output id="oIB"></output></label>
+          <input type="range" id="IB" min="-350" max="350" step="10"></div>
+      </fieldset>
+
+      <fieldset class="w">
+        <legend>Welle (Außenmaß)</legend>
+        <div class="ctl"><label for="es"><span>oberes Abmaß es</span> <output id="oes"></output></label>
+          <input type="range" id="es" min="-290" max="300" step="10"></div>
+        <div class="ctl"><label for="ei"><span>unteres Abmaß ei</span> <output id="oei"></output></label>
+          <input type="range" id="ei" min="-300" max="290" step="10"></div>
+        <div class="ctl"><label for="IW"><span>Istmaß I<sub>W</sub> (gemessen)</span> <output id="oIW"></output></label>
+          <input type="range" id="IW" min="-350" max="350" step="10"></div>
+      </fieldset>
+      <p class="small">Hinweis: Das obere Abmaß kann nicht kleiner als das untere werden. Die Regler schieben sich gegenseitig mit.</p>
+    </div>
+
+    <!-- ================= Darstellung ================= -->
+    <div class="card">
+      <h2>Darstellung</h2>
+      <div class="draw">
+        <div class="dim"><span class="cap">Bohrung</span>Ø<span id="dNB"></span><span class="tol"><span id="dES"></span><span id="dEI"></span></span></div>
+        <div class="dim"><span class="cap">Welle</span>Ø<span id="dNW"></span><span class="tol"><span id="des"></span><span id="dei"></span></span></div>
+      </div>
+      <svg id="svg" viewBox="-40 0 680 410" role="img" aria-label="Skizze der Toleranzfelder von Bohrung und Welle"></svg>
+      <p class="small">Die Abmaße sind in der Skizze stark vergrößert dargestellt (nicht maßstäblich).</p>
+
+      <div class="forms">
+        <div class="fbox b">
+          <h3>Bohrung</h3>
+          <div id="fGoB"></div><div id="fGuB"></div><div id="fTB"></div>
+          <div id="fIB"></div><span class="verdict" id="vB"></span>
+        </div>
+        <div class="fbox w">
+          <h3>Welle</h3>
+          <div id="fGoW"></div><div id="fGuW"></div><div id="fTW"></div>
+          <div id="fIW"></div><span class="verdict" id="vW"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Aufträge ================= -->
+  <div class="card" style="margin-top:16px">
+    <h2>Aufträge</h2>
+    <div class="status">
+      <div class="bar"><div id="bar"></div></div>
+      <span class="score" id="score" aria-live="polite">0 / 0 erledigt</span>
+      <button class="btn-2 no-print" id="reset" type="button">Alles zurücksetzen</button>
+    </div>
+    <div id="tasks"></div>
+    <div class="done" id="done" aria-live="polite">✓ Alle Aufträge erledigt.</div>
+  </div>
+
+  <div id="selftest" hidden></div>
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../">Startseite</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+"use strict";
+// ---------- Fehler sichtbar machen (Selbsttest) ----------
+window.onerror=function(msg,src,line){
+  document.documentElement.setAttribute("data-jserr",String(msg)+" @"+line);
+  const el=document.getElementById("selftest");
+  if(el){el.hidden=false;el.textContent+="\nJS-FEHLER: "+msg+" (Zeile "+line+")"}
+};
+
+/* ======================= Zustand (alle Abmaße in µm) ======================= */
+const START = {N:60, ES:100, EI:0, es:-50, ei:-150, IB:50, IW:-100};
+let S = {...START};
+const $ = id => document.getElementById(id);
+const MI = "−";
+
+/* ======================= Formatierung ======================= */
+const mm = (v,d=2) => (v).toFixed(d).replace(".",",");                 // v in mm
+const dev = u => u===0 ? "0" : (u>0?"+":MI) + mm(Math.abs(u)/1000);    // Abmaß mit Vorzeichen, immer 2 Nachkommastellen
+const sym = u => String(Math.abs(u)/1000).replace(".",",");            // ±-Wert ohne Nullen am Ende
+const gm = u => mm(S.N + u/1000);                                      // Grenz-/Istmaß
+const paren = u => u===0 ? "0" : `(${dev(u)})`;
+
+/* ======================= Regler ======================= */
+["ES","EI","es","ei","IB","IW"].forEach(k=>{
+  $(k).addEventListener("input", e=>{
+    const v = +e.target.value; S[k] = v;
+    if (k==="ES" && S.ES <= S.EI) S.EI = S.ES-10;
+    if (k==="EI" && S.EI >= S.ES) S.ES = S.EI+10;
+    if (k==="es" && S.es <= S.ei) S.ei = S.es-10;
+    if (k==="ei" && S.ei >= S.es) S.es = S.ei+10;
+    S.EI=Math.max(-300,S.EI); S.ES=Math.min(300,S.ES); S.ei=Math.max(-300,S.ei); S.es=Math.min(300,S.es);
+    render();
+  });
+});
+$("N").addEventListener("input", e=>{
+  const raw = e.target.value;
+  if (raw==="") return;
+  const v = Math.round(+raw);
+  if (v>=1 && v<=500){
+    S.N = v;
+    if (String(v)!==raw) e.target.value = v;      // gerundeten ganzzahligen Wert zurückschreiben
+    render();
+  }
+});
+$("N").addEventListener("change", e=>{ e.target.value = S.N; });   // ungültige Eingabe: letzten gültigen Wert zeigen
+
+/* ======================= Skizze ======================= */
+const Y0 = 190, K = 0.5, YB = 395;            // Nulllinie, px pro µm, Bezugslinie unten
+const y = u => Y0 - u*K;
+const COL = {B:"var(--bore)", W:"var(--fach)", N:"var(--ink)", G:"var(--ok)", R:"var(--bad)"};
+function arrow(x, y1, y2, key, both=false){
+  const c = COL[key];
+  if (Math.abs(y2-y1) < 2) return `<circle cx="${x}" cy="${y1}" r="2.5" style="fill:${c}"/>`;
+  const m = Math.abs(y2-y1) > 14;
+  return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" style="stroke:${c};stroke-width:1.6"
+    ${m?`marker-end="url(#ah-${key})"`:""} ${m&&both?`marker-start="url(#ah-${key})"`:""}/>`;
+}
+function vlabel(x, yy, txt, key){
+  return `<text x="${x}" y="${yy}" style="fill:${COL[key]};font-size:16px;font-weight:600" text-anchor="middle"
+          transform="rotate(-90 ${x} ${yy})" dominant-baseline="middle">${txt}</text>`;
+}
+function hlabel(x, yy, txt, key, anchor="start"){
+  return `<text x="${x}" y="${yy}" style="fill:${COL[key]};font-size:16px;font-weight:600" text-anchor="${anchor}" dominant-baseline="middle">${txt}</text>`;
+}
+// y-Lage der Abmaß-Beschriftung: Mitte des Pfeils, aber mindestens 12 px Abstand zur Nulllinie
+function aly(u, upper){
+  const mid=(Y0+y(u))/2;
+  if (u>0) return Math.min(mid, Y0-12);
+  if (u<0) return Math.max(mid, Y0+12);
+  return upper ? Y0-12 : Y0+12;
+}
+const sub = (a,b) => `${a}<tspan font-size="12" dy="3">${b}</tspan><tspan dy="-3"></tspan>`;
+
+function drawSVG(){
+  const marker = k => `<marker id="ah-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L10,5 L0,9 z" style="fill:${COL[k]}"/></marker>`;
+  let s = `<defs>${["B","W","N"].map(marker).join("")}
+    <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="8" style="stroke:var(--muted);stroke-width:1.2"/></pattern></defs>`;
+  const hatchStroke = "stroke:var(--muted)";
+  let tl = "";
+
+  /* --- Bohrung --- */
+  const bx1=30, bx2=200;
+  s += `<rect x="${bx1}" y="8" width="${bx2-bx1}" height="${y(S.ES)-8}" fill="url(#hatch)" style="${hatchStroke}"/>`;           // Werkstoff oberhalb
+  s += `<rect x="${bx1}" y="${y(S.ES)}" width="${bx2-bx1}" height="${y(S.EI)-y(S.ES)}" style="fill:var(--bore-bg);stroke:var(--bore);stroke-width:2"/>`; // Toleranzfeld
+  s += `<rect x="${bx1}" y="${YB}" width="${bx2-bx1}" height="12" fill="url(#hatch)" style="${hatchStroke}"/>`;
+  s += hlabel(bx2-6, YB-12, "Bohrung", "B", "end");
+  s += arrow(70, YB, y(S.EI), "B") + vlabel(60, (YB+y(S.EI))/2, sub("G","uB"), "B");
+  s += arrow(105, YB, y(S.ES), "B") + vlabel(95, (YB+y(S.ES))/2, sub("G","oB"), "B");
+  // Abmaße Bohrung (rechts vom Feld)
+  s += arrow(215, Y0, y(S.ES), "B") + hlabel(221, aly(S.ES,true), "ES", "B");
+  s += arrow(245, Y0, y(S.EI), "B") + hlabel(251, aly(S.EI,false), "EI", "B");
+  s += arrow(150, y(S.ES), y(S.EI), "B", true) ;
+  tl += hlabel(156, (y(S.ES)+y(S.EI))/2, sub("T","B"), "B");
+
+  /* --- Welle --- */
+  const wx1=340, wx2=470;
+  s += `<rect x="${wx1}" y="${y(S.ei)}" width="${wx2-wx1}" height="${YB-y(S.ei)}" style="fill:var(--soft);stroke:var(--muted)"/>`;   // Wellenkörper
+  s += `<rect x="${wx1}" y="${y(S.es)}" width="${wx2-wx1}" height="${y(S.ei)-y(S.es)}" style="fill:var(--shaft-bg);stroke:var(--fach);stroke-width:2"/>`;
+  s += hlabel(wx2-8, YB-12, "Welle", "W", "end");
+  s += arrow(365, YB, y(S.ei), "W") + vlabel(355, (YB+y(S.ei))/2, sub("G","uW"), "W");
+  s += arrow(400, YB, y(S.es), "W") + vlabel(390, (YB+y(S.es))/2, sub("G","oW"), "W");
+  s += arrow(440, y(S.es), y(S.ei), "W", true) ;
+  tl += hlabel(446, (y(S.es)+y(S.ei))/2, sub("T","W"), "W");
+  s += arrow(490, Y0, y(S.es), "W") + hlabel(496, aly(S.es,true), "es", "W");
+  s += arrow(525, Y0, y(S.ei), "W") + hlabel(531, aly(S.ei,false), "ei", "W");
+
+  /* --- Nulllinie & Nennmaß --- */
+  s += `<line x1="8" y1="${Y0}" x2="632" y2="${Y0}" style="stroke:var(--ink);stroke-width:1.4" stroke-dasharray="10 4 2 4"/>`;
+  s += hlabel(-36, Y0-10, "0", "N") + hlabel(632, Y0-10, "Nulllinie", "N", "end");
+  s += `<line x1="8" y1="${YB}" x2="632" y2="${YB}" style="stroke:var(--muted);stroke-width:1"/>`;
+  s += arrow(600, YB, Y0, "N") + vlabel(588, (YB+Y0)/2, `N = ${S.N} mm`, "N");
+
+  /* --- Istmaße (Farbe und Zeichen ✓/✗) --- */
+  const okB = S.IB>=S.EI && S.IB<=S.ES, okW = S.IW>=S.ei && S.IW<=S.es;
+  s += `<line x1="${bx1-10}" y1="${y(S.IB)}" x2="${bx2+5}" y2="${y(S.IB)}" style="stroke:${okB?COL.G:COL.R};stroke-width:2.5" stroke-dasharray="6 4"/>`;
+  s += hlabel(bx1-12, y(S.IB), sub("I","B")+(okB?" ✓":" ✗"), okB?"G":"R", "end");
+  s += `<line x1="${wx1-10}" y1="${y(S.IW)}" x2="${wx2+5}" y2="${y(S.IW)}" style="stroke:${okW?COL.G:COL.R};stroke-width:2.5" stroke-dasharray="6 4"/>`;
+  s += hlabel(wx1-12, y(S.IW), sub("I","W")+(okW?" ✓":" ✗"), okW?"G":"R", "end");
+  s += `<g style="paint-order:stroke;stroke:var(--card);stroke-width:6px;stroke-linejoin:round">${tl}</g>`;   // T-Beschriftung zuletzt, mit Hintergrundkontur
+  $("svg").innerHTML = s;
+}
+
+/* ======================= Ausgabe ======================= */
+function tolText(hi, lo, elHi, elLo){          // Zeichnungsangabe: ±-Schreibweise bei gleichen Beträgen
+  if (hi===-lo && hi>0){ elHi.textContent = "±"+sym(hi); elLo.textContent = ""; }
+  else { elHi.textContent = dev(hi); elLo.textContent = dev(lo); }
+}
+function render(){
+  ["ES","EI","es","ei","IB","IW"].forEach(k=>$(k).value = S[k]);
+  $("oES").textContent = dev(S.ES)+" mm"; $("oEI").textContent = dev(S.EI)+" mm";
+  $("oes").textContent = dev(S.es)+" mm"; $("oei").textContent = dev(S.ei)+" mm";
+  $("oIB").textContent = gm(S.IB)+" mm"; $("oIW").textContent = gm(S.IW)+" mm";
+  $("dNB").textContent = $("dNW").textContent = S.N;
+  tolText(S.ES, S.EI, $("dES"), $("dEI"));
+  tolText(S.es, S.ei, $("des"), $("dei"));
+
+  $("fGoB").innerHTML = `G<sub>oB</sub> = N + ES = ${S.N} + ${paren(S.ES)} = <b>${gm(S.ES)} mm</b>`;
+  $("fGuB").innerHTML = `G<sub>uB</sub> = N + EI = ${S.N} + ${paren(S.EI)} = <b>${gm(S.EI)} mm</b>`;
+  $("fTB").innerHTML  = `T<sub>B</sub> = G<sub>oB</sub> − G<sub>uB</sub> = ES − EI = <b>${mm((S.ES-S.EI)/1000)} mm</b>`;
+  $("fIB").innerHTML  = `Istmaß I<sub>B</sub> = ${gm(S.IB)} mm`;
+  $("fGoW").innerHTML = `G<sub>oW</sub> = N + es = ${S.N} + ${paren(S.es)} = <b>${gm(S.es)} mm</b>`;
+  $("fGuW").innerHTML = `G<sub>uW</sub> = N + ei = ${S.N} + ${paren(S.ei)} = <b>${gm(S.ei)} mm</b>`;
+  $("fTW").innerHTML  = `T<sub>W</sub> = G<sub>oW</sub> − G<sub>uW</sub> = es − ei = <b>${mm((S.es-S.ei)/1000)} mm</b>`;
+  $("fIW").innerHTML  = `Istmaß I<sub>W</sub> = ${gm(S.IW)} mm`;
+
+  const verdict = (el, ok, lo) => { el.className = "verdict " + (ok?"good":"bad");
+    el.textContent = ok ? "✓ Gutteil – Istmaß liegt innerhalb der Grenzmaße" : (lo ? "✗ Ausschuss – Istmaß zu klein" : "✗ Ausschuss – Istmaß zu groß"); };
+  verdict($("vB"), S.IB>=S.EI && S.IB<=S.ES, S.IB<S.EI);
+  verdict($("vW"), S.IW>=S.ei && S.IW<=S.es, S.IW<S.ei);
+  drawSVG();
+  checkStates();
+}
+
+/* ======================= Aufträge ======================= */
+// Eingabe: Komma oder Punkt, „mm“ am Ende wird ignoriert, Minus als -, − oder –
+const parseNum = s => {
+  const t = String(s).trim().replace(/mm$/i,"").replace(/\s/g,"").replace(/[−–—]/g,"-").replace(",",".");
+  return /^[+-]?(\d+\.?\d*|\.\d+)$/.test(t) ? Number(t) : NaN;
+};
+
+const ACHTUNG = "Achtung: Bei einer Toleranzklasse wie H7 hängen die Abmaße selbst vom Nennmaß ab – das zeigt das Labor Toleranzklassen.";
+const TASKS = [
+  { type:"state", q:"<b>1.</b> Stellen Sie die Welle aus dem Beispiel ein: <b>Ø60 mit es = +0,1 mm und ei = −0,2 mm</b>.",
+    cond:()=>S.N===60 && S.es===100 && S.ei===-200,
+    hint:"Nennmaß auf 60 stellen. Schieben Sie zuerst ei nach unten auf −0,20 und dann es nach oben auf +0,10." },
+  { type:"input", q:"<b>2.</b> Wie groß ist die Maßtoleranz T<sub>W</sub> dieser Welle? (in mm)", answer:0.3,
+    hint:"T<sub>W</sub> = es − ei = 0,1 − (−0,2). Minus vor einer negativen Zahl ergibt Plus: 0,1 − (−0,2) = 0,1 + 0,2." },
+  { type:"input", q:"<b>3.</b> Wie groß ist das Mindestmaß G<sub>uW</sub> dieser Welle? (in mm)", answer:59.8,
+    hint:"G<sub>uW</sub> = N + ei = 60 + (−0,2). Das Ergebnis muss kleiner als das Nennmaß sein." },
+  { type:"state", q:"<b>4.</b> Stellen Sie eine <b>Bohrung</b> (N = 60 mm) mit dem Höchstmaß <b>60,25 mm</b> und dem Mindestmaß <b>60,05 mm</b> ein.",
+    cond:()=>S.N===60 && S.ES===250 && S.EI===50,
+    hint:"Rechnen Sie die Grenzmaße in Abmaße um: ES = G<sub>oB</sub> − N und EI = G<sub>uB</sub> − N." },
+  { type:"select", q:"<b>5.</b> Wo liegt das Toleranzfeld der Bohrung aus Auftrag 4?",
+    options:["oberhalb der Nulllinie","unterhalb der Nulllinie","Das Toleranzfeld schneidet die Nulllinie"], answer:"oberhalb der Nulllinie",
+    hint:"Schauen Sie in die Skizze: Beide Abmaße (ES und EI) sind positiv. Wo liegt dann das blaue Feld?" },
+  { type:"select", q:"<b>6.</b> Ändern Sie <b>nur</b> das Nennmaß N (z. B. auf 80 mm). Was passiert bei gleichen Abmaßen mit der Maßtoleranz T?",
+    options:["Sie wird größer","Sie wird kleiner","Sie bleibt gleich"], answer:"Sie bleibt gleich",
+    hint:"Probieren Sie es aus und beobachten Sie T in den Formelkästen. T = ES − EI – kommt N in dieser Formel vor?<br>"+ACHTUNG,
+    note:ACHTUNG },
+  { type:"state", q:"<b>7.</b> Stellen Sie das Istmaß I<sub>W</sub> der Welle <b>genau auf ihr Mindestmaß</b> G<sub>uW</sub>.",
+    cond:()=>S.IW===S.ei,
+    hint:"Die gestrichelte Istmaß-Linie der Welle muss genau auf der Unterkante des orangefarbenen Toleranzfeldes liegen." },
+  { type:"select", q:"<b>8.</b> Ist die Welle aus Auftrag 7 (Istmaß = Mindestmaß) ein Gutteil oder Ausschuss?",
+    options:["Gutteil","Ausschuss"], answer:"Gutteil",
+    hint:"Die Grenzmaße sind die <em>zulässigen</em> Grenzen – gehört der Grenzwert selbst noch dazu? Schauen Sie auf die Bewertung im Formelkasten." },
+  { type:"state", q:"<b>9.</b> Erzeugen Sie eine <b>Ausschuss-Bohrung</b>, deren Istmaß <b>zu groß</b> ist.",
+    cond:()=>S.IB>S.ES,
+    hint:"Schieben Sie das Istmaß I<sub>B</sub> über das Höchstmaß G<sub>oB</sub> hinaus (die Linie wird rot und mit ✗ gekennzeichnet)." },
+  { type:"select", q:"<b>10.</b> Kann die Maßtoleranz T einen negativen Wert annehmen?",
+    options:["Ja, wenn beide Abmaße negativ sind","Ja, wenn das Nennmaß sehr klein ist","Nein, T ist ein Betrag ohne Vorzeichen"], answer:"Nein, T ist ein Betrag ohne Vorzeichen",
+    hint:"Stellen Sie z. B. es = −0,05 und ei = −0,15 ein. Welchen Wert zeigt T<sub>W</sub>? Das Höchstmaß ist immer größer als das Mindestmaß." }
+];
+
+let items = [];
+function mark(it, st){                       // st: "ok" | "bad" | ""
+  it.mk.className = "mk" + (st?" "+st:"");
+  it.mk.textContent = st==="ok" ? "✓" : st==="bad" ? "✗" : "";
+}
+function buildTasks(){
+  const box = $("tasks"); box.innerHTML = ""; items = [];
+  TASKS.forEach(t=>{
+    const d = document.createElement("div"); d.className="task";
+    d.innerHTML = `<div class="q">${t.q}</div>`;
+    const row = document.createElement("div"); row.className="ansrow";
+    const hint = document.createElement("div"); hint.className="hint fb-hint"; hint.innerHTML = `<b>Tipp:</b> ${t.hint}`;
+    const note = document.createElement("div"); note.className="note fb-hint"; note.innerHTML = t.note||"";
+    const mk = document.createElement("span"); mk.className="mk"; mk.setAttribute("aria-live","polite");
+    const it = {t, hint, note, mk, done:false, wrong:false};
+    if (t.type==="state"){
+      const st = document.createElement("span"); st.className="state"; st.textContent="noch nicht eingestellt";
+      const hb = document.createElement("button"); hb.className="btn-2 hbtn no-print"; hb.type="button"; hb.textContent="Tipp anzeigen";
+      hb.onclick = ()=>hint.classList.toggle("show");
+      row.append(st, hb); it.el = st;
+    } else if (t.type==="input"){
+      const inp = document.createElement("input"); inp.type="text"; inp.className="ans"; inp.inputMode="decimal"; inp.autocomplete="off";
+      inp.setAttribute("aria-label","Antwort in mm");
+      const unit = document.createElement("span"); unit.textContent="mm";
+      const chk = v => Math.abs(parseNum(v)-t.answer) < 1e-9;
+      inp.addEventListener("input",()=>judge(it, inp.value, chk, false));
+      inp.addEventListener("blur",()=>judge(it, inp.value, chk, true));
+      inp.addEventListener("keydown",e=>{ if(e.key==="Enter") judge(it, inp.value, chk, true); });
+      row.append(inp, unit, mk); it.el = inp;
+    } else {
+      const sel = document.createElement("select"); sel.className="ans"; sel.setAttribute("aria-label","Antwort auswählen");
+      ["– bitte wählen –",...t.options].forEach((o,i)=>{ const op=document.createElement("option"); op.value=i?o:""; op.textContent=o; sel.appendChild(op); });
+      sel.addEventListener("change",()=>judge(it, sel.value, v=>v===t.answer, true));
+      row.append(sel, mk); it.el = sel;
+    }
+    d.append(row, hint, note); box.appendChild(d); items.push(it);
+  });
+  checkStates(); progress();
+}
+function judge(it, v, chk, showWrong){
+  it.el.classList.remove("ok","bad"); mark(it,"");
+  if (String(v).trim()===""){ it.done=false; it.wrong=false; }
+  else if (chk(v)){ it.done=true; it.wrong=false; it.el.classList.add("ok"); mark(it,"ok"); }
+  else { it.done=false; if(showWrong) it.wrong=true; if(it.wrong){ it.el.classList.add("bad"); mark(it,"bad"); } }
+  it.hint.classList.toggle("show", it.wrong);
+  it.note.classList.toggle("show", it.done && !!it.t.note);
+  progress();
+}
+function checkStates(){
+  items.forEach(it=>{
+    if (it.t.type!=="state" || it.done) return;          // einmal erfüllt = bleibt erfüllt
+    if (it.t.cond()){ it.done=true; it.el.classList.add("ok"); it.el.textContent="✓ erfüllt"; it.hint.classList.remove("show"); }
+  });
+  progress();
+}
+function progress(){
+  if (!items.length) return;
+  const c = items.filter(i=>i.done).length, n = items.length;
+  $("score").textContent = `${c} / ${n} erledigt`;
+  $("bar").style.width = (c/n*100)+"%";
+  $("done").classList.toggle("show", c===n);
+}
+function resetAll(scroll){ S={...START}; $("N").value=S.N; buildTasks(); render(); if(scroll) window.scrollTo({top:0,behavior:"smooth"}); }
+$("reset").addEventListener("click",()=>resetAll(true));
+
+buildTasks();
+render();
+
+/* ======================= Selbsttest (nur mit ?selftest=1) ======================= */
+function selftest(){
+  const out=[]; let fails=0;
+  const T=(name,cond)=>{ if(!cond) fails++; out.push((cond?"OK   ":"FEHL ")+name); };
+  const fire=(el,type)=>el.dispatchEvent(new Event(type,{bubbles:true}));
+  const slider=(id,v)=>{ $(id).value=v; fire($(id),"input"); };
+  const typeIn=(i,val)=>{ const el=items[i].el; el.value=val; fire(el,"input"); fire(el,"blur"); };
+  const pick=(i,val)=>{ const el=items[i].el; el.value=val; fire(el,"change"); };
+
+  resetAll(false);
+  T("Start: 0 erledigt", $("score").textContent==="0 / 10 erledigt");
+  T("Start: kein Auftrag erfüllt", items.every(i=>!i.done));
+
+  // Formatierung
+  T("dev(100) = +0,10", dev(100)==="+0,10");
+  T("dev(-250) = −0,25", dev(-250)==="−0,25");
+  T("dev(0) = 0", dev(0)==="0");
+  slider("ES",100); slider("EI",-100);
+  T("Zeichnung ±0,1", $("dES").textContent==="±0,1" && $("dEI").textContent==="");
+  slider("es",0); slider("ei",-250);
+  T("Zeichnung 0 / −0,25", $("des").textContent==="0" && $("dei").textContent==="−0,25");
+  slider("ES",100); slider("EI",0);
+  T("Zeichnung +0,10 / 0", $("dES").textContent==="+0,10" && $("dEI").textContent==="0");
+  slider("es",100); slider("ei",-200);
+  T("Zeichnung +0,10 / −0,20", $("des").textContent==="+0,10" && $("dei").textContent==="−0,20");
+
+  // Parser
+  const pn=(s,v)=>T("parse '"+s+"' = "+v, Math.abs(parseNum(s)-v)<1e-9);
+  pn("0,3",0.3); pn("0.3",0.3); pn("0,3 mm",0.3); pn("0,30mm",0.3); pn("+0,3",0.3);
+  pn("–0,3",-0.3); pn("−0,3",-0.3); pn("-0,3 mm",-0.3);
+  T("parse 'abc' = NaN", isNaN(parseNum("abc"))); T("parse 'mm' = NaN", isNaN(parseNum("mm")));
+
+  // Auftrag 1 (State über Regler)
+  T("A4 durch A1 nicht erfüllt", !items[3].done);
+  T("A1 erfüllt", S.N===60 && items[0].done);
+  // Auftrag 2
+  ["0,1","-0,3","−0,3","0,2","abc","0,4"].forEach(v=>{ typeIn(1,v); T("A2 falsch '"+v+"' (✗)", !items[1].done && items[1].mk.textContent==="✗" && items[1].hint.classList.contains("show")); });
+  typeIn(1,""); T("A2 leer: kein Zeichen", items[1].mk.textContent==="" && !items[1].done);
+  ["0,3","0.3","0,30 mm","0,3mm","+0,3"].forEach(v=>{ typeIn(1,v); T("A2 richtig '"+v+"' (✓)", items[1].done && items[1].mk.textContent==="✓"); });
+  // Auftrag 3
+  ["60,2","59,6","−59,8","59"].forEach(v=>{ typeIn(2,v); T("A3 falsch '"+v+"'", !items[2].done && items[2].mk.textContent==="✗"); });
+  ["59,8","59.8 mm","59,80mm"].forEach(v=>{ typeIn(2,v); T("A3 richtig '"+v+"'", items[2].done && items[2].mk.textContent==="✓"); });
+  // Auftrag 4
+  slider("ES",250); T("A4 nach ES allein offen", !items[3].done);
+  slider("EI",50); T("A4 erfüllt", items[3].done && items[3].el.textContent==="✓ erfüllt");
+  // Auftrag 5
+  T("A5 Option 3 lautet 'Das Toleranzfeld schneidet die Nulllinie'", items[4].el.options[3].textContent==="Das Toleranzfeld schneidet die Nulllinie");
+  pick(4,"unterhalb der Nulllinie"); T("A5 falsch", !items[4].done && items[4].mk.textContent==="✗");
+  pick(4,"Das Toleranzfeld schneidet die Nulllinie"); T("A5 falsch (3)", !items[4].done);
+  pick(4,"oberhalb der Nulllinie"); T("A5 richtig", items[4].done && items[4].mk.textContent==="✓");
+  // Auftrag 6
+  T("A6 Frage enthält 'bei gleichen Abmaßen'", TASKS[5].q.includes("bei gleichen Abmaßen"));
+  pick(5,"Sie wird größer"); T("A6 falsch, Tipp mit Achtung", !items[5].done && items[5].hint.textContent.includes("Toleranzklasse wie H7") && items[5].hint.classList.contains("show"));
+  pick(5,"Sie bleibt gleich"); T("A6 richtig, Hinweis sichtbar", items[5].done && items[5].note.classList.contains("show") && items[5].note.textContent.includes("Labor Toleranzklassen"));
+  // Nennmaß-Eingabe
+  const nEl=$("N"); nEl.value="80.4"; fire(nEl,"input");
+  T("N 80.4 -> 80 zurückgeschrieben", S.N===80 && nEl.value==="80");
+  nEl.value="1000"; fire(nEl,"input"); fire(nEl,"change");
+  T("N 1000 ignoriert", S.N===80 && nEl.value==="80");
+  nEl.value="60"; fire(nEl,"input");
+  // Auftrag 7, 8, 9, 10
+  T("A7 vorher offen", !items[6].done);
+  slider("IW",S.ei); T("A7 erfüllt", items[6].done);
+  pick(7,"Ausschuss"); T("A8 falsch", !items[7].done && items[7].mk.textContent==="✗");
+  pick(7,"Gutteil"); T("A8 richtig", items[7].done);
+  T("A9 vorher offen", !items[8].done);
+  slider("IB",350); T("A9 erfüllt", items[8].done && $("vB").textContent.startsWith("✗"));
+  pick(9,"Ja, wenn beide Abmaße negativ sind"); T("A10 falsch", !items[9].done);
+  pick(9,"Nein, T ist ein Betrag ohne Vorzeichen"); T("A10 richtig", items[9].done);
+  T("Fortschritt 10 / 10", $("score").textContent==="10 / 10 erledigt");
+  T("Abschlussmeldung", $("done").classList.contains("show") && $("done").textContent==="✓ Alle Aufträge erledigt.");
+
+  // Zurücksetzen
+  $("reset").click();
+  T("Zurücksetzen: 0 / 10, Startwerte", $("score").textContent==="0 / 10 erledigt" && S.ES===100 && S.N===60 && !$("done").classList.contains("show"));
+
+  out.push(fails?("ERGEBNIS: FAIL ("+fails+")"):"ERGEBNIS: PASS");
+  const el=$("selftest"); el.hidden=false; el.textContent=out.join("\n");
+  document.documentElement.setAttribute("data-selftest",fails?"FAIL":"PASS");
+}
+(function(){
+  let q=""; try{q=location.search}catch(e){}
+  if(/[?&]theme=dark/.test(q)) document.documentElement.setAttribute("data-theme","dark");
+  if(/[?&]theme=light/.test(q)) document.documentElement.setAttribute("data-theme","light");
+  const m=q.match(/[?&]set=([^&]+)/);                 // Testparameter, z. B. ?set=ES:0,EI:-300,es:0,ei:-300
+  if(m){ m[1].split(",").forEach(p=>{ const [k,v]=p.split(":"); if(k in S) S[k]=+v; }); render(); }
+  if(/[?&]selftest=1/.test(q)) selftest();
+})();
+</script>
+</body>
+</html>
