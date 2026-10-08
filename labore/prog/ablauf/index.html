@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Programmablauf Schritt für Schritt – Labor</title>
+<meta name="description" content="Interaktives Labor: Python-Programme Zeile für Zeile ausführen, mit Programmablaufplan, Variablentabelle und Vorhersagefragen">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
+  :root{--str:#a15c07;--num:#1f5fa8;--mono:Consolas,"Cascadia Mono","Courier New",monospace}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--str:#f2c46d;--num:#7fb2f0}}
+  :root[data-theme="dark"]{--str:#f2c46d;--num:#7fb2f0}
+
+  [hidden]{display:none!important}
+  .wrap{max-width:1500px}
+  button{touch-action:manipulation}
+  button:focus-visible,select:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .btn,.btn-2{min-height:40px}
+  .btn:disabled,.btn-2:disabled{opacity:.45;cursor:not-allowed;filter:none}
+  code{font-family:var(--mono);font-size:.92em;background:var(--soft);padding:0 4px;border-radius:4px}
+  .einleitung{margin:0}
+
+  /* Auswahl */
+  .wahl{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end}
+  .feld{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .feld>span{font-size:.85rem;color:var(--muted);font-weight:600}
+  select{font:inherit;padding:6px 8px;min-height:40px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);max-width:100%}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font:inherit;font-size:.95rem;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 14px;cursor:pointer;min-height:38px}
+  .chip[aria-pressed="true"]{background:var(--fach);border-color:var(--fach);color:var(--fach-ink);font-weight:600}
+  #info{margin:10px 0 0;color:var(--muted)}
+
+  /* Steuerleiste */
+  .steuer{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px}
+  .steuer .zaehler{font-weight:600;font-variant-numeric:tabular-nums;margin-left:4px}
+  .steuer .rechts{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  #punkte{font-weight:600;color:var(--fach)}
+
+  /* Frage */
+  #frage{border:2px solid var(--fach)}
+  #frage h2{font-size:1.2rem}
+  .fq{margin:0 0 8px;font-size:1.05rem}
+  .opts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+  .opts .btn-2{font-size:1rem}
+  .opts .btn-2.code{font-family:var(--mono)}
+  .fb-ok,.fb-bad{margin:6px 0}
+  .erkl{margin:6px 0 0}
+
+  /* Bühne */
+  .buehne{display:grid;gap:16px;align-items:start;
+          grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:auto 1fr;grid-template-areas:"code pap" "var pap"}
+  @media (min-width:1400px){.buehne{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) minmax(0,.8fr);grid-template-rows:auto;grid-template-areas:"code pap var"}}
+  @media (max-width:760px){.buehne{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;grid-template-areas:"code" "var" "pap"}}
+  .buehne>.card{margin:0;min-width:0}
+  .k-code{grid-area:code} .k-pap{grid-area:pap} .k-var{grid-area:var}
+  .card h2{font-size:1.2rem}
+
+  /* Code */
+  #code{font-family:var(--mono);font-size:var(--cz,16px);line-height:1.55;overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:6px 0}
+  .z{display:flex;align-items:baseline;white-space:pre;padding:0 10px 0 0;border-left:4px solid transparent;min-height:1.55em}
+  .z .nr{display:inline-block;width:2.4em;text-align:right;padding-right:.9em;color:var(--muted);user-select:none;flex:none}
+  .z .tx{flex:none}
+  .z .an{margin-left:1.2em;font-family:var(--font);font-size:.82em;font-weight:700;padding:0 8px;border-radius:999px;background:var(--fach);color:var(--fach-ink);white-space:nowrap}
+  .z.aktiv{background:color-mix(in srgb,var(--fach) 18%,transparent);border-left-color:var(--fach)}
+  .z.fehl{background:var(--hint-bg);border-left-color:var(--hint)}
+  .z.waehlbar{cursor:pointer}
+  .z.waehlbar:hover{background:var(--soft);outline:2px dashed var(--fach);outline-offset:-2px}
+  .z.gewaehlt-ok{outline:2px solid var(--ok);outline-offset:-2px}
+  .z.gewaehlt-bad{outline:2px solid var(--bad);outline-offset:-2px}
+  .kw{color:var(--fach);font-weight:700} .fn{color:var(--fach)} .st{color:var(--str)} .nu{color:var(--num)} .ko{color:var(--muted);font-style:italic}
+  #jetzt{margin-top:10px;font-size:1rem}
+  #jetzt p{margin:0 0 6px}
+  #jetzt ul{margin:4px 0 6px;padding-left:1.2em}
+  .gross{font-size:1.05rem}
+
+  /* Variablen und Ausgabe */
+  table.vars{width:100%;border-collapse:collapse;font-size:var(--cz,16px)}
+  .vars th{text-align:left;font-size:.8rem;color:var(--muted);font-weight:600;border-bottom:2px solid var(--line);padding:4px 6px}
+  .vars td{border-bottom:1px solid var(--line);padding:5px 6px;font-family:var(--mono);overflow-wrap:anywhere}
+  .vars td.typ{color:var(--muted);font-size:.85em;white-space:nowrap}
+  .vars tr.neu td{background:color-mix(in srgb,var(--fach) 16%,transparent)}
+  .vars tr.neu td:first-child{box-shadow:inset 4px 0 var(--fach)}
+  .leer{color:var(--muted);font-style:italic;margin:6px 0}
+  #ausgabe{font-family:var(--mono);font-size:calc(var(--cz,16px) * .9);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:3.2em;max-height:340px;overflow:auto;white-space:pre-wrap;margin:0}
+  #ausgabe .err{display:block;background:var(--hint-bg);color:var(--hint-ink);border-left:4px solid var(--hint);padding:2px 6px;margin-top:4px}
+  .k-var h2+h2,.k-var .zw{margin-top:14px}
+
+  /* PAP */
+  #pap{width:100%;height:auto;max-height:82vh;display:block;margin:0 auto}
+  #pap .f{fill:var(--card);stroke:var(--ink);stroke-width:1.5}
+  #pap .f.punkt{fill:var(--ink)}
+  #pap text{font-family:var(--mono);font-size:13px;fill:var(--ink)}
+  #pap text.sans{font-family:var(--font);font-size:14px;font-weight:600}
+  #pap .lbl{font-family:var(--font);font-size:12px;fill:var(--muted);font-weight:600}
+  #pap polyline{fill:none;stroke:var(--muted);stroke-width:1.5}
+  #pap .pf{fill:var(--muted)}
+  #pap g.aktiv .f{fill:var(--fach);stroke:var(--fach)}
+  #pap g.aktiv text{fill:var(--fach-ink)}
+  #pap g.fehl .f{fill:var(--hint-bg);stroke:var(--hint);stroke-width:3}
+
+  details.info summary{cursor:pointer;font-weight:700;color:var(--fach)}
+  details.info p,details.info li{font-size:.95rem}
+  #selftest{white-space:pre-wrap;font:12px/1.4 monospace;background:var(--soft);padding:8px;margin:12px 0}
+
+  @media (max-width:480px){
+    .wrap{padding:12px 12px 40px}
+    .card{padding:14px 12px}
+    .kopf{padding:12px 14px 14px}
+    .kopf h1{font-size:1.5rem}
+    .steuer .rechts{margin-left:0}
+  }
+</style>
+</head>
+<body data-fach="prog">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Programmieren</a></div>
+    <h1>Programmablauf Schritt für Schritt</h1>
+    <p>Python · Code, PAP und Variablen · Vorhersagen</p>
+  </header>
+
+  <div class="card">
+    <p class="einleitung"><strong>So arbeiten Sie:</strong> Wählen Sie ein Programm und die Eingaben. Mit „Weiter ▶“ (oder der Pfeiltaste →) wird das Programm Zeile für Zeile ausgeführt. Die <strong>markierte Zeile wird als Nächstes ausgeführt</strong>, die Variablentabelle zeigt den Stand davor. Im Modus „Vorhersagen“ hält das Programm an manchen Stellen an: Überlegen Sie zuerst, was passiert, und antworten Sie dann.</p>
+  </div>
+
+  <div class="card">
+    <div class="wahl">
+      <label class="feld"><span>Programm</span><select id="prog"></select></label>
+      <div class="feld"><span>Eingaben</span><div class="chips" id="varianten"></div></div>
+      <div class="feld"><span>Modus</span><div class="chips" id="modi">
+        <button class="chip" type="button" data-m="zeigen" aria-pressed="true">Vorführen</button>
+        <button class="chip" type="button" data-m="vorher" aria-pressed="false">Vorhersagen</button>
+      </div></div>
+    </div>
+    <p id="info"></p>
+  </div>
+
+  <div class="card steuer no-print">
+    <button class="btn-2" id="neu" type="button" title="Neustart (Taste Pos1)">⟲ Neustart</button>
+    <button class="btn-2" id="zur" type="button" title="Schritt zurück (Taste ←)">◀ Zurück</button>
+    <button class="btn" id="vor" type="button" title="Nächster Schritt (Taste →)">Weiter ▶</button>
+    <button class="btn-2" id="play" type="button">▶ Abspielen</button>
+    <select id="tempo" aria-label="Tempo">
+      <option value="1600">langsam</option><option value="900" selected>mittel</option><option value="400">schnell</option>
+    </select>
+    <span class="zaehler" id="zaehler" aria-live="polite"></span>
+    <span class="rechts">
+      <span id="punkte" hidden></span>
+      <button class="btn-2" id="kleiner" type="button" aria-label="Schrift kleiner">A−</button>
+      <button class="btn-2" id="groesser" type="button" aria-label="Schrift größer">A+</button>
+    </span>
+  </div>
+
+  <div class="card" id="frage" hidden aria-live="polite"></div>
+
+  <div class="buehne" id="buehne">
+    <section class="card k-code">
+      <h2>Code</h2>
+      <div id="code"></div>
+      <div id="jetzt" aria-live="polite"></div>
+    </section>
+    <section class="card k-pap">
+      <h2>Programmablaufplan</h2>
+      <svg id="pap" role="img" aria-label="Programmablaufplan zum Programm"></svg>
+    </section>
+    <section class="card k-var">
+      <h2>Variablen</h2>
+      <div id="vars"></div>
+      <h2 class="zw">Ausgabe</h2>
+      <pre id="ausgabe"></pre>
+    </section>
+  </div>
+
+  <details class="card info" style="margin-top:16px">
+    <summary>Was dieses Labor zeigt und was nicht</summary>
+    <ul>
+      <li>Die Programme wurden vorab mit echtem Python ausgeführt und Schritt für Schritt aufgezeichnet. Was Sie sehen, ist also genau das, was Python tut, einschließlich der Werte wie <code>154.01999999999998</code>.</li>
+      <li>Eigener Code kann hier nicht eingegeben werden. Dafür nutzen Sie Jupyter.</li>
+      <li>Die Eingaben wählen Sie oben aus. In Jupyter tippen Sie sie in das Eingabefeld unter der Zelle.</li>
+      <li>Python kennt „Zeilen“ eigentlich nicht als Schritte. Zeilen wie <code>else:</code> werden deshalb nie selbst markiert, sondern gleich die erste Zeile darunter.</li>
+      <li>Der PAP verwendet die Sinnbilder nach DIN 66001: Oval für Start und Ende, Rechteck für Anweisungen, Parallelogramm für Ein- und Ausgabe, Raute für Verzweigungen. Mehrere gleichartige Zeilen sind zu einem Kasten zusammengefasst.</li>
+    </ul>
+  </details>
+
+  <div id="selftest" hidden></div>
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../">Startseite</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+"use strict";
+const DATEN = [{"id":"B1","gruppe":"Grundlagen","titel":"Bestand speichern und ändern","info":"Eine Variable bekommt einen neuen Wert. Achten Sie in der Variablentabelle auf Wert und Typ.","code":"eierbestand = 30\neierbestand = 5\nprint(eierbestand)\n\nproduktname = \"Eierkarton\"\npreis = 3.50\nprint(produktname)\nprint(preis)","pap":{"w":263,"h":413,"n":[{"k":"start","x":76.4,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"op","x":55.0,"y":76,"w":152.8,"h":50,"t":["eierbestand = 30","eierbestand = 5"],"z":[1,2]},{"k":"io","x":35.2,"y":152,"w":192.4,"h":33,"t":["print(eierbestand)"],"z":[3]},{"k":"op","x":16.0,"y":211,"w":230.8,"h":50,"t":["produktname = \"Eierkarton\"","preis = 3.50"],"z":[5,6]},{"k":"io","x":35.2,"y":287,"w":192.4,"h":50,"t":["print(produktname)","print(preis)"],"z":[7,8]},{"k":"ende","x":76.4,"y":363,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[131.4,50],[131.4,76]],"a":true},{"p":[[131.4,126],[131.4,152]],"a":true},{"p":[[131.4,185],[131.4,211]],"a":true},{"p":[[131.4,261],[131.4,287]],"a":true},{"p":[[131.4,337],[131.4,363]],"a":true}]},"varianten":[{"name":"ohne Eingabe","eingaben":[],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":2,"v":[["eierbestand","30","int"]],"o":0},{"l":3,"v":[["eierbestand","5","int"]],"o":0},{"l":5,"v":[["eierbestand","5","int"]],"o":2},{"l":6,"v":[["eierbestand","5","int"],["produktname","'Eierkarton'","str"]],"o":2},{"l":7,"v":[["eierbestand","5","int"],["produktname","'Eierkarton'","str"],["preis","3.5","float"]],"o":2},{"l":8,"v":[["eierbestand","5","int"],["produktname","'Eierkarton'","str"],["preis","3.5","float"]],"o":13},{"l":null,"ende":true,"v":[["eierbestand","5","int"],["produktname","'Eierkarton'","str"],["preis","3.5","float"]],"o":17}],"ausgabe":"5\nEierkarton\n3.5\n","fragen":[{"s":2,"typ":"wert","text":"Welchen Wert hat `eierbestand`, nachdem Zeile 2 ausgeführt wurde?","opts":["25","30","35","5"],"richtig":"5","erkl":"Die neue Zuweisung überschreibt den alten Wert. Die 30 ist danach nicht mehr gespeichert."},{"s":5,"typ":"wert","text":"Welchen Wert hat `preis`, nachdem Zeile 6 ausgeführt wurde?","opts":["3.5","3.50","'3.50'","3,50"],"richtig":"3.5","erkl":"Python speichert die Zahl 3,50 als `3.5`, die Null am Ende ändert den Wert nicht. Wie viele Nachkommastellen angezeigt werden, legen Sie später mit dem f-String fest."}]}]},{"id":"B2","gruppe":"Grundlagen","titel":"Zaun um den Hühnerstall","info":"Beispiel aus dem Infomaterial zum f-String. Vergleichen Sie die beiden Ausgaben.","code":"laenge = 53.56\nbreite = 23.45\n\numfang = laenge + laenge + breite + breite\n\nprint(umfang)\nprint(f\"Es müssen {umfang:.2f} Meter Zaun gekauft werden\")","pap":{"w":318,"h":295,"n":[{"k":"start","x":104.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"op","x":28.0,"y":76,"w":262.0,"h":67,"t":["laenge = 53.56","breite = 23.45","umfang = laenge + laenge + br…"],"z":[1,2,4]},{"k":"io","x":16.0,"y":169,"w":286.0,"h":50,"t":["print(umfang)","print(f\"Es müssen {umfang:.2f…"],"z":[6,7]},{"k":"ende","x":104.0,"y":245,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[159.0,50],[159.0,76]],"a":true},{"p":[[159.0,143],[159.0,169]],"a":true},{"p":[[159.0,219],[159.0,245]],"a":true}]},"varianten":[{"name":"ohne Eingabe","eingaben":[],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":2,"v":[["laenge","53.56","float"]],"o":0},{"l":4,"v":[["laenge","53.56","float"],["breite","23.45","float"]],"o":0},{"l":6,"v":[["laenge","53.56","float"],["breite","23.45","float"],["umfang","154.01999999999998","float"]],"o":0},{"l":7,"v":[["laenge","53.56","float"],["breite","23.45","float"],["umfang","154.01999999999998","float"]],"o":19},{"l":null,"ende":true,"v":[["laenge","53.56","float"],["breite","23.45","float"],["umfang","154.01999999999998","float"]],"o":62}],"ausgabe":"154.01999999999998\nEs müssen 154.02 Meter Zaun gekauft werden\n","fragen":[{"s":3,"typ":"wert","text":"Welchen Wert hat `umfang`, nachdem Zeile 4 ausgeführt wurde?","opts":["154.0","154.01999999999998","154.02","77.01"],"richtig":"154.01999999999998","erkl":"Viele Kommazahlen kann der Computer im Binärsystem nicht exakt speichern. Deshalb entsteht eine winzige Abweichung in der letzten Stelle. Mit `{umfang:.2f}` im f-String wird auf zwei Nachkommastellen gerundet ausgegeben."}]}]},{"id":"B3","gruppe":"Grundlagen","titel":"Zaun mit input() ohne Umwandlung","info":"Länge und Breite werden eingegeben, aber nicht umgewandelt. Das Programm läuft ohne Fehlermeldung. Stimmt das Ergebnis?","code":"laenge = input(\"Länge in Metern: \")\nbreite = input(\"Breite in Metern: \")\n\numfang = laenge + laenge + breite + breite\nprint(f\"Es müssen {umfang} Meter Zaun gekauft werden\")","pap":{"w":318,"h":320,"n":[{"k":"start","x":104.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":66.7,"y":76,"w":184.6,"h":50,"t":["laenge = input(…)","breite = input(…)"],"z":[1,2]},{"k":"op","x":28.0,"y":152,"w":262.0,"h":33,"t":["umfang = laenge + laenge + br…"],"z":[4]},{"k":"io","x":16.0,"y":211,"w":286.0,"h":33,"t":["print(f\"Es müssen {umfang} Me…"],"z":[5]},{"k":"ende","x":104.0,"y":270,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[159.0,50],[159.0,76]],"a":true},{"p":[[159.0,126],[159.0,152]],"a":true},{"p":[[159.0,185],[159.0,211]],"a":true},{"p":[[159.0,244],[159.0,270]],"a":true}]},"varianten":[{"name":"50 und 20","eingaben":["50","20"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"50"},{"l":2,"v":[["laenge","'50'","str"]],"o":20,"in":"20"},{"l":4,"v":[["laenge","'50'","str"],["breite","'20'","str"]],"o":41},{"l":5,"v":[["laenge","'50'","str"],["breite","'20'","str"],["umfang","'50502020'","str"]],"o":41},{"l":null,"ende":true,"v":[["laenge","'50'","str"],["breite","'20'","str"],["umfang","'50502020'","str"]],"o":86}],"ausgabe":"Länge in Metern: 50\nBreite in Metern: 20\nEs müssen 50502020 Meter Zaun gekauft werden\n","fragen":[{"s":1,"typ":"wert","text":"Welchen Wert hat `laenge`, nachdem Zeile 1 ausgeführt wurde?","opts":["12.0","'50'","50","50.0","12"],"richtig":"'50'","erkl":"`input()` liefert immer einen Text (Typ `str`), auch wenn Ziffern eingetippt werden. Sie erkennen das an den Anführungszeichen."},{"s":3,"typ":"wert","text":"Welchen Wert hat `umfang`, nachdem Zeile 4 ausgeführt wurde?","opts":["'50502020'","'140'","'40'","40","140"],"richtig":"'50502020'","erkl":"Bei Texten bedeutet `+` aneinanderhängen. Python meldet keinen Fehler, das Ergebnis ist aber falsch."}]},{"name":"12 und 8","eingaben":["12","8"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"12"},{"l":2,"v":[["laenge","'12'","str"]],"o":20,"in":"8"},{"l":4,"v":[["laenge","'12'","str"],["breite","'8'","str"]],"o":40},{"l":5,"v":[["laenge","'12'","str"],["breite","'8'","str"],["umfang","'121288'","str"]],"o":40},{"l":null,"ende":true,"v":[["laenge","'12'","str"],["breite","'8'","str"],["umfang","'121288'","str"]],"o":83}],"ausgabe":"Länge in Metern: 12\nBreite in Metern: 8\nEs müssen 121288 Meter Zaun gekauft werden\n","fragen":[{"s":1,"typ":"wert","text":"Welchen Wert hat `laenge`, nachdem Zeile 1 ausgeführt wurde?","opts":["'12'","50.0","50","12.0","12"],"richtig":"'12'","erkl":"`input()` liefert immer einen Text (Typ `str`), auch wenn Ziffern eingetippt werden. Sie erkennen das an den Anführungszeichen."},{"s":3,"typ":"wert","text":"Welchen Wert hat `umfang`, nachdem Zeile 4 ausgeführt wurde?","opts":["'140'","'40'","'121288'","140","40"],"richtig":"'121288'","erkl":"Bei Texten bedeutet `+` aneinanderhängen. Python meldet keinen Fehler, das Ergebnis ist aber falsch."}]}]},{"id":"B4","gruppe":"Grundlagen","titel":"Rechteck mit input() ohne Umwandlung","info":"Wie B3, aber jetzt wird multipliziert.","code":"laenge = input(\"Bitte geben Sie die Länge ein: \")\nbreite = input(\"Bitte geben Sie die Breite ein: \")\n\nflaeche = laenge * breite\n\nprint(f\"Die Fläche des Rechtecks beträgt: {flaeche}\")","pap":{"w":318,"h":320,"n":[{"k":"start","x":104.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":66.7,"y":76,"w":184.6,"h":50,"t":["laenge = input(…)","breite = input(…)"],"z":[1,2]},{"k":"op","x":47.5,"y":152,"w":223.0,"h":33,"t":["flaeche = laenge * breite"],"z":[4]},{"k":"io","x":16.0,"y":211,"w":286.0,"h":33,"t":["print(f\"Die Fläche des Rechte…"],"z":[6]},{"k":"ende","x":104.0,"y":270,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[159.0,50],[159.0,76]],"a":true},{"p":[[159.0,126],[159.0,152]],"a":true},{"p":[[159.0,185],[159.0,211]],"a":true},{"p":[[159.0,244],[159.0,270]],"a":true}]},"varianten":[{"name":"5 und 10","eingaben":["5","10"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"5"},{"l":2,"v":[["laenge","'5'","str"]],"o":33,"in":"10"},{"l":4,"v":[["laenge","'5'","str"],["breite","'10'","str"]],"o":68},{"l":4,"ende":true,"err":"TypeError: can't multiply sequence by non-int of type 'str'","v":[["laenge","'5'","str"],["breite","'10'","str"]],"o":68}],"ausgabe":"Bitte geben Sie die Länge ein: 5\nBitte geben Sie die Breite ein: 10\n","fragen":[{"s":3,"typ":"wahl","text":"Was passiert, wenn diese Zeile ausgeführt wird?","opts":["`flaeche` bekommt den Wert `50`","`flaeche` bekommt den Wert `'510'`","Python bricht mit einer Fehlermeldung ab"],"richtig":"Python bricht mit einer Fehlermeldung ab","erkl":"`laenge` und `breite` sind Texte. Zwei Texte kann Python nicht multiplizieren und meldet einen `TypeError`."}]}]},{"id":"B5","gruppe":"Grundlagen","titel":"Rechteck mit float()","info":"Beispiel aus dem Infomaterial zu input(), Teil 2. Die Eingabe wird in eine Zahl umgewandelt.","code":"laenge = float(input(\"Bitte geben Sie die Länge ein: \"))\nbreite = float(input(\"Bitte geben Sie die Breite ein: \"))\n\nflaeche = laenge * breite\n\nprint(f\"Die Fläche des Rechtecks beträgt: {flaeche}\")","pap":{"w":318,"h":320,"n":[{"k":"start","x":104.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":39.4,"y":76,"w":239.2,"h":50,"t":["laenge = float(input(…))","breite = float(input(…))"],"z":[1,2]},{"k":"op","x":47.5,"y":152,"w":223.0,"h":33,"t":["flaeche = laenge * breite"],"z":[4]},{"k":"io","x":16.0,"y":211,"w":286.0,"h":33,"t":["print(f\"Die Fläche des Rechte…"],"z":[6]},{"k":"ende","x":104.0,"y":270,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[159.0,50],[159.0,76]],"a":true},{"p":[[159.0,126],[159.0,152]],"a":true},{"p":[[159.0,185],[159.0,211]],"a":true},{"p":[[159.0,244],[159.0,270]],"a":true}]},"varianten":[{"name":"5 und 10","eingaben":["5","10"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"5"},{"l":2,"v":[["laenge","5.0","float"]],"o":33,"in":"10"},{"l":4,"v":[["laenge","5.0","float"],["breite","10.0","float"]],"o":68},{"l":6,"v":[["laenge","5.0","float"],["breite","10.0","float"],["flaeche","50.0","float"]],"o":68},{"l":null,"ende":true,"v":[["laenge","5.0","float"],["breite","10.0","float"],["flaeche","50.0","float"]],"o":107}],"ausgabe":"Bitte geben Sie die Länge ein: 5\nBitte geben Sie die Breite ein: 10\nDie Fläche des Rechtecks beträgt: 50.0\n","fragen":[{"s":1,"typ":"wert","text":"Welchen Wert hat `laenge`, nachdem Zeile 1 ausgeführt wurde?","opts":["'5'","'2.5'","5","5.0"],"richtig":"5.0","erkl":"`input()` liefert den Text, `float()` wandelt ihn in eine Kommazahl um. Gespeichert wird also eine Zahl vom Typ `float`."}]},{"name":"2.5 und 4","eingaben":["2.5","4"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"2.5"},{"l":2,"v":[["laenge","2.5","float"]],"o":35,"in":"4"},{"l":4,"v":[["laenge","2.5","float"],["breite","4.0","float"]],"o":69},{"l":6,"v":[["laenge","2.5","float"],["breite","4.0","float"],["flaeche","10.0","float"]],"o":69},{"l":null,"ende":true,"v":[["laenge","2.5","float"],["breite","4.0","float"],["flaeche","10.0","float"]],"o":108}],"ausgabe":"Bitte geben Sie die Länge ein: 2.5\nBitte geben Sie die Breite ein: 4\nDie Fläche des Rechtecks beträgt: 10.0\n","fragen":[{"s":1,"typ":"wert","text":"Welchen Wert hat `laenge`, nachdem Zeile 1 ausgeführt wurde?","opts":["5","'2.5'","'5'","2.5"],"richtig":"2.5","erkl":"`input()` liefert den Text, `float()` wandelt ihn in eine Kommazahl um. Gespeichert wird also eine Zahl vom Typ `float`."}]}]},{"id":"I1","gruppe":"if-Anweisung","titel":"Rechenquiz (if/else)","info":"Beispiel aus dem Infomaterial zur if-Anweisung.","code":"# Vorgaben\nzahl1 = 2\nzahl2 = 5\n\n# Eingabe\nergebnis = int(input(f\"Wie viel ist {zahl1} + {zahl2}? \"))\n\n# Verarbeitung\ncomputerergebnis = zahl1 + zahl2\n\n# Ausgabe\nif ergebnis == computerergebnis:\n    print(\"Richtig, sehr gut!\")\nelse:\n    print(f\"Leider falsch. Richtig ist {computerergebnis}.\")","pap":{"w":705,"h":520,"n":[{"k":"start","x":145.1,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"op","x":135.1,"y":76,"w":130,"h":50,"t":["zahl1 = 2","zahl2 = 5"],"z":[2,3]},{"k":"io","x":80.5,"y":152,"w":239.2,"h":33,"t":["ergebnis = int(input(…))"],"z":[6]},{"k":"op","x":69.1,"y":211,"w":262.0,"h":33,"t":["computerergebnis = zahl1 + za…"],"z":[9]},{"k":"verz","x":16.0,"y":270,"w":368.3,"h":54,"t":["ergebnis == computerergebnis"],"z":[12]},{"k":"io","x":408.1,"y":323.0,"w":262.6,"h":33,"t":["print(\"Richtig, sehr gut!\")"],"z":[13]},{"k":"io","x":57.1,"y":389.8,"w":286.0,"h":33,"t":["print(f\"Leider falsch. Richti…"],"z":[15]},{"k":"punkt","x":196.6,"y":440.1,"w":7,"h":7,"t":[],"z":[]},{"k":"ende","x":145.1,"y":469.6,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[200.1,50],[200.1,76]],"a":true},{"p":[[200.1,126],[200.1,152]],"a":true},{"p":[[200.1,185],[200.1,211]],"a":true},{"p":[[200.1,244],[200.1,270]],"a":true},{"p":[[384.3,297.0],[539.4,297.0],[539.4,323.0]],"a":true,"l":"ja","lp":[390.3,291.0]},{"p":[[539.4,356.0],[539.4,369.0],[688.7,369.0],[688.7,443.6],[200.1,443.6]],"a":false},{"p":[[200.1,324],[200.1,389.8]],"a":true,"l":"nein","lp":[206.1,337]},{"p":[[200.1,422.8],[200.1,443.6]],"a":false},{"p":[[200.1,443.6],[200.1,469.6]],"a":true}]},"varianten":[{"name":"Eingabe 7","eingaben":["7"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":2,"v":[],"o":0},{"l":3,"v":[["zahl1","2","int"]],"o":0},{"l":6,"v":[["zahl1","2","int"],["zahl2","5","int"]],"o":0,"in":"7"},{"l":9,"v":[["zahl1","2","int"],["zahl2","5","int"],["ergebnis","7","int"]],"o":22},{"l":12,"v":[["zahl1","2","int"],["zahl2","5","int"],["ergebnis","7","int"],["computerergebnis","7","int"]],"o":22,"c":{"w":true,"t":[]}},{"l":13,"v":[["zahl1","2","int"],["zahl2","5","int"],["ergebnis","7","int"],["computerergebnis","7","int"]],"o":22},{"l":null,"ende":true,"v":[["zahl1","2","int"],["zahl2","5","int"],["ergebnis","7","int"],["computerergebnis","7","int"]],"o":41}],"ausgabe":"Wie viel ist 2 + 5? 7\nRichtig, sehr gut!\n","fragen":[{"s":5,"typ":"bedingung","text":"Ist die Bedingung in Zeile 12 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`ergebnis` ist 7, `computerergebnis` ist 7. Die Bedingung ist also True."},{"s":5,"typ":"zeile","text":"Welche Zeile wird nach Zeile 12 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"13","erkl":"Ist die Bedingung True, läuft der Block unter `if`, sonst der Block unter `else`. Es läuft immer genau einer der beiden."}]},{"name":"Eingabe 8","eingaben":["8"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":2,"v":[],"o":0},{"l":3,"v":[["zahl1","2","int"]],"o":0},{"l":6,"v":[["zahl1","2","int"],["zahl2","5","int"]],"o":0,"in":"8"},{"l":9,"v":[["zahl1","2","int"],["zahl2","5","int"],["ergebnis","8","int"]],"o":22},{"l":12,"v":[["zahl1","2","int"],["zahl2","5","int"],["ergebnis","8","int"],["computerergebnis","7","int"]],"o":22,"c":{"w":false,"t":[]}},{"l":15,"v":[["zahl1","2","int"],["zahl2","5","int"],["ergebnis","8","int"],["computerergebnis","7","int"]],"o":22},{"l":null,"ende":true,"v":[["zahl1","2","int"],["zahl2","5","int"],["ergebnis","8","int"],["computerergebnis","7","int"]],"o":52}],"ausgabe":"Wie viel ist 2 + 5? 8\nLeider falsch. Richtig ist 7.\n","fragen":[{"s":5,"typ":"bedingung","text":"Ist die Bedingung in Zeile 12 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`ergebnis` ist 8, `computerergebnis` ist 7. Die Bedingung ist also False."},{"s":5,"typ":"zeile","text":"Welche Zeile wird nach Zeile 12 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"15","erkl":"Ist die Bedingung True, läuft der Block unter `if`, sonst der Block unter `else`. Es läuft immer genau einer der beiden."}]}]},{"id":"I2","gruppe":"if-Anweisung","titel":"Großbestellung (if ohne else)","info":"Beispiel aus dem Infomaterial zur if-Anweisung. Achten Sie darauf, welche Zeilen übersprungen werden.","code":"menge = int(input(\"Bestellmenge: \"))\n\nif menge >= 100:\n    print(\"Großbestellung: Bitte Liefertermin telefonisch bestätigen.\")\n\nprint(\"Bestellung erfasst.\")","pap":{"w":578,"h":390,"n":[{"k":"start","x":96.2,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":43.3,"y":76,"w":215.8,"h":33,"t":["menge = int(input(…))"],"z":[1]},{"k":"verz","x":67.7,"y":135,"w":167.0,"h":54,"t":["menge >= 100"],"z":[3]},{"k":"io","x":258.5,"y":188.0,"w":286.0,"h":33,"t":["print(\"Großbestellung: Bitte …"],"z":[4]},{"k":"punkt","x":147.7,"y":251.3,"w":7,"h":7,"t":[],"z":[]},{"k":"io","x":16.0,"y":280.8,"w":270.4,"h":33,"t":["print(\"Bestellung erfasst.\")"],"z":[6]},{"k":"ende","x":96.2,"y":339.8,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[151.2,50],[151.2,76]],"a":true},{"p":[[151.2,109],[151.2,135]],"a":true},{"p":[[234.7,162.0],[401.5,162.0],[401.5,188.0]],"a":true,"l":"ja","lp":[240.7,156.0]},{"p":[[401.5,221.0],[401.5,234.0],[562.5,234.0],[562.5,254.8],[151.2,254.8]],"a":false},{"p":[[151.2,189],[151.2,254.8]],"a":false,"l":"nein","lp":[157.2,202]},{"p":[[151.2,254.8],[151.2,280.8]],"a":true},{"p":[[151.2,313.8],[151.2,339.8]],"a":true}]},"varianten":[{"name":"Menge 120","eingaben":["120"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"120"},{"l":3,"v":[["menge","120","int"]],"o":18,"c":{"w":true,"t":[]}},{"l":4,"v":[["menge","120","int"]],"o":18},{"l":6,"v":[["menge","120","int"]],"o":77},{"l":null,"ende":true,"v":[["menge","120","int"]],"o":97}],"ausgabe":"Bestellmenge: 120\nGroßbestellung: Bitte Liefertermin telefonisch bestätigen.\nBestellung erfasst.\n","fragen":[{"s":2,"typ":"zeile","text":"Welche Zeile wird nach Zeile 3 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"4","erkl":"`menge` ist 120, die Bedingung ist also True. Ist sie True, läuft der eingerückte Block, sonst wird er übersprungen. Zeile 6 ist nicht eingerückt und läuft in jedem Fall."}]},{"name":"Menge 30","eingaben":["30"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"30"},{"l":3,"v":[["menge","30","int"]],"o":17,"c":{"w":false,"t":[]}},{"l":6,"v":[["menge","30","int"]],"o":17},{"l":null,"ende":true,"v":[["menge","30","int"]],"o":37}],"ausgabe":"Bestellmenge: 30\nBestellung erfasst.\n","fragen":[{"s":2,"typ":"zeile","text":"Welche Zeile wird nach Zeile 3 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"6","erkl":"`menge` ist 30, die Bedingung ist also False. Ist sie True, läuft der eingerückte Block, sonst wird er übersprungen. Zeile 6 ist nicht eingerückt und läuft in jedem Fall."}]},{"name":"Menge 100","eingaben":["100"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"100"},{"l":3,"v":[["menge","100","int"]],"o":18,"c":{"w":true,"t":[]}},{"l":4,"v":[["menge","100","int"]],"o":18},{"l":6,"v":[["menge","100","int"]],"o":77},{"l":null,"ende":true,"v":[["menge","100","int"]],"o":97}],"ausgabe":"Bestellmenge: 100\nGroßbestellung: Bitte Liefertermin telefonisch bestätigen.\nBestellung erfasst.\n","fragen":[{"s":2,"typ":"zeile","text":"Welche Zeile wird nach Zeile 3 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"4","erkl":"`menge` ist 100, die Bedingung ist also True. Ist sie True, läuft der eingerückte Block, sonst wird er übersprungen. Zeile 6 ist nicht eingerückt und läuft in jedem Fall."}]}]},{"id":"I3","gruppe":"if-Anweisung","titel":"Gummienten (if/elif/else)","info":"Beispiel aus dem Infomaterial zu elif. Probieren Sie auch die Eingabe „Rot“ mit großem R.","code":"farbe = input(\"Farbe der Enten (rot/blau/schwarz): \")\nanzahl = int(input(\"Anzahl der Enten in dieser Farbe: \"))\n\nif farbe == \"rot\":\n    gesamtpreis = anzahl * 3.99\n    print(f\"Gesamtpreis: {gesamtpreis:.2f} €\")\nelif farbe == \"blau\":\n    gesamtpreis = anzahl * 3.15\n    print(f\"Gesamtpreis: {gesamtpreis:.2f} €\")\nelif farbe == \"schwarz\":\n    gesamtpreis = anzahl * 2.53\n    print(f\"Gesamtpreis: {gesamtpreis:.2f} €\")\nelse:\n    print(\"Diese Farbe gibt es nicht.\")","pap":{"w":660,"h":860,"n":[{"k":"start","x":104.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":47.2,"y":76,"w":223.6,"h":50,"t":["farbe = input(…)","anzahl = int(input(…))"],"z":[1,2]},{"k":"verz","x":62.9,"y":152,"w":192.1,"h":54,"t":["farbe == \"rot\""],"z":[4]},{"k":"op","x":302.6,"y":205.0,"w":238.6,"h":33,"t":["gesamtpreis = anzahl * 3.99"],"z":[5]},{"k":"io","x":278.9,"y":264.0,"w":286.0,"h":33,"t":["print(f\"Gesamtpreis: {gesamtp…"],"z":[6]},{"k":"verz","x":56.6,"y":330.8,"w":204.7,"h":54,"t":["farbe == \"blau\""],"z":[7]},{"k":"op","x":308.9,"y":383.8,"w":238.6,"h":33,"t":["gesamtpreis = anzahl * 3.15"],"z":[8]},{"k":"io","x":285.2,"y":442.8,"w":286.0,"h":33,"t":["print(f\"Gesamtpreis: {gesamtp…"],"z":[9]},{"k":"verz","x":37.8,"y":509.6,"w":242.5,"h":54,"t":["farbe == \"schwarz\""],"z":[10]},{"k":"op","x":327.7,"y":562.6,"w":238.6,"h":33,"t":["gesamtpreis = anzahl * 2.53"],"z":[11]},{"k":"io","x":304.0,"y":621.6,"w":286.0,"h":33,"t":["print(f\"Gesamtpreis: {gesamtp…"],"z":[12]},{"k":"io","x":16.0,"y":688.4,"w":286.0,"h":33,"t":["print(\"Diese Farbe gibt es ni…"],"z":[14]},{"k":"punkt","x":155.5,"y":738.7,"w":7,"h":7,"t":[],"z":[]},{"k":"punkt","x":155.5,"y":759.5,"w":7,"h":7,"t":[],"z":[]},{"k":"punkt","x":155.5,"y":780.3,"w":7,"h":7,"t":[],"z":[]},{"k":"ende","x":104.0,"y":809.8,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[159.0,50],[159.0,76]],"a":true},{"p":[[159.0,126],[159.0,152]],"a":true},{"p":[[255.1,179.0],[421.9,179.0],[421.9,205.0]],"a":true,"l":"ja","lp":[261.1,173.0]},{"p":[[421.9,238.0],[421.9,264.0]],"a":true},{"p":[[421.9,297.0],[421.9,310.0],[644.0,310.0],[644.0,783.8],[159.0,783.8]],"a":false},{"p":[[159.0,206],[159.0,330.8]],"a":true,"l":"nein","lp":[165.0,219]},{"p":[[261.4,357.8],[428.2,357.8],[428.2,383.8]],"a":true,"l":"ja","lp":[267.4,351.8]},{"p":[[428.2,416.8],[428.2,442.8]],"a":true},{"p":[[428.2,475.8],[428.2,488.8],[626.0,488.8],[626.0,763.0],[159.0,763.0]],"a":false},{"p":[[159.0,384.8],[159.0,509.6]],"a":true,"l":"nein","lp":[165.0,397.8]},{"p":[[280.2,536.6],[447.0,536.6],[447.0,562.6]],"a":true,"l":"ja","lp":[286.2,530.6]},{"p":[[447.0,595.6],[447.0,621.6]],"a":true},{"p":[[447.0,654.6],[447.0,667.6],[608.0,667.6],[608.0,742.2],[159.0,742.2]],"a":false},{"p":[[159.0,563.6],[159.0,688.4]],"a":true,"l":"nein","lp":[165.0,576.6]},{"p":[[159.0,721.4],[159.0,742.2]],"a":false},{"p":[[159.0,742.2],[159.0,763.0]],"a":false},{"p":[[159.0,763.0],[159.0,783.8]],"a":false},{"p":[[159.0,783.8],[159.0,809.8]],"a":true}]},"varianten":[{"name":"rot, 4","eingaben":["rot","4"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"rot"},{"l":2,"v":[["farbe","'rot'","str"]],"o":40,"in":"4"},{"l":4,"v":[["farbe","'rot'","str"],["anzahl","4","int"]],"o":76,"c":{"w":true,"t":[]}},{"l":5,"v":[["farbe","'rot'","str"],["anzahl","4","int"]],"o":76},{"l":6,"v":[["farbe","'rot'","str"],["anzahl","4","int"],["gesamtpreis","15.96","float"]],"o":76},{"l":null,"ende":true,"v":[["farbe","'rot'","str"],["anzahl","4","int"],["gesamtpreis","15.96","float"]],"o":97}],"ausgabe":"Farbe der Enten (rot/blau/schwarz): rot\nAnzahl der Enten in dieser Farbe: 4\nGesamtpreis: 15.96 €\n","fragen":[{"s":3,"typ":"zeile","text":"Welche Zeile wird nach Zeile 4 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"5","erkl":"`farbe` ist 'rot'. Die Bedingung in Zeile 4 ist True. Ist sie False, prüft Python als Nächstes das `elif` darunter."},{"s":5,"typ":"zeile","text":"Welche Zeile wird nach Zeile 6 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"Programmende","erkl":"Nach einem ausgeführten Block springt Python ans Ende der ganzen if-elif-else-Struktur. Die übrigen Bedingungen werden nicht mehr geprüft."}]},{"name":"schwarz, 10","eingaben":["schwarz","10"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"schwarz"},{"l":2,"v":[["farbe","'schwarz'","str"]],"o":44,"in":"10"},{"l":4,"v":[["farbe","'schwarz'","str"],["anzahl","10","int"]],"o":81,"c":{"w":false,"t":[]}},{"l":7,"v":[["farbe","'schwarz'","str"],["anzahl","10","int"]],"o":81,"c":{"w":false,"t":[]}},{"l":10,"v":[["farbe","'schwarz'","str"],["anzahl","10","int"]],"o":81,"c":{"w":true,"t":[]}},{"l":11,"v":[["farbe","'schwarz'","str"],["anzahl","10","int"]],"o":81},{"l":12,"v":[["farbe","'schwarz'","str"],["anzahl","10","int"],["gesamtpreis","25.299999999999997","float"]],"o":81},{"l":null,"ende":true,"v":[["farbe","'schwarz'","str"],["anzahl","10","int"],["gesamtpreis","25.299999999999997","float"]],"o":102}],"ausgabe":"Farbe der Enten (rot/blau/schwarz): schwarz\nAnzahl der Enten in dieser Farbe: 10\nGesamtpreis: 25.30 €\n","fragen":[{"s":3,"typ":"zeile","text":"Welche Zeile wird nach Zeile 4 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"7","erkl":"`farbe` ist 'schwarz'. Die Bedingung in Zeile 4 ist False. Ist sie False, prüft Python als Nächstes das `elif` darunter."},{"s":5,"typ":"bedingung","text":"Ist die Bedingung in Zeile 10 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`farbe` ist 'schwarz'. Der Vergleich mit `==` unterscheidet Groß- und Kleinschreibung, `\"Rot\"` ist nicht gleich `\"rot\"`."}]},{"name":"grün, 3","eingaben":["grün","3"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"grün"},{"l":2,"v":[["farbe","'grün'","str"]],"o":41,"in":"3"},{"l":4,"v":[["farbe","'grün'","str"],["anzahl","3","int"]],"o":77,"c":{"w":false,"t":[]}},{"l":7,"v":[["farbe","'grün'","str"],["anzahl","3","int"]],"o":77,"c":{"w":false,"t":[]}},{"l":10,"v":[["farbe","'grün'","str"],["anzahl","3","int"]],"o":77,"c":{"w":false,"t":[]}},{"l":14,"v":[["farbe","'grün'","str"],["anzahl","3","int"]],"o":77},{"l":null,"ende":true,"v":[["farbe","'grün'","str"],["anzahl","3","int"]],"o":104}],"ausgabe":"Farbe der Enten (rot/blau/schwarz): grün\nAnzahl der Enten in dieser Farbe: 3\nDiese Farbe gibt es nicht.\n","fragen":[{"s":3,"typ":"zeile","text":"Welche Zeile wird nach Zeile 4 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"7","erkl":"`farbe` ist 'grün'. Die Bedingung in Zeile 4 ist False. Ist sie False, prüft Python als Nächstes das `elif` darunter."},{"s":5,"typ":"bedingung","text":"Ist die Bedingung in Zeile 10 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`farbe` ist 'grün'. Der Vergleich mit `==` unterscheidet Groß- und Kleinschreibung, `\"Rot\"` ist nicht gleich `\"rot\"`."}]},{"name":"Rot, 2","eingaben":["Rot","2"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"Rot"},{"l":2,"v":[["farbe","'Rot'","str"]],"o":40,"in":"2"},{"l":4,"v":[["farbe","'Rot'","str"],["anzahl","2","int"]],"o":76,"c":{"w":false,"t":[]}},{"l":7,"v":[["farbe","'Rot'","str"],["anzahl","2","int"]],"o":76,"c":{"w":false,"t":[]}},{"l":10,"v":[["farbe","'Rot'","str"],["anzahl","2","int"]],"o":76,"c":{"w":false,"t":[]}},{"l":14,"v":[["farbe","'Rot'","str"],["anzahl","2","int"]],"o":76},{"l":null,"ende":true,"v":[["farbe","'Rot'","str"],["anzahl","2","int"]],"o":103}],"ausgabe":"Farbe der Enten (rot/blau/schwarz): Rot\nAnzahl der Enten in dieser Farbe: 2\nDiese Farbe gibt es nicht.\n","fragen":[{"s":3,"typ":"zeile","text":"Welche Zeile wird nach Zeile 4 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"7","erkl":"`farbe` ist 'Rot'. Die Bedingung in Zeile 4 ist False. Ist sie False, prüft Python als Nächstes das `elif` darunter."},{"s":5,"typ":"bedingung","text":"Ist die Bedingung in Zeile 10 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`farbe` ist 'Rot'. Der Vergleich mit `==` unterscheidet Groß- und Kleinschreibung, `\"Rot\"` ist nicht gleich `\"rot\"`."}]}]},{"id":"I4","gruppe":"if-Anweisung","titel":"Rabattstaffel (Reihenfolge falsch)","info":"Beispiel aus dem Infomaterial zu elif. Bei 600 € sollten es 10 % Rabatt sein. Was gibt das Programm aus?","code":"einkaufswert = 600\n\nif einkaufswert >= 100:\n    rabattsatz = 0.05\nelif einkaufswert >= 500:\n    rabattsatz = 0.10\nelse:\n    rabattsatz = 0\n\nprint(f\"Rabatt: {rabattsatz * 100:.0f} %\")","pap":{"w":523,"h":584,"n":[{"k":"start","x":104.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"op","x":74.8,"y":76,"w":168.4,"h":33,"t":["einkaufswert = 600"],"z":[1]},{"k":"verz","x":31.5,"y":135,"w":255.0,"h":54,"t":["einkaufswert >= 100"],"z":[3]},{"k":"op","x":310.3,"y":188.0,"w":160.6,"h":33,"t":["rabattsatz = 0.05"],"z":[4]},{"k":"verz","x":31.5,"y":254.8,"w":255.0,"h":54,"t":["einkaufswert >= 500"],"z":[5]},{"k":"op","x":310.3,"y":307.8,"w":160.6,"h":33,"t":["rabattsatz = 0.10"],"z":[6]},{"k":"op","x":90.4,"y":374.6,"w":137.2,"h":33,"t":["rabattsatz = 0"],"z":[8]},{"k":"punkt","x":155.5,"y":424.9,"w":7,"h":7,"t":[],"z":[]},{"k":"punkt","x":155.5,"y":445.7,"w":7,"h":7,"t":[],"z":[]},{"k":"io","x":16.0,"y":475.2,"w":286.0,"h":33,"t":["print(f\"Rabatt: {rabattsatz *…"],"z":[10]},{"k":"ende","x":104.0,"y":534.2,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[159.0,50],[159.0,76]],"a":true},{"p":[[159.0,109],[159.0,135]],"a":true},{"p":[[286.5,162.0],[390.6,162.0],[390.6,188.0]],"a":true,"l":"ja","lp":[292.5,156.0]},{"p":[[390.6,221.0],[390.6,234.0],[506.9,234.0],[506.9,449.2],[159.0,449.2]],"a":false},{"p":[[159.0,189],[159.0,254.8]],"a":true,"l":"nein","lp":[165.0,202]},{"p":[[286.5,281.8],[390.6,281.8],[390.6,307.8]],"a":true,"l":"ja","lp":[292.5,275.8]},{"p":[[390.6,340.8],[390.6,353.8],[488.9,353.8],[488.9,428.4],[159.0,428.4]],"a":false},{"p":[[159.0,308.8],[159.0,374.6]],"a":true,"l":"nein","lp":[165.0,321.8]},{"p":[[159.0,407.6],[159.0,428.4]],"a":false},{"p":[[159.0,428.4],[159.0,449.2]],"a":false},{"p":[[159.0,449.2],[159.0,475.2]],"a":true},{"p":[[159.0,508.2],[159.0,534.2]],"a":true}]},"varianten":[{"name":"ohne Eingabe","eingaben":[],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":3,"v":[["einkaufswert","600","int"]],"o":0,"c":{"w":true,"t":[]}},{"l":4,"v":[["einkaufswert","600","int"]],"o":0},{"l":10,"v":[["einkaufswert","600","int"],["rabattsatz","0.05","float"]],"o":0},{"l":null,"ende":true,"v":[["einkaufswert","600","int"],["rabattsatz","0.05","float"]],"o":12}],"ausgabe":"Rabatt: 5 %\n","fragen":[{"s":2,"typ":"bedingung","text":"Ist die Bedingung in Zeile 3 True oder False?","opts":["True","False"],"richtig":"True","erkl":"600 >= 100 ist True. Damit läuft der erste Block."},{"s":3,"typ":"zeile","text":"Welche Zeile wird nach Zeile 4 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"10","erkl":"Nach einem ausgeführten Block springt Python ans Ende der ganzen if-elif-else-Struktur. Die Bedingung in Zeile 5 wird gar nicht mehr geprüft, obwohl sie auch True wäre."}]}]},{"id":"I5","gruppe":"if-Anweisung","titel":"Provision mit and","info":"Beispiel aus dem Infomaterial zu und/oder. Vergleichen Sie mit I6: gleiche Eingaben, nur or statt and.","code":"umsatz_vorjahr = float(input(\"Umsatz des Vorjahres in €: \"))\numsatz_dieses_jahr = float(input(\"Umsatz dieses Jahres in €: \"))\n\nif umsatz_dieses_jahr > 50000 and umsatz_dieses_jahr > umsatz_vorjahr:\n    provision = umsatz_dieses_jahr * 0.02\n    print(f\"Die Provision beträgt {provision:.2f} €.\")\nelse:\n    print(\"Es gibt keine Provision.\")","pap":{"w":866,"h":481,"n":[{"k":"start","x":214.3,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":126.3,"y":76,"w":286.0,"h":50,"t":["umsatz_vorjahr = float(input(…","umsatz_dieses_jahr = float(in…"],"z":[1,2]},{"k":"verz","x":16.0,"y":152,"w":506.6,"h":95.5,"t":["umsatz_dieses_jahr > 50000","and umsatz_dieses_jahr > umsatz_vorjahr"],"z":[4]},{"k":"op","x":558.4,"y":225.7,"w":262.0,"h":33,"t":["provision = umsatz_dieses_jah…"],"z":[5]},{"k":"io","x":546.4,"y":284.7,"w":286.0,"h":33,"t":["print(f\"Die Provision beträgt…"],"z":[6]},{"k":"io","x":126.3,"y":351.5,"w":286.0,"h":33,"t":["print(\"Es gibt keine Provisio…"],"z":[8]},{"k":"punkt","x":265.8,"y":401.8,"w":7,"h":7,"t":[],"z":[]},{"k":"ende","x":214.3,"y":431.3,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[269.3,50],[269.3,76]],"a":true},{"p":[[269.3,126],[269.3,152]],"a":true},{"p":[[522.6,199.7],[689.4,199.7],[689.4,225.7]],"a":true,"l":"ja","lp":[528.6,193.7]},{"p":[[689.4,258.7],[689.4,284.7]],"a":true},{"p":[[689.4,317.7],[689.4,330.7],[850.4,330.7],[850.4,405.3],[269.3,405.3]],"a":false},{"p":[[269.3,247.5],[269.3,351.5]],"a":true,"l":"nein","lp":[275.3,260.5]},{"p":[[269.3,384.5],[269.3,405.3]],"a":false},{"p":[[269.3,405.3],[269.3,431.3]],"a":true}]},"varianten":[{"name":"40000 → 60000","eingaben":["40000","60000"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"40000"},{"l":2,"v":[["umsatz_vorjahr","40000.0","float"]],"o":33,"in":"60000"},{"l":4,"v":[["umsatz_vorjahr","40000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":66,"c":{"w":true,"t":[["umsatz_dieses_jahr > 50000",true],["umsatz_dieses_jahr > umsatz_vorjahr",true]]}},{"l":5,"v":[["umsatz_vorjahr","40000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":66},{"l":6,"v":[["umsatz_vorjahr","40000.0","float"],["umsatz_dieses_jahr","60000.0","float"],["provision","1200.0","float"]],"o":66},{"l":null,"ende":true,"v":[["umsatz_vorjahr","40000.0","float"],["umsatz_dieses_jahr","60000.0","float"],["provision","1200.0","float"]],"o":99}],"ausgabe":"Umsatz des Vorjahres in €: 40000\nUmsatz dieses Jahres in €: 60000\nDie Provision beträgt 1200.00 €.\n","fragen":[{"s":3,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`umsatz_dieses_jahr > 50000` ist True, `umsatz_dieses_jahr > umsatz_vorjahr` ist True. Bei `and` ist die Bedingung nur True, wenn beide Teilbedingungen True sind."}]},{"name":"70000 → 60000","eingaben":["70000","60000"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"70000"},{"l":2,"v":[["umsatz_vorjahr","70000.0","float"]],"o":33,"in":"60000"},{"l":4,"v":[["umsatz_vorjahr","70000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":66,"c":{"w":false,"t":[["umsatz_dieses_jahr > 50000",true],["umsatz_dieses_jahr > umsatz_vorjahr",false]]}},{"l":8,"v":[["umsatz_vorjahr","70000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":66},{"l":null,"ende":true,"v":[["umsatz_vorjahr","70000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":91}],"ausgabe":"Umsatz des Vorjahres in €: 70000\nUmsatz dieses Jahres in €: 60000\nEs gibt keine Provision.\n","fragen":[{"s":3,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`umsatz_dieses_jahr > 50000` ist True, `umsatz_dieses_jahr > umsatz_vorjahr` ist False. Bei `and` ist die Bedingung nur True, wenn beide Teilbedingungen True sind."}]},{"name":"30000 → 40000","eingaben":["30000","40000"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"30000"},{"l":2,"v":[["umsatz_vorjahr","30000.0","float"]],"o":33,"in":"40000"},{"l":4,"v":[["umsatz_vorjahr","30000.0","float"],["umsatz_dieses_jahr","40000.0","float"]],"o":66,"c":{"w":false,"t":[["umsatz_dieses_jahr > 50000",false],["umsatz_dieses_jahr > umsatz_vorjahr",true]]}},{"l":8,"v":[["umsatz_vorjahr","30000.0","float"],["umsatz_dieses_jahr","40000.0","float"]],"o":66},{"l":null,"ende":true,"v":[["umsatz_vorjahr","30000.0","float"],["umsatz_dieses_jahr","40000.0","float"]],"o":91}],"ausgabe":"Umsatz des Vorjahres in €: 30000\nUmsatz dieses Jahres in €: 40000\nEs gibt keine Provision.\n","fragen":[{"s":3,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`umsatz_dieses_jahr > 50000` ist False, `umsatz_dieses_jahr > umsatz_vorjahr` ist True. Bei `and` ist die Bedingung nur True, wenn beide Teilbedingungen True sind."}]},{"name":"60000 → 45000","eingaben":["60000","45000"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"60000"},{"l":2,"v":[["umsatz_vorjahr","60000.0","float"]],"o":33,"in":"45000"},{"l":4,"v":[["umsatz_vorjahr","60000.0","float"],["umsatz_dieses_jahr","45000.0","float"]],"o":66,"c":{"w":false,"t":[["umsatz_dieses_jahr > 50000",false],["umsatz_dieses_jahr > umsatz_vorjahr",false]]}},{"l":8,"v":[["umsatz_vorjahr","60000.0","float"],["umsatz_dieses_jahr","45000.0","float"]],"o":66},{"l":null,"ende":true,"v":[["umsatz_vorjahr","60000.0","float"],["umsatz_dieses_jahr","45000.0","float"]],"o":91}],"ausgabe":"Umsatz des Vorjahres in €: 60000\nUmsatz dieses Jahres in €: 45000\nEs gibt keine Provision.\n","fragen":[{"s":3,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`umsatz_dieses_jahr > 50000` ist False, `umsatz_dieses_jahr > umsatz_vorjahr` ist False. Bei `and` ist die Bedingung nur True, wenn beide Teilbedingungen True sind."}]}]},{"id":"I6","gruppe":"if-Anweisung","titel":"Provision mit or","info":"Wie I5, aber mit or.","code":"umsatz_vorjahr = float(input(\"Umsatz des Vorjahres in €: \"))\numsatz_dieses_jahr = float(input(\"Umsatz dieses Jahres in €: \"))\n\nif umsatz_dieses_jahr > 50000 or umsatz_dieses_jahr > umsatz_vorjahr:\n    provision = umsatz_dieses_jahr * 0.02\n    print(f\"Die Provision beträgt {provision:.2f} €.\")\nelse:\n    print(\"Es gibt keine Provision.\")","pap":{"w":854,"h":481,"n":[{"k":"start","x":208.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":120.0,"y":76,"w":286.0,"h":50,"t":["umsatz_vorjahr = float(input(…","umsatz_dieses_jahr = float(in…"],"z":[1,2]},{"k":"verz","x":16.0,"y":152,"w":494.1,"h":95.5,"t":["umsatz_dieses_jahr > 50000","or umsatz_dieses_jahr > umsatz_vorjahr"],"z":[4]},{"k":"op","x":545.9,"y":225.7,"w":262.0,"h":33,"t":["provision = umsatz_dieses_jah…"],"z":[5]},{"k":"io","x":533.9,"y":284.7,"w":286.0,"h":33,"t":["print(f\"Die Provision beträgt…"],"z":[6]},{"k":"io","x":120.0,"y":351.5,"w":286.0,"h":33,"t":["print(\"Es gibt keine Provisio…"],"z":[8]},{"k":"punkt","x":259.5,"y":401.8,"w":7,"h":7,"t":[],"z":[]},{"k":"ende","x":208.0,"y":431.3,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[263.0,50],[263.0,76]],"a":true},{"p":[[263.0,126],[263.0,152]],"a":true},{"p":[[510.1,199.7],[676.9,199.7],[676.9,225.7]],"a":true,"l":"ja","lp":[516.1,193.7]},{"p":[[676.9,258.7],[676.9,284.7]],"a":true},{"p":[[676.9,317.7],[676.9,330.7],[837.9,330.7],[837.9,405.3],[263.0,405.3]],"a":false},{"p":[[263.0,247.5],[263.0,351.5]],"a":true,"l":"nein","lp":[269.0,260.5]},{"p":[[263.0,384.5],[263.0,405.3]],"a":false},{"p":[[263.0,405.3],[263.0,431.3]],"a":true}]},"varianten":[{"name":"40000 → 60000","eingaben":["40000","60000"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"40000"},{"l":2,"v":[["umsatz_vorjahr","40000.0","float"]],"o":33,"in":"60000"},{"l":4,"v":[["umsatz_vorjahr","40000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":66,"c":{"w":true,"t":[["umsatz_dieses_jahr > 50000",true],["umsatz_dieses_jahr > umsatz_vorjahr",true]]}},{"l":5,"v":[["umsatz_vorjahr","40000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":66},{"l":6,"v":[["umsatz_vorjahr","40000.0","float"],["umsatz_dieses_jahr","60000.0","float"],["provision","1200.0","float"]],"o":66},{"l":null,"ende":true,"v":[["umsatz_vorjahr","40000.0","float"],["umsatz_dieses_jahr","60000.0","float"],["provision","1200.0","float"]],"o":99}],"ausgabe":"Umsatz des Vorjahres in €: 40000\nUmsatz dieses Jahres in €: 60000\nDie Provision beträgt 1200.00 €.\n","fragen":[{"s":3,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`umsatz_dieses_jahr > 50000` ist True, `umsatz_dieses_jahr > umsatz_vorjahr` ist True. Bei `or` genügt es, wenn mindestens eine Teilbedingung True ist."}]},{"name":"70000 → 60000","eingaben":["70000","60000"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"70000"},{"l":2,"v":[["umsatz_vorjahr","70000.0","float"]],"o":33,"in":"60000"},{"l":4,"v":[["umsatz_vorjahr","70000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":66,"c":{"w":true,"t":[["umsatz_dieses_jahr > 50000",true],["umsatz_dieses_jahr > umsatz_vorjahr",false]]}},{"l":5,"v":[["umsatz_vorjahr","70000.0","float"],["umsatz_dieses_jahr","60000.0","float"]],"o":66},{"l":6,"v":[["umsatz_vorjahr","70000.0","float"],["umsatz_dieses_jahr","60000.0","float"],["provision","1200.0","float"]],"o":66},{"l":null,"ende":true,"v":[["umsatz_vorjahr","70000.0","float"],["umsatz_dieses_jahr","60000.0","float"],["provision","1200.0","float"]],"o":99}],"ausgabe":"Umsatz des Vorjahres in €: 70000\nUmsatz dieses Jahres in €: 60000\nDie Provision beträgt 1200.00 €.\n","fragen":[{"s":3,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`umsatz_dieses_jahr > 50000` ist True, `umsatz_dieses_jahr > umsatz_vorjahr` ist False. Bei `or` genügt es, wenn mindestens eine Teilbedingung True ist."}]},{"name":"30000 → 40000","eingaben":["30000","40000"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"30000"},{"l":2,"v":[["umsatz_vorjahr","30000.0","float"]],"o":33,"in":"40000"},{"l":4,"v":[["umsatz_vorjahr","30000.0","float"],["umsatz_dieses_jahr","40000.0","float"]],"o":66,"c":{"w":true,"t":[["umsatz_dieses_jahr > 50000",false],["umsatz_dieses_jahr > umsatz_vorjahr",true]]}},{"l":5,"v":[["umsatz_vorjahr","30000.0","float"],["umsatz_dieses_jahr","40000.0","float"]],"o":66},{"l":6,"v":[["umsatz_vorjahr","30000.0","float"],["umsatz_dieses_jahr","40000.0","float"],["provision","800.0","float"]],"o":66},{"l":null,"ende":true,"v":[["umsatz_vorjahr","30000.0","float"],["umsatz_dieses_jahr","40000.0","float"],["provision","800.0","float"]],"o":98}],"ausgabe":"Umsatz des Vorjahres in €: 30000\nUmsatz dieses Jahres in €: 40000\nDie Provision beträgt 800.00 €.\n","fragen":[{"s":3,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`umsatz_dieses_jahr > 50000` ist False, `umsatz_dieses_jahr > umsatz_vorjahr` ist True. Bei `or` genügt es, wenn mindestens eine Teilbedingung True ist."}]},{"name":"60000 → 45000","eingaben":["60000","45000"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"60000"},{"l":2,"v":[["umsatz_vorjahr","60000.0","float"]],"o":33,"in":"45000"},{"l":4,"v":[["umsatz_vorjahr","60000.0","float"],["umsatz_dieses_jahr","45000.0","float"]],"o":66,"c":{"w":false,"t":[["umsatz_dieses_jahr > 50000",false],["umsatz_dieses_jahr > umsatz_vorjahr",false]]}},{"l":8,"v":[["umsatz_vorjahr","60000.0","float"],["umsatz_dieses_jahr","45000.0","float"]],"o":66},{"l":null,"ende":true,"v":[["umsatz_vorjahr","60000.0","float"],["umsatz_dieses_jahr","45000.0","float"]],"o":91}],"ausgabe":"Umsatz des Vorjahres in €: 60000\nUmsatz dieses Jahres in €: 45000\nEs gibt keine Provision.\n","fragen":[{"s":3,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`umsatz_dieses_jahr > 50000` ist False, `umsatz_dieses_jahr > umsatz_vorjahr` ist False. Bei `or` genügt es, wenn mindestens eine Teilbedingung True ist."}]}]},{"id":"S1","gruppe":"Schleife","titel":"Einmaleins (while mit Zähler)","info":"Beispiel aus dem Infomaterial zur Schleife. Beobachten Sie den Wert von zaehler.","code":"eingabe = int(input(\"Geben Sie eine Zahl ein: \"))\nzaehler = 2\n\nwhile zaehler <= 10:\n    ausgabe = eingabe * zaehler\n    print(f\"{zaehler} mal {eingabe} ist {ausgabe}\")\n    zaehler = zaehler + 1","pap":{"w":370,"h":553,"n":[{"k":"start","x":130.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":69.3,"y":76,"w":231.4,"h":33,"t":["eingabe = int(input(…))"],"z":[1]},{"k":"op","x":120.0,"y":135,"w":130,"h":33,"t":["zaehler = 2"],"z":[2]},{"k":"verz","x":95.2,"y":210,"w":179.5,"h":54,"t":["zaehler <= 10"],"z":[4]},{"k":"op","x":65.7,"y":290,"w":238.6,"h":33,"t":["ausgabe = eingabe * zaehler"],"z":[5]},{"k":"io","x":42.0,"y":349,"w":286.0,"h":33,"t":["print(f\"{zaehler} mal {eingab…"],"z":[6]},{"k":"op","x":89.1,"y":408,"w":191.8,"h":33,"t":["zaehler = zaehler + 1"],"z":[7]},{"k":"ende","x":130.0,"y":503.4,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[185.0,50],[185.0,76]],"a":true},{"p":[[185.0,109],[185.0,135]],"a":true},{"p":[[185.0,168],[185.0,194]],"a":false},{"p":[[185.0,194],[185.0,210]],"a":true},{"p":[[185.0,264],[185.0,290]],"a":true,"l":"ja","lp":[191.0,277]},{"p":[[185.0,323],[185.0,349]],"a":true},{"p":[[185.0,382],[185.0,408]],"a":true},{"p":[[185.0,441],[185.0,456.6],[16.0,456.6],[16.0,202.0],[185.0,202.0]],"a":true},{"p":[[274.8,237.0],[354.0,237.0],[354.0,477.4],[185.0,477.4]],"a":false,"l":"nein","lp":[280.8,231.0]},{"p":[[185.0,477.4],[185.0,503.4]],"a":true}]},"varianten":[{"name":"Zahl 4","eingaben":["4"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"4"},{"l":2,"v":[["eingabe","4","int"]],"o":27},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"]],"o":27,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"]],"o":27},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":27},{"l":7,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":41},{"l":4,"v":[["eingabe","4","int"],["zaehler","3","int"],["ausgabe","8","int"]],"o":41,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","3","int"],["ausgabe","8","int"]],"o":41},{"l":6,"v":[["eingabe","4","int"],["zaehler","3","int"],["ausgabe","12","int"]],"o":41},{"l":7,"v":[["eingabe","4","int"],["zaehler","3","int"],["ausgabe","12","int"]],"o":56},{"l":4,"v":[["eingabe","4","int"],["zaehler","4","int"],["ausgabe","12","int"]],"o":56,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","4","int"],["ausgabe","12","int"]],"o":56},{"l":6,"v":[["eingabe","4","int"],["zaehler","4","int"],["ausgabe","16","int"]],"o":56},{"l":7,"v":[["eingabe","4","int"],["zaehler","4","int"],["ausgabe","16","int"]],"o":71},{"l":4,"v":[["eingabe","4","int"],["zaehler","5","int"],["ausgabe","16","int"]],"o":71,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","5","int"],["ausgabe","16","int"]],"o":71},{"l":6,"v":[["eingabe","4","int"],["zaehler","5","int"],["ausgabe","20","int"]],"o":71},{"l":7,"v":[["eingabe","4","int"],["zaehler","5","int"],["ausgabe","20","int"]],"o":86},{"l":4,"v":[["eingabe","4","int"],["zaehler","6","int"],["ausgabe","20","int"]],"o":86,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","6","int"],["ausgabe","20","int"]],"o":86},{"l":6,"v":[["eingabe","4","int"],["zaehler","6","int"],["ausgabe","24","int"]],"o":86},{"l":7,"v":[["eingabe","4","int"],["zaehler","6","int"],["ausgabe","24","int"]],"o":101},{"l":4,"v":[["eingabe","4","int"],["zaehler","7","int"],["ausgabe","24","int"]],"o":101,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","7","int"],["ausgabe","24","int"]],"o":101},{"l":6,"v":[["eingabe","4","int"],["zaehler","7","int"],["ausgabe","28","int"]],"o":101},{"l":7,"v":[["eingabe","4","int"],["zaehler","7","int"],["ausgabe","28","int"]],"o":116},{"l":4,"v":[["eingabe","4","int"],["zaehler","8","int"],["ausgabe","28","int"]],"o":116,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","8","int"],["ausgabe","28","int"]],"o":116},{"l":6,"v":[["eingabe","4","int"],["zaehler","8","int"],["ausgabe","32","int"]],"o":116},{"l":7,"v":[["eingabe","4","int"],["zaehler","8","int"],["ausgabe","32","int"]],"o":131},{"l":4,"v":[["eingabe","4","int"],["zaehler","9","int"],["ausgabe","32","int"]],"o":131,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","9","int"],["ausgabe","32","int"]],"o":131},{"l":6,"v":[["eingabe","4","int"],["zaehler","9","int"],["ausgabe","36","int"]],"o":131},{"l":7,"v":[["eingabe","4","int"],["zaehler","9","int"],["ausgabe","36","int"]],"o":146},{"l":4,"v":[["eingabe","4","int"],["zaehler","10","int"],["ausgabe","36","int"]],"o":146,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","10","int"],["ausgabe","36","int"]],"o":146},{"l":6,"v":[["eingabe","4","int"],["zaehler","10","int"],["ausgabe","40","int"]],"o":146},{"l":7,"v":[["eingabe","4","int"],["zaehler","10","int"],["ausgabe","40","int"]],"o":162},{"l":4,"v":[["eingabe","4","int"],["zaehler","11","int"],["ausgabe","40","int"]],"o":162,"c":{"w":false,"t":[]}},{"l":null,"ende":true,"v":[["eingabe","4","int"],["zaehler","11","int"],["ausgabe","40","int"]],"o":162}],"ausgabe":"Geben Sie eine Zahl ein: 4\n2 mal 4 ist 8\n3 mal 4 ist 12\n4 mal 4 ist 16\n5 mal 4 ist 20\n6 mal 4 ist 24\n7 mal 4 ist 28\n8 mal 4 ist 32\n9 mal 4 ist 36\n10 mal 4 ist 40\n","fragen":[{"s":3,"typ":"anzahl","text":"Wie oft wird der eingerückte Block der Schleife insgesamt ausgeführt?","opts":["10","9","11","8"],"richtig":"9","erkl":"`zaehler` läuft von 2 bis 10. Das sind 9 Durchläufe. Bei 11 ist die Bedingung False."},{"s":6,"typ":"zeile","text":"Welche Zeile wird nach Zeile 7 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"4","erkl":"Nach der letzten eingerückten Zeile springt Python zurück zur Bedingung der Schleife und prüft sie neu."},{"s":35,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`zaehler` ist 10. `10 <= 10` ist True, der Block läuft also noch einmal."},{"s":39,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`zaehler` ist 11. `11 <= 10` ist False, die Schleife endet. Weiter geht es nach dem eingerückten Block."}]},{"name":"Zahl 6","eingaben":["6"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"6"},{"l":2,"v":[["eingabe","6","int"]],"o":27},{"l":4,"v":[["eingabe","6","int"],["zaehler","2","int"]],"o":27,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","2","int"]],"o":27},{"l":6,"v":[["eingabe","6","int"],["zaehler","2","int"],["ausgabe","12","int"]],"o":27},{"l":7,"v":[["eingabe","6","int"],["zaehler","2","int"],["ausgabe","12","int"]],"o":42},{"l":4,"v":[["eingabe","6","int"],["zaehler","3","int"],["ausgabe","12","int"]],"o":42,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","3","int"],["ausgabe","12","int"]],"o":42},{"l":6,"v":[["eingabe","6","int"],["zaehler","3","int"],["ausgabe","18","int"]],"o":42},{"l":7,"v":[["eingabe","6","int"],["zaehler","3","int"],["ausgabe","18","int"]],"o":57},{"l":4,"v":[["eingabe","6","int"],["zaehler","4","int"],["ausgabe","18","int"]],"o":57,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","4","int"],["ausgabe","18","int"]],"o":57},{"l":6,"v":[["eingabe","6","int"],["zaehler","4","int"],["ausgabe","24","int"]],"o":57},{"l":7,"v":[["eingabe","6","int"],["zaehler","4","int"],["ausgabe","24","int"]],"o":72},{"l":4,"v":[["eingabe","6","int"],["zaehler","5","int"],["ausgabe","24","int"]],"o":72,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","5","int"],["ausgabe","24","int"]],"o":72},{"l":6,"v":[["eingabe","6","int"],["zaehler","5","int"],["ausgabe","30","int"]],"o":72},{"l":7,"v":[["eingabe","6","int"],["zaehler","5","int"],["ausgabe","30","int"]],"o":87},{"l":4,"v":[["eingabe","6","int"],["zaehler","6","int"],["ausgabe","30","int"]],"o":87,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","6","int"],["ausgabe","30","int"]],"o":87},{"l":6,"v":[["eingabe","6","int"],["zaehler","6","int"],["ausgabe","36","int"]],"o":87},{"l":7,"v":[["eingabe","6","int"],["zaehler","6","int"],["ausgabe","36","int"]],"o":102},{"l":4,"v":[["eingabe","6","int"],["zaehler","7","int"],["ausgabe","36","int"]],"o":102,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","7","int"],["ausgabe","36","int"]],"o":102},{"l":6,"v":[["eingabe","6","int"],["zaehler","7","int"],["ausgabe","42","int"]],"o":102},{"l":7,"v":[["eingabe","6","int"],["zaehler","7","int"],["ausgabe","42","int"]],"o":117},{"l":4,"v":[["eingabe","6","int"],["zaehler","8","int"],["ausgabe","42","int"]],"o":117,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","8","int"],["ausgabe","42","int"]],"o":117},{"l":6,"v":[["eingabe","6","int"],["zaehler","8","int"],["ausgabe","48","int"]],"o":117},{"l":7,"v":[["eingabe","6","int"],["zaehler","8","int"],["ausgabe","48","int"]],"o":132},{"l":4,"v":[["eingabe","6","int"],["zaehler","9","int"],["ausgabe","48","int"]],"o":132,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","9","int"],["ausgabe","48","int"]],"o":132},{"l":6,"v":[["eingabe","6","int"],["zaehler","9","int"],["ausgabe","54","int"]],"o":132},{"l":7,"v":[["eingabe","6","int"],["zaehler","9","int"],["ausgabe","54","int"]],"o":147},{"l":4,"v":[["eingabe","6","int"],["zaehler","10","int"],["ausgabe","54","int"]],"o":147,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","6","int"],["zaehler","10","int"],["ausgabe","54","int"]],"o":147},{"l":6,"v":[["eingabe","6","int"],["zaehler","10","int"],["ausgabe","60","int"]],"o":147},{"l":7,"v":[["eingabe","6","int"],["zaehler","10","int"],["ausgabe","60","int"]],"o":163},{"l":4,"v":[["eingabe","6","int"],["zaehler","11","int"],["ausgabe","60","int"]],"o":163,"c":{"w":false,"t":[]}},{"l":null,"ende":true,"v":[["eingabe","6","int"],["zaehler","11","int"],["ausgabe","60","int"]],"o":163}],"ausgabe":"Geben Sie eine Zahl ein: 6\n2 mal 6 ist 12\n3 mal 6 ist 18\n4 mal 6 ist 24\n5 mal 6 ist 30\n6 mal 6 ist 36\n7 mal 6 ist 42\n8 mal 6 ist 48\n9 mal 6 ist 54\n10 mal 6 ist 60\n","fragen":[{"s":3,"typ":"anzahl","text":"Wie oft wird der eingerückte Block der Schleife insgesamt ausgeführt?","opts":["11","10","9","8"],"richtig":"9","erkl":"`zaehler` läuft von 2 bis 10. Das sind 9 Durchläufe. Bei 11 ist die Bedingung False."},{"s":6,"typ":"zeile","text":"Welche Zeile wird nach Zeile 7 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"4","erkl":"Nach der letzten eingerückten Zeile springt Python zurück zur Bedingung der Schleife und prüft sie neu."},{"s":35,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`zaehler` ist 10. `10 <= 10` ist True, der Block läuft also noch einmal."},{"s":39,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`zaehler` ist 11. `11 <= 10` ist False, die Schleife endet. Weiter geht es nach dem eingerückten Block."}]}]},{"id":"S2","gruppe":"Schleife","titel":"Weitere Position erfassen? (while mit Eingabe)","info":"Beispiel aus dem Infomaterial zur Schleife. Probieren Sie auch die Eingabe „Ja“ mit großem J.","code":"weiter = \"ja\"\n\nwhile weiter == \"ja\":\n    print(\"Eine Position wird erfasst.\")\n    weiter = input(\"Weitere Position erfassen? (ja/nein): \")\n\nprint(\"Erfassung abgeschlossen.\")","pap":{"w":370,"h":494,"n":[{"k":"start","x":130.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"op","x":120.0,"y":76,"w":130,"h":33,"t":["weiter = \"ja\""],"z":[1]},{"k":"verz","x":88.9,"y":151,"w":192.1,"h":54,"t":["weiter == \"ja\""],"z":[3]},{"k":"io","x":42.0,"y":231,"w":286.0,"h":33,"t":["print(\"Eine Position wird erf…"],"z":[4]},{"k":"io","x":92.7,"y":290,"w":184.6,"h":33,"t":["weiter = input(…)"],"z":[5]},{"k":"io","x":42.0,"y":385.4,"w":286.0,"h":33,"t":["print(\"Erfassung abgeschlosse…"],"z":[7]},{"k":"ende","x":130.0,"y":444.4,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[185.0,50],[185.0,76]],"a":true},{"p":[[185.0,109],[185.0,135]],"a":false},{"p":[[185.0,135],[185.0,151]],"a":true},{"p":[[185.0,205],[185.0,231]],"a":true,"l":"ja","lp":[191.0,218]},{"p":[[185.0,264],[185.0,290]],"a":true},{"p":[[185.0,323],[185.0,338.6],[16.0,338.6],[16.0,143.0],[185.0,143.0]],"a":true},{"p":[[281.1,178.0],[354.0,178.0],[354.0,359.4],[185.0,359.4]],"a":false,"l":"nein","lp":[287.1,172.0]},{"p":[[185.0,359.4],[185.0,385.4]],"a":true},{"p":[[185.0,418.4],[185.0,444.4]],"a":true}]},"varianten":[{"name":"ja, ja, nein","eingaben":["ja","ja","nein"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":3,"v":[["weiter","'ja'","str"]],"o":0,"c":{"w":true,"t":[]}},{"l":4,"v":[["weiter","'ja'","str"]],"o":0},{"l":5,"v":[["weiter","'ja'","str"]],"o":28,"in":"ja"},{"l":3,"v":[["weiter","'ja'","str"]],"o":69,"c":{"w":true,"t":[]}},{"l":4,"v":[["weiter","'ja'","str"]],"o":69},{"l":5,"v":[["weiter","'ja'","str"]],"o":97,"in":"ja"},{"l":3,"v":[["weiter","'ja'","str"]],"o":138,"c":{"w":true,"t":[]}},{"l":4,"v":[["weiter","'ja'","str"]],"o":138},{"l":5,"v":[["weiter","'ja'","str"]],"o":166,"in":"nein"},{"l":3,"v":[["weiter","'nein'","str"]],"o":209,"c":{"w":false,"t":[]}},{"l":7,"v":[["weiter","'nein'","str"]],"o":209},{"l":null,"ende":true,"v":[["weiter","'nein'","str"]],"o":234}],"ausgabe":"Eine Position wird erfasst.\nWeitere Position erfassen? (ja/nein): ja\nEine Position wird erfasst.\nWeitere Position erfassen? (ja/nein): ja\nEine Position wird erfasst.\nWeitere Position erfassen? (ja/nein): nein\nErfassung abgeschlossen.\n","fragen":[{"s":1,"typ":"wahl","text":"Warum steht diese Zeile vor der Schleife?","opts":["Sonst gibt es `weiter` beim ersten Prüfen noch nicht, Python meldet einen Fehler.","Damit die Schleife genau einmal läuft.","Python verlangt am Programmanfang immer eine Zuweisung."],"richtig":"Sonst gibt es `weiter` beim ersten Prüfen noch nicht, Python meldet einen Fehler.","erkl":"Die Bedingung in Zeile 3 wird geprüft, bevor der Block das erste Mal läuft. Ohne Zeile 1 gäbe es dort einen `NameError`. Mit `\"ja\"` läuft der Block mindestens einmal."},{"s":4,"typ":"zeile","text":"Welche Zeile wird nach Zeile 5 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"3","erkl":"Nach der letzten eingerückten Zeile springt Python zurück zur Bedingung der Schleife."},{"s":5,"typ":"bedingung","text":"Ist die Bedingung in Zeile 3 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`weiter` ist 'ja'. Nur bei genau `\"ja\"` läuft die Schleife weiter, `==` unterscheidet Groß- und Kleinschreibung."}]},{"name":"nein","eingaben":["nein"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":3,"v":[["weiter","'ja'","str"]],"o":0,"c":{"w":true,"t":[]}},{"l":4,"v":[["weiter","'ja'","str"]],"o":0},{"l":5,"v":[["weiter","'ja'","str"]],"o":28,"in":"nein"},{"l":3,"v":[["weiter","'nein'","str"]],"o":71,"c":{"w":false,"t":[]}},{"l":7,"v":[["weiter","'nein'","str"]],"o":71},{"l":null,"ende":true,"v":[["weiter","'nein'","str"]],"o":96}],"ausgabe":"Eine Position wird erfasst.\nWeitere Position erfassen? (ja/nein): nein\nErfassung abgeschlossen.\n","fragen":[{"s":1,"typ":"wahl","text":"Warum steht diese Zeile vor der Schleife?","opts":["Sonst gibt es `weiter` beim ersten Prüfen noch nicht, Python meldet einen Fehler.","Damit die Schleife genau einmal läuft.","Python verlangt am Programmanfang immer eine Zuweisung."],"richtig":"Sonst gibt es `weiter` beim ersten Prüfen noch nicht, Python meldet einen Fehler.","erkl":"Die Bedingung in Zeile 3 wird geprüft, bevor der Block das erste Mal läuft. Ohne Zeile 1 gäbe es dort einen `NameError`. Mit `\"ja\"` läuft der Block mindestens einmal."},{"s":4,"typ":"zeile","text":"Welche Zeile wird nach Zeile 5 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"3","erkl":"Nach der letzten eingerückten Zeile springt Python zurück zur Bedingung der Schleife."},{"s":5,"typ":"bedingung","text":"Ist die Bedingung in Zeile 3 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`weiter` ist 'nein'. Nur bei genau `\"ja\"` läuft die Schleife weiter, `==` unterscheidet Groß- und Kleinschreibung."}]},{"name":"Ja","eingaben":["Ja"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":3,"v":[["weiter","'ja'","str"]],"o":0,"c":{"w":true,"t":[]}},{"l":4,"v":[["weiter","'ja'","str"]],"o":0},{"l":5,"v":[["weiter","'ja'","str"]],"o":28,"in":"Ja"},{"l":3,"v":[["weiter","'Ja'","str"]],"o":69,"c":{"w":false,"t":[]}},{"l":7,"v":[["weiter","'Ja'","str"]],"o":69},{"l":null,"ende":true,"v":[["weiter","'Ja'","str"]],"o":94}],"ausgabe":"Eine Position wird erfasst.\nWeitere Position erfassen? (ja/nein): Ja\nErfassung abgeschlossen.\n","fragen":[{"s":1,"typ":"wahl","text":"Warum steht diese Zeile vor der Schleife?","opts":["Sonst gibt es `weiter` beim ersten Prüfen noch nicht, Python meldet einen Fehler.","Damit die Schleife genau einmal läuft.","Python verlangt am Programmanfang immer eine Zuweisung."],"richtig":"Sonst gibt es `weiter` beim ersten Prüfen noch nicht, Python meldet einen Fehler.","erkl":"Die Bedingung in Zeile 3 wird geprüft, bevor der Block das erste Mal läuft. Ohne Zeile 1 gäbe es dort einen `NameError`. Mit `\"ja\"` läuft der Block mindestens einmal."},{"s":4,"typ":"zeile","text":"Welche Zeile wird nach Zeile 5 als Nächstes ausgeführt? Klicken Sie die Zeile im Code an.","opts":null,"richtig":"3","erkl":"Nach der letzten eingerückten Zeile springt Python zurück zur Bedingung der Schleife."},{"s":5,"typ":"bedingung","text":"Ist die Bedingung in Zeile 3 True oder False?","opts":["True","False"],"richtig":"False","erkl":"`weiter` ist 'Ja'. Nur bei genau `\"ja\"` läuft die Schleife weiter, `==` unterscheidet Groß- und Kleinschreibung."}]}]},{"id":"S3","gruppe":"Schleife","titel":"Fehler: Zähler wird nicht erhöht","info":"Im Einmaleins fehlt eine Zeile. Was passiert?","code":"eingabe = int(input(\"Geben Sie eine Zahl ein: \"))\nzaehler = 2\n\nwhile zaehler <= 10:\n    ausgabe = eingabe * zaehler\n    print(f\"{zaehler} mal {eingabe} ist {ausgabe}\")","pap":{"w":370,"h":494,"n":[{"k":"start","x":130.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"io","x":69.3,"y":76,"w":231.4,"h":33,"t":["eingabe = int(input(…))"],"z":[1]},{"k":"op","x":120.0,"y":135,"w":130,"h":33,"t":["zaehler = 2"],"z":[2]},{"k":"verz","x":95.2,"y":210,"w":179.5,"h":54,"t":["zaehler <= 10"],"z":[4]},{"k":"op","x":65.7,"y":290,"w":238.6,"h":33,"t":["ausgabe = eingabe * zaehler"],"z":[5]},{"k":"io","x":42.0,"y":349,"w":286.0,"h":33,"t":["print(f\"{zaehler} mal {eingab…"],"z":[6]},{"k":"ende","x":130.0,"y":444.4,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[185.0,50],[185.0,76]],"a":true},{"p":[[185.0,109],[185.0,135]],"a":true},{"p":[[185.0,168],[185.0,194]],"a":false},{"p":[[185.0,194],[185.0,210]],"a":true},{"p":[[185.0,264],[185.0,290]],"a":true,"l":"ja","lp":[191.0,277]},{"p":[[185.0,323],[185.0,349]],"a":true},{"p":[[185.0,382],[185.0,397.6],[16.0,397.6],[16.0,202.0],[185.0,202.0]],"a":true},{"p":[[274.8,237.0],[354.0,237.0],[354.0,418.4],[185.0,418.4]],"a":false,"l":"nein","lp":[280.8,231.0]},{"p":[[185.0,418.4],[185.0,444.4]],"a":true}]},"varianten":[{"name":"Zahl 4","eingaben":["4"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0,"in":"4"},{"l":2,"v":[["eingabe","4","int"]],"o":27},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"]],"o":27,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"]],"o":27},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":27},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":41,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":41},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":41},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":55,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":55},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":55},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":69,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":69},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":69},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":83,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":83},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":83},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":97,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":97},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":97},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":111,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":111},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":111},{"l":4,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":125,"c":{"w":true,"t":[]}},{"l":5,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":125},{"l":6,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":125},{"l":null,"ende":true,"abbruch":true,"v":[["eingabe","4","int"],["zaehler","2","int"],["ausgabe","8","int"]],"o":139}],"ausgabe":"Geben Sie eine Zahl ein: 4\n2 mal 4 ist 8\n2 mal 4 ist 8\n2 mal 4 ist 8\n2 mal 4 ist 8\n2 mal 4 ist 8\n2 mal 4 ist 8\n2 mal 4 ist 8\n2 mal 4 ist 8\n","fragen":[{"s":9,"typ":"bedingung","text":"Ist die Bedingung in Zeile 4 True oder False?","opts":["True","False"],"richtig":"True","erkl":"`zaehler` ist immer noch 2, weil ihn keine Zeile im Block verändert. Die Bedingung bleibt True, die Schleife endet nie."}]}]},{"id":"S4","gruppe":"Schleife","titel":"Eier einsammeln (Summe in der Schleife)","info":"Für jeden Stall wird die Zahl der Eier eingegeben und aufaddiert. Beobachten Sie summe.","code":"summe = 0\nweiter = \"ja\"\n\nwhile weiter == \"ja\":\n    eier = int(input(\"Eier aus diesem Stall: \"))\n    summe = summe + eier\n    weiter = input(\"Noch ein Stall? (ja/nein): \")\n\nprint(f\"Eier gesamt: {summe}\")","pap":{"w":318,"h":570,"n":[{"k":"start","x":104.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"op","x":94.0,"y":76,"w":130,"h":50,"t":["summe = 0","weiter = \"ja\""],"z":[1,2]},{"k":"verz","x":62.9,"y":168,"w":192.1,"h":54,"t":["weiter == \"ja\""],"z":[4]},{"k":"io","x":55.0,"y":248,"w":208.0,"h":33,"t":["eier = int(input(…))"],"z":[5]},{"k":"op","x":67.0,"y":307,"w":184.0,"h":33,"t":["summe = summe + eier"],"z":[6]},{"k":"io","x":66.7,"y":366,"w":184.6,"h":33,"t":["weiter = input(…)"],"z":[7]},{"k":"io","x":16.0,"y":461.4,"w":286.0,"h":33,"t":["print(f\"Eier gesamt: {summe}\")"],"z":[9]},{"k":"ende","x":104.0,"y":520.4,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[159.0,50],[159.0,76]],"a":true},{"p":[[159.0,126],[159.0,152]],"a":false},{"p":[[159.0,152],[159.0,168]],"a":true},{"p":[[159.0,222],[159.0,248]],"a":true,"l":"ja","lp":[165.0,235]},{"p":[[159.0,281],[159.0,307]],"a":true},{"p":[[159.0,340],[159.0,366]],"a":true},{"p":[[159.0,399],[159.0,414.6],[29.0,414.6],[29.0,160.0],[159.0,160.0]],"a":true},{"p":[[255.1,195.0],[289.0,195.0],[289.0,435.4],[159.0,435.4]],"a":false,"l":"nein","lp":[261.1,189.0]},{"p":[[159.0,435.4],[159.0,461.4]],"a":true},{"p":[[159.0,494.4],[159.0,520.4]],"a":true}]},"varianten":[{"name":"12, 30, 25","eingaben":["12","ja","30","ja","25","nein"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":2,"v":[["summe","0","int"]],"o":0},{"l":4,"v":[["summe","0","int"],["weiter","'ja'","str"]],"o":0,"c":{"w":true,"t":[]}},{"l":5,"v":[["summe","0","int"],["weiter","'ja'","str"]],"o":0,"in":"12"},{"l":6,"v":[["summe","0","int"],["weiter","'ja'","str"],["eier","12","int"]],"o":26},{"l":7,"v":[["summe","12","int"],["weiter","'ja'","str"],["eier","12","int"]],"o":26,"in":"ja"},{"l":4,"v":[["summe","12","int"],["weiter","'ja'","str"],["eier","12","int"]],"o":56,"c":{"w":true,"t":[]}},{"l":5,"v":[["summe","12","int"],["weiter","'ja'","str"],["eier","12","int"]],"o":56,"in":"30"},{"l":6,"v":[["summe","12","int"],["weiter","'ja'","str"],["eier","30","int"]],"o":82},{"l":7,"v":[["summe","42","int"],["weiter","'ja'","str"],["eier","30","int"]],"o":82,"in":"ja"},{"l":4,"v":[["summe","42","int"],["weiter","'ja'","str"],["eier","30","int"]],"o":112,"c":{"w":true,"t":[]}},{"l":5,"v":[["summe","42","int"],["weiter","'ja'","str"],["eier","30","int"]],"o":112,"in":"25"},{"l":6,"v":[["summe","42","int"],["weiter","'ja'","str"],["eier","25","int"]],"o":138},{"l":7,"v":[["summe","67","int"],["weiter","'ja'","str"],["eier","25","int"]],"o":138,"in":"nein"},{"l":4,"v":[["summe","67","int"],["weiter","'nein'","str"],["eier","25","int"]],"o":170,"c":{"w":false,"t":[]}},{"l":9,"v":[["summe","67","int"],["weiter","'nein'","str"],["eier","25","int"]],"o":170},{"l":null,"ende":true,"v":[["summe","67","int"],["weiter","'nein'","str"],["eier","25","int"]],"o":186}],"ausgabe":"Eier aus diesem Stall: 12\nNoch ein Stall? (ja/nein): ja\nEier aus diesem Stall: 30\nNoch ein Stall? (ja/nein): ja\nEier aus diesem Stall: 25\nNoch ein Stall? (ja/nein): nein\nEier gesamt: 67\n","fragen":[{"s":5,"typ":"wert","text":"Welchen Wert hat `summe`, nachdem Zeile 6 ausgeführt wurde?","opts":["1","0","12","'12'"],"richtig":"12","erkl":"Rechts vom `=` wird zuerst gerechnet: alter Wert von `summe` (0) plus `eier` (12). Das Ergebnis wird wieder in `summe` gespeichert."},{"s":9,"typ":"wert","text":"Welchen Wert hat `summe`, nachdem Zeile 6 ausgeführt wurde?","opts":["30","12","60","42"],"richtig":"42","erkl":"`summe` hat noch den Wert aus dem ersten Durchlauf (12). Dazu kommen die 30 Eier aus diesem Stall."}]},{"name":"40","eingaben":["40","nein"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":2,"v":[["summe","0","int"]],"o":0},{"l":4,"v":[["summe","0","int"],["weiter","'ja'","str"]],"o":0,"c":{"w":true,"t":[]}},{"l":5,"v":[["summe","0","int"],["weiter","'ja'","str"]],"o":0,"in":"40"},{"l":6,"v":[["summe","0","int"],["weiter","'ja'","str"],["eier","40","int"]],"o":26},{"l":7,"v":[["summe","40","int"],["weiter","'ja'","str"],["eier","40","int"]],"o":26,"in":"nein"},{"l":4,"v":[["summe","40","int"],["weiter","'nein'","str"],["eier","40","int"]],"o":58,"c":{"w":false,"t":[]}},{"l":9,"v":[["summe","40","int"],["weiter","'nein'","str"],["eier","40","int"]],"o":58},{"l":null,"ende":true,"v":[["summe","40","int"],["weiter","'nein'","str"],["eier","40","int"]],"o":74}],"ausgabe":"Eier aus diesem Stall: 40\nNoch ein Stall? (ja/nein): nein\nEier gesamt: 40\n","fragen":[{"s":5,"typ":"wert","text":"Welchen Wert hat `summe`, nachdem Zeile 6 ausgeführt wurde?","opts":["40","'12'","0","1"],"richtig":"40","erkl":"Rechts vom `=` wird zuerst gerechnet: alter Wert von `summe` (0) plus `eier` (40). Das Ergebnis wird wieder in `summe` gespeichert."}]}]},{"id":"S5","gruppe":"Schleife","titel":"Fehler: Summe in der Schleife auf 0 gesetzt","info":"Wie S4, aber summe = 0 steht in der Schleife. Gleiche Eingaben, anderes Ergebnis.","code":"weiter = \"ja\"\n\nwhile weiter == \"ja\":\n    summe = 0\n    eier = int(input(\"Eier aus diesem Stall: \"))\n    summe = summe + eier\n    weiter = input(\"Noch ein Stall? (ja/nein): \")\n\nprint(f\"Eier gesamt: {summe}\")","pap":{"w":318,"h":612,"n":[{"k":"start","x":104.0,"y":16,"w":110,"h":34,"t":["Start"],"z":[]},{"k":"op","x":94.0,"y":76,"w":130,"h":33,"t":["weiter = \"ja\""],"z":[1]},{"k":"verz","x":62.9,"y":151,"w":192.1,"h":54,"t":["weiter == \"ja\""],"z":[3]},{"k":"op","x":94.0,"y":231,"w":130,"h":33,"t":["summe = 0"],"z":[4]},{"k":"io","x":55.0,"y":290,"w":208.0,"h":33,"t":["eier = int(input(…))"],"z":[5]},{"k":"op","x":67.0,"y":349,"w":184.0,"h":33,"t":["summe = summe + eier"],"z":[6]},{"k":"io","x":66.7,"y":408,"w":184.6,"h":33,"t":["weiter = input(…)"],"z":[7]},{"k":"io","x":16.0,"y":503.4,"w":286.0,"h":33,"t":["print(f\"Eier gesamt: {summe}\")"],"z":[9]},{"k":"ende","x":104.0,"y":562.4,"w":110,"h":34,"t":["Ende"],"z":[]}],"e":[{"p":[[159.0,50],[159.0,76]],"a":true},{"p":[[159.0,109],[159.0,135]],"a":false},{"p":[[159.0,135],[159.0,151]],"a":true},{"p":[[159.0,205],[159.0,231]],"a":true,"l":"ja","lp":[165.0,218]},{"p":[[159.0,264],[159.0,290]],"a":true},{"p":[[159.0,323],[159.0,349]],"a":true},{"p":[[159.0,382],[159.0,408]],"a":true},{"p":[[159.0,441],[159.0,456.6],[29.0,456.6],[29.0,143.0],[159.0,143.0]],"a":true},{"p":[[255.1,178.0],[289.0,178.0],[289.0,477.4],[159.0,477.4]],"a":false,"l":"nein","lp":[261.1,172.0]},{"p":[[159.0,477.4],[159.0,503.4]],"a":true},{"p":[[159.0,536.4],[159.0,562.4]],"a":true}]},"varianten":[{"name":"12, 30, 25","eingaben":["12","ja","30","ja","25","nein"],"schritte":[{"l":null,"start":true,"v":[],"o":0},{"l":1,"v":[],"o":0},{"l":3,"v":[["weiter","'ja'","str"]],"o":0,"c":{"w":true,"t":[]}},{"l":4,"v":[["weiter","'ja'","str"]],"o":0},{"l":5,"v":[["weiter","'ja'","str"],["summe","0","int"]],"o":0,"in":"12"},{"l":6,"v":[["weiter","'ja'","str"],["summe","0","int"],["eier","12","int"]],"o":26},{"l":7,"v":[["weiter","'ja'","str"],["summe","12","int"],["eier","12","int"]],"o":26,"in":"ja"},{"l":3,"v":[["weiter","'ja'","str"],["summe","12","int"],["eier","12","int"]],"o":56,"c":{"w":true,"t":[]}},{"l":4,"v":[["weiter","'ja'","str"],["summe","12","int"],["eier","12","int"]],"o":56},{"l":5,"v":[["weiter","'ja'","str"],["summe","0","int"],["eier","12","int"]],"o":56,"in":"30"},{"l":6,"v":[["weiter","'ja'","str"],["summe","0","int"],["eier","30","int"]],"o":82},{"l":7,"v":[["weiter","'ja'","str"],["summe","30","int"],["eier","30","int"]],"o":82,"in":"ja"},{"l":3,"v":[["weiter","'ja'","str"],["summe","30","int"],["eier","30","int"]],"o":112,"c":{"w":true,"t":[]}},{"l":4,"v":[["weiter","'ja'","str"],["summe","30","int"],["eier","30","int"]],"o":112},{"l":5,"v":[["weiter","'ja'","str"],["summe","0","int"],["eier","30","int"]],"o":112,"in":"25"},{"l":6,"v":[["weiter","'ja'","str"],["summe","0","int"],["eier","25","int"]],"o":138},{"l":7,"v":[["weiter","'ja'","str"],["summe","25","int"],["eier","25","int"]],"o":138,"in":"nein"},{"l":3,"v":[["weiter","'nein'","str"],["summe","25","int"],["eier","25","int"]],"o":170,"c":{"w":false,"t":[]}},{"l":9,"v":[["weiter","'nein'","str"],["summe","25","int"],["eier","25","int"]],"o":170},{"l":null,"ende":true,"v":[["weiter","'nein'","str"],["summe","25","int"],["eier","25","int"]],"o":186}],"ausgabe":"Eier aus diesem Stall: 12\nNoch ein Stall? (ja/nein): ja\nEier aus diesem Stall: 30\nNoch ein Stall? (ja/nein): ja\nEier aus diesem Stall: 25\nNoch ein Stall? (ja/nein): nein\nEier gesamt: 25\n","fragen":[{"s":8,"typ":"wert","text":"Welchen Wert hat `summe`, nachdem Zeile 4 ausgeführt wurde?","opts":["12","0","42"],"richtig":"0","erkl":"Zeile 4 steht im Block und läuft in jedem Durchlauf. Dabei wird die bisherige Summe überschrieben. Am Ende zählt nur der letzte Stall."}]}]}];
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const md = s => esc(s).replace(/`([^`]+)`/g,"<code>$1</code>");
+const SVGNS = "http://www.w3.org/2000/svg";
+
+let P = null, VI = 0, V = null, S = 0, MODUS = "zeigen", timer = null;
+let antworten = {};                    // Schlüssel: Frageindex -> {ok, gegeben}
+let lineNode = {};                     // Zeile -> Index des PAP-Kastens
+
+/* ---------- Syntax-Hervorhebung ---------- */
+const TOK = /(#.*$)|(f?"(?:[^"\\]|\\.)*")|\b(if|elif|else|while|for|in|and|or|not|True|False|None)\b|\b(print|input|int|float|str|type|len|range)\b(?=\()|\b(\d+(?:\.\d+)?)\b/g;
+function farbig(z){
+  let out = "", last = 0, m;
+  TOK.lastIndex = 0;
+  while((m = TOK.exec(z))){
+    out += esc(z.slice(last, m.index));
+    const cls = m[1] ? "ko" : m[2] ? "st" : m[3] ? "kw" : m[4] ? "fn" : "nu";
+    out += `<span class="${cls}">${esc(m[0])}</span>`;
+    last = TOK.lastIndex;
+  }
+  return out + esc(z.slice(last));
+}
+
+/* ---------- Programm laden ---------- */
+function auswahlAufbauen(){
+  const sel = $("prog");
+  const gruppen = {};
+  DATEN.forEach((p, i) => { (gruppen[p.gruppe] = gruppen[p.gruppe] || []).push([p, i]); });
+  for(const g in gruppen){
+    const og = document.createElement("optgroup"); og.label = g;
+    gruppen[g].forEach(([p, i]) => { const o = document.createElement("option"); o.value = i; o.textContent = p.id + " · " + p.titel; og.appendChild(o); });
+    sel.appendChild(og);
+  }
+}
+
+function laden(pi, vi){
+  stop();
+  P = DATEN[pi]; VI = Math.min(vi || 0, P.varianten.length - 1); V = P.varianten[VI];
+  $("prog").value = pi;
+  $("info").textContent = P.info;
+  const vb = $("varianten"); vb.innerHTML = "";
+  P.varianten.forEach((v, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = v.name;
+    b.setAttribute("aria-pressed", i === VI);
+    b.onclick = () => laden(pi, i);
+    vb.appendChild(b);
+  });
+  $("code").innerHTML = P.code.split("\n").map((z, i) =>
+    `<div class="z" data-l="${i + 1}"><span class="nr">${i + 1}</span><span class="tx">${farbig(z) || " "}</span><span class="an" hidden></span></div>`).join("");
+  $("code").querySelectorAll(".z").forEach(el => el.addEventListener("click", () => zeileGeklickt(+el.dataset.l)));
+  papZeichnen();
+  S = 0; antworten = {};
+  render();
+}
+
+/* ---------- PAP ---------- */
+function papZeichnen(){
+  const svg = $("pap"), p = P.pap;
+  svg.setAttribute("viewBox", `0 0 ${p.w} ${p.h}`);
+  svg.style.maxWidth = Math.round(p.w * 1.35) + "px";   // kleine PAPs nicht riesig aufblasen
+  svg.innerHTML = `<defs><marker id="pfeil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="pf" d="M0,0 L10,5 L0,10 z"/></marker></defs>`;
+  lineNode = {};
+  p.e.forEach(e => {
+    const pl = document.createElementNS(SVGNS, "polyline");
+    pl.setAttribute("points", e.p.map(q => q.join(",")).join(" "));
+    if(e.a) pl.setAttribute("marker-end", "url(#pfeil)");
+    svg.appendChild(pl);
+    if(e.l){
+      const t = document.createElementNS(SVGNS, "text");
+      t.setAttribute("x", e.lp[0]); t.setAttribute("y", e.lp[1]); t.setAttribute("class", "lbl"); t.textContent = e.l;
+      svg.appendChild(t);
+    }
+  });
+  p.n.forEach((n, i) => {
+    const g = document.createElementNS(SVGNS, "g");
+    g.dataset.i = i;
+    let f;
+    const {x, y, w, h} = n;
+    if(n.k === "start" || n.k === "ende"){
+      f = document.createElementNS(SVGNS, "rect");
+      f.setAttribute("x", x); f.setAttribute("y", y); f.setAttribute("width", w); f.setAttribute("height", h); f.setAttribute("rx", h / 2);
+    } else if(n.k === "op"){
+      f = document.createElementNS(SVGNS, "rect");
+      f.setAttribute("x", x); f.setAttribute("y", y); f.setAttribute("width", w); f.setAttribute("height", h);
+    } else if(n.k === "io"){
+      f = document.createElementNS(SVGNS, "polygon");
+      const s = 12;
+      f.setAttribute("points", `${x + s},${y} ${x + w},${y} ${x + w - s},${y + h} ${x},${y + h}`);
+    } else if(n.k === "verz"){
+      f = document.createElementNS(SVGNS, "polygon");
+      f.setAttribute("points", `${x + w / 2},${y} ${x + w},${y + h / 2} ${x + w / 2},${y + h} ${x},${y + h / 2}`);
+    } else {
+      f = document.createElementNS(SVGNS, "circle");
+      f.setAttribute("cx", x + w / 2); f.setAttribute("cy", y + h / 2); f.setAttribute("r", w / 2);
+    }
+    f.setAttribute("class", "f " + n.k);
+    g.appendChild(f);
+    const lh = 17, y0 = y + h / 2 - (n.t.length - 1) * lh / 2;
+    n.t.forEach((t, j) => {
+      const tx = document.createElementNS(SVGNS, "text");
+      tx.setAttribute("x", x + w / 2); tx.setAttribute("y", y0 + j * lh);
+      tx.setAttribute("text-anchor", "middle"); tx.setAttribute("dominant-baseline", "central");
+      if(n.k === "start" || n.k === "ende") tx.setAttribute("class", "sans");
+      tx.textContent = t;
+      g.appendChild(tx);
+    });
+    if(n.k === "start") lineNode.start = i;
+    if(n.k === "ende") lineNode.ende = i;
+    n.z.forEach(z => lineNode[z] = i);
+    svg.appendChild(g);
+  });
+}
+
+/* ---------- Fragen ---------- */
+function fragenHier(){ return V.fragen.map((q, i) => [q, i]).filter(([q]) => q.s === S); }
+function offeneFrage(){
+  if(MODUS !== "vorher") return null;
+  const f = fragenHier().find(([q, i]) => !antworten[i]);
+  return f || null;
+}
+function antworten_(i, gegeben){
+  const q = V.fragen[i];
+  if(antworten[i]) return;
+  antworten[i] = {ok: gegeben === q.richtig, gegeben};
+  render();
+}
+function zeileGeklickt(l){
+  const f = offeneFrage();
+  if(f && f[0].typ === "zeile") antworten_(f[1], String(l));
+}
+
+function frageRender(){
+  const box = $("frage");
+  const liste = MODUS === "vorher" ? fragenHier() : [];
+  const offen = offeneFrage();
+  if(!liste.length){ box.hidden = true; box.innerHTML = ""; return; }
+  let html = "";
+  for(const [q, i] of liste){
+    const a = antworten[i];
+    if(!a && (!offen || offen[1] !== i)) continue;
+    html += `<h2>Vorhersage</h2><p class="fq">${md(q.text)}</p>`;
+    if(!a){
+      if(q.opts){
+        html += `<div class="opts">` + q.opts.map(o => `<button class="btn-2${/^['"\d.TF]/.test(o) && !/ /.test(o) ? " code" : ""}" type="button" data-a="${esc(o)}">${md(o)}</button>`).join("") + `</div>`;
+      } else {
+        html += `<div class="opts"><button class="btn-2" type="button" data-a="Programmende">Programmende</button></div>`;
+      }
+    } else {
+      const zeigen = q.typ === "zeile" && q.richtig !== "Programmende" ? "Zeile " + q.richtig : q.richtig;
+      html += a.ok ? `<div class="fb-ok">Richtig.</div>`
+                   : `<div class="fb-bad">Nicht ganz. Richtig ist: ${md(zeigen)}</div>`;
+      html += `<p class="erkl">${md(q.erkl)}</p>`;
+    }
+  }
+  box.innerHTML = html;
+  box.hidden = !html;
+  box.querySelectorAll("button[data-a]").forEach(b => b.onclick = () => antworten_(offen[1], b.dataset.a));
+}
+
+function punkteRender(){
+  const el = $("punkte");
+  if(MODUS !== "vorher"){ el.hidden = true; return; }
+  const werte = Object.values(antworten);
+  el.hidden = false;
+  el.textContent = `Vorhersagen: ${werte.filter(a => a.ok).length} von ${V.fragen.length} richtig`;
+}
+
+/* ---------- Anzeige ---------- */
+function render(){
+  const st = V.schritte[S], vorher = S > 0 ? V.schritte[S - 1] : null;
+  const letzter = S === V.schritte.length - 1;
+  const offen = offeneFrage();
+  const verdeckt = offen && offen[0].typ === "bedingung";
+
+  // Code
+  $("code").querySelectorAll(".z").forEach(el => {
+    const l = +el.dataset.l;
+    el.classList.toggle("aktiv", st.l === l && !st.err);
+    el.classList.toggle("fehl", !!st.err && st.l === l);
+    el.classList.toggle("waehlbar", !!(offen && offen[0].typ === "zeile"));
+    el.classList.remove("gewaehlt-ok", "gewaehlt-bad");
+    const an = el.querySelector(".an");
+    an.hidden = true;
+    if(st.l === l && !st.err){
+      if(st.c && !verdeckt){ an.hidden = false; an.textContent = "→ " + (st.c.w ? "True" : "False"); }
+      if(st.in !== undefined){ an.hidden = false; an.textContent = "⌨ Eingabe: " + st.in; }
+    }
+  });
+  fragenHier().forEach(([q, i]) => {
+    const a = antworten[i];
+    if(MODUS === "vorher" && a && q.typ === "zeile" && a.gegeben !== "Programmende"){
+      const el = $("code").querySelector(`.z[data-l="${a.gegeben}"]`);
+      if(el) el.classList.add(a.ok ? "gewaehlt-ok" : "gewaehlt-bad");
+    }
+  });
+  const akt = $("code").querySelector(".z.aktiv, .z.fehl");
+  if(akt && akt.scrollIntoViewIfNeeded) akt.scrollIntoViewIfNeeded(false);
+
+  // Was passiert gerade?
+  let j = "";
+  if(st.start) j = `<p class="gross">Das Programm ist bereit. Klicken Sie auf „Weiter ▶“.</p>`;
+  else if(st.err) j = `<div class="fb-hint">⚠️ Fehler in Zeile ${st.l}. Python bricht hier ab: <code>${esc(st.err)}</code></div>`;
+  else if(st.abbruch) j = `<div class="fb-hint">⚠️ Angehalten. Die Bedingung der Schleife bleibt immer True, das Programm würde nie enden. In Jupyter bleibt dann <code>[*]</code> neben der Zelle stehen und die Ausgabe wächst weiter. Abhilfe: Kernel unterbrechen (■ in der Symbolleiste) und den Fehler im Code beheben.</div>`;
+  else if(st.ende) j = `<p class="gross">Das Programm ist beendet.</p>`;
+  else {
+    j = `<p class="gross">Als Nächstes wird <strong>Zeile ${st.l}</strong> ausgeführt.</p>`;
+    if(st.c){
+      if(verdeckt) j += `<p>Python prüft hier eine Bedingung. Was ergibt sie?</p>`;
+      else {
+        j += `<p>Python prüft die Bedingung: Ergebnis <strong>${st.c.w ? "True" : "False"}</strong>.</p>`;
+        if(st.c.t.length) j += `<ul>` + st.c.t.map(([t, w]) => `<li><code>${esc(t)}</code> → ${w ? "True" : "False"}</li>`).join("") + `</ul>`;
+      }
+    }
+    if(st.in !== undefined) j += `<p>Hier wartet das Programm auf eine Eingabe. Eingetippt wird: <code>${esc(st.in)}</code></p>`;
+  }
+  if(letzter && MODUS === "vorher" && V.fragen.length){
+    const r = Object.values(antworten).filter(a => a.ok).length;
+    j += `<p>Sie haben ${r} von ${V.fragen.length} Vorhersagen richtig getroffen.</p>`;
+  }
+  $("jetzt").innerHTML = j;
+
+  // Variablen
+  const alt = {};
+  if(vorher) vorher.v.forEach(([k, r, t]) => alt[k] = r + "|" + t);
+  $("vars").innerHTML = st.v.length
+    ? `<table class="vars"><thead><tr><th>Name</th><th>Wert</th><th>Typ</th></tr></thead><tbody>` +
+      st.v.map(([k, r, t]) => `<tr class="${alt[k] !== r + "|" + t && S > 0 ? "neu" : ""}"><td>${esc(k)}</td><td>${esc(r)}</td><td class="typ">${esc(t)}</td></tr>`).join("") +
+      `</tbody></table>`
+    : `<p class="leer">Noch keine Variablen.</p>`;
+
+  // Ausgabe
+  const aus = V.ausgabe.slice(0, st.o);
+  $("ausgabe").innerHTML = esc(aus) + (st.err ? `<span class="err">${esc(st.err)}</span>` : "");
+  $("ausgabe").scrollTop = $("ausgabe").scrollHeight;
+
+  // PAP
+  let ni = st.start ? lineNode.start : st.l ? lineNode[st.l] : (st.ende && !st.abbruch ? lineNode.ende : undefined);
+  $("pap").querySelectorAll("g").forEach(g => {
+    g.classList.toggle("aktiv", +g.dataset.i === ni && !st.err);
+    g.classList.toggle("fehl", +g.dataset.i === ni && !!st.err);
+  });
+
+  // Steuerung
+  $("zaehler").textContent = `Schritt ${S} / ${V.schritte.length - 1}`;
+  $("zur").disabled = S === 0;
+  $("vor").disabled = letzter || !!offen;
+  $("play").disabled = letzter || !!offen;
+  $("play").textContent = timer ? "⏸ Pause" : "▶ Abspielen";
+  frageRender();
+  punkteRender();
+}
+
+function vor(){
+  if(offeneFrage() || S >= V.schritte.length - 1){ stop(); return; }
+  S++; render();
+  if(offeneFrage() || S >= V.schritte.length - 1) stop();
+}
+function zur(){ if(S > 0){ stop(); S--; render(); } }
+function neu(){ stop(); S = 0; antworten = {}; render(); }
+function stop(){ if(timer){ clearInterval(timer); timer = null; } if(V) $("play").textContent = "▶ Abspielen"; }
+function play(){
+  if(timer){ stop(); render(); return; }
+  timer = setInterval(vor, +$("tempo").value);
+  render();
+  vor();
+}
+function modus(m){
+  MODUS = m;
+  document.querySelectorAll("#modi .chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m));
+  neu();
+}
+
+/* ---------- Bedienung ---------- */
+let cz = 16;
+function zoom(d){ cz = Math.max(12, Math.min(28, cz + d)); $("buehne").style.setProperty("--cz", cz + "px"); }
+$("vor").onclick = vor; $("zur").onclick = zur; $("neu").onclick = neu; $("play").onclick = play;
+$("tempo").onchange = () => { if(timer){ stop(); play(); } };
+$("kleiner").onclick = () => zoom(-2); $("groesser").onclick = () => zoom(2);
+$("prog").onchange = () => laden(+$("prog").value, 0);
+document.querySelectorAll("#modi .chip").forEach(b => b.onclick = () => modus(b.dataset.m));
+document.addEventListener("keydown", e => {
+  if(e.altKey || e.ctrlKey || e.metaKey) return;
+  const tag = e.target.tagName;
+  if(tag === "SELECT" || tag === "INPUT" || tag === "TEXTAREA") return;
+  if(e.key === "ArrowRight" || e.key === "PageDown"){ e.preventDefault(); vor(); }
+  else if(e.key === "ArrowLeft" || e.key === "PageUp"){ e.preventDefault(); zur(); }
+  else if(e.key === "Home"){ e.preventDefault(); neu(); }
+});
+
+/* ---------- Selbsttest (?selftest=1) ---------- */
+function selftest(){
+  const out = []; let fails = 0;
+  const T = (name, ok) => { out.push((ok ? "ok   " : "FAIL ") + name); if(!ok) fails++; };
+  try{
+    // Alle Programme und Varianten bis zum Ende durchlaufen
+    modus("zeigen");
+    DATEN.forEach((p, pi) => p.varianten.forEach((v, vi) => {
+      laden(pi, vi);
+      let fehltKnoten = false, n = 0;
+      while(S < V.schritte.length - 1 && n++ < 1000){
+        vor();
+        const st = V.schritte[S];
+        if(st.l && lineNode[st.l] === undefined) fehltKnoten = true;
+        if(!$("pap").querySelector("g.aktiv, g.fehl") && !st.abbruch) fehltKnoten = true;
+      }
+      const ende = V.schritte[S];
+      const soll = V.ausgabe + (ende.err || "");
+      T(`${p.id} ${v.name}: bis zum Ende (${S} Schritte)`, S === V.schritte.length - 1);
+      T(`${p.id} ${v.name}: Ausgabe vollständig`, $("ausgabe").textContent === soll);
+      T(`${p.id} ${v.name}: jede Zeile im PAP markiert`, !fehltKnoten);
+      T(`${p.id} ${v.name}: Weiter am Ende gesperrt`, $("vor").disabled);
+      zur(); T(`${p.id} ${v.name}: Zurück`, S === V.schritte.length - 2);
+    }));
+    const idx = id => DATEN.findIndex(p => p.id === id);
+
+    // Vorhersage: Bedingung (I5, 70000 -> 60000: False)
+    modus("vorher"); laden(idx("I5"), 1);
+    while(!offeneFrage()) vor();
+    T("I5: Weiter bei offener Frage gesperrt", $("vor").disabled && $("play").disabled);
+    T("I5: Ergebnis der Bedingung verdeckt", $("code").querySelector(".z.aktiv .an").hidden && !$("jetzt").textContent.includes("Ergebnis"));
+    const s0 = S; vor(); T("I5: vor() bewegt nicht", S === s0);
+    $("frage").querySelector('button[data-a="True"]').click();
+    T("I5: falsche Antwort ✗", !!$("frage").querySelector(".fb-bad") && $("frage").textContent.includes("Richtig ist: False"));
+    T("I5: Erklärung mit Teilbedingungen", $("frage").textContent.includes("umsatz_dieses_jahr > umsatz_vorjahr ist False"));
+    T("I5: Bedingung jetzt sichtbar", !$("code").querySelector(".z.aktiv .an").hidden);
+    T("I5: Punkte 0 von 1", $("punkte").textContent === "Vorhersagen: 0 von 1 richtig");
+    T("I5: Weiter wieder frei", !$("vor").disabled);
+    vor(); T("I5: Zeile 8 nach False", V.schritte[S].l === 8);
+
+    // Vorhersage: Zeile anklicken (S1)
+    laden(idx("S1"), 0);
+    while(!offeneFrage()) vor();
+    let q = offeneFrage()[0];
+    T("S1: erste Frage ist anzahl", q.typ === "anzahl" && q.richtig === "9");
+    $("frage").querySelector('button[data-a="9"]').click();
+    T("S1: anzahl richtig ✓", !!$("frage").querySelector(".fb-ok"));
+    while(!offeneFrage()) vor();
+    q = offeneFrage()[0];
+    T("S1: Zeilenfrage, Zeilen anklickbar", q.typ === "zeile" && !!$("code").querySelector(".z.waehlbar"));
+    $("code").querySelector('.z[data-l="4"]').click();
+    T("S1: Zeile 4 richtig ✓", !!$("frage").querySelector(".fb-ok") && !!$("code").querySelector(".z.gewaehlt-ok"));
+    neu(); T("S1: Neustart setzt Antworten zurück", Object.keys(antworten).length === 0 && S === 0);
+
+    // Wertfrage (B1)
+    laden(idx("B1"), 0);
+    while(!offeneFrage()) vor();
+    $("frage").querySelector('button[data-a="5"]').click();
+    T("B1: Wert 5 richtig ✓", !!$("frage").querySelector(".fb-ok"));
+
+    // Fehler und Abbruch
+    modus("zeigen");
+    laden(idx("B4"), 0); while(S < V.schritte.length - 1) vor();
+    T("B4: Fehlerzeile 4 markiert", !!$("code").querySelector('.z.fehl[data-l="4"]') && $("jetzt").textContent.includes("TypeError"));
+    laden(idx("S3"), 0); while(S < V.schritte.length - 1) vor();
+    T("S3: Abbruchmeldung", $("jetzt").textContent.includes("würde nie enden"));
+
+    // Tastatur
+    laden(0, 0);
+    document.body.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowRight", bubbles: true}));
+    T("Taste →", S === 1);
+    document.body.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowLeft", bubbles: true}));
+    T("Taste ←", S === 0);
+  }catch(e){ T("Ausnahme: " + e.message + " " + e.stack, false); }
+  out.push(fails ? `ERGEBNIS: FAIL (${fails})` : "ERGEBNIS: PASS");
+  const el = $("selftest"); el.hidden = false; el.textContent = out.join("\n");
+  document.documentElement.setAttribute("data-selftest", fails ? "FAIL" : "PASS");
+}
+
+/* ---------- Start ---------- */
+auswahlAufbauen();
+(function(){
+  let q = ""; try{ q = location.search; }catch(e){}
+  const par = k => { const m = q.match(new RegExp("[?&]" + k + "=([^&]+)")); return m ? decodeURIComponent(m[1]) : null; };
+  if(par("theme") === "dark") document.documentElement.setAttribute("data-theme", "dark");
+  if(par("theme") === "light") document.documentElement.setAttribute("data-theme", "light");
+  let pi = DATEN.findIndex(p => p.id === par("p"));
+  if(pi < 0) pi = 0;
+  if(par("m") === "vorher") MODUS = "vorher";
+  document.querySelectorAll("#modi .chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === MODUS));
+  laden(pi, +(par("v") || 1) - 1);
+  if(par("zoom")) zoom(+par("zoom") - 16);
+  if(par("schritt")) for(let i = 0; i < +par("schritt"); i++) vor();
+  if(par("selftest") === "1") selftest();
+})();
+</script>
+</body>
+</html>
