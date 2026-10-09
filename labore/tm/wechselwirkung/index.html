@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kraft und Gegenkraft – Labor</title>
+<meta name="description" content="Interaktives Labor: Reaktionskraft und Gegenkraft unterscheiden, Nachbarteile wegdenken, alle Bauteile eines Systems freimachen">
+<link rel="stylesheet" href="../../assets/basis.css">
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Kräfte in Fachfarbe, Gegenkräfte gestrichelt grau, gedachte Bewegung gestrichelt.
+     Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
+  :root{--hebel:#d6e4f5}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--hebel:#2a3d57}}
+  :root[data-theme="dark"]{--hebel:#2a3d57}
+
+  [hidden]{display:none!important}
+  button{touch-action:manipulation}
+  .btn,.btn-2{min-height:40px}
+  button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  button:disabled{opacity:.45;cursor:not-allowed}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
+  .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 14px;min-height:40px}
+  .tabs button[aria-selected="true"]{background:var(--fach);border-color:var(--fach);color:var(--fach-ink)}
+  .tabs button:disabled{cursor:default}
+  .tabs small{font-weight:400}
+  .taskbox{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:var(--card);padding:16px;margin-bottom:16px}
+
+  .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
+  .info summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px;min-height:44px}
+  .info summary::-webkit-details-marker{display:none}
+  .info summary::before{content:"▸";color:var(--fach);font-size:1.2rem;transition:transform .15s}
+  .info[open] summary::before{transform:rotate(90deg)}
+  .info-body{padding:0 16px 14px}
+  .tab{width:100%;border-collapse:collapse;margin:6px 0 10px;font-size:.95rem}
+  .tab th,.tab td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+  .tab th{background:var(--soft)}
+  .satzmuster{margin:6px 0 0;padding:8px 12px;background:var(--soft);border-radius:8px}
+
+  .schritt{border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
+  .schritt:first-of-type{border-top:none;margin-top:0;padding-top:0}
+  .schritt h3{margin:0 0 6px;font-size:1.3rem;color:var(--fach)}
+  .schritt h3 .nr{display:inline-block;min-width:1.6em;height:1.6em;line-height:1.6em;text-align:center;border-radius:50%;background:var(--fach);color:var(--fach-ink);font-size:.95rem;margin-right:6px}
+  .gesperrt{color:var(--muted);font-style:italic;margin:0}
+  .lab{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
+  @media (max-width:820px){.lab{grid-template-columns:minmax(0,1fr)}}
+
+  svg.sys{display:block;width:100%;height:auto;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+  svg.sys text{font-family:var(--font);font-size:15px;fill:var(--ink)}
+  svg.sys text.k{font-weight:700;fill:var(--fach);font-size:17px}
+  svg.sys text.g{fill:var(--muted);font-size:14px}
+  svg.sys text.nr{font-weight:700;fill:var(--fach-ink);font-size:13px}
+  svg.sys .nrk{fill:var(--fach)}
+  svg.sys .gestell{stroke:var(--ink);stroke-width:2.5;fill:none}
+  svg.sys .schraff{stroke:var(--muted);stroke-width:1.2}
+  svg.sys .bock{fill:var(--soft);stroke:var(--ink);stroke-width:2}
+  svg.sys .hebel-o{stroke:var(--ink);stroke-width:28;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  svg.sys .hebel-i{stroke:var(--hebel);stroke-width:23;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  svg.sys .rolle{fill:var(--card);stroke:var(--ink);stroke-width:2.5}
+  svg.sys .loch{fill:var(--card);stroke:var(--ink);stroke-width:2}
+  svg.sys .bolzen{fill:var(--ink)}
+  svg.sys .feder{stroke:var(--ink);stroke-width:2.2;fill:none;stroke-linejoin:round}
+  svg.sys .weg{opacity:.3;stroke-dasharray:6 5}
+  svg.sys .geist{opacity:.28}
+  svg.sys .kraft line{stroke:var(--fach);stroke-width:3.4}
+  svg.sys .kraft polygon{fill:var(--fach)}
+  svg.sys .kraft.gegen line{stroke:var(--muted);stroke-dasharray:7 5}
+  svg.sys .kraft.gegen polygon{fill:var(--muted)}
+  svg.sys .beweg line{stroke:var(--muted);stroke-width:2.4;stroke-dasharray:5 4}
+  svg.sys .beweg polygon{fill:var(--muted)}
+  svg.sys g{transition:opacity .2s}
+  svg.sys .dim{opacity:.12}
+
+  .knoepfe{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+  .knoepfe .btn-2[aria-pressed="true"]{background:var(--fach);color:var(--fach-ink);border-color:var(--fach);font-weight:600}
+  .knoepfe .erledigt::after{content:" ✓";font-weight:700}
+  .erkl{border-left:4px solid var(--fach);border-radius:6px;padding:8px 12px;background:var(--soft);font-size:.97rem;min-height:3em}
+  .erkl p{margin:0 0 6px}.erkl p:last-child{margin:0}
+  .merke{margin:12px 0 0;padding:8px 12px;border:2px solid var(--fach);border-radius:8px;font-size:.95rem}
+  .weiter{margin-top:10px}
+
+  .zeile{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 10px;background:var(--card)}
+  .zeile h4{margin:0 0 6px;font-size:1rem}
+  .zeile.ok{border-color:var(--ok);border-width:2px}
+  .satz{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:1rem}
+  .satz select{font:inherit;min-height:40px;padding:4px 6px;border:2px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);max-width:100%}
+  .rm{margin-top:8px;font-size:.95rem}
+  .rm:empty{display:none}
+
+  .frage{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 10px}
+  .frage p.q{margin:0 0 6px;font-weight:600}
+  .frage label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;cursor:pointer}
+  .frage input{margin-top:5px;width:18px;height:18px;accent-color:var(--fach);flex:none}
+  .frage .rm{margin-top:6px}
+  sub{font-size:.75em;line-height:0}
+</style>
+</head>
+<body data-fach="tm">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Technische Mechanik</a></div>
+    <h1>Kraft und Gegenkraft</h1>
+    <p>Reaktionskraft oder Gegenkraft? · Nachbarteile wegdenken · alle Bauteile freimachen · ca. 15 min je Beispiel</p>
+  </header>
+
+  <details class="info" open>
+    <summary>Kraft, Gegenkraft, Reaktionskraft – worin liegt der Unterschied?</summary>
+    <div class="info-body">
+      <table class="tab">
+        <tr><th>Begriff</th><th>Bedeutung</th><th>Im Bild des freigemachten Bauteils?</th></tr>
+        <tr><td><b>Eingeprägte Kraft</b> (Belastung)</td><td>gegeben oder bekannt, z. B. Federkraft, Gewichtskraft, Handkraft F</td><td>ja</td></tr>
+        <tr><td><b>Reaktionskraft</b></td><td>Kraft, mit der ein Lager oder Nachbarteil <b>auf mein Bauteil</b> wirkt. Sie entsteht, weil eine Belastung da ist, und wird aus dem Gleichgewicht berechnet.</td><td>ja</td></tr>
+        <tr><td><b>Gegenkraft</b> (Wechselwirkung)</td><td>gleich groß und entgegengesetzt, wirkt aber <b>auf den Nachbarn</b></td><td><b>nein</b> – sie gehört in das Bild des Nachbarn</td></tr>
+      </table>
+      <p style="margin:0">Prüfen Sie jeden Kraftpfeil mit diesem Satz. Ihr Bauteil muss darin das <b>Objekt</b> sein:</p>
+      <p class="satzmuster">„Die/Der <i>Nachbar</i> zieht/drückt <b>mein Bauteil</b> nach …“</p>
+      <p class="small" style="margin:6px 0 0">Steht Ihr Bauteil als Subjekt im Satz („Der Hebel drückt gegen die Decke“), beschreibt der Pfeil die Gegenkraft.</p>
+    </div>
+  </details>
+
+  <div class="tabs" role="tablist" aria-label="Beispiele">
+    <button role="tab" disabled>1 Kiste auf Tisch <small>(folgt)</small></button>
+    <button role="tab" disabled>2 Seil über Rolle <small>(folgt)</small></button>
+    <button role="tab" disabled>3 Hebel mit Gestänge <small>(folgt)</small></button>
+    <button role="tab" aria-selected="true">4 Hebel mit Rolle</button>
+    <button role="tab" disabled>5 Rollenhebel-Endschalter <small>(folgt)</small></button>
+  </div>
+
+  <section class="taskbox" aria-label="Beispiel 4: Hebel mit Rolle">
+    <p style="margin:0 0 12px">Ein <b>Hebel</b> ist im Lagerbock auf einem Bolzen drehbar gelagert. Am unteren Ende zieht eine <b>Zugfeder</b>.
+      Am linken Ende sitzt eine frei drehbare <b>Rolle</b>, die an der Decke anliegt. Die Gewichtskraft des Hebels wird vernachlässigt.
+      Gesucht sind alle Kräfte <b>auf den Hebel</b>.</p>
+
+    <!-- ===== Schritt 1 ===== -->
+    <div class="schritt">
+      <h3><span class="nr">1</span>Nachbarn wegdenken</h3>
+      <p style="margin:0 0 10px">Nehmen Sie nacheinander jeden Nachbarn des Hebels weg. Beobachten Sie, wie sich der Hebel bewegen würde.</p>
+      <div class="lab">
+        <div>
+          <svg class="sys" id="s1" viewBox="0 0 600 390" role="img" aria-label="Hebel mit Rolle, Lagerbock und Zugfeder"></svg>
+          <div class="knoepfe" id="k1">
+            <button class="btn-2" type="button" data-weg="decke">Decke wegnehmen</button>
+            <button class="btn-2" type="button" data-weg="lager">Lagerbolzen wegnehmen</button>
+            <button class="btn-2" type="button" data-weg="feder">Feder wegnehmen</button>
+          </div>
+        </div>
+        <div>
+          <div class="erkl" id="e1" aria-live="polite"><p>Wählen Sie links einen Nachbarn aus.</p></div>
+          <p class="merke"><b>Merke:</b> In welche Richtung würde sich mein Bauteil ohne den Nachbarn bewegen?
+            Die <b>Reaktionskraft</b> des Nachbarn wirkt genau <b>dagegen</b>.</p>
+          <p class="fb-ok weiter" id="w1" hidden>Alle drei Nachbarn untersucht. Weiter mit Schritt 2.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Schritt 2 ===== -->
+    <div class="schritt">
+      <h3><span class="nr">2</span>Welche Kraft gehört zum Hebel?</h3>
+      <p class="gesperrt" id="g2">Wird nach Schritt 1 freigeschaltet.</p>
+      <div id="b2" hidden>
+        <p style="margin:0 0 10px">Beschreiben Sie für jede Berührstelle die Kraft mit einem Satz. Das Bild zeigt die Pfeile so, wie Sie sie beschreiben.
+          Kräfte auf den Hebel erscheinen <b>durchgezogen</b>, Kräfte auf andere Bauteile <b>gestrichelt</b>.</p>
+        <div class="lab">
+          <div><svg class="sys" id="s2" viewBox="0 0 600 390" role="img" aria-label="Freigemachter Hebel"></svg></div>
+          <div id="zeilen"></div>
+        </div>
+        <div class="knoepfe">
+          <button class="btn" type="button" id="pruef2">Prüfen</button>
+        </div>
+        <p class="fb-ok weiter" id="w2" hidden></p>
+      </div>
+    </div>
+
+    <!-- ===== Schritt 3 ===== -->
+    <div class="schritt">
+      <h3><span class="nr">3</span>Alle Bauteile freimachen</h3>
+      <p class="gesperrt" id="g3">Wird nach Schritt 2 freigeschaltet.</p>
+      <div id="b3" hidden>
+        <p style="margin:0 0 10px">Jetzt sind <b>alle</b> Bauteile auseinandergezogen. Zu jeder Berührstelle gehört ein Paar aus Kraft und Gegenkraft mit derselben Nummer.
+          Wählen Sie ein Paar oder ein Bauteil aus.</p>
+        <div class="lab">
+          <div>
+            <svg class="sys" id="s3" viewBox="0 -75 600 690" role="img" aria-label="Alle Bauteile freigemacht"></svg>
+            <div class="knoepfe" id="k3"></div>
+          </div>
+          <div>
+            <div class="erkl" id="e3" aria-live="polite"></div>
+            <div id="fragen" style="margin-top:12px"></div>
+            <p class="fb-ok weiter" id="w3" hidden></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="fuss"><a href="../freimachen/">Labor „Freimachen von Bauteilen“</a> · <a href="../../">alle Labore</a> · <a href="../../../">Startseite</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+"use strict";
+/* ---------- Geometrie (SVG-Koordinaten, y nach unten) ---------- */
+const P = [400, 125];          // Lagerbolzen
+const R = [150, 100];          // Rollenmittelpunkt
+const RR = 30;                 // Rollenradius
+const E = [460, 270];          // Federanschluss am Hebel
+const A = [330, 350];          // Federanker
+const DY = R[1] - RR;          // Unterkante der Decke (Berührpunkt Rolle)
+const K = [R[0], DY];          // Berührpunkt Rolle – Decke
+
+const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
+const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+const mul = (a, k) => [a[0] * k, a[1] * k];
+const len = a => Math.hypot(a[0], a[1]);
+const norm = a => mul(a, 1 / len(a));
+const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
+
+/* ---------- Gleichgewicht am Hebel (Federkraft = 1) ----------
+   Momente um P: cross(E-P, uF) + cross(K-P, (0, kN)) = 0
+   Kräfte: F_L = -(F_F + F_N)                                  */
+const uF = norm(sub(A, E));                                   // Richtung der Federkraft auf den Hebel
+const kN = -cross(sub(E, P), uF) / cross(sub(K, P), [0, 1]);  // Betrag der Deckenkraft (nach unten)
+const FN = [0, kN];
+const FL = mul(add(uF, FN), -1);                              // Lagerkraft auf den Hebel
+const uL = norm(FL);
+const FIX = (v, n = 1) => v.toFixed(n);
+
+/* ---------- Zeichenbausteine ---------- */
+const pt = p => `${FIX(p[0])},${FIX(p[1])}`;
+function pfeil(p, d, L, modus, cls = "", attr = "") {
+  const u = norm(d);
+  const a = modus === "spitze" ? sub(p, mul(u, L)) : p;
+  const b = modus === "spitze" ? p : add(p, mul(u, L));
+  const basis = sub(b, mul(u, 12)), n = [-u[1], u[0]];
+  return `<g class="kraft ${cls}" ${attr}><line x1="${FIX(a[0])}" y1="${FIX(a[1])}" x2="${FIX(basis[0])}" y2="${FIX(basis[1])}"/>` +
+         `<polygon points="${pt(b)} ${pt(add(basis, mul(n, 6)))} ${pt(sub(basis, mul(n, 6)))}"/></g>`;
+}
+const beweg = (p, d, L) => pfeil(p, d, L, "fuss", "").replace('class="kraft ', 'class="beweg ');
+function fname(p, idx, cls = "k") {
+  return `<text class="${cls}" x="${FIX(p[0])}" y="${FIX(p[1])}">F<tspan dy="5" font-size="12">${idx}</tspan></text>`;
+}
+const txt = (p, s, cls = "", anchor = "start") =>
+  `<text class="${cls}" x="${FIX(p[0])}" y="${FIX(p[1])}" text-anchor="${anchor}">${s}</text>`;
+function nummer(p, n) {
+  return `<circle class="nrk" cx="${FIX(p[0])}" cy="${FIX(p[1])}" r="10"/>` +
+         `<text class="nr" x="${FIX(p[0])}" y="${FIX(p[1] + 4.5)}" text-anchor="middle">${n}</text>`;
+}
+function schraffur(x1, x2, y, oben) {
+  let s = `<line class="gestell" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`;
+  for (let x = x1 + 4; x < x2; x += 12)
+    s += oben ? `<line class="schraff" x1="${x}" y1="${y}" x2="${x + 10}" y2="${y - 10}"/>`
+              : `<line class="schraff" x1="${x}" y1="${y}" x2="${x - 10}" y2="${y + 10}"/>`;
+  return s;
+}
+function federPfad(p, q) {
+  const d = sub(q, p), L = len(d), u = norm(d), n = [-u[1], u[0]];
+  const vor = 16, z = 12, amp = 9, pts = [p, add(p, mul(u, vor))];
+  for (let i = 0; i < z; i++) {
+    const t = vor + (L - 2 * vor) * (i + 0.5) / z;
+    pts.push(add(add(p, mul(u, t)), mul(n, amp * (i % 2 ? 1 : -1))));
+  }
+  pts.push(add(p, mul(u, L - vor)), q);
+  return "M" + pts.map(pt).join(" L");
+}
+/* Bauteile, jeweils mit Verschiebung o */
+function decke(o, x1 = 40, x2 = 560, cls = "") {
+  return `<g class="${cls}">${schraffur(x1 + o[0], x2 + o[0], DY + o[1], true)}</g>`;
+}
+function bock(o, cls = "") {
+  const p = add(P, o), y0 = DY + o[1];
+  return `<g class="${cls}"><polygon class="bock" points="${p[0] - 34},${y0} ${p[0] + 34},${y0} ${p[0] + 17},${p[1] + 17} ${p[0] - 17},${p[1] + 17}"/></g>`;
+}
+const bolzen = (o, cls = "") => { const p = add(P, o); return `<circle class="bolzen ${cls}" cx="${p[0]}" cy="${p[1]}" r="6"/>`; };
+function anker(o, cls = "") {
+  const a = add(A, o);
+  return `<g class="${cls}"><line class="gestell" x1="${a[0]}" y1="${a[1] + 5}" x2="${a[0]}" y2="${a[1] + 16}"/>` +
+         schraffur(a[0] - 34, a[0] + 34, a[1] + 16, false) +
+         `<circle class="loch" cx="${a[0]}" cy="${a[1]}" r="5"/></g>`;
+}
+const feder = (p, q, cls = "") => `<path class="feder ${cls}" d="${federPfad(p, q)}"/>`;
+function hebel(r, p, e, cls = "") {
+  const d = `M${pt(r)} L${pt(p)} L${pt(e)}`;
+  return `<g class="${cls}"><path class="hebel-o" d="${d}"/><path class="hebel-i" d="${d}"/>` +
+         `<circle class="loch" cx="${FIX(p[0])}" cy="${FIX(p[1])}" r="9"/>` +
+         `<circle class="loch" cx="${FIX(e[0])}" cy="${FIX(e[1])}" r="5"/>` +
+         `<circle class="rolle" cx="${FIX(r[0])}" cy="${FIX(r[1])}" r="${RR}"/>` +
+         `<circle class="bolzen" cx="${FIX(r[0])}" cy="${FIX(r[1])}" r="4"/></g>`;
+}
+/* Hebel um P gedreht (Grad, im Uhrzeigersinn) und verschoben */
+function lage(p, rot, v) {
+  const a = rot * Math.PI / 180, d = sub(p, P);
+  return add(add(P, [d[0] * Math.cos(a) - d[1] * Math.sin(a), d[0] * Math.sin(a) + d[1] * Math.cos(a)]), v);
+}
+
+/* ================= Schritt 1 ================= */
+const s1 = document.getElementById("s1");
+const e1 = document.getElementById("e1");
+const ruhig = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const st1 = { weg: null, rot: 0, v: [0, 0], phase: "", erledigt: new Set() };
+const vLager = mul(norm(mul(FL, -1)), 40);   // Ausweichen ohne Lagerbolzen
+
+const TEXT1 = {
+  decke: `<p><b>Ohne Decke</b> dreht die Feder den Hebel im Uhrzeigersinn um den Lagerbolzen. Die Rolle würde nach <b>oben</b> ausweichen.</p>
+          <p>Die Decke verhindert das. Sie drückt die Rolle also nach <b>unten</b>.
+          Die Wirklinie steht senkrecht zur Decke und geht durch den Rollenmittelpunkt. Weil sich die Rolle frei drehen kann, wird keine Kraft parallel zur Decke übertragen.</p>`,
+  lager: `<p><b>Ohne Lagerbolzen</b> würden Feder und Decke den Hebel nach <b>links unten</b> wegschieben.</p>
+          <p>Der Bolzen hält dagegen. Die Lagerkraft zeigt also nach <b>rechts oben</b>.
+          Ihre genaue Richtung kennt man vorher meist nicht. Beim Festlager zeichnet man deshalb zwei Komponenten F<sub>Lx</sub> und F<sub>Ly</sub>.</p>`,
+  feder: `<p><b>Ohne Feder</b> passiert nichts. Der Hebel bleibt liegen, die Rolle berührt die Decke nur noch lose, der Bolzen ist unbelastet.</p>
+          <p>Die Federkraft ist hier die <b>Ursache</b>, also die eingeprägte Kraft. Die Kräfte von Decke und Lagerbolzen sind <b>Reaktionskräfte</b>: Sie entstehen erst, weil die Feder zieht.
+          Eine Zugfeder zieht immer, und zwar entlang ihrer Achse <b>zu sich hin</b>.</p>`
+};
+
+function zeichne1() {
+  const w = st1.weg, r = lage(R, st1.rot, st1.v), p = lage(P, st1.rot, st1.v), e = lage(E, st1.rot, st1.v);
+  let s = "";
+  s += decke([0, 0], 40, 330, w === "decke" ? "weg" : "");
+  s += decke([0, 0], 330, 560);
+  s += bock([0, 0]) + anker([0, 0]);
+  s += feder(w === "feder" ? E : e, A, w === "feder" ? "weg" : "");
+  s += hebel(r, p, e);
+  s += bolzen([0, 0], w === "lager" ? "weg" : "");
+  s += txt([60, 52], "Decke", "g") + txt([450, 52], "Lagerbock", "g") + txt([250, 148], "Hebel", "g") +
+       txt([150, 152], "Rolle", "g", "middle") + txt([372, 296], "Zugfeder", "g", "end") + txt([372, 376], "Federanker", "g");
+  if (st1.phase === "halten") {
+    if (w === "decke") s += beweg([R[0] - 46, 110], [0, -1], 50) + txt([R[0] - 46, 128], "Rolle weicht aus", "g", "middle");
+    if (w === "lager") s += beweg(add(P, [-34, 30]), mul(FL, -1), 46) + txt(add(P, [-58, 96]), "Hebel rutscht weg", "g", "end");
+  }
+  if (st1.phase === "fertig") {
+    if (w === "decke") s += pfeil(K, [0, 1], 58, "spitze") + fname([K[0] + 10, K[1] - 22], "N");
+    if (w === "lager") s += pfeil(P, FL, 64) + fname(add(P, add(mul(uL, 64), [8, 8])), "L");
+    if (w === "feder") s += pfeil(E, uF, 60) + fname(add(E, add(mul(uF, 60), [-28, 4])), "F");
+  }
+  s1.innerHTML = s;
+}
+
+let anim = 0;
+function spiele(w) {
+  cancelAnimationFrame(anim);
+  Object.assign(st1, { weg: w, rot: 0, v: [0, 0], phase: "" });
+  e1.innerHTML = "<p>…</p>";
+  const ziel = w === "decke" ? { rot: 12, v: [0, 0] } : w === "lager" ? { rot: 0, v: vLager } : { rot: 0, v: [0, 0] };
+  const T_HIN = ruhig ? 0 : 800, T_HALT = ruhig ? 0 : 900, T_ZURUECK = ruhig ? 0 : 500;
+  const t0 = performance.now();
+  const eas = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+  function schritt(t) {
+    const dt = t - t0;
+    let f;
+    if (dt < T_HIN) { f = eas(dt / T_HIN); st1.phase = ""; }
+    else if (dt < T_HIN + T_HALT) { f = 1; st1.phase = "halten"; }
+    else if (dt < T_HIN + T_HALT + T_ZURUECK) { f = 1 - eas((dt - T_HIN - T_HALT) / T_ZURUECK); st1.phase = ""; }
+    else { f = 0; st1.phase = "fertig"; }
+    st1.rot = ziel.rot * f; st1.v = mul(ziel.v, f);
+    zeichne1();
+    if (st1.phase !== "fertig") anim = requestAnimationFrame(schritt);
+    else fertig1(w);
+  }
+  if (ruhig) { st1.phase = "fertig"; zeichne1(); fertig1(w); } else anim = requestAnimationFrame(schritt);
+}
+function fertig1(w) {
+  e1.innerHTML = TEXT1[w];
+  st1.erledigt.add(w);
+  document.querySelector(`#k1 [data-weg="${w}"]`).classList.add("erledigt");
+  if (st1.erledigt.size === 3) {
+    document.getElementById("w1").hidden = false;
+    document.getElementById("g2").hidden = true;
+    document.getElementById("b2").hidden = false;
+  }
+}
+document.querySelectorAll("#k1 [data-weg]").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("#k1 [data-weg]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  spiele(b.dataset.weg);
+}));
+
+/* ================= Schritt 2 ================= */
+const s2 = document.getElementById("s2");
+const ZEILEN = [
+  { id: "decke", titel: "Berührstelle Rolle – Decke", nachbar: "die Decke", punkt: K, name: "N",
+    subj: [["n", "Die Decke"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Decke"]],
+    verb: [["drueckt", "drückt"], ["zieht", "zieht"]], richt: [["unten", "nach unten", [0, 1]], ["oben", "nach oben", [0, -1]]],
+    soll: { verb: "drueckt", richt: "unten" }, gegen: "oben",
+    verbFalsch: "Eine Decke kann nicht ziehen. Über eine Berührfläche wird nur Druck übertragen.",
+    richtFalsch: { oben: "Ohne Decke würde die Rolle nach oben ausweichen (Schritt 1). Die Decke hält dagegen." },
+    ok: "Die Decke drückt den Hebel über die Rolle senkrecht nach unten. Die Wirklinie geht durch den Rollenmittelpunkt." },
+  { id: "lager", titel: "Lagerbolzen", nachbar: "den Lagerbolzen", punkt: P, name: "L", modus: "fuss",
+    subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]],
+    verb: [["drueckt", "drückt"], ["zieht", "zieht"]],
+    richt: [["ro", "nach rechts oben", uL], ["lu", "nach links unten", mul(uL, -1)], ["o", "nach oben", [0, -1]], ["r", "nach rechts", [1, 0]]],
+    soll: { verb: "drueckt", richt: "ro" }, gegen: "lu",
+    verbFalsch: "Ein Bolzen kann nur gegen die Bohrungswand drücken. In welche Richtung, hängt von den übrigen Kräften ab.",
+    richtFalsch: {
+      lu: "In diese Richtung würde der Hebel ohne Bolzen wegrutschen (Schritt 1). Die Lagerkraft wirkt dagegen.",
+      o: "Teilweise richtig. Die Lagerkraft hat auch einen Anteil nach rechts, sonst bliebe der Anteil der Federkraft nach links unausgeglichen.",
+      r: "Teilweise richtig. Die Lagerkraft hat auch einen Anteil nach oben, denn Feder und Decke ziehen bzw. drücken den Hebel beide nach unten." },
+    ok: "Der Lagerbolzen drückt den Hebel nach rechts oben. Da man die genaue Richtung vorher nicht kennt, zeichnet man beim Festlager zwei Komponenten: F<sub>Lx</sub> nach rechts und F<sub>Ly</sub> nach oben." },
+  { id: "feder", titel: "Federanschluss", nachbar: "die Feder", punkt: E, name: "F",
+    subj: [["n", "Die Feder"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Feder"]],
+    verb: [["zieht", "zieht"], ["drueckt", "drückt"]],
+    richt: [["hin", "zur Feder hin (nach links unten)", uF], ["weg", "von der Feder weg (nach rechts oben)", mul(uF, -1)]],
+    soll: { verb: "zieht", richt: "hin" }, gegen: "weg",
+    verbFalsch: "Eine Zugfeder ist gedehnt und will sich zusammenziehen. Sie kann nur ziehen.",
+    richtFalsch: { weg: "Eine Zugfeder zieht das Bauteil zu sich hin, also entlang der Federachse in Richtung Feder." },
+    ok: "Die Feder zieht den Hebel entlang der Federachse zu sich hin. Das ist die eingeprägte Kraft, die alles auslöst." }
+];
+const auswahl = {};
+const zeilenBox = document.getElementById("zeilen");
+function sel(z, k, opts, label) {
+  return `<select data-z="${z.id}" data-k="${k}" aria-label="${label}"><option value="">– wählen –</option>` +
+         opts.map(o => `<option value="${o[0]}">${o[1]}</option>`).join("") + `</select>`;
+}
+zeilenBox.innerHTML = ZEILEN.map(z =>
+  `<div class="zeile" id="z-${z.id}"><h4>${z.titel}</h4><div class="satz">` +
+  sel(z, "subj", z.subj, "Wer?") + sel(z, "verb", z.verb, "Was tut er?") + sel(z, "obj", z.obj, "Mit wem?") +
+  sel(z, "richt", z.richt, "Wohin?") + `<span>.</span></div><div class="rm" aria-live="polite"></div></div>`).join("");
+ZEILEN.forEach(z => auswahl[z.id] = {});
+zeilenBox.addEventListener("change", ev => {
+  const s = ev.target; if (!s.dataset.z) return;
+  auswahl[s.dataset.z][s.dataset.k] = s.value;
+  const box = document.getElementById("z-" + s.dataset.z);
+  box.classList.remove("ok"); box.querySelector(".rm").textContent = ""; box.querySelector(".rm").className = "rm";
+  document.getElementById("w2").hidden = true;
+  zeichne2();
+});
+
+function zeichne2() {
+  let s = decke([0, 0], 40, 560, "geist") + bock([0, 0], "geist") + bolzen([0, 0], "geist") +
+          anker([0, 0], "geist") + feder(E, A, "geist") + hebel(R, P, E);
+  s += txt([250, 148], "Hebel", "g");
+  ZEILEN.forEach(z => {
+    const a = auswahl[z.id];
+    if (!a.subj || !a.obj || !a.verb || !a.richt || a.subj === a.obj) return;
+    const d = z.richt.find(r => r[0] === a.richt)[2];
+    const modus = z.modus || (a.verb === "drueckt" ? "spitze" : "fuss");
+    const L = 58, auf = a.obj === "h";
+    s += pfeil(z.punkt, d, L, modus, auf ? "" : "gegen");
+    const u = norm(d), ende = modus === "spitze" ? sub(z.punkt, mul(u, L)) : add(z.punkt, mul(u, L));
+    let n = [-u[1], u[0]]; if (n[0] < 0) n = mul(n, -1);
+    const mitte = mul(add(ende, z.punkt), .5);
+    s += auf ? fname(add(mitte, add(mul(n, 14), [0, 6])), z.name)
+             : txt(add(mitte, add(mul(n, -14), [0, 5])), "auf " + z.nachbar.split(" ")[1], "g", "end");
+  });
+  s2.innerHTML = s;
+}
+
+function rm(box, cls, html) { const r = box.querySelector(".rm"); r.className = "rm " + cls; r.innerHTML = html; }
+document.getElementById("pruef2").addEventListener("click", () => {
+  let alleOk = true;
+  ZEILEN.forEach(z => {
+    const a = auswahl[z.id], box = document.getElementById("z-" + z.id);
+    box.classList.remove("ok");
+    if (!a.subj || !a.verb || !a.obj || !a.richt) { alleOk = false; return rm(box, "fb-hint", "Bitte alle vier Felder wählen."); }
+    if (a.subj === a.obj) { alleOk = false; return rm(box, "fb-bad", "Ein Bauteil übt keine Kraft auf sich selbst aus. Wer ist hier der Nachbar des Hebels?"); }
+    if (a.obj !== "h") {
+      alleOk = false;
+      const n = z.nachbar;
+      if (a.verb === z.soll.verb && a.richt === z.gegen)
+        return rm(box, "fb-bad", `Der Satz stimmt, beschreibt aber die <b>Gegenkraft</b>. Sie wirkt auf ${n}. In das Bild des Hebels gehört nur, was der Nachbar mit dem Hebel macht. Drehen Sie den Satz um.`);
+      return rm(box, "fb-bad", `Diese Kraft wirkt auf ${n}, nicht auf den Hebel. Gesucht ist die Kraft <b>auf den Hebel</b>.`);
+    }
+    if (a.verb !== z.soll.verb) { alleOk = false; return rm(box, "fb-bad", z.verbFalsch); }
+    if (a.richt !== z.soll.richt) { alleOk = false; return rm(box, "fb-bad", z.richtFalsch[a.richt]); }
+    box.classList.add("ok"); rm(box, "fb-ok", z.ok);
+  });
+  if (alleOk) {
+    const w = document.getElementById("w2");
+    w.innerHTML = "Der Hebel ist vollständig freigemacht: F<sub>N</sub> von der Decke, F<sub>L</sub> vom Lagerbolzen und F<sub>F</sub> von der Feder. Weiter mit Schritt 3.";
+    w.hidden = false;
+    document.getElementById("g3").hidden = true;
+    document.getElementById("b3").hidden = false;
+    zeichne3();
+  }
+});
+
+/* ================= Schritt 3: Explosionsansicht ================= */
+const s3 = document.getElementById("s3");
+const e3 = document.getElementById("e3");
+const nF = [-uF[1], uF[0]];                                  // senkrecht zur Federachse
+const O = {
+  oben: [0, -70],                                             // Decke und Lagerbock
+  hebel: [0, 40],
+  feder: add(add(mul(uF, 55), mul(nF, -40)), [0, 40]),
+};
+O.anker = add(add(O.feder, mul(uF, 105)), mul(nF, -32));
+const SK = 55;                                                // Pfeillänge für F_F = 1
+const KR = [
+  // Paar, Bauteil, Angriffspunkt, Richtung, Betrag, Modus, Beschriftung
+  { paar: 1, teil: "hebel",   p: add(K, O.hebel),          d: [0, 1],          b: kN,     m: "spitze", name: "N" },
+  { paar: 1, teil: "gestell", p: add(K, O.oben),           d: [0, -1],         b: kN,     m: "spitze" },
+  { paar: 2, teil: "hebel",   p: add(P, O.hebel),          d: uL,              b: len(FL), m: "fuss", name: "L" },
+  { paar: 2, teil: "gestell", p: add(P, O.oben),           d: mul(uL, -1),     b: len(FL), m: "fuss" },
+  { paar: 3, teil: "hebel",   p: add(E, O.hebel),          d: uF,              b: 1,      m: "fuss", name: "F" },
+  { paar: 3, teil: "feder",   p: add(E, O.feder),          d: mul(uF, -1),     b: 1,      m: "fuss" },
+  { paar: 4, teil: "feder",   p: add(A, O.feder),          d: uF,              b: 1,      m: "fuss" },
+  { paar: 4, teil: "gestell", p: add(A, O.anker),          d: mul(uF, -1),     b: 1,      m: "fuss" },
+];
+const PAARTEXT = {
+  1: "<p><b>Paar ①:</b> Die Decke drückt die Rolle nach unten. Die Rolle drückt die Decke nach oben.</p>",
+  2: "<p><b>Paar ②:</b> Der Lagerbolzen drückt den Hebel nach rechts oben. Der Hebel drückt den Lagerbolzen nach links unten.</p>",
+  3: "<p><b>Paar ③:</b> Die Feder zieht den Hebel zu sich hin. Der Hebel zieht die Feder zu sich hin.</p>",
+  4: "<p><b>Paar ④:</b> Der Federanker zieht die Feder nach links unten. Die Feder zieht den Anker nach rechts oben.</p>"
+};
+const PAARZUSATZ = "<p>Kraft und Gegenkraft sind <b>gleich groß</b> und <b>entgegengesetzt</b>. Sie greifen aber an <b>zwei verschiedenen Bauteilen</b> an. Deshalb können sie sich nicht gegenseitig aufheben.</p>";
+const TEILTEXT = {
+  hebel: "<p><b>Kräfte am Hebel:</b> F<sub>N</sub>, F<sub>L</sub> und F<sub>F</sub> greifen am <b>selben</b> Bauteil an und halten sich das Gleichgewicht. Genau dieses Bild entsteht beim Freimachen des Hebels.</p><p>F<sub>L</sub> ist hier als eine schräge Kraft gezeichnet, damit das Paar ② gut zu sehen ist. Beim Rechnen zerlegt man sie in F<sub>Lx</sub> und F<sub>Ly</sub>.</p>",
+  feder: "<p><b>Kräfte an der Feder:</b> An beiden Enden wird die Feder gleich stark nach außen gezogen. Wie ein Seil oder ein Pendelstab überträgt sie die Kraft nur entlang ihrer Achse.</p>",
+  gestell: "<p><b>Kräfte am Gestell:</b> Decke, Lagerbock und Federanker sind fest mit dem Fundament verbunden und bilden zusammen das Gestell. Auf das Gestell wirken die Gegenkräfte ①, ② und ④. Die Kräfte vom Fundament sind hier nicht gezeichnet.</p>"
+};
+let fokus = null;
+function zeichne3() {
+  let s = "";
+  s += decke(O.oben) + bock(O.oben) + bolzen(O.oben) + anker(O.anker);
+  s += feder(add(E, O.feder), add(A, O.feder));
+  s += hebel(add(R, O.hebel), add(P, O.hebel), add(E, O.hebel));
+  s += txt([60, -18 + O.oben[1] + 30], "Gestell (Decke, Lagerbock)", "g");
+  s += txt(add(A, add(O.anker, [44, 12])), "Gestell (Federanker)", "g");
+  s += txt(add([250, 148], O.hebel), "Hebel", "g");
+  const fm = add(mul(add(E, A), .5), O.feder);
+  s += txt(add(fm, [-118, 6]), "Zugfeder", "g");
+  KR.forEach(k => {
+    const L = k.b * SK, u = norm(k.d);
+    const an = !fokus || fokus === "alle" || fokus === k.paar || fokus === k.teil;
+    const a = k.m === "spitze" ? sub(k.p, mul(u, L)) : k.p, b = k.m === "spitze" ? k.p : add(k.p, mul(u, L));
+    const mitte = mul(add(a, b), .5), n = [-u[1], u[0]];
+    let g = pfeil(k.p, k.d, L, k.m);
+    g += nummer(add(mitte, mul(n, 16)), k.paar);
+    if (k.name) g += fname(add(b, [u[0] >= 0 ? 6 : -30, u[1] > 0 ? 16 : -2]), k.name);
+    s += `<g class="${an ? "" : "dim"}">${g}</g>`;
+  });
+  s3.innerHTML = s;
+}
+const K3 = [["alle", "Alle Kräfte"], [1, "Paar ①"], [2, "Paar ②"], [3, "Paar ③"], [4, "Paar ④"],
+            ["hebel", "Kräfte am Hebel"], ["feder", "Kräfte an der Feder"], ["gestell", "Kräfte am Gestell"]];
+const k3 = document.getElementById("k3");
+k3.innerHTML = K3.map(([v, t]) => `<button class="btn-2" type="button" data-f="${v}" aria-pressed="${v === "alle"}">${t}</button>`).join("");
+e3.innerHTML = "<p>Alle Kräfte sind eingeblendet. Wählen Sie unter dem Bild ein Paar oder ein Bauteil aus.</p>";
+k3.addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (!b) return;
+  const v = b.dataset.f; fokus = /^\d$/.test(v) ? +v : v;
+  k3.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  e3.innerHTML = fokus === "alle" ? "<p>Alle Kräfte sind eingeblendet. Wählen Sie unter dem Bild ein Paar oder ein Bauteil aus.</p>"
+               : typeof fokus === "number" ? PAARTEXT[fokus] + PAARZUSATZ : TEILTEXT[fokus];
+  zeichne3();
+});
+
+/* Abschlussfragen */
+const FRAGEN = [
+  { q: "Die Decke drückt auf die Rolle, die Rolle drückt auf die Decke (Paar ①). Wie groß sind die beiden Kräfte im Vergleich?",
+    a: [["Gleich groß", true, "Richtig. Kraft und Gegenkraft sind immer gleich groß und entgegengesetzt (Wechselwirkungsgesetz)."],
+        ["Die Kraft der Decke ist größer, sonst würde die Rolle nach oben ausweichen.", false, "Die Rolle bewegt sich nicht, weil sich die Kräfte <b>am Hebel</b> aufheben. Kraft und Gegenkraft eines Paares sind immer gleich groß."],
+        ["Die Kraft der Rolle ist größer, weil die Feder dahintersteckt.", false, "Die Feder sorgt dafür, dass überhaupt gedrückt wird. Die beiden Kräfte des Paares sind trotzdem gleich groß."]] },
+  { q: "Welche Kräfte heben sich gegenseitig auf?",
+    a: [["Kraft und Gegenkraft eines Paares, z. B. die beiden Pfeile von ①", false, "Kraft und Gegenkraft greifen an verschiedenen Bauteilen an. Aufheben können sich nur Kräfte, die am <b>selben</b> Bauteil angreifen."],
+        ["Die drei Kräfte am Hebel", true, "Richtig. F<sub>N</sub>, F<sub>L</sub> und F<sub>F</sub> greifen alle am Hebel an. Weil der Hebel in Ruhe ist, halten sie sich das Gleichgewicht."],
+        ["Keine, im Gleichgewicht wirken keine Kräfte", false, "Gleichgewicht heißt nicht, dass keine Kräfte wirken. Es heißt, dass sich die Kräfte an einem Bauteil in ihrer Wirkung aufheben."]] },
+  { q: "Welche Kräfte wirken auf die Zugfeder?",
+    a: [["Nur die Kraft vom Hebel", false, "Am anderen Ende hält der Federanker. Ohne ihn würde die Feder einfach mitgezogen."],
+        ["An jedem Ende eine gleich große Kraft, beide nach außen gerichtet", true, "Richtig. Die Feder wird von beiden Seiten gezogen und dadurch gedehnt."],
+        ["An jedem Ende eine Kraft nach innen, zur Federmitte hin", false, "Kräfte nach innen würden die Feder zusammendrücken. Eine Zugfeder wird aber gedehnt."]] }
+];
+const fragenBox = document.getElementById("fragen");
+fragenBox.innerHTML = FRAGEN.map((f, i) => `<fieldset class="frage" style="margin:0 0 10px"><p class="q">${i + 1}. ${f.q}</p>` +
+  f.a.map((a, j) => `<label><input type="radio" name="f${i}" value="${j}"><span>${a[0]}</span></label>`).join("") +
+  `<div class="rm" aria-live="polite"></div></fieldset>`).join("");
+const richtig = new Set();
+fragenBox.addEventListener("change", ev => {
+  const i = +ev.target.name.slice(1), a = FRAGEN[i].a[+ev.target.value];
+  const r = fragenBox.querySelectorAll(".rm")[i];
+  r.className = "rm " + (a[1] ? "fb-ok" : "fb-bad"); r.innerHTML = a[2];
+  a[1] ? richtig.add(i) : richtig.delete(i);
+  const w = document.getElementById("w3");
+  w.hidden = richtig.size !== FRAGEN.length;
+  w.innerHTML = "Beispiel abgeschlossen. Kurz gesagt: Ins Bild eines Bauteils gehören nur die Kräfte, die <b>auf dieses Bauteil</b> wirken. Die Gegenkraft gehört immer zum Nachbarn.";
+});
+
+/* Startbild */
+zeichne1(); zeichne2();
+/* Selbstprüfung: Gleichgewicht am Hebel (Kräfte und Momente um P) */
+(() => {
+  const sumF = add(add(uF, FN), FL), mom = cross(sub(E, P), uF) + cross(sub(K, P), FN);
+  if (Math.abs(sumF[0]) + Math.abs(sumF[1]) + Math.abs(mom) > 1e-9) console.error("Gleichgewicht verletzt", sumF, mom);
+})();
+</script>
+</body>
+</html>
