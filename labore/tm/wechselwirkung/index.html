@@ -94,6 +94,12 @@
   .frage label{display:flex;gap:8px;align-items:flex-start;padding:4px 0;cursor:pointer}
   .frage input{margin-top:5px;width:18px;height:18px;accent-color:var(--fach);flex:none}
   .frage .rm{margin-top:6px}
+  svg.sys .stange-o{stroke:var(--ink);stroke-width:18;fill:none;stroke-linecap:round}
+  svg.sys .stange-i{stroke:var(--hebel);stroke-width:13;fill:none;stroke-linecap:round}
+  svg.sys .kiste{fill:var(--hebel);stroke:var(--ink);stroke-width:2.5}
+  svg.sys .seil{stroke:var(--ink);stroke-width:3;fill:none}
+  svg.sys .nocke{fill:var(--soft);stroke:var(--ink);stroke-width:2}
+  svg.sys .smark{fill:var(--ink)}
   sub{font-size:.75em;line-height:0}
 </style>
 </head>
@@ -120,38 +126,25 @@
     </div>
   </details>
 
-  <div class="tabs" role="tablist" aria-label="Beispiele">
-    <button role="tab" disabled>1 Kiste auf Tisch <small>(folgt)</small></button>
-    <button role="tab" disabled>2 Seil über Rolle <small>(folgt)</small></button>
-    <button role="tab" disabled>3 Hebel mit Gestänge <small>(folgt)</small></button>
-    <button role="tab" aria-selected="true">4 Hebel mit Rolle</button>
-    <button role="tab" disabled>5 Rollenhebel-Endschalter <small>(folgt)</small></button>
-  </div>
+  <div class="tabs" role="tablist" aria-label="Beispiele" id="tabs"></div>
 
-  <section class="taskbox" aria-label="Beispiel 4: Hebel mit Rolle">
-    <p style="margin:0 0 12px">Ein <b>Hebel</b> ist im Lagerbock auf einem Bolzen drehbar gelagert. Am unteren Ende zieht eine <b>Zugfeder</b>.
-      Am linken Ende sitzt eine frei drehbare <b>Rolle</b>, die an der Decke anliegt. Die Gewichtskraft von Hebel und Rolle ist klein gegenüber der Federkraft und wird beim Freimachen vernachlässigt.
-      Gesucht sind die Kräfte <b>auf die Rolle</b> und <b>auf den Hebel</b>.</p>
+  <section class="taskbox" id="box">
+    <p id="intro" style="margin:0 0 12px"></p>
 
     <!-- ===== Schritt 1 ===== -->
     <div class="schritt">
       <h3><span class="nr">1</span>Nachbarn wegdenken</h3>
-      <p style="margin:0 0 10px">Nehmen Sie nacheinander jedes Nachbarteil weg. Beobachten Sie, wie sich Rolle und Hebel bewegen würden.</p>
+      <p style="margin:0 0 10px">Nehmen Sie nacheinander jedes Nachbarteil weg. Beobachten Sie, wie sich die Bauteile bewegen würden.</p>
       <div class="lab">
         <div>
-          <svg class="sys" id="s1" viewBox="0 0 600 390" role="img" aria-label="Hebel mit Rolle, Lagerbock und Zugfeder"></svg>
-          <div class="knoepfe" id="k1">
-            <button class="btn-2" type="button" data-weg="decke">Decke wegnehmen</button>
-            <button class="btn-2" type="button" data-weg="rolle">Rolle wegnehmen</button>
-            <button class="btn-2" type="button" data-weg="lager">Lagerbolzen wegnehmen</button>
-            <button class="btn-2" type="button" data-weg="feder">Feder wegnehmen</button>
-          </div>
+          <svg class="sys" id="s1" role="img" aria-label="Systembild"></svg>
+          <div class="knoepfe" id="k1"></div>
         </div>
         <div>
-          <div class="erkl" id="e1" aria-live="polite"><p>Wählen Sie links einen Nachbarn aus.</p></div>
+          <div class="erkl" id="e1" aria-live="polite"></div>
           <p class="merke"><b>Merke:</b> In welche Richtung würde sich mein Bauteil ohne den Nachbarn bewegen?
             Die <b>Reaktionskraft</b> des Nachbarn wirkt genau <b>dagegen</b>.</p>
-          <p class="fb-ok weiter" id="w1" hidden>Alle vier Nachbarteile untersucht. Weiter mit Schritt 2.</p>
+          <p class="fb-ok weiter" id="w1" hidden>Alle Nachbarteile untersucht. Weiter mit Schritt 2.</p>
         </div>
       </div>
     </div>
@@ -161,10 +154,10 @@
       <h3><span class="nr">2</span>Welche Kraft gehört zu welchem Bauteil?</h3>
       <p class="gesperrt" id="g2">Wird nach Schritt 1 freigeschaltet.</p>
       <div id="b2" hidden>
-        <p style="margin:0 0 10px">Machen Sie zuerst die Rolle frei, dann den Hebel. Beschreiben Sie für jede Berührstelle die Kraft mit einem Satz. Das Bild zeigt die Pfeile so, wie Sie sie beschreiben.
+        <p style="margin:0 0 10px"><span id="intro2"></span> Beschreiben Sie für jede Berührstelle die Kraft mit einem Satz. Das Bild zeigt die Pfeile so, wie Sie sie beschreiben.
           Kräfte auf das gerade betrachtete Bauteil erscheinen <b>durchgezogen</b>, Kräfte auf andere Bauteile <b>gestrichelt</b>.</p>
         <div class="lab">
-          <div><svg class="sys" id="s2" viewBox="0 0 600 390" role="img" aria-label="Freigemachte Rolle und freigemachter Hebel"></svg></div>
+          <div><svg class="sys" id="s2" role="img" aria-label="Freigemachte Bauteile"></svg></div>
           <div id="zeilen"></div>
         </div>
         <div class="knoepfe">
@@ -183,7 +176,7 @@
           Wählen Sie ein Paar oder ein Bauteil aus.</p>
         <div class="lab">
           <div>
-            <svg class="sys" id="s3" viewBox="0 -110 600 690" role="img" aria-label="Alle Bauteile freigemacht"></svg>
+            <svg class="sys" id="s3" role="img" aria-label="Alle Bauteile freigemacht"></svg>
             <div class="knoepfe" id="k3"></div>
           </div>
           <div>
@@ -201,444 +194,1071 @@
 
 <script>
 "use strict";
-/* ---------- Geometrie (SVG-Koordinaten, y nach unten) ---------- */
-const P = [400, 125];          // Lagerbolzen
-const R = [150, 100];          // Rollenmittelpunkt
-const RR = 30;                 // Rollenradius
-const E = [460, 270];          // Federanschluss am Hebel
-const A = [330, 350];          // Federanker
-const DY = R[1] - RR;          // Unterkante der Decke (Berührpunkt Rolle)
-const K = [R[0], DY];          // Berührpunkt Rolle – Decke
+/* =====================================================================
+   Aufbau: Jedes Beispiel (B1 … B5) liefert Zeichnungen, Sätze, Kräfte
+   und Fragen. Ablauf, Prüfung und Explosionsansicht sind gemeinsam.
+   SVG-Koordinaten: y zeigt nach unten. Drehwinkel positiv = Uhrzeigersinn.
+   ===================================================================== */
 
+/* ---------- Vektoren ---------- */
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
 const mul = (a, k) => [a[0] * k, a[1] * k];
 const len = a => Math.hypot(a[0], a[1]);
 const norm = a => mul(a, 1 / len(a));
-const cross = (a, b) => a[0] * b[1] - a[1] * b[0];
-
-/* ---------- Gleichgewicht am Hebel (Federkraft = 1) ----------
-   Momente um P: cross(E-P, uF) + cross(K-P, (0, kN)) = 0
-   Kräfte: F_L = -(F_F + F_N)                                  */
-const uF = norm(sub(A, E));                                   // Richtung der Federkraft auf den Hebel
-const kN = -cross(sub(E, P), uF) / cross(sub(K, P), [0, 1]);  // Betrag der Deckenkraft (nach unten)
-const FN = [0, kN];
-const FL = mul(add(uF, FN), -1);                              // Lagerkraft auf den Hebel
+const cross = (a, b) => a[0] * b[1] - a[1] * b[0];   // > 0: dreht im Uhrzeigersinn
 const FIX = (v, n = 1) => v.toFixed(n);
-const SK = 55;                                                // Pfeillänge für F_F = 1
-
-/* ---------- Zeichenbausteine ---------- */
 const pt = p => `${FIX(p[0])},${FIX(p[1])}`;
-function pfeil(p, d, L, modus, cls = "", attr = "") {
+/* Punkt p um Z drehen (Grad, Uhrzeigersinn) und um v verschieben */
+function dreh(p, Z, rot, v = [0, 0]) {
+  const a = rot * Math.PI / 180, d = sub(p, Z);
+  return add(add(Z, [d[0] * Math.cos(a) - d[1] * Math.sin(a), d[0] * Math.sin(a) + d[1] * Math.cos(a)]), v);
+}
+
+/* ---------- Pfeile und Beschriftung ---------- */
+function pfeil(p, d, L, modus = "fuss", cls = "") {
   const u = norm(d);
   const a = modus === "spitze" ? sub(p, mul(u, L)) : p;
   const b = modus === "spitze" ? p : add(p, mul(u, L));
   const basis = sub(b, mul(u, 12)), n = [-u[1], u[0]];
-  return `<g class="kraft ${cls}" ${attr}><line x1="${FIX(a[0])}" y1="${FIX(a[1])}" x2="${FIX(basis[0])}" y2="${FIX(basis[1])}"/>` +
+  return `<g class="kraft ${cls}"><line x1="${FIX(a[0])}" y1="${FIX(a[1])}" x2="${FIX(basis[0])}" y2="${FIX(basis[1])}"/>` +
          `<polygon points="${pt(b)} ${pt(add(basis, mul(n, 6)))} ${pt(sub(basis, mul(n, 6)))}"/></g>`;
 }
-const beweg = (p, d, L) => pfeil(p, d, L, "fuss", "").replace('class="kraft ', 'class="beweg ');
-function fname(p, idx, cls = "k") {
-  return `<text class="${cls}" x="${FIX(p[0])}" y="${FIX(p[1])}">F<tspan dy="5" font-size="12">${idx}</tspan></text>`;
+const beweg = (p, d, L) => pfeil(p, d, L).replace('class="kraft ', 'class="beweg ');
+function fname(p, idx, pre = "", cls = "k") {
+  return `<text class="${cls}" x="${FIX(p[0])}" y="${FIX(p[1])}">${pre}F` +
+         (idx ? `<tspan dy="5" font-size="12">${idx}</tspan>` : "") + `</text>`;
 }
-const txt = (p, s, cls = "", anchor = "start") =>
+const txt = (p, s, cls = "g", anchor = "start") =>
   `<text class="${cls}" x="${FIX(p[0])}" y="${FIX(p[1])}" text-anchor="${anchor}">${s}</text>`;
 function nummer(p, n) {
   return `<circle class="nrk" cx="${FIX(p[0])}" cy="${FIX(p[1])}" r="10"/>` +
          `<text class="nr" x="${FIX(p[0])}" y="${FIX(p[1] + 4.5)}" text-anchor="middle">${n}</text>`;
 }
-function schraffur(x1, x2, y, oben) {
-  let s = `<line class="gestell" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`;
+
+/* ---------- Bauteile ---------- */
+function flaeche(x1, x2, y, oben, cls = "") {      // Decke (oben) oder Boden (unten), schraffiert
+  let s = `<line class="gestell" x1="${FIX(x1)}" y1="${FIX(y)}" x2="${FIX(x2)}" y2="${FIX(y)}"/>`;
   for (let x = x1 + 4; x < x2; x += 12)
-    s += oben ? `<line class="schraff" x1="${x}" y1="${y}" x2="${x + 10}" y2="${y - 10}"/>`
-              : `<line class="schraff" x1="${x}" y1="${y}" x2="${x - 10}" y2="${y + 10}"/>`;
-  return s;
+    s += oben ? `<line class="schraff" x1="${FIX(x)}" y1="${FIX(y)}" x2="${FIX(x + 10)}" y2="${FIX(y - 10)}"/>`
+              : `<line class="schraff" x1="${FIX(x)}" y1="${FIX(y)}" x2="${FIX(x - 10)}" y2="${FIX(y + 10)}"/>`;
+  return `<g class="${cls}">${s}</g>`;
+}
+function wand(x, y1, y2, cls = "") {               // Wand, Schraffur rechts
+  let s = `<line class="gestell" x1="${FIX(x)}" y1="${FIX(y1)}" x2="${FIX(x)}" y2="${FIX(y2)}"/>`;
+  for (let y = y1 + 10; y <= y2; y += 12) s += `<line class="schraff" x1="${FIX(x)}" y1="${FIX(y)}" x2="${FIX(x + 10)}" y2="${FIX(y - 10)}"/>`;
+  return `<g class="${cls}">${s}</g>`;
+}
+const bockOben = (p, y0, cls = "") => `<polygon class="bock ${cls}" points="${pt([p[0] - 34, y0])} ${pt([p[0] + 34, y0])} ${pt([p[0] + 17, p[1] + 17])} ${pt([p[0] - 17, p[1] + 17])}"/>`;
+const bockUnten = (p, y0, cls = "") => `<polygon class="bock ${cls}" points="${pt([p[0] - 34, y0])} ${pt([p[0] + 34, y0])} ${pt([p[0] + 17, p[1] - 17])} ${pt([p[0] - 17, p[1] - 17])}"/>`;
+const bolzen = (p, cls = "") => `<circle class="bolzen ${cls}" cx="${FIX(p[0])}" cy="${FIX(p[1])}" r="6"/>`;
+const achse = p => `<circle class="bolzen" cx="${FIX(p[0])}" cy="${FIX(p[1])}" r="4"/>`;
+const auge = (p, r = 5) => `<circle class="loch" cx="${FIX(p[0])}" cy="${FIX(p[1])}" r="${r}"/>`;
+function anker(a, cls = "") {                       // Federanker bzw. Haken am Boden
+  return `<g class="${cls}"><line class="gestell" x1="${FIX(a[0])}" y1="${FIX(a[1] + 5)}" x2="${FIX(a[0])}" y2="${FIX(a[1] + 16)}"/>` +
+         flaeche(a[0] - 34, a[0] + 34, a[1] + 16, false) + auge(a) + `</g>`;
+}
+function ankerWand(a, cls = "") {                   // Federanker an einer Wand rechts
+  return `<g class="${cls}"><line class="gestell" x1="${FIX(a[0] + 5)}" y1="${FIX(a[1])}" x2="${FIX(a[0] + 16)}" y2="${FIX(a[1])}"/>` +
+         wand(a[0] + 16, a[1] - 32, a[1] + 32) + auge(a) + `</g>`;
 }
 function federPfad(p, q) {
   const d = sub(q, p), L = len(d), u = norm(d), n = [-u[1], u[0]];
   const vor = 16, z = 12, amp = 9, pts = [p, add(p, mul(u, vor))];
-  for (let i = 0; i < z; i++) {
-    const t = vor + (L - 2 * vor) * (i + 0.5) / z;
-    pts.push(add(add(p, mul(u, t)), mul(n, amp * (i % 2 ? 1 : -1))));
-  }
+  for (let i = 0; i < z; i++) pts.push(add(add(p, mul(u, vor + (L - 2 * vor) * (i + 0.5) / z)), mul(n, amp * (i % 2 ? 1 : -1))));
   pts.push(add(p, mul(u, L - vor)), q);
   return "M" + pts.map(pt).join(" L");
 }
-/* Bauteile, jeweils mit Verschiebung o */
-function decke(o, x1 = 40, x2 = 560, cls = "") {
-  return `<g class="${cls}">${schraffur(x1 + o[0], x2 + o[0], DY + o[1], true)}</g>`;
-}
-function bock(o, cls = "") {
-  const p = add(P, o), y0 = DY + o[1];
-  return `<g class="${cls}"><polygon class="bock" points="${p[0] - 34},${y0} ${p[0] + 34},${y0} ${p[0] + 17},${p[1] + 17} ${p[0] - 17},${p[1] + 17}"/></g>`;
-}
-const bolzen = (o, cls = "") => { const p = add(P, o); return `<circle class="bolzen ${cls}" cx="${p[0]}" cy="${p[1]}" r="6"/>`; };
-function anker(o, cls = "") {
-  const a = add(A, o);
-  return `<g class="${cls}"><line class="gestell" x1="${a[0]}" y1="${a[1] + 5}" x2="${a[0]}" y2="${a[1] + 16}"/>` +
-         schraffur(a[0] - 34, a[0] + 34, a[1] + 16, false) +
-         `<circle class="loch" cx="${a[0]}" cy="${a[1]}" r="5"/></g>`;
-}
 const feder = (p, q, cls = "") => `<path class="feder ${cls}" d="${federPfad(p, q)}"/>`;
-/* Hebel mit Bohrung für den Lagerbolzen, Auge für die Feder und Rollenachse */
-function hebel(r, p, e, cls = "") {
-  const d = `M${pt(r)} L${pt(p)} L${pt(e)}`;
-  return `<g class="${cls}"><path class="hebel-o" d="${d}"/><path class="hebel-i" d="${d}"/>` +
-         `<circle class="loch" cx="${FIX(p[0])}" cy="${FIX(p[1])}" r="9"/>` +
-         `<circle class="loch" cx="${FIX(e[0])}" cy="${FIX(e[1])}" r="5"/>` +
-         `<circle class="bolzen" cx="${FIX(r[0])}" cy="${FIX(r[1])}" r="4"/></g>`;
+function stab(pts, cls = "", loecher = [], dick = true) {   // Hebel (dick) oder Gestänge
+  const d = "M" + pts.map(pt).join(" L"), k = dick ? "hebel" : "stange";
+  return `<g class="${cls}"><path class="${k}-o" d="${d}"/><path class="${k}-i" d="${d}"/>` +
+         loecher.map(([p, r]) => auge(p, r)).join("") + `</g>`;
 }
-/* Rolle, frei drehbar auf der Achse am Hebel */
-const rolle = (c, cls = "") =>
-  `<g class="${cls}"><circle class="rolle" cx="${FIX(c[0])}" cy="${FIX(c[1])}" r="${RR}"/>` +
-  `<circle class="loch" cx="${FIX(c[0])}" cy="${FIX(c[1])}" r="5"/></g>`;
-/* Hebel um P gedreht (Grad, im Uhrzeigersinn) und verschoben */
-function lage(p, rot, v) {
-  const a = rot * Math.PI / 180, d = sub(p, P);
-  return add(add(P, [d[0] * Math.cos(a) - d[1] * Math.sin(a), d[0] * Math.sin(a) + d[1] * Math.cos(a)]), v);
+const rolle = (c, r, cls = "") => `<g class="${cls}"><circle class="rolle" cx="${FIX(c[0])}" cy="${FIX(c[1])}" r="${r}"/>${auge(c)}</g>`;
+function smark(p) {                                 // Schwerpunkt S
+  return `<circle class="smark" cx="${FIX(p[0])}" cy="${FIX(p[1])}" r="3.5"/>` + txt(add(p, [7, -5]), "S", "", "start");
 }
 
-/* ================= Schritt 1 ================= */
-const s1 = document.getElementById("s1");
-const e1 = document.getElementById("e1");
+/* ---------- Bausteine für die Satzzeilen in Schritt 2 ---------- */
+const TEIL = {
+  kiste:  { akk: "die Kiste",     gen: "der Kiste",     dat: "der Kiste" },
+  tisch:  { akk: "den Tisch",     gen: "des Tisches",   dat: "dem Tisch" },
+  last:   { akk: "die Last",      gen: "der Last",      dat: "der Last" },
+  rolle:  { akk: "die Rolle",     gen: "der Rolle",     dat: "der Rolle" },
+  hebel:  { akk: "den Hebel",     gen: "des Hebels",    dat: "dem Hebel" },
+  stange: { akk: "das Gestänge",  gen: "des Gestänges", dat: "dem Gestänge" }
+};
+const DRUECKT = [["drueckt", "drückt"], ["zieht", "zieht"]];
+const ZIEHT = [["zieht", "zieht"], ["drueckt", "drückt"]];
+const BOLZEN_VERB = "Ein Bolzen kann nur gegen die Bohrungswand drücken. In welche Richtung, hängt von den übrigen Kräften ab.";
+const FLAECHE_VERB = "Über eine Berührfläche wird nur Druck übertragen, kein Zug.";
+
+/* =====================================================================
+   Beispiel 1: Kiste auf Tisch
+   ===================================================================== */
+const B1 = (() => {
+  const BODEN = 360, KX = 240, KY = 110, KW = 120, KH = 110;
+  const S = [KX + KW / 2, KY + KH / 2], KT = [300, KY + KH];     // Schwerpunkt, Berührpunkt Kiste – Tisch
+  const F1 = [176, BODEN], F2 = [424, BODEN];                    // Fußpunkte der Tischbeine
+  const SK = 45;
+  const kiste = (o, cls = "") => `<g class="${cls}"><rect class="kiste" x="${KX + o[0]}" y="${KY + o[1]}" width="${KW}" height="${KH}"/>${smark(add(S, o))}</g>`;
+  const tisch = (o, cls = "") => `<g class="${cls}"><rect class="bock" x="${150 + o[0]}" y="${220 + o[1]}" width="300" height="16"/>` +
+    `<rect class="bock" x="${168 + o[0]}" y="${236 + o[1]}" width="16" height="${BODEN - 236}"/>` +
+    `<rect class="bock" x="${416 + o[0]}" y="${236 + o[1]}" width="16" height="${BODEN - 236}"/></g>`;
+  const ZIEL = { tisch: { k: [0, 140], t: [0, 0] }, boden: { k: [0, 34], t: [0, 34] }, erde: { k: [0, 0], t: [0, 0] } };
+  return {
+    nr: 1, titel: "Kiste auf Tisch", sk: SK, vb1: "0 0 600 400", vb2: "0 0 600 400", vb3: "0 -20 600 520",
+    intro: `Eine <b>Kiste</b> steht auf einem <b>Tisch</b>. Der Tisch ist leicht gegenüber der Kiste, sein Eigengewicht wird vernachlässigt.
+            Gesucht sind die Kräfte <b>auf die Kiste</b> und <b>auf den Tisch</b>.`,
+    intro2: "Machen Sie zuerst die Kiste frei, dann den Tisch.",
+    weg: [
+      { id: "tisch", knopf: "Tisch wegnehmen",
+        text: `<p><b>Ohne Tisch</b> fällt die Kiste nach <b>unten</b>.</p>
+               <p>Der Tisch verhindert das: Er drückt die Kiste nach <b>oben</b>. Diese Kraft steht senkrecht zur Berührfläche und heißt <b>Normalkraft</b> F<sub>N</sub>.</p>` },
+      { id: "erde", knopf: "Erdanziehung wegdenken",
+        text: `<p><b>Ohne Erdanziehung</b> hätte die Kiste kein Gewicht. Sie würde nicht mehr auf den Tisch drücken, und es gäbe auch keine Normalkraft.</p>
+               <p>Die <b>Gewichtskraft</b> F<sub>G</sub> ist die <b>Ursache</b>, also die eingeprägte Kraft. Die Erde zieht die Kiste an, ohne sie zu berühren. F<sub>G</sub> greift im Schwerpunkt S an.
+               F<sub>N</sub> ist eine <b>Reaktionskraft</b>: Sie entsteht erst, weil die Kiste auf den Tisch drückt.</p>` },
+      { id: "boden", knopf: "Boden wegnehmen",
+        text: `<p><b>Ohne Boden</b> fallen Tisch und Kiste herunter.</p>
+               <p>Der Boden drückt die beiden Tischbeine nach <b>oben</b> (F<sub>B1</sub>, F<sub>B2</sub>). Zusammen tragen sie die Kiste.</p>` }
+    ],
+    bild1(w, f, ph) {
+      const z = ZIEL[w] || ZIEL.erde, ok = mul(z.k, f), ot = mul(z.t, f);
+      let s = flaeche(40, 560, BODEN, false, w === "boden" ? "weg" : "");
+      s += tisch(ot, w === "tisch" ? "weg" : "") + kiste(ok);
+      s += txt([50, 392], "Erde (Boden)") + (w === "tisch" ? "" : txt(add([300, 300], ot), "Tisch", "g", "middle")) + txt(add([KX + 6, KY + 20], ok), "Kiste");
+      if (ph === "halten") {
+        if (w === "tisch") s += beweg([385, 150], [0, 1], 50) + txt([392, 180], "Kiste fällt");
+        if (w === "boden") s += beweg([475, 250], [0, 1], 50) + txt([482, 280], "Tisch fällt");
+      }
+      if (ph === "fertig") {
+        if (w === "tisch") s += pfeil(KT, [0, -1], SK, "spitze") + fname([KT[0] + 10, KT[1] + 34], "N");
+        if (w === "erde") s += pfeil(S, [0, 1], SK) + fname([S[0] + 10, S[1] + 40], "G");
+        if (w === "boden") s += pfeil(F1, [0, -1], SK / 2, "spitze") + pfeil(F2, [0, -1], SK / 2, "spitze") +
+                                fname([F1[0] + 12, F1[1] + 4], "B1") + fname([F2[0] + 12, F2[1] + 4], "B2");
+      }
+      return s;
+    },
+    zeilen: [
+      { id: "g", gruppe: "Kiste freimachen", teil: "kiste", titel: "Erdanziehung", nachbar: "die Erde",
+        punkt: add(S, [0, -95]), name: "G", modus: "fuss", L: 40,
+        subj: [["n", "Die Erde"], ["h", "Die Kiste"]], obj: [["h", "die Kiste"], ["n", "die Erde"]], verb: ZIEHT,
+        richt: [["unten", "nach unten", [0, 1]], ["oben", "nach oben", [0, -1]]], soll: { verb: "zieht", richt: "unten" }, gegen: "oben",
+        verbFalsch: "Die Erde berührt die Kiste nicht. Sie zieht die Kiste an, über die Entfernung hinweg.",
+        richtFalsch: { oben: "Die Erde zieht die Kiste zu sich hin, also nach unten." },
+        ok: "Die Erde zieht die Kiste nach unten. Das ist die Gewichtskraft F<sub>G</sub>, die eingeprägte Kraft. Sie greift im Schwerpunkt S an." },
+      { id: "n", teil: "kiste", titel: "Berührfläche Kiste – Tisch", nachbar: "den Tisch",
+        punkt: add(KT, [0, -95]), name: "N", modus: "spitze", L: 40,
+        subj: [["n", "Der Tisch"], ["h", "Die Kiste"]], obj: [["h", "die Kiste"], ["n", "den Tisch"]], verb: DRUECKT,
+        richt: [["oben", "nach oben", [0, -1]], ["unten", "nach unten", [0, 1]]], soll: { verb: "drueckt", richt: "oben" }, gegen: "unten",
+        verbFalsch: "Eine Tischplatte kann nicht ziehen. " + FLAECHE_VERB,
+        richtFalsch: { unten: "Ohne Tisch würde die Kiste nach unten fallen (Schritt 1). Der Tisch hält dagegen." },
+        ok: "Der Tisch drückt die Kiste nach oben. Das ist die Normalkraft F<sub>N</sub>, senkrecht zur Berührfläche." },
+      { id: "k", gruppe: "Tisch freimachen", teil: "tisch", titel: "Berührfläche Tisch – Kiste", nachbar: "die Kiste",
+        punkt: KT, name: "K", modus: "spitze", L: 40,
+        subj: [["n", "Die Kiste"], ["h", "Der Tisch"]], obj: [["h", "den Tisch"], ["n", "die Kiste"]], verb: DRUECKT,
+        richt: [["unten", "nach unten", [0, 1]], ["oben", "nach oben", [0, -1]]], soll: { verb: "drueckt", richt: "unten" }, gegen: "oben",
+        verbFalsch: "Die Kiste liegt nur auf. Sie kann den Tisch nicht ziehen, nur drücken.",
+        richtFalsch: { oben: "Die Kiste liegt auf dem Tisch und drückt ihn nach unten." },
+        ok: "Die Kiste drückt den Tisch nach unten (F<sub>K</sub>). Das ist die Gegenkraft zu F<sub>N</sub>. Sie ist so groß wie F<sub>G</sub>, ist aber <b>nicht</b> F<sub>G</sub>: F<sub>G</sub> greift an der Kiste an und kommt von der Erde." },
+      { id: "b", teil: "tisch", titel: "Tischbeine – Boden", nachbar: "den Boden",
+        punkte: [F1, F2], namen: ["B1", "B2"], modus: "spitze", L: 24,
+        subj: [["n", "Der Boden"], ["h", "Der Tisch"]], obj: [["h", "den Tisch"], ["n", "den Boden"]], verb: DRUECKT,
+        richt: [["oben", "nach oben", [0, -1]], ["unten", "nach unten", [0, 1]]], soll: { verb: "drueckt", richt: "oben" }, gegen: "unten",
+        verbFalsch: "Der Boden kann nicht ziehen. " + FLAECHE_VERB,
+        richtFalsch: { unten: "Ohne Boden würde der Tisch nach unten fallen (Schritt 1). Der Boden hält dagegen." },
+        ok: "Der Boden drückt den Tisch an beiden Beinen nach oben. Zusammen sind F<sub>B1</sub> und F<sub>B2</sub> so groß wie F<sub>K</sub>." }
+    ],
+    bild2() {
+      return flaeche(40, 560, BODEN, false, "geist") + tisch([0, 0]) + kiste([0, -95]) +
+             txt([300, 300], "Tisch", "g", "middle") + txt([KX + 6, KY - 75], "Kiste") + txt([50, 392], "Erde (Boden)", "g geist");
+    },
+    kr: [
+      { paar: 1, teil: "kiste", p: add(S, [0, -100]), d: [0, 1], b: 1, m: "fuss", name: "G" },
+      { paar: 1, teil: "erde",  p: [300, 482], d: [0, -1], b: 1, m: "fuss" },
+      { paar: 2, teil: "kiste", p: add(KT, [0, -100]), d: [0, -1], b: 1, m: "spitze", name: "N" },
+      { paar: 2, teil: "tisch", p: KT, d: [0, 1], b: 1, m: "spitze", name: "K" },
+      { paar: 3, teil: "tisch", p: F1, d: [0, -1], b: .5, m: "spitze", name: "B1", lp: [-46, 0] },
+      { paar: 3, teil: "tisch", p: F2, d: [0, -1], b: .5, m: "spitze", name: "B2", lp: [12, 0] },
+      { paar: 3, teil: "erde",  p: add(F1, [0, 70]), d: [0, 1], b: .5, m: "spitze" },
+      { paar: 3, teil: "erde",  p: add(F2, [0, 70]), d: [0, 1], b: .5, m: "spitze" }
+    ],
+    bild3() {
+      return flaeche(40, 560, BODEN + 70, false) + tisch([0, 0]) + kiste([0, -100]) +
+             txt([50, 470], "Erde (Boden)") + txt([300, 300], "Tisch", "g", "middle") + txt([KX + 6, KY - 80], "Kiste");
+    },
+    k3: [["kiste", "Kräfte an der Kiste"], ["tisch", "Kräfte am Tisch"], ["erde", "Kräfte an der Erde"]],
+    paartext: {
+      1: "<p><b>Paar ①:</b> Die Erde zieht die Kiste nach unten (F<sub>G</sub>). Die Kiste zieht die Erde nach oben. Diese Kräfte wirken über die Entfernung, ohne Berührung.</p>",
+      2: "<p><b>Paar ②:</b> Der Tisch drückt die Kiste nach oben (F<sub>N</sub>). Die Kiste drückt den Tisch nach unten (F<sub>K</sub>).</p>",
+      3: "<p><b>Paar ③:</b> Der Boden drückt die Tischbeine nach oben. Die Tischbeine drücken den Boden nach unten.</p>"
+    },
+    teiltext: {
+      kiste: "<p><b>Kräfte an der Kiste:</b> F<sub>G</sub> von der Erde und F<sub>N</sub> vom Tisch. Beide greifen an der Kiste an und halten sich das Gleichgewicht.</p><p>Sie sind gleich groß und entgegengesetzt, gehören aber zu <b>verschiedenen Paaren</b> (① und ②). Sie sind also <b>kein</b> Paar aus Kraft und Gegenkraft.</p>",
+      tisch: "<p><b>Kräfte am Tisch:</b> F<sub>K</sub> von der Kiste nach unten, F<sub>B1</sub> und F<sub>B2</sub> vom Boden nach oben. Das Eigengewicht des Tisches ist vernachlässigt.</p>",
+      erde: "<p><b>Kräfte an der Erde:</b> Die Kiste zieht die Erde an (Gegenkraft zu F<sub>G</sub>), die Tischbeine drücken auf den Boden. Wegen der riesigen Masse der Erde sieht man davon keine Bewegung. Die Kräfte sind aber genauso groß.</p>"
+    },
+    fertig2: "Kiste und Tisch sind freigemacht. An der Kiste: F<sub>G</sub> von der Erde und F<sub>N</sub> vom Tisch. Am Tisch: F<sub>K</sub> von der Kiste und F<sub>B1</sub>, F<sub>B2</sub> vom Boden. Weiter mit Schritt 3.",
+    fragen: [
+      { q: "F<sub>G</sub> und F<sub>N</sub> sind gleich groß und entgegengesetzt. Sind sie Kraft und Gegenkraft?",
+        a: [["Ja, weil sie gleich groß und entgegengesetzt sind", false, "Gleich groß und entgegengesetzt reicht nicht. Kraft und Gegenkraft greifen an <b>zwei verschiedenen</b> Bauteilen an. F<sub>G</sub> und F<sub>N</sub> greifen beide an der Kiste an."],
+            ["Nein. Beide greifen an der Kiste an und halten sich das Gleichgewicht.", true, "Richtig. F<sub>G</sub> gehört zu Paar ① (mit der Erde), F<sub>N</sub> zu Paar ② (mit dem Tisch)."],
+            ["Nein, weil F<sub>N</sub> größer ist als F<sub>G</sub>", false, "Die Kiste ist in Ruhe, also sind F<sub>N</sub> und F<sub>G</sub> gleich groß. Der Grund liegt woanders: An welchem Bauteil greifen beide an?"]] },
+      { q: "Welche Kraft ist die Gegenkraft zur Gewichtskraft F<sub>G</sub>?",
+        a: [["Die Normalkraft F<sub>N</sub>", false, "F<sub>N</sub> greift ebenfalls an der Kiste an. Sie hält F<sub>G</sub> das Gleichgewicht, ist aber nicht ihre Gegenkraft."],
+            ["Die Kraft, mit der die Kiste die Erde anzieht", true, "Richtig. Die Erde zieht die Kiste an, und die Kiste zieht die Erde an. Gleich groß, entgegengesetzt, an zwei Körpern."],
+            ["Die Kraft, mit der die Kiste auf den Tisch drückt", false, "Diese Kraft ist zwar gleich groß, sie gehört aber zum Paar mit dem Tisch (②). F<sub>G</sub> kommt von der Erde."]] },
+      { q: "Jemand drückt die Kiste zusätzlich mit der Hand nach unten. Was passiert mit F<sub>N</sub>?",
+        a: [["F<sub>N</sub> wird größer", true, "Richtig. F<sub>N</sub> ist eine Reaktionskraft. Sie stellt sich so ein, dass die Kiste im Gleichgewicht bleibt: F<sub>N</sub> = F<sub>G</sub> + F<sub>Hand</sub>."],
+            ["F<sub>N</sub> bleibt so groß wie F<sub>G</sub>", false, "F<sub>N</sub> ist keine feste „Gegenkraft“ von F<sub>G</sub>. Sie hängt von allen Kräften auf die Kiste ab."],
+            ["F<sub>N</sub> wird kleiner", false, "Die Kiste wird stärker auf den Tisch gedrückt. Der Tisch muss stärker dagegenhalten."]] }
+    ],
+    pruef: () => ""
+  };
+})();
+
+/* =====================================================================
+   Beispiel 2: Seil über Rolle
+   ===================================================================== */
+const B2 = (() => {
+  const C = [300, 140], RS = 40, TL = [C[0] - RS, C[1]], TR = [C[0] + RS, C[1]];
+  const H = [260, 270], BH = [340, 385], S = [260, 305], DY = 40, SK = 45;
+  const seilD = (c, hl, hr) => `M${pt(hl)} L${pt(add(c, [-RS, 0]))} A${RS} ${RS} 0 0 1 ${pt(add(c, [RS, 0]))} L${pt(hr)}`;
+  const bogen = c => `<path class="seil" d="M${pt(add(c, [-RS, 0]))} A${RS} ${RS} 0 0 1 ${pt(add(c, [RS, 0]))}"/>`;
+  const last = (o, cls = "") => `<g class="${cls}"><rect class="kiste" x="${222 + o[0]}" y="${H[1] + o[1]}" width="76" height="70"/>${auge(add(H, o), 4)}${smark(add(S, o))}</g>`;
+  const oben = (o, cls = "") => `<g class="${cls}">${flaeche(150 + o[0], 450 + o[0], DY + o[1], true)}${bockOben(add(C, o), DY + o[1])}</g>`;
+  return {
+    nr: 2, titel: "Seil über Rolle", sk: SK, vb1: "0 0 600 420", vb2: "0 0 600 420", vb3: "0 -70 600 650",
+    intro: `Ein <b>Seil</b> läuft über eine feste <b>Rolle</b> (Umlenkrolle). Am linken Ende hängt eine <b>Last</b>, das rechte Ende ist an einem <b>Bodenhaken</b> befestigt.
+            Die Rolle dreht sich reibungsfrei. Die Gewichtskräfte von Seil und Rolle werden vernachlässigt.`,
+    intro2: "Machen Sie zuerst die Last frei, dann die Rolle (mit dem Seilstück, das auf ihr liegt).",
+    weg: [
+      { id: "seil", knopf: "Seil wegnehmen",
+        text: `<p><b>Ohne Seil</b> fällt die Last nach <b>unten</b>.</p>
+               <p>Das Seil hält sie: Es zieht die Last nach <b>oben</b> (Seilkraft F<sub>S</sub>). Ein Seil kann nur ziehen, und zwar in Seilrichtung.</p>` },
+      { id: "haken", knopf: "Bodenhaken lösen",
+        text: `<p><b>Ohne Bodenhaken</b> rutscht das Seil über die Rolle, die Last fällt.</p>
+               <p>Der Haken hält das rechte Seilende fest. Die Seilkraft ist im ganzen Seil <b>gleich groß</b>, auch nach der Umlenkung.
+               Der Haken zieht also genauso stark am Seil wie die Last am anderen Ende.</p>` },
+      { id: "achse", knopf: "Rollenachse wegnehmen",
+        text: `<p><b>Ohne Achse</b> fallen Rolle und Last herunter.</p>
+               <p>Die Achse hält die Rolle: Sie drückt sie nach <b>oben</b> (F<sub>A</sub>). An der Rolle ziehen <b>zwei</b> Seilstränge nach unten. F<sub>A</sub> ist deshalb doppelt so groß wie F<sub>S</sub>.</p>` }
+    ],
+    bild1(w, f, ph) {
+      let c = C, dl = 0, dr = 0;
+      if (w === "seil") dl = 50 * f;
+      if (w === "haken") { dl = 50 * f; dr = 50 * f; }
+      if (w === "achse") { c = add(C, [0, 25 * f]); dl = 50 * f; }
+      const hl = add(H, [0, w === "seil" ? 0 : dl]), hr = sub(BH, [0, dr]);
+      let s = oben([0, 0]) + anker(BH, w === "haken" ? "weg" : "");
+      s += `<path class="seil ${w === "seil" ? "weg" : ""}" d="${seilD(w === "seil" ? C : c, hl, hr)}"/>`;
+      s += rolle(c, RS) + bolzen(C, w === "achse" ? "weg" : "") + last([0, dl]);
+      s += txt([160, 28], "Decke") + txt([352, 100], "Rolle") + txt([248, 215], "Seil", "g", "end") +
+           txt(add([214, 310], [0, dl]), "Last", "g", "end") + txt([380, 398], "Bodenhaken");
+      if (ph === "halten") {
+        if (w === "seil" || w === "haken") s += beweg([205, 280], [0, 1], 50) + txt([198, 300], "Last fällt", "g", "end");
+        if (w === "haken") s += beweg([360, 360], [0, -1], 50) + txt([368, 330], "Seil rutscht");
+        if (w === "achse") s += beweg([360, 170], [0, 1], 46) + txt([368, 200], "Rolle und Last fallen");
+      }
+      if (ph === "fertig") {
+        if (w === "seil") s += pfeil(H, [0, -1], SK) + fname([H[0] - 34, H[1] - 26], "S");
+        if (w === "haken") s += pfeil(BH, [0, 1], SK, "spitze") + fname([BH[0] + 10, BH[1] - 24], "S");
+        if (w === "achse") s += pfeil(C, [0, -1], 2 * SK, "spitze") + fname([C[0] + 8, C[1] + 70], "A");
+      }
+      return s;
+    },
+    zeilen: [
+      { id: "g", gruppe: "Last freimachen", teil: "last", titel: "Erdanziehung", nachbar: "die Erde",
+        punkt: add(S, [0, 40]), name: "G", modus: "fuss",
+        subj: [["n", "Die Erde"], ["h", "Die Last"]], obj: [["h", "die Last"], ["n", "die Erde"]], verb: ZIEHT,
+        richt: [["unten", "nach unten", [0, 1]], ["oben", "nach oben", [0, -1]]], soll: { verb: "zieht", richt: "unten" }, gegen: "oben",
+        verbFalsch: "Die Erde berührt die Last nicht. Sie zieht die Last an, über die Entfernung hinweg.",
+        richtFalsch: { oben: "Die Erde zieht die Last zu sich hin, also nach unten." },
+        ok: "Die Erde zieht die Last nach unten. Das ist die Gewichtskraft F<sub>G</sub>, die eingeprägte Kraft." },
+      { id: "s", teil: "last", titel: "Seil – Last", nachbar: "das Seil",
+        punkt: add(H, [0, 40]), name: "S", modus: "fuss",
+        subj: [["n", "Das Seil"], ["h", "Die Last"]], obj: [["h", "die Last"], ["n", "das Seil"]], verb: ZIEHT,
+        richt: [["oben", "nach oben", [0, -1]], ["unten", "nach unten", [0, 1]]], soll: { verb: "zieht", richt: "oben" }, gegen: "unten",
+        verbFalsch: "Ein Seil kann nur ziehen, nicht drücken.",
+        richtFalsch: { unten: "Ohne Seil würde die Last fallen (Schritt 1). Das Seil hält dagegen." },
+        ok: "Das Seil zieht die Last nach oben (Seilkraft F<sub>S</sub>, in Seilrichtung)." },
+      { id: "sr", gruppe: "Rolle freimachen", teil: "rolle", titel: "Seilstränge – Rolle", nachbar: "das Seil",
+        punkte: [TL, TR], namen: ["S", "S"], modus: "fuss",
+        subj: [["n", "Das Seil"], ["h", "Die Rolle"]], obj: [["h", "die Rolle"], ["n", "das Seil"]], verb: ZIEHT,
+        richt: [["unten", "nach unten", [0, 1]], ["oben", "nach oben", [0, -1]]], soll: { verb: "zieht", richt: "unten" }, gegen: "oben",
+        verbFalsch: "Ein Seil kann nur ziehen. Jeder Seilstrang zieht die Rolle in seine Richtung.",
+        richtFalsch: { oben: "Beide Seilstränge hängen nach unten. Sie ziehen die Rolle also nach unten." },
+        ok: "Beide Seilstränge ziehen die Rolle nach unten, jeder mit F<sub>S</sub>." },
+      { id: "a", teil: "rolle", titel: "Rollenachse", nachbar: "den Achsbolzen",
+        punkt: C, name: "A", modus: "spitze", L: 2 * SK,
+        subj: [["n", "Der Achsbolzen"], ["h", "Die Rolle"]], obj: [["h", "die Rolle"], ["n", "den Achsbolzen"]], verb: DRUECKT,
+        richt: [["oben", "nach oben", [0, -1]], ["unten", "nach unten", [0, 1]]], soll: { verb: "drueckt", richt: "oben" }, gegen: "unten",
+        verbFalsch: BOLZEN_VERB,
+        richtFalsch: { unten: "Ohne Achse fallen Rolle und Last herunter (Schritt 1). Die Achse hält dagegen." },
+        ok: "Der Achsbolzen drückt die Rolle nach oben. F<sub>A</sub> ist doppelt so groß wie F<sub>S</sub>, denn die Rolle trägt beide Seilstränge." }
+    ],
+    bild2() {
+      return oben([0, 0], "geist") + bolzen(C, "geist") + anker(BH, "geist") +
+             `<path class="seil geist" d="${seilD(C, H, BH)}"/>` + rolle(C, RS) + bogen(C) + last([0, 40]) +
+             txt([352, 96], "Rolle") + txt([214, 350], "Last", "g", "end");
+    },
+    kr: (() => {
+      const Oo = [0, -80], Or = [0, 60], Ol = [-80, 60], Oq = [80, 60], Ox = [0, 130], Oa = [80, 165];
+      return [
+        { paar: 0, teil: "last",  p: add(S, Ox), d: [0, 1], b: 1, m: "fuss", name: "G" },
+        { paar: 1, teil: "last",  p: add(H, Ox), d: [0, -1], b: 1, m: "fuss", name: "S" },
+        { paar: 1, teil: "seilL", p: add(H, Ol), d: [0, 1], b: 1, m: "fuss" },
+        { paar: 2, teil: "rolle", p: add(TL, Or), d: [0, 1], b: 1, m: "fuss", name: "S", lp: [6, 52] },
+        { paar: 2, teil: "seilL", p: add(TL, Ol), d: [0, -1], b: 1, m: "fuss" },
+        { paar: 3, teil: "rolle", p: add(TR, Or), d: [0, 1], b: 1, m: "fuss", name: "S", lp: [6, 52] },
+        { paar: 3, teil: "seilR", p: add(TR, Oq), d: [0, -1], b: 1, m: "fuss" },
+        { paar: 4, teil: "rolle", p: add(C, Or), d: [0, -1], b: 2, m: "spitze", name: "A", lp: [8, 84] },
+        { paar: 4, teil: "gestell", p: add(C, Oo), d: [0, 1], b: 2, m: "fuss" },
+        { paar: 5, teil: "seilR", p: add(BH, Oq), d: [0, 1], b: 1, m: "fuss" },
+        { paar: 5, teil: "gestell", p: add(BH, Oa), d: [0, -1], b: 1, m: "fuss" }
+      ];
+    })(),
+    bild3() {
+      const Oo = [0, -80], Or = [0, 60], Ol = [-80, 60], Oq = [80, 60], Ox = [0, 130], Oa = [80, 165];
+      return oben(Oo) + bolzen(add(C, Oo)) + anker(add(BH, Oa)) +
+             `<path class="seil" d="M${pt(add(TL, Ol))} L${pt(add(H, Ol))}"/>` + `<path class="seil" d="M${pt(add(TR, Oq))} L${pt(add(BH, Oq))}"/>` +
+             rolle(add(C, Or), RS) + bogen(add(C, Or)) + last(Ox) +
+             txt([160, -52], "Gestell (Decke, Achse)") + txt(add(BH, add(Oa, [40, 12])), "Gestell (Haken)") +
+             txt(add(C, add(Or, [RS + 12, -30])), "Rolle") + txt(add([170, 270], Ol), "Seil links", "g", "end") +
+             txt(add([350, 330], Oq), "Seil rechts") + txt(add([214, 310], Ox), "Last", "g", "end");
+    },
+    k3: [["last", "Kräfte an der Last"], ["seilL", "am linken Seilstrang"], ["rolle", "an der Rolle"], ["seilR", "am rechten Seilstrang"], ["gestell", "am Gestell"]],
+    paartext: {
+      1: "<p><b>Paar ①:</b> Das Seil zieht die Last nach oben. Die Last zieht das Seil nach unten.</p>",
+      2: "<p><b>Paar ②:</b> Der linke Seilstrang zieht die Rolle nach unten. Die Rolle hält den Seilstrang oben fest.</p>",
+      3: "<p><b>Paar ③:</b> Der rechte Seilstrang zieht die Rolle nach unten. Die Rolle hält den Seilstrang oben fest.</p>",
+      4: "<p><b>Paar ④:</b> Der Achsbolzen drückt die Rolle nach oben. Die Rolle drückt den Achsbolzen nach unten.</p>",
+      5: "<p><b>Paar ⑤:</b> Der Bodenhaken zieht das Seil nach unten. Das Seil zieht den Haken nach oben.</p>"
+    },
+    teiltext: {
+      last: "<p><b>Kräfte an der Last:</b> F<sub>G</sub> von der Erde und F<sub>S</sub> vom Seil. Sie halten sich das Gleichgewicht. Die Gegenkraft zu F<sub>G</sub> wirkt auf die Erde (siehe Beispiel 1).</p>",
+      seilL: "<p><b>Kräfte am linken Seilstrang:</b> oben und unten je F<sub>S</sub>, beide nach außen. Das Seil wird gezogen, wie eine Zugfeder.</p>",
+      seilR: "<p><b>Kräfte am rechten Seilstrang:</b> genauso groß wie am linken. Die Rolle lenkt die Seilkraft nur um, sie ändert ihre Größe nicht.</p>",
+      rolle: "<p><b>Kräfte an der Rolle:</b> zweimal F<sub>S</sub> nach unten und F<sub>A</sub> = 2·F<sub>S</sub> nach oben. Sie halten sich das Gleichgewicht.</p>",
+      gestell: "<p><b>Kräfte am Gestell:</b> Decke mit Achse und Bodenhaken sind fest mit dem Gebäude verbunden. Auf sie wirken die Gegenkräfte ④ und ⑤.</p>"
+    },
+    fertig2: "Last und Rolle sind freigemacht. An der Last: F<sub>G</sub> und F<sub>S</sub>. An der Rolle: zweimal F<sub>S</sub> von den Seilsträngen und F<sub>A</sub> von der Achse. Weiter mit Schritt 3.",
+    fragen: [
+      { q: "Wie groß ist die Achskraft F<sub>A</sub> im Vergleich zur Gewichtskraft der Last?",
+        a: [["Doppelt so groß", true, "Richtig. An der Rolle ziehen zwei Seilstränge mit je F<sub>S</sub> = F<sub>G</sub> nach unten."],
+            ["Gleich groß", false, "Die Rolle hängt an zwei Seilsträngen. Jeder zieht mit F<sub>S</sub> nach unten."],
+            ["Halb so groß", false, "Das gilt für die Kraft am Seil bei einer <i>losen</i> Rolle. Hier ist die Rolle fest, und die Achse muss beide Seilstränge tragen."]] },
+      { q: "Mit welcher Kraft zieht der rechte Seilstrang am Bodenhaken?",
+        a: [["Mit F<sub>S</sub>, also so stark wie die Last am anderen Ende", true, "Richtig. Die Seilkraft ist im ganzen Seil gleich groß, auch nach der Umlenkung (reibungsfreie Rolle)."],
+            ["Mit gar keiner Kraft, die Rolle trägt alles", false, "Ohne Haken rutscht das Seil über die Rolle (Schritt 1). Der Haken muss also ziehen."],
+            ["Mit 2·F<sub>S</sub>", false, "2·F<sub>S</sub> trägt die Achse. Im Seil selbst ist die Kraft überall F<sub>S</sub>."]] },
+      { q: "Welche Kräfte wirken auf einen Seilstrang?",
+        a: [["An jedem Ende F<sub>S</sub>, beide nach außen gerichtet", true, "Richtig. Das Seil wird von beiden Seiten gezogen. Wie ein Pendelstab überträgt es die Kraft nur entlang seiner Richtung."],
+            ["Nur oben eine Kraft von der Rolle", false, "Am unteren Ende hängt die Last bzw. hält der Haken. Ein Seilstück wird immer an beiden Enden gezogen."],
+            ["An jedem Ende eine Kraft nach innen", false, "Kräfte nach innen würden das Seil zusammendrücken. Ein Seil kann nur Zug übertragen."]] }
+    ],
+    pruef: () => ""
+  };
+})();
+
+/* =====================================================================
+   Beispiel 3: Hebel mit Gestänge (wie Aufgabe 4)
+   ===================================================================== */
+const B3 = (() => {
+  const T = [230, 110], P = [300, 210], U = [370, 310], G0 = [90, 260], W = [500, 310], BODEN = 390, SK = 45;
+  const g = norm(sub(T, G0));                       // Achse des Gestänges, Richtung von F
+  const uF = [1, 0];                                // Zugfeder zieht nach rechts
+  const kS = -cross(sub(T, P), g) / cross(sub(U, P), uF);   // Federkraft bei F = 1
+  const FL = mul(add(g, mul(uF, kS)), -1);          // Lagerkraft auf den Hebel
+  const lh = norm(sub(U, T)), senk = [lh[1], -lh[0]];       // senkrecht zum Hebel (nach rechts oben)
+  const ZIEL = { stange: { rot: -10, v: [0, 0] }, feder: { rot: 10, v: [0, 0] }, lager: { rot: 0, v: mul(norm(mul(FL, -1)), 35) } };
+  const hebel = (t, p, u, cls = "") => stab([t, u], cls, [[p, 9], [u, 5]]) + achse(t);
+  const stange = (a, t, cls = "") => stab([a, t], cls, [[a, 5]], false);
+  const kraftF = (a, cls = "") => `<g class="${cls}">${pfeil(a, g, SK, "spitze")}${fname(add(a, [-40, 10]), "")}</g>`;
+  const unten = (o, cls = "") => `<g class="${cls}">${flaeche(250 + o[0], 350 + o[0], BODEN + o[1], false)}${bockUnten(add(P, o), BODEN + o[1])}</g>`;
+  return {
+    nr: 3, titel: "Hebel mit Gestänge", sk: SK, vb1: "0 0 600 410", vb2: "0 0 600 410", vb3: "-30 20 690 500",
+    intro: `Ein <b>Hebel</b> ist in der Mitte drehbar gelagert (Festlager). Am oberen Ende drückt ein <b>Gestänge</b> mit der Kraft F, am unteren Ende zieht eine waagerechte <b>Zugfeder</b>.
+            Das Gestänge hat an beiden Enden Gelenke. Gewichtskräfte werden vernachlässigt.`,
+    intro2: "Machen Sie zuerst das Gestänge frei, dann den Hebel.",
+    weg: [
+      { id: "stange", knopf: "Gestänge wegnehmen",
+        text: `<p><b>Ohne Gestänge</b> zieht die Feder das untere Ende nach rechts. Der Hebel kippt gegen den Uhrzeigersinn.</p>
+               <p>Das Gestänge hält dagegen: Es drückt den Hebel am oberen Gelenk nach rechts oben (F<sub>St</sub>), und zwar <b>entlang der Stange</b>.
+               Ein Gestänge mit zwei Gelenken ist ein Pendelstab. Es überträgt Kraft nur in Richtung seiner Achse.</p>` },
+      { id: "feder", knopf: "Feder wegnehmen",
+        text: `<p><b>Ohne Feder</b> dreht das Gestänge den Hebel im Uhrzeigersinn. Das untere Ende weicht nach links aus.</p>
+               <p>Die Zugfeder hält dagegen: Sie zieht den Hebel nach <b>rechts</b> zu sich hin (F<sub>F</sub>).</p>` },
+      { id: "lager", knopf: "Lagerbolzen wegnehmen",
+        text: `<p><b>Ohne Lagerbolzen</b> schieben Gestänge und Feder den Hebel nach <b>rechts oben</b> weg.</p>
+               <p>Der Bolzen hält dagegen: in x-Richtung nach <b>links</b> (F<sub>Lx</sub>), in y-Richtung nach <b>unten</b> (F<sub>Ly</sub>).
+               Überraschend? Das Gestänge drückt den Hebel nach oben, die Feder zieht nur waagerecht. Damit der Hebel nicht nach oben wegrutscht, muss das Lager ihn nach unten halten.</p>` }
+    ],
+    bild1(w, f, ph) {
+      const z = ZIEL[w] || { rot: 0, v: [0, 0] }, rot = z.rot * f, v = mul(z.v, f);
+      const t = dreh(T, P, rot, v), p = dreh(P, P, rot, v), u = dreh(U, P, rot, v), a = add(G0, sub(t, T));
+      let s = unten([0, 0]) + ankerWand(W);
+      s += feder(w === "feder" ? U : u, W, w === "feder" ? "weg" : "");
+      s += hebel(t, p, u) + bolzen(P, w === "lager" ? "weg" : "");
+      s += w === "stange" ? stange(G0, T, "weg") : stange(a, t) + kraftF(a);
+      s += txt([196, 96], "Gelenk", "g", "end") + txt([120, 196], "Gestänge", "g", "end") + txt([340, 200], "Hebel") +
+           txt([440, 296], "Zugfeder") + txt([256, 380], "Lagerbock", "g", "end");
+      if (ph === "halten") {
+        if (w === "stange") s += beweg([214, 66], [-1, .25], 44) + txt([168, 52], "Hebel kippt", "g", "end");
+        if (w === "feder") s += beweg([380, 342], [-1, 0], 44) + txt([350, 372], "unteres Ende weicht aus");
+        if (w === "lager") s += beweg([330, 236], mul(FL, -1), 46) + txt([380, 250], "Hebel rutscht weg");
+      }
+      if (ph === "fertig") {
+        if (w === "stange") s += pfeil(T, g, SK) + fname(add(T, [36, -30]), "St");
+        if (w === "feder") s += pfeil(U, uF, kS * SK) + fname(add(U, [kS * SK - 14, 28]), "F");
+        if (w === "lager") s += pfeil(P, [-1, 0], -FL[0] * SK) + fname(add(P, [FL[0] * SK, -10]), "Lx") +
+                                pfeil(P, [0, 1], FL[1] * SK) + fname(add(P, [8, FL[1] * SK + 6]), "Ly");
+      }
+      return s;
+    },
+    zeilen: [
+      { id: "gh", gruppe: "Gestänge freimachen", teil: "stange", titel: "Gelenk – Kraft auf das Gestänge", nachbar: "den Hebel",
+        punkt: add(T, mul(g, -40)), name: "", modus: "spitze",
+        subj: [["n", "Der Hebel"], ["h", "Das Gestänge"]], obj: [["h", "das Gestänge"], ["n", "den Hebel"]], verb: DRUECKT,
+        richt: [["ul", "entlang der Stange nach links unten", mul(g, -1)], ["or", "entlang der Stange nach rechts oben", g], ["s", "senkrecht zum Hebel nach links unten", mul(senk, -1)]],
+        soll: { verb: "drueckt", richt: "ul" }, gegen: "or",
+        verbFalsch: "Die Kraft F drückt das Gestänge gegen den Hebel. Der Hebel drückt zurück.",
+        richtFalsch: { or: "In diese Richtung wirkt F. Der Hebel hält dagegen.", s: "Ein Gestänge mit zwei Gelenken ist ein Pendelstab. Es überträgt Kraft nur entlang seiner Achse." },
+        ok: "Der Hebel drückt das Gestänge entlang der Stange zurück. Am Gestänge greifen nur F und diese Kraft an: gleich groß, entgegengesetzt, auf der Stangenachse." },
+      { id: "hg", gruppe: "Hebel freimachen", teil: "hebel", titel: "Gelenk – Kraft auf den Hebel", nachbar: "das Gestänge",
+        punkt: T, name: "St", modus: "fuss",
+        subj: [["n", "Das Gestänge"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "das Gestänge"]], verb: DRUECKT,
+        richt: [["or", "entlang der Stange nach rechts oben", g], ["ul", "entlang der Stange nach links unten", mul(g, -1)], ["s", "senkrecht zum Hebel nach rechts oben", senk]],
+        soll: { verb: "drueckt", richt: "or" }, gegen: "ul",
+        verbFalsch: "Das Gestänge wird von F gegen den Hebel gedrückt. Es zieht nicht.",
+        richtFalsch: { ul: "Ohne Gestänge kippt der Hebel nach links (Schritt 1). Das Gestänge hält dagegen.", s: "Ein Gestänge mit zwei Gelenken ist ein Pendelstab. Es überträgt Kraft nur entlang seiner Achse, nicht senkrecht zum Hebel." },
+        ok: "Das Gestänge drückt den Hebel entlang der Stange nach rechts oben (F<sub>St</sub>). Diese Kraft ist so groß wie F." },
+      { id: "lx", teil: "hebel", titel: "Lagerbolzen – waagerecht (x-Richtung)", nachbar: "den Lagerbolzen",
+        punkt: P, name: "Lx", modus: "fuss",
+        subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]], verb: DRUECKT,
+        richt: [["r", "nach rechts", [1, 0]], ["l", "nach links", [-1, 0]]], soll: { verb: "drueckt", richt: "l" }, gegen: "r",
+        verbFalsch: BOLZEN_VERB,
+        richtFalsch: { r: "Gestänge und Feder schieben den Hebel beide nach rechts (Schritt 1). Der Bolzen hält dagegen." },
+        ok: "Der Lagerbolzen drückt den Hebel nach links (F<sub>Lx</sub>)." },
+      { id: "ly", teil: "hebel", titel: "Lagerbolzen – senkrecht (y-Richtung)", nachbar: "den Lagerbolzen",
+        punkt: P, name: "Ly", modus: "fuss",
+        subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]], verb: DRUECKT,
+        richt: [["o", "nach oben", [0, -1]], ["u", "nach unten", [0, 1]]], soll: { verb: "drueckt", richt: "u" }, gegen: "o",
+        verbFalsch: BOLZEN_VERB,
+        richtFalsch: { o: "Das Gestänge drückt den Hebel nach oben, die Feder zieht nur waagerecht. Ohne Bolzen rutscht der Hebel nach rechts oben weg (Schritt 1). Der Bolzen hält also nach unten." },
+        ok: "Der Lagerbolzen drückt den Hebel nach unten (F<sub>Ly</sub>). Lagerkräfte zeigen also nicht immer nach oben, es kommt auf die übrigen Kräfte an." },
+      { id: "hf", teil: "hebel", titel: "Federanschluss", nachbar: "die Feder",
+        punkt: U, name: "F", modus: "fuss",
+        subj: [["n", "Die Feder"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Feder"]], verb: ZIEHT,
+        richt: [["r", "zur Feder hin (nach rechts)", [1, 0]], ["l", "von der Feder weg (nach links)", [-1, 0]]], soll: { verb: "zieht", richt: "r" }, gegen: "l",
+        verbFalsch: "Eine Zugfeder ist gedehnt und will sich zusammenziehen. Sie kann nur ziehen.",
+        richtFalsch: { l: "Eine Zugfeder zieht das Bauteil zu sich hin." },
+        ok: "Die Feder zieht den Hebel nach rechts zu sich hin (F<sub>F</sub>)." }
+    ],
+    bild2() {
+      const os = mul(g, -40);
+      return unten([0, 0], "geist") + bolzen(P, "geist") + ankerWand(W, "geist") + feder(U, W, "geist") +
+             hebel(T, P, U) + stange(add(G0, os), add(T, os)) + kraftF(add(G0, os)) +
+             txt([340, 200], "Hebel") + txt(add([120, 196], os), "Gestänge", "g", "end");
+    },
+    kr: (() => {
+      const Os = mul(g, -95), Ob = [-120, 40], Of = [50, 40], Oa = [100, 110];
+      return [
+        { paar: 0, teil: "stange", p: add(G0, Os), d: g, b: 1, m: "spitze", name: "", lp: [-44, 4] },
+        { paar: 1, teil: "hebel",  p: T, d: g, b: 1, m: "fuss", name: "St" },
+        { paar: 1, teil: "stange", p: add(T, Os), d: mul(g, -1), b: 1, m: "spitze" },
+        { paar: 2, teil: "hebel",  p: P, d: [-1, 0], b: -FL[0], m: "fuss", name: "Lx", lp: [FL[0] * SK - 6, -10] },
+        { paar: 2, teil: "hebel",  p: P, d: [0, 1], b: FL[1], m: "fuss", name: "Ly", lp: [-36, FL[1] * SK + 8], seite: -1 },
+        { paar: 2, teil: "gestell", p: add(P, Ob), d: [1, 0], b: -FL[0], m: "fuss" },
+        { paar: 2, teil: "gestell", p: add(P, Ob), d: [0, -1], b: FL[1], m: "fuss", seite: -1 },
+        { paar: 3, teil: "hebel",  p: U, d: uF, b: kS, m: "fuss", name: "F", lp: [kS * SK - 10, 26], seite: -1 },
+        { paar: 3, teil: "feder",  p: add(U, Of), d: mul(uF, -1), b: kS, m: "fuss" },
+        { paar: 4, teil: "feder",  p: add(W, Of), d: uF, b: kS, m: "fuss" },
+        { paar: 4, teil: "gestell", p: add(W, Oa), d: mul(uF, -1), b: kS, m: "fuss" }
+      ];
+    })(),
+    bild3() {
+      const Os = mul(g, -95), Ob = [-120, 40], Of = [50, 40], Oa = [100, 110];
+      return unten(Ob) + bolzen(add(P, Ob)) + ankerWand(add(W, Oa)) + feder(add(U, Of), add(W, Of)) +
+             hebel(T, P, U) + stange(add(G0, Os), add(T, Os)) +
+             txt([340, 200], "Hebel") + txt(add([110, 200], Os), "Gestänge", "g", "end") + txt(add([440, 340], [0, 0]), "Zugfeder") +
+             txt(add([256, 420], Ob), "Gestell", "g", "end");
+    },
+    k3: [["stange", "Kräfte am Gestänge"], ["hebel", "am Hebel"], ["feder", "an der Feder"], ["gestell", "am Gestell"]],
+    paartext: {
+      1: "<p><b>Paar ①:</b> Das Gestänge drückt den Hebel nach rechts oben (F<sub>St</sub>). Der Hebel drückt das Gestänge nach links unten.</p>",
+      2: "<p><b>Paar ②:</b> Der Lagerbolzen drückt den Hebel nach links und nach unten (F<sub>Lx</sub>, F<sub>Ly</sub>). Der Hebel drückt den Bolzen nach rechts und nach oben.</p>",
+      3: "<p><b>Paar ③:</b> Die Feder zieht den Hebel nach rechts. Der Hebel zieht die Feder nach links.</p>",
+      4: "<p><b>Paar ④:</b> Der Federanker zieht die Feder nach rechts. Die Feder zieht den Anker nach links.</p>"
+    },
+    teiltext: {
+      stange: "<p><b>Kräfte am Gestänge:</b> F am linken Ende und die Kraft des Hebels am rechten Ende. Gleich groß, entgegengesetzt, entlang der Stange: ein Pendelstab (Druckstab).</p><p>Wer F aufbringt (Hand, Zylinder), ist hier nicht gezeichnet. Dort wirkt die Gegenkraft zu F.</p>",
+      hebel: "<p><b>Kräfte am Hebel:</b> F<sub>St</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub> greifen am <b>selben</b> Bauteil an und halten sich das Gleichgewicht.</p>",
+      feder: "<p><b>Kräfte an der Feder:</b> An beiden Enden wird die Feder gleich stark nach außen gezogen.</p>",
+      gestell: "<p><b>Kräfte am Gestell:</b> Lagerbock und Federanker sind fest mit dem Fundament verbunden. Auf sie wirken die Gegenkräfte ② und ④.</p>"
+    },
+    fertig2: "Gestänge und Hebel sind freigemacht. Am Gestänge: F und die Gegenkraft des Hebels. Am Hebel: F<sub>St</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub>. Weiter mit Schritt 3.",
+    fragen: [
+      { q: "In welche Richtung überträgt das Gestänge die Kraft auf den Hebel?",
+        a: [["Entlang der Stange", true, "Richtig. Ein Stab mit zwei Gelenken ist ein Pendelstab. Er kann nur Zug oder Druck entlang seiner Achse übertragen."],
+            ["Senkrecht zum Hebel", false, "Das wäre so, wenn das Gestänge fest mit dem Hebel verbunden wäre. Mit Gelenken an beiden Enden geht die Kraft entlang der Stange."],
+            ["Senkrecht nach oben", false, "Die Richtung hängt von der Lage der Stange ab: Die Kraft wirkt entlang der Stangenachse."]] },
+      { q: "F<sub>Ly</sub> zeigt hier nach unten. Woran liegt das?",
+        a: [["Das Gestänge drückt den Hebel nach oben, die Feder zieht nur waagerecht. Der Bolzen muss nach unten halten.", true, "Richtig. Die Richtung einer Lagerkraft ergibt sich aus dem Gleichgewicht."],
+            ["Lagerkräfte zeigen immer nach unten", false, "Nein. In Beispiel 4 zeigte F<sub>Ly</sub> nach oben. Es kommt auf die übrigen Kräfte an."],
+            ["Das ist ein Fehler. Lager drücken immer nach oben.", false, "Ein Bolzen drückt in die Richtung, die das Gleichgewicht verlangt. Hier ist das nach unten."]] },
+      { q: "Welche Kräfte wirken auf das Gestänge?",
+        a: [["F und die Gegenkraft des Hebels, beide entlang der Stange und gleich groß", true, "Richtig. Das Gestänge ist ein Zweikraftkörper."],
+            ["Nur F", false, "Dann würde das Gestänge weggeschoben. Der Hebel hält am Gelenk dagegen."],
+            ["F und die Federkraft", false, "Die Feder hängt am Hebel, nicht am Gestänge. Auf ein Bauteil wirken nur die Teile, die es berühren."]] }
+    ],
+    pruef() {
+      const sum = add(add(g, mul(uF, kS)), FL), m = cross(sub(T, P), g) + cross(sub(U, P), mul(uF, kS));
+      return Math.abs(sum[0]) + Math.abs(sum[1]) + Math.abs(m) > 1e-9 ? "B3 nicht im Gleichgewicht" : "";
+    }
+  };
+})();
+
+/* =====================================================================
+   Beispiel 4: Hebel mit Rolle (wie Aufgabe 6)
+   ===================================================================== */
+const B4 = (() => {
+  const P = [400, 125], R = [150, 100], RR = 30, E = [460, 270], A = [330, 350], DY = 70, K = [R[0], DY], SK = 55;
+  const uF = norm(sub(A, E));                                     // Federkraft auf den Hebel
+  const kN = -cross(sub(E, P), uF) / cross(sub(R, P), [0, 1]);    // Kraft der Rolle auf den Hebel (nach unten)
+  const FN = [0, kN], FL = mul(add(uF, FN), -1);                  // Lagerkraft auf den Hebel
+  const ZIEL = {
+    decke: { rot: 12, v: [0, 0] },        // Feder dreht Hebel und Rolle im Uhrzeigersinn
+    rolle: { rot: 4, v: [0, 0] },         // Hebelende ohne Halt, bis es selbst an die Decke stößt
+    lager: { rot: 0, v: mul(norm(mul(FL, -1)), 40) },
+    feder: { rot: -14, v: [0, 0] }        // Eigengewicht: Rolle fällt herunter
+  };
+  const hebel = (r, p, e, cls = "") => stab([r, p, e], cls, [[p, 9], [e, 5]]) + achse(r);
+  const oben = (o, cls = "") => `<g class="${cls}">${flaeche(40 + o[0], 560 + o[0], DY + o[1], true)}${bockOben(add(P, o), DY + o[1])}</g>`;
+  const nF = [-uF[1], uF[0]];
+  const O = { oben: [0, -90], rolle: [0, -10], hebel: [0, 70], feder: add(add(mul(uF, 55), mul(nF, -40)), [0, 70]) };
+  O.anker = add(add(O.feder, mul(uF, 105)), mul(nF, -32));
+  const OR2 = [-80, 0];
+  return {
+    nr: 4, titel: "Hebel mit Rolle", sk: SK, vb1: "0 0 600 390", vb2: "0 0 600 390", vb3: "0 -110 600 690",
+    intro: `Ein <b>Hebel</b> ist im Lagerbock auf einem Bolzen drehbar gelagert. Am unteren Ende zieht eine <b>Zugfeder</b>.
+            Am linken Ende sitzt eine frei drehbare <b>Rolle</b>, die an der Decke anliegt. Die Gewichtskraft von Hebel und Rolle ist klein gegenüber der Federkraft und wird beim Freimachen vernachlässigt.
+            Gesucht sind die Kräfte <b>auf die Rolle</b> und <b>auf den Hebel</b>.`,
+    intro2: "Machen Sie zuerst die Rolle frei, dann den Hebel.",
+    weg: [
+      { id: "decke", knopf: "Decke wegnehmen",
+        text: `<p><b>Ohne Decke</b> dreht die Feder Hebel und Rolle im Uhrzeigersinn um den Lagerbolzen. Die Rolle würde nach <b>oben</b> ausweichen.</p>
+               <p>Die Decke verhindert das. Sie drückt die Rolle also nach <b>unten</b> (F<sub>N</sub>).
+               Die Wirklinie steht senkrecht zur Decke und geht durch den Rollenmittelpunkt. Weil sich die Rolle frei drehen kann, wird keine Kraft parallel zur Decke übertragen.</p>` },
+      { id: "rolle", knopf: "Rolle wegnehmen",
+        text: `<p><b>Ohne Rolle</b> hat das linke Hebelende keinen Halt mehr. Die Feder dreht den Hebel, sein Ende weicht nach <b>oben</b> aus, bis es selbst an die Decke stößt.</p>
+               <p>Die Rolle stützt sich an der Decke ab und drückt den Hebel über ihre Achse nach <b>unten</b> (F<sub>A</sub>).
+               Die Decke berührt den Hebel gar nicht. Ihre Kraft kommt nur über die Rolle beim Hebel an.</p>` },
+      { id: "lager", knopf: "Lagerbolzen wegnehmen",
+        text: `<p><b>Ohne Lagerbolzen</b> würden Feder und Rolle den Hebel nach <b>links unten</b> wegschieben.</p>
+               <p>Der Bolzen hält dagegen, also nach <b>rechts</b> und nach <b>oben</b>.
+               Ein Festlager ist zweiwertig. Man zeichnet deshalb zwei Komponenten: F<sub>Lx</sub> in x-Richtung und F<sub>Ly</sub> in y-Richtung.</p>` },
+      { id: "feder", knopf: "Feder wegnehmen",
+        text: `<p><b>Ohne Feder</b> fällt die Rolle nach <b>unten</b>. Der Schwerpunkt von Hebel und Rolle liegt links vom Lagerbolzen, das Eigengewicht dreht den Hebel gegen den Uhrzeigersinn.
+               Die Decke kann die Rolle nicht festhalten, denn über eine Berührfläche wird nur Druck übertragen, kein Zug.</p>
+               <p>Erst die Feder presst die Rolle gegen die Decke. Die Federkraft ist die <b>Ursache</b>, also die eingeprägte Kraft.
+               Die Kräfte von Decke, Rolle und Lagerbolzen sind <b>Reaktionskräfte</b>: Sie entstehen erst, weil die Feder zieht.
+               Eine Zugfeder zieht immer, und zwar entlang ihrer Achse <b>zu sich hin</b> (F<sub>F</sub>).</p>
+               <p class="small">Das Eigengewicht ist klein gegenüber der Federkraft. Beim Freimachen wird es deshalb vernachlässigt.</p>` }
+    ],
+    bild1(w, f, ph) {
+      const z = ZIEL[w] || { rot: 0, v: [0, 0] }, rot = z.rot * f, v = mul(z.v, f);
+      const r = dreh(R, P, rot, v), p = dreh(P, P, rot, v), e = dreh(E, P, rot, v);
+      let s = flaeche(40, 330, DY, true, w === "decke" ? "weg" : "") + flaeche(330, 560, DY, true) + bockOben(P, DY) + anker(A);
+      s += feder(w === "feder" ? E : e, A, w === "feder" ? "weg" : "");
+      s += hebel(r, p, e);
+      s += w === "rolle" ? rolle(R, RR, "weg") : rolle(r, RR);
+      s += bolzen(P, w === "lager" ? "weg" : "");
+      s += txt([60, 52], "Decke") + txt([450, 52], "Lagerbock") + txt([250, 148], "Hebel") +
+           txt(add(w === "rolle" ? R : r, [0, 52]), "Rolle", "g", "middle") + txt([372, 296], "Zugfeder", "g", "end") + txt([372, 376], "Federanker");
+      if (ph === "halten") {
+        if (w === "decke") s += beweg([R[0] - 46, 110], [0, -1], 50) + txt([R[0] - 46, 128], "Rolle weicht aus", "g", "middle");
+        if (w === "rolle") s += beweg([R[0] - 46, 110], [0, -1], 50) + txt([R[0] - 46, 128], "Hebelende weicht aus", "g", "middle");
+        if (w === "lager") s += beweg(add(P, [-34, 30]), mul(FL, -1), 46) + txt(add(P, [-58, 96]), "Hebel rutscht weg", "g", "end");
+        if (w === "feder") s += beweg([70, 92], [0, 1], 50) + txt([22, 168], "Rolle fällt") + txt([22, 186], "herunter");
+      }
+      if (ph === "fertig") {
+        if (w === "decke") s += pfeil(K, [0, 1], 58, "spitze") + fname([K[0] + 10, K[1] - 22], "N");
+        if (w === "rolle") s += pfeil(R, [0, 1], 58) + fname([R[0] + 8, R[1] + 30], "A");
+        if (w === "lager") s += pfeil(P, [1, 0], FL[0] * SK) + fname(add(P, [FL[0] * SK - 14, 26]), "Lx") +
+                                pfeil(P, [0, -1], -FL[1] * SK) + fname(add(P, [10, FL[1] * SK / 2 + 6]), "Ly");
+        if (w === "feder") s += pfeil(E, uF, 60) + fname(add(E, add(mul(uF, 60), [-28, 4])), "F");
+      }
+      return s;
+    },
+    zeilen: [
+      { id: "rd", gruppe: "Rolle freimachen", teil: "rolle", titel: "Berührstelle Rolle – Decke", nachbar: "die Decke",
+        punkt: add(K, OR2), name: "N",
+        subj: [["n", "Die Decke"], ["h", "Die Rolle"]], obj: [["h", "die Rolle"], ["n", "die Decke"]], verb: DRUECKT,
+        richt: [["unten", "nach unten", [0, 1]], ["oben", "nach oben", [0, -1]]], soll: { verb: "drueckt", richt: "unten" }, gegen: "oben",
+        verbFalsch: "Eine Decke kann nicht ziehen. " + FLAECHE_VERB,
+        richtFalsch: { oben: "Ohne Decke würde die Rolle nach oben ausweichen (Schritt 1). Die Decke hält dagegen." },
+        ok: "Die Decke drückt die Rolle senkrecht nach unten. Die Wirklinie geht durch den Rollenmittelpunkt." },
+      { id: "ra", teil: "rolle", titel: "Rollenachse – Kraft auf die Rolle", nachbar: "den Hebel",
+        punkt: add(R, OR2), name: "A", modus: "spitze",
+        subj: [["n", "Der Hebel"], ["h", "Die Rolle"]], obj: [["h", "die Rolle"], ["n", "den Hebel"]], verb: DRUECKT,
+        richt: [["oben", "nach oben", [0, -1]], ["unten", "nach unten", [0, 1]]], soll: { verb: "drueckt", richt: "oben" }, gegen: "unten",
+        verbFalsch: "Der Hebel zieht nicht an der Rolle. Er presst sie über die Achse gegen die Decke.",
+        richtFalsch: { unten: "Von oben drückt schon die Decke. Damit die Rolle in Ruhe bleibt, muss der Hebel sie über die Achse nach oben drücken." },
+        ok: "Der Hebel drückt die Rolle über die Achse nach oben. An der Rolle greifen nur zwei Kräfte an. Deshalb sind sie gleich groß, entgegengesetzt und liegen auf einer Wirklinie, wie beim Pendelstab." },
+      { id: "ha", gruppe: "Hebel freimachen", teil: "hebel", titel: "Rollenachse – Kraft auf den Hebel", nachbar: "die Rolle",
+        punkt: R, name: "A", modus: "fuss",
+        subj: [["n", "Die Rolle"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Rolle"]], verb: DRUECKT,
+        richt: [["oben", "nach oben", [0, -1]], ["unten", "nach unten", [0, 1]]], soll: { verb: "drueckt", richt: "unten" }, gegen: "oben",
+        verbFalsch: "Die Rolle stützt sich an der Decke ab und drückt über ihre Achse auf den Hebel. Sie zieht nicht.",
+        richtFalsch: { oben: "Ohne Rolle würde das Hebelende nach oben ausweichen (Schritt 1). Die Rolle hält dagegen." },
+        ok: "Die Rolle drückt den Hebel über die Achse nach unten. Das ist die Gegenkraft zu „Der Hebel drückt die Rolle nach oben“. Die Achse taucht deshalb in beiden Bildern auf, jeweils mit umgekehrter Richtung." },
+      { id: "lx", teil: "hebel", titel: "Lagerbolzen – waagerecht (x-Richtung)", nachbar: "den Lagerbolzen",
+        punkt: P, name: "Lx", modus: "fuss",
+        subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]], verb: DRUECKT,
+        richt: [["r", "nach rechts", [1, 0]], ["l", "nach links", [-1, 0]]], soll: { verb: "drueckt", richt: "r" }, gegen: "l",
+        verbFalsch: BOLZEN_VERB,
+        richtFalsch: { l: "Die Feder zieht den Hebel auch nach links. Ohne Bolzen würde er nach links wegrutschen (Schritt 1). Der Bolzen hält dagegen." },
+        ok: "Der Lagerbolzen drückt den Hebel nach rechts (F<sub>Lx</sub>). Er gleicht den waagerechten Anteil der Federkraft aus." },
+      { id: "ly", teil: "hebel", titel: "Lagerbolzen – senkrecht (y-Richtung)", nachbar: "den Lagerbolzen",
+        punkt: P, name: "Ly", modus: "fuss",
+        subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]], verb: DRUECKT,
+        richt: [["o", "nach oben", [0, -1]], ["u", "nach unten", [0, 1]]], soll: { verb: "drueckt", richt: "o" }, gegen: "u",
+        verbFalsch: BOLZEN_VERB,
+        richtFalsch: { u: "Feder und Rolle ziehen bzw. drücken den Hebel nach unten. Der Bolzen hält dagegen." },
+        ok: "Der Lagerbolzen drückt den Hebel nach oben (F<sub>Ly</sub>). Ein Festlager ist zweiwertig, deshalb gibt es hier zwei Komponenten. Kennt man den Richtungssinn nicht, nimmt man ihn an. Ein negatives Ergebnis heißt dann: Die Kraft wirkt umgekehrt." },
+      { id: "feder", teil: "hebel", titel: "Federanschluss", nachbar: "die Feder",
+        punkt: E, name: "F", modus: "fuss",
+        subj: [["n", "Die Feder"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Feder"]], verb: ZIEHT,
+        richt: [["hin", "zur Feder hin (nach links unten)", uF], ["weg", "von der Feder weg (nach rechts oben)", mul(uF, -1)]], soll: { verb: "zieht", richt: "hin" }, gegen: "weg",
+        verbFalsch: "Eine Zugfeder ist gedehnt und will sich zusammenziehen. Sie kann nur ziehen.",
+        richtFalsch: { weg: "Eine Zugfeder zieht das Bauteil zu sich hin, also entlang der Federachse in Richtung Feder." },
+        ok: "Die Feder zieht den Hebel entlang der Federachse zu sich hin. Das ist die eingeprägte Kraft, die alles auslöst." }
+    ],
+    bild2() {
+      return oben([0, 0], "geist") + bolzen(P, "geist") + anker(A, "geist") + feder(E, A, "geist") +
+             hebel(R, P, E) + rolle(add(R, OR2), RR) + txt([250, 148], "Hebel") + txt(add([R[0], 152], OR2), "Rolle", "g", "middle");
+    },
+    kr: [
+      { paar: 1, teil: "rolle",   p: add(K, O.rolle),  d: [0, 1],      b: kN,      m: "spitze", name: "N" },
+      { paar: 1, teil: "gestell", p: add(K, O.oben),   d: [0, -1],     b: kN,      m: "spitze" },
+      { paar: 2, teil: "rolle",   p: add(R, O.rolle),  d: [0, -1],     b: kN,      m: "spitze", name: "A", seite: -1 },
+      { paar: 2, teil: "hebel",   p: add(R, O.hebel),  d: [0, 1],      b: kN,      m: "fuss",   name: "A" },
+      { paar: 3, teil: "hebel",   p: add(P, O.hebel),  d: [1, 0],      b: FL[0],   m: "fuss",   name: "Lx", lp: [FL[0] * SK + 6, 6] },
+      { paar: 3, teil: "hebel",   p: add(P, O.hebel),  d: [0, -1],     b: -FL[1],  m: "fuss",   name: "Ly", lp: [-36, FL[1] * SK + 10] },
+      { paar: 3, teil: "gestell", p: add(P, O.oben),   d: [-1, 0],     b: FL[0],   m: "fuss" },
+      { paar: 3, teil: "gestell", p: add(P, O.oben),   d: [0, 1],      b: -FL[1],  m: "fuss", seite: -1 },
+      { paar: 4, teil: "hebel",   p: add(E, O.hebel),  d: uF,          b: 1,       m: "fuss",   name: "F" },
+      { paar: 4, teil: "feder",   p: add(E, O.feder),  d: mul(uF, -1), b: 1,       m: "fuss" },
+      { paar: 5, teil: "feder",   p: add(A, O.feder),  d: uF,          b: 1,       m: "fuss" },
+      { paar: 5, teil: "gestell", p: add(A, O.anker),  d: mul(uF, -1), b: 1,       m: "fuss" }
+    ],
+    bild3() {
+      return oben(O.oben) + bolzen(add(P, O.oben)) + anker(add(A, O.anker)) + feder(add(E, O.feder), add(A, O.feder)) +
+             hebel(add(R, O.hebel), add(P, O.hebel), add(E, O.hebel)) + rolle(add(R, O.rolle), RR) +
+             txt([60, DY + O.oben[1] - 22], "Gestell (Decke, Lagerbock)") + txt(add(A, add(O.anker, [44, 12])), "Gestell (Federanker)") +
+             txt(add([250, 148], O.hebel), "Hebel") + txt(add(R, add(O.rolle, [-RR - 10, 5])), "Rolle", "g", "end") +
+             txt(add(add(mul(add(E, A), .5), O.feder), [-118, 6]), "Zugfeder");
+    },
+    k3: [["rolle", "Kräfte an der Rolle"], ["hebel", "am Hebel"], ["feder", "an der Feder"], ["gestell", "am Gestell"]],
+    paartext: {
+      1: "<p><b>Paar ①:</b> Die Decke drückt die Rolle nach unten. Die Rolle drückt die Decke nach oben.</p>",
+      2: "<p><b>Paar ②:</b> Der Hebel drückt die Rolle über die Achse nach oben. Die Rolle drückt den Hebel über die Achse nach unten.</p>",
+      3: "<p><b>Paar ③:</b> Der Lagerbolzen drückt den Hebel nach rechts und nach oben (F<sub>Lx</sub>, F<sub>Ly</sub>). Der Hebel drückt den Lagerbolzen nach links und nach unten. Jede Komponente hat ihre eigene Gegenkomponente.</p>",
+      4: "<p><b>Paar ④:</b> Die Feder zieht den Hebel zu sich hin. Der Hebel zieht die Feder zu sich hin.</p>",
+      5: "<p><b>Paar ⑤:</b> Der Federanker zieht die Feder nach links unten. Die Feder zieht den Anker nach rechts oben.</p>"
+    },
+    teiltext: {
+      rolle: "<p><b>Kräfte an der Rolle:</b> F<sub>N</sub> von der Decke und F<sub>A</sub> vom Hebel. An der Rolle greifen nur diese zwei Kräfte an. Sie sind deshalb gleich groß, entgegengesetzt und liegen auf einer Wirklinie durch den Rollenmittelpunkt.</p><p>Die Rolle gibt die Kraft der Decke also unverändert an den Hebel weiter.</p>",
+      hebel: "<p><b>Kräfte am Hebel:</b> F<sub>A</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub> greifen am <b>selben</b> Bauteil an und halten sich das Gleichgewicht. Genau dieses Bild entsteht beim Freimachen des Hebels.</p>",
+      feder: "<p><b>Kräfte an der Feder:</b> An beiden Enden wird die Feder gleich stark nach außen gezogen. Wie ein Seil oder ein Pendelstab überträgt sie die Kraft nur entlang ihrer Achse.</p>",
+      gestell: "<p><b>Kräfte am Gestell:</b> Decke, Lagerbock und Federanker sind fest mit dem Fundament verbunden und bilden zusammen das Gestell. Auf das Gestell wirken die Gegenkräfte ①, ③ und ⑤. Die Kräfte vom Fundament sind hier nicht gezeichnet.</p>"
+    },
+    fertig2: "Rolle und Hebel sind freigemacht. An der Rolle: F<sub>N</sub> von der Decke und F<sub>A</sub> vom Hebel. Am Hebel: F<sub>A</sub> von der Rolle, F<sub>Lx</sub> und F<sub>Ly</sub> vom Lagerbolzen und F<sub>F</sub> von der Feder. Weiter mit Schritt 3.",
+    fragen: [
+      { q: "Die Decke drückt auf die Rolle, die Rolle drückt auf die Decke (Paar ①). Wie groß sind die beiden Kräfte im Vergleich?",
+        a: [["Gleich groß", true, "Richtig. Kraft und Gegenkraft sind immer gleich groß und entgegengesetzt (Wechselwirkungsgesetz)."],
+            ["Die Kraft der Decke ist größer, sonst würde die Rolle nach oben ausweichen.", false, "Die Rolle bleibt in Ruhe, weil sich die beiden Kräfte <b>an der Rolle</b> aufheben (F<sub>N</sub> und F<sub>A</sub>). Kraft und Gegenkraft eines Paares sind immer gleich groß."],
+            ["Die Kraft der Rolle ist größer, weil die Feder dahintersteckt.", false, "Die Feder sorgt dafür, dass überhaupt gedrückt wird. Die beiden Kräfte des Paares sind trotzdem gleich groß."]] },
+      { q: "Welche Kräfte heben sich gegenseitig auf?",
+        a: [["Kraft und Gegenkraft eines Paares, z. B. die beiden Pfeile von ②", false, "Kraft und Gegenkraft greifen an verschiedenen Bauteilen an. Aufheben können sich nur Kräfte, die am <b>selben</b> Bauteil angreifen."],
+            ["Die Kräfte am Hebel", true, "Richtig. F<sub>A</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub> greifen alle am Hebel an. Weil der Hebel in Ruhe ist, halten sie sich das Gleichgewicht."],
+            ["Keine, im Gleichgewicht wirken keine Kräfte", false, "Gleichgewicht heißt nicht, dass keine Kräfte wirken. Es heißt, dass sich die Kräfte an einem Bauteil in ihrer Wirkung aufheben."]] },
+      { q: "Welche Kräfte wirken auf die Rolle?",
+        a: [["Nur die Kraft der Decke", false, "Dann würde die Rolle nach unten weggedrückt. Über die Achse hält der Hebel dagegen."],
+            ["Die Kraft der Decke nach unten und die Kraft des Hebels über die Achse nach oben", true, "Richtig. Zwei gleich große, entgegengesetzte Kräfte auf einer Wirklinie. Die Rolle leitet die Kraft der Decke an den Hebel weiter."],
+            ["Die Kraft der Decke nach unten und die Kraft der Feder", false, "Die Feder hängt am Hebel, nicht an der Rolle. Auf ein Bauteil wirken nur die Teile, die es berühren."]] },
+      { q: "Welche Kräfte wirken auf die Zugfeder?",
+        a: [["Nur die Kraft vom Hebel", false, "Am anderen Ende hält der Federanker. Ohne ihn würde die Feder einfach mitgezogen."],
+            ["An jedem Ende eine gleich große Kraft, beide nach außen gerichtet", true, "Richtig. Die Feder wird von beiden Seiten gezogen und dadurch gedehnt."],
+            ["An jedem Ende eine Kraft nach innen, zur Federmitte hin", false, "Kräfte nach innen würden die Feder zusammendrücken. Eine Zugfeder wird aber gedehnt."]] }
+    ],
+    pruef() {
+      const sum = add(add(uF, FN), FL), m = cross(sub(E, P), uF) + cross(sub(R, P), FN);
+      return Math.abs(sum[0]) + Math.abs(sum[1]) + Math.abs(m) > 1e-9 ? "B4 nicht im Gleichgewicht" : "";
+    }
+  };
+})();
+
+/* =====================================================================
+   Beispiel 5: Rollenhebel-Endschalter mit Druckfeder
+   ===================================================================== */
+const B5 = (() => {
+  const P = [450, 200], R = [170, 200], RR = 24, D = [290, 200], Dt = [290, 214], DB = [290, 330], BODEN = 330, SK = 60;
+  const WI = 40 * Math.PI / 180;
+  const n = [Math.sin(WI), Math.cos(WI)];             // Normale der Nockenfläche, Kraft der Nocke auf die Rolle
+  const t = [n[1], -n[0]];                            // Richtung der Nockenfläche
+  const K = sub(R, mul(n, RR));                       // Berührpunkt Rolle – Nocke
+  const kN = -cross(sub(Dt, P), [0, -1]) / cross(sub(R, P), n);   // Nockenkraft bei Federkraft 1
+  const FL = mul(add(mul(n, kN), [0, -1]), -1);       // Lagerkraft auf den Hebel
+  const ZIEL = { nocke: { rot: 10, v: [0, 0] }, rolle: { rot: 1.5, v: [0, 0] }, feder: { rot: -8, v: [0, 0] }, lager: { rot: 0, v: mul(norm(mul(FL, -1)), 35) } };
+  const hebelZ = (r, p, e, cls = "") => stab([r, e], cls, [[p, 9]]) + achse(r);
+  const schlitten = (o, cls = "") => {
+    const W1 = add(sub(K, mul(t, 60)), o), W2 = add(add(K, mul(t, 40)), o);
+    return `<g class="${cls}">${flaeche(40 + o[0], 330 + o[0], 70 + o[1], true)}<rect class="nocke" x="${70 + o[0]}" y="${80 + o[1]}" width="170" height="30"/>` +
+           `<polygon class="nocke" points="${pt(W1)} ${pt(W2)} ${pt([W2[0], 110 + o[1]])} ${pt([W1[0], 110 + o[1]])}"/></g>`;
+  };
+  const gehaeuse = (o, cls = "") => `<g class="${cls}">${flaeche(230 + o[0], 540 + o[0], BODEN + o[1], false)}${bockUnten(add(P, o), BODEN + o[1])}</g>`;
+  const EE = [P[0] + 24, P[1]];                        // rechtes Hebelende
+  return {
+    nr: 5, titel: "Rollenhebel-Endschalter", sk: SK, vb1: "0 0 600 360", vb2: "0 0 600 360", vb3: "0 -30 600 660",
+    intro: `Ein <b>Rollenhebel-Endschalter</b> begrenzt den Weg einer Linearachse. Die <b>Nocke</b> am Schlitten hat eine schräge Fläche und drückt auf die <b>Rolle</b> des Schalthebels.
+            Eine <b>Druckfeder</b> drückt den Hebel nach oben. Der Hebel ist im Gehäuse drehbar gelagert. Reibung und Gewichtskräfte werden vernachlässigt.`,
+    intro2: "Machen Sie zuerst die Rolle frei, dann den Hebel.",
+    weg: [
+      { id: "nocke", knopf: "Nocke wegfahren",
+        text: `<p><b>Ohne Nocke</b> drückt die Feder den Hebel nach oben, die Rolle weicht nach <b>oben</b> aus.</p>
+               <p>Die Nocke verhindert das. Sie drückt die Rolle <b>senkrecht zur Nockenfläche</b>, also schräg nach rechts unten (F<sub>N</sub>).
+               Die Wirklinie geht durch den Rollenmittelpunkt. Ohne Reibung gibt es keine Kraft entlang der Nockenfläche.</p>` },
+      { id: "rolle", knopf: "Rolle wegnehmen",
+        text: `<p><b>Ohne Rolle</b> drückt die Feder das Hebelende nach oben, bis es an der Nocke anstößt.</p>
+               <p>Die Rolle gibt die Kraft der Nocke über ihre Achse an den Hebel weiter. Sie drückt den Hebel schräg nach <b>rechts unten</b> (F<sub>A</sub>), in derselben Richtung wie F<sub>N</sub>.</p>` },
+      { id: "feder", knopf: "Feder wegnehmen",
+        text: `<p><b>Ohne Feder</b> fällt die Rolle durch das Eigengewicht nach unten, weg von der Nocke. Die Nocke kann die Rolle nicht festhalten, sie kann nur drücken.</p>
+               <p>Die Druckfeder ist zusammengedrückt und will sich ausdehnen. Sie <b>drückt</b> den Hebel nach <b>oben</b> (F<sub>F</sub>). Die Federkraft ist die eingeprägte Kraft, alle anderen Kräfte sind Reaktionskräfte.</p>` },
+      { id: "lager", knopf: "Lagerbolzen wegnehmen",
+        text: `<p><b>Ohne Lagerbolzen</b> rutscht der Hebel nach <b>rechts oben</b> weg: Die Feder drückt stärker nach oben, als die Rolle nach unten drückt, und die Rolle schiebt ihn etwas nach rechts.</p>
+               <p>Der Bolzen hält dagegen: nach <b>links</b> (F<sub>Lx</sub>) und nach <b>unten</b> (F<sub>Ly</sub>).</p>` }
+    ],
+    bild1(w, f, ph) {
+      const z = ZIEL[w] || { rot: 0, v: [0, 0] }, rot = z.rot * f, v = mul(z.v, f);
+      const r = dreh(R, P, rot, v), p = dreh(P, P, rot, v), e = dreh(EE, P, rot, v), dt = dreh(Dt, P, rot, v);
+      let s = gehaeuse([0, 0]) + schlitten([0, 0], w === "nocke" ? "weg" : "");
+      s += feder(w === "feder" ? Dt : dt, DB, w === "feder" ? "weg" : "");
+      s += hebelZ(r, p, e);
+      s += w === "rolle" ? rolle(R, RR, "weg") : rolle(r, RR);
+      s += bolzen(P, w === "lager" ? "weg" : "");
+      s += txt([60, 50], "Schlitten mit Nocke → fährt nach rechts") + txt([330, 236], "Schalthebel") + txt([300, 290], "Druckfeder") +
+           txt([545, 318], "Gehäuse", "g", "end") + txt(add(w === "rolle" ? R : r, [0, 44]), "Rolle", "g", "middle");
+      if (ph === "halten") {
+        if (w === "nocke") s += beweg([120, 236], [0, -1], 44) + txt([120, 254], "Rolle weicht aus", "g", "middle");
+        if (w === "rolle") s += beweg([120, 236], [0, -1], 44) + txt([120, 254], "Hebelende weicht aus", "g", "middle");
+        if (w === "feder") s += beweg([120, 200], [0, 1], 44) + txt([120, 262], "Rolle fällt", "g", "middle");
+        if (w === "lager") s += beweg(add(P, [-30, -24]), mul(FL, -1), 40) + txt(add(P, [-40, -40]), "Hebel rutscht weg", "g", "end");
+      }
+      if (ph === "fertig") {
+        if (w === "nocke") s += pfeil(K, n, kN * SK, "spitze") + fname(add(K, [-36, -16]), "N");
+        if (w === "rolle") s += pfeil(R, n, kN * SK) + fname(add(R, [34, 50]), "A");
+        if (w === "feder") s += pfeil(Dt, [0, -1], SK, "spitze") + fname(add(Dt, [10, 40]), "F");
+        if (w === "lager") s += pfeil(P, [-1, 0], -FL[0] * SK) + fname(add(P, [FL[0] * SK - 26, -8]), "Lx") +
+                                pfeil(P, [0, 1], FL[1] * SK) + fname(add(P, [8, FL[1] * SK + 6]), "Ly");
+      }
+      return s;
+    },
+    zeilen: [
+      { id: "rn", gruppe: "Rolle freimachen", teil: "rolle", titel: "Berührstelle Rolle – Nocke", nachbar: "die Nocke",
+        punkt: add(K, [-70, 0]), name: "N", modus: "spitze",
+        subj: [["n", "Die Nocke"], ["h", "Die Rolle"]], obj: [["h", "die Rolle"], ["n", "die Nocke"]], verb: DRUECKT,
+        richt: [["n", "senkrecht zur Nockenfläche (nach rechts unten)", n], ["u", "senkrecht nach unten", [0, 1]], ["g", "senkrecht zur Nockenfläche (nach links oben)", mul(n, -1)]],
+        soll: { verb: "drueckt", richt: "n" }, gegen: "g",
+        verbFalsch: "Die Nocke kann nicht ziehen. " + FLAECHE_VERB,
+        richtFalsch: { u: "Die Nockenfläche ist schräg. Ohne Reibung überträgt eine Berührfläche nur Kraft senkrecht zur Fläche, hier also schräg nach rechts unten.",
+                       g: "Ohne Nocke würde die Rolle nach oben ausweichen (Schritt 1). Die Nocke hält dagegen." },
+        ok: "Die Nocke drückt die Rolle senkrecht zur Nockenfläche, also schräg nach rechts unten. Die Wirklinie geht durch den Rollenmittelpunkt." },
+      { id: "ra", teil: "rolle", titel: "Rollenachse – Kraft auf die Rolle", nachbar: "den Hebel",
+        punkt: add(R, [-70, 0]), name: "A", modus: "spitze",
+        subj: [["n", "Der Hebel"], ["h", "Die Rolle"]], obj: [["h", "die Rolle"], ["n", "den Hebel"]], verb: DRUECKT,
+        richt: [["g", "schräg nach links oben (entgegen F<sub>N</sub>)", mul(n, -1)], ["o", "senkrecht nach oben", [0, -1]], ["n", "schräg nach rechts unten", n]],
+        soll: { verb: "drueckt", richt: "g" }, gegen: "n",
+        verbFalsch: "Der Hebel zieht nicht an der Rolle. Er presst sie über die Achse gegen die Nocke.",
+        richtFalsch: { o: "An der Rolle greifen nur zwei Kräfte an. Damit sie im Gleichgewicht ist, muss die Achskraft genau entgegengesetzt zu F<sub>N</sub> wirken, also schräg.",
+                       n: "Von der Nocke kommt schon eine Kraft nach rechts unten. Der Hebel hält über die Achse dagegen." },
+        ok: "Der Hebel drückt die Rolle über die Achse schräg nach links oben. Zwei Kräfte an der Rolle: gleich groß, entgegengesetzt, auf einer Wirklinie." },
+      { id: "ha", gruppe: "Hebel freimachen", teil: "hebel", titel: "Rollenachse – Kraft auf den Hebel", nachbar: "die Rolle",
+        punkt: R, name: "A", modus: "fuss",
+        subj: [["n", "Die Rolle"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Rolle"]], verb: DRUECKT,
+        richt: [["n", "schräg nach rechts unten", n], ["u", "senkrecht nach unten", [0, 1]], ["g", "schräg nach links oben", mul(n, -1)]],
+        soll: { verb: "drueckt", richt: "n" }, gegen: "g",
+        verbFalsch: "Die Rolle stützt sich an der Nocke ab und drückt über ihre Achse auf den Hebel. Sie zieht nicht.",
+        richtFalsch: { u: "Fast. Die Rolle gibt die Kraft der Nocke unverändert weiter, also schräg wie F<sub>N</sub>.",
+                       g: "Ohne Rolle würde das Hebelende nach oben ausweichen (Schritt 1). Die Rolle hält dagegen." },
+        ok: "Die Rolle drückt den Hebel über die Achse schräg nach rechts unten (F<sub>A</sub>). Das ist die Gegenkraft zur Achskraft auf die Rolle." },
+      { id: "lx", teil: "hebel", titel: "Lagerbolzen – waagerecht (x-Richtung)", nachbar: "den Lagerbolzen",
+        punkt: P, name: "Lx", modus: "fuss",
+        subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]], verb: DRUECKT,
+        richt: [["r", "nach rechts", [1, 0]], ["l", "nach links", [-1, 0]]], soll: { verb: "drueckt", richt: "l" }, gegen: "r",
+        verbFalsch: BOLZEN_VERB,
+        richtFalsch: { r: "Die Rolle drückt den Hebel schräg, also auch ein Stück nach rechts. Der Bolzen hält dagegen." },
+        ok: "Der Lagerbolzen drückt den Hebel nach links (F<sub>Lx</sub>). Er gleicht den waagerechten Anteil von F<sub>A</sub> aus." },
+      { id: "ly", teil: "hebel", titel: "Lagerbolzen – senkrecht (y-Richtung)", nachbar: "den Lagerbolzen",
+        punkt: P, name: "Ly", modus: "fuss",
+        subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]], verb: DRUECKT,
+        richt: [["o", "nach oben", [0, -1]], ["u", "nach unten", [0, 1]]], soll: { verb: "drueckt", richt: "u" }, gegen: "o",
+        verbFalsch: BOLZEN_VERB,
+        richtFalsch: { o: "Ohne Bolzen rutscht der Hebel nach rechts oben weg (Schritt 1): Die Feder drückt stärker nach oben, als die Rolle nach unten drückt. Der Bolzen hält also nach unten." },
+        ok: "Der Lagerbolzen drückt den Hebel nach unten (F<sub>Ly</sub>). Ohne Rechnung erkennt man das nur aus Schritt 1. Beim Freimachen nimmt man den Richtungssinn sonst einfach an." },
+      { id: "hf", teil: "hebel", titel: "Druckfeder", nachbar: "die Feder",
+        punkt: Dt, name: "F", modus: "spitze",
+        subj: [["n", "Die Feder"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Feder"]], verb: DRUECKT,
+        richt: [["o", "nach oben (von der Feder weg)", [0, -1]], ["u", "nach unten (zur Feder hin)", [0, 1]]], soll: { verb: "drueckt", richt: "o" }, gegen: "u",
+        verbFalsch: "Eine Druckfeder ist zusammengedrückt und will sich ausdehnen. Sie kann nur drücken.",
+        richtFalsch: { u: "Eine Druckfeder drückt das Bauteil von sich weg, hier also nach oben." },
+        ok: "Die Druckfeder drückt den Hebel nach oben (F<sub>F</sub>). Vergleichen Sie mit Beispiel 4: Die Zugfeder zog den Hebel zu sich hin." }
+    ],
+    bild2() {
+      return gehaeuse([0, 0], "geist") + schlitten([0, 0], "geist") + bolzen(P, "geist") + feder(Dt, DB, "geist") +
+             hebelZ(R, P, EE) + rolle(add(R, [-70, 0]), RR) + txt([330, 236], "Schalthebel") + txt(add(R, [-70, 44]), "Rolle", "g", "middle");
+    },
+    kr: (() => {
+      const Os = [-30, -60], Or = [-60, 10], Oh = [0, 70], Of = [0, 145], Og = [0, 220];
+      return [
+        { paar: 1, teil: "rolle",   p: add(K, Or), d: n, b: kN, m: "spitze", name: "N", lp: [-44, -20] },
+        { paar: 1, teil: "nocke",   p: add(K, Os), d: mul(n, -1), b: kN, m: "spitze" },
+        { paar: 2, teil: "rolle",   p: add(R, Or), d: mul(n, -1), b: kN, m: "spitze", name: "A", lp: [26, 44] },
+        { paar: 2, teil: "hebel",   p: add(R, Oh), d: n, b: kN, m: "fuss", name: "A", lp: [36, 52] },
+        { paar: 3, teil: "hebel",   p: add(P, Oh), d: [-1, 0], b: -FL[0], m: "fuss", name: "Lx", lp: [FL[0] * SK - 24, 34] },
+        { paar: 3, teil: "hebel",   p: add(P, Oh), d: [0, 1], b: FL[1], m: "fuss", name: "Ly", lp: [8, FL[1] * SK + 8] },
+        { paar: 3, teil: "gestell", p: add(P, Og), d: [1, 0], b: -FL[0], m: "fuss" },
+        { paar: 3, teil: "gestell", p: add(P, Og), d: [0, -1], b: FL[1], m: "fuss", seite: -1 },
+        { paar: 4, teil: "hebel",   p: add(Dt, Oh), d: [0, -1], b: 1, m: "fuss", name: "F", lp: [-30, -40] },
+        { paar: 4, teil: "feder",   p: add(Dt, Of), d: [0, 1], b: 1, m: "spitze" },
+        { paar: 5, teil: "feder",   p: add(DB, Of), d: [0, -1], b: 1, m: "spitze" },
+        { paar: 5, teil: "gestell", p: add(DB, Og), d: [0, 1], b: 1, m: "fuss" }
+      ];
+    })(),
+    bild3() {
+      const Os = [-30, -60], Or = [-60, 10], Oh = [0, 70], Of = [0, 145], Og = [0, 220];
+      return schlitten(Os) + gehaeuse(Og) + bolzen(add(P, Og)) + feder(add(Dt, Of), add(DB, Of)) +
+             hebelZ(add(R, Oh), add(P, Oh), add(EE, Oh)) + rolle(add(R, Or), RR) +
+             txt([30, -10 + 0], "Schlitten mit Nocke") + txt(add([320, 180], Oh), "Schalthebel") + txt(add([300, 290], Of), "Druckfeder") +
+             txt(add([545, 318], Og), "Gehäuse", "g", "end") + txt(add(R, add(Or, [-RR - 8, 5])), "Rolle", "g", "end");
+    },
+    k3: [["nocke", "Kräfte an der Nocke"], ["rolle", "an der Rolle"], ["hebel", "am Hebel"], ["feder", "an der Feder"], ["gestell", "am Gehäuse"]],
+    paartext: {
+      1: "<p><b>Paar ①:</b> Die Nocke drückt die Rolle schräg nach rechts unten. Die Rolle drückt die Nocke schräg nach links oben.</p>",
+      2: "<p><b>Paar ②:</b> Der Hebel drückt die Rolle über die Achse schräg nach links oben. Die Rolle drückt den Hebel schräg nach rechts unten.</p>",
+      3: "<p><b>Paar ③:</b> Der Lagerbolzen drückt den Hebel nach links und nach unten. Der Hebel drückt den Bolzen nach rechts und nach oben.</p>",
+      4: "<p><b>Paar ④:</b> Die Feder drückt den Hebel nach oben. Der Hebel drückt die Feder nach unten.</p>",
+      5: "<p><b>Paar ⑤:</b> Das Gehäuse drückt die Feder nach oben. Die Feder drückt das Gehäuse nach unten.</p>"
+    },
+    teiltext: {
+      nocke: "<p><b>Kraft an der Nocke:</b> Die Rolle drückt die Nocke schräg nach links oben. Der Schlitten muss diese Kraft über seine Führung aufnehmen (hier nicht gezeichnet).</p>",
+      rolle: "<p><b>Kräfte an der Rolle:</b> F<sub>N</sub> von der Nocke und F<sub>A</sub> vom Hebel. Zwei Kräfte: gleich groß, entgegengesetzt, auf einer schrägen Wirklinie durch den Rollenmittelpunkt.</p>",
+      hebel: "<p><b>Kräfte am Hebel:</b> F<sub>A</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub> halten sich das Gleichgewicht.</p>",
+      feder: "<p><b>Kräfte an der Druckfeder:</b> An beiden Enden wird die Feder nach <b>innen</b> gedrückt, sie wird zusammengedrückt. Bei der Zugfeder in Beispiel 4 zeigten die Kräfte nach außen.</p>",
+      gestell: "<p><b>Kräfte am Gehäuse:</b> Auf das Gehäuse wirken die Gegenkräfte ③ und ⑤. Es ist an der Maschine festgeschraubt.</p>"
+    },
+    fertig2: "Rolle und Hebel sind freigemacht. An der Rolle: F<sub>N</sub> von der Nocke und F<sub>A</sub> vom Hebel. Am Hebel: F<sub>A</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub>. Weiter mit Schritt 3.",
+    fragen: [
+      { q: "In welche Richtung drückt die Nocke auf die Rolle?",
+        a: [["Senkrecht zur Nockenfläche", true, "Richtig. Ohne Reibung überträgt eine Berührfläche nur Kraft senkrecht zur Fläche. Die Wirklinie geht durch den Rollenmittelpunkt."],
+            ["Senkrecht nach unten", false, "Das gilt nur, wenn die Fläche waagerecht ist. Die Nockenfläche ist schräg."],
+            ["In Fahrtrichtung des Schlittens", false, "Ohne Reibung gibt es keine Kraft entlang der Fläche. Die Rolle dreht sich einfach ab."]] },
+      { q: "Welche Kraft ist die Gegenkraft zur Kraft der Nocke auf die Rolle?",
+        a: [["Die Kraft der Achse auf die Rolle", false, "Beide greifen an der Rolle an. Sie halten sich das Gleichgewicht, sind aber kein Paar."],
+            ["Die Kraft der Rolle auf die Nocke", true, "Richtig. Gleich groß, entgegengesetzt, an zwei verschiedenen Bauteilen (Paar ①)."],
+            ["Die Federkraft", false, "Die Feder berührt die Rolle nicht. Sie drückt auf den Hebel."]] },
+      { q: "Welche Kräfte wirken auf die Druckfeder?",
+        a: [["An jedem Ende eine gleich große Kraft nach innen", true, "Richtig. Hebel und Gehäuse drücken die Feder zusammen."],
+            ["An jedem Ende eine Kraft nach außen", false, "Das gilt für die Zugfeder. Eine Druckfeder wird zusammengedrückt."],
+            ["Nur die Kraft vom Hebel", false, "Unten stützt sich die Feder am Gehäuse ab. Ohne Gehäuse würde sie einfach weggedrückt."]] }
+    ],
+    pruef() {
+      const sum = add(add(mul(n, kN), [0, -1]), FL), m = cross(sub(R, P), mul(n, kN)) + cross(sub(Dt, P), [0, -1]);
+      return Math.abs(sum[0]) + Math.abs(sum[1]) + Math.abs(m) > 1e-9 ? "B5 nicht im Gleichgewicht" : "";
+    }
+  };
+})();
+
+const BEISPIELE = [B1, B2, B3, B4, B5];
+
+/* =====================================================================
+   Gemeinsamer Ablauf
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const s1 = $("s1"), s2 = $("s2"), s3 = $("s3"), e1 = $("e1"), e3 = $("e3");
+const k1 = $("k1"), k3 = $("k3"), zeilenBox = $("zeilen"), fragenBox = $("fragen");
 const ruhig = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const st1 = { weg: null, rot: 0, v: [0, 0], phase: "", erledigt: new Set() };
-const vLager = mul(norm(mul(FL, -1)), 40);   // Ausweichen ohne Lagerbolzen
-const ZIEL1 = {
-  decke: { rot: 12, v: [0, 0] },             // Feder dreht Hebel und Rolle im Uhrzeigersinn
-  rolle: { rot: 4, v: [0, 0] },              // Hebelende ohne Halt, bis es selbst an die Decke stößt
-  lager: { rot: 0, v: vLager },
-  feder: { rot: -14, v: [0, 0] }             // Eigengewicht: Rolle fällt herunter
-};
+let B = null, st1 = null, auswahl = {}, fokus = "alle", richtig = new Set(), anim = 0;
 
-const TEXT1 = {
-  decke: `<p><b>Ohne Decke</b> dreht die Feder Hebel und Rolle im Uhrzeigersinn um den Lagerbolzen. Die Rolle würde nach <b>oben</b> ausweichen.</p>
-          <p>Die Decke verhindert das. Sie drückt die Rolle also nach <b>unten</b> (F<sub>N</sub>).
-          Die Wirklinie steht senkrecht zur Decke und geht durch den Rollenmittelpunkt. Weil sich die Rolle frei drehen kann, wird keine Kraft parallel zur Decke übertragen.</p>`,
-  rolle: `<p><b>Ohne Rolle</b> hat das linke Hebelende keinen Halt mehr. Die Feder dreht den Hebel, sein Ende weicht nach <b>oben</b> aus, bis es selbst an die Decke stößt.</p>
-          <p>Die Rolle stützt sich an der Decke ab und drückt den Hebel über ihre Achse nach <b>unten</b> (F<sub>A</sub>).
-          Die Decke berührt den Hebel gar nicht. Ihre Kraft kommt nur über die Rolle beim Hebel an.</p>`,
-  lager: `<p><b>Ohne Lagerbolzen</b> würden Feder und Rolle den Hebel nach <b>links unten</b> wegschieben.</p>
-          <p>Der Bolzen hält dagegen, also nach <b>rechts</b> und nach <b>oben</b>.
-          Ein Festlager ist zweiwertig. Man zeichnet deshalb zwei Komponenten: F<sub>Lx</sub> in x-Richtung und F<sub>Ly</sub> in y-Richtung.</p>`,
-  feder: `<p><b>Ohne Feder</b> fällt die Rolle nach <b>unten</b>. Der Schwerpunkt von Hebel und Rolle liegt links vom Lagerbolzen, das Eigengewicht dreht den Hebel gegen den Uhrzeigersinn.
-          Die Decke kann die Rolle nicht festhalten, denn über eine Berührfläche wird nur Druck übertragen, kein Zug.</p>
-          <p>Erst die Feder presst die Rolle gegen die Decke. Die Federkraft ist die <b>Ursache</b>, also die eingeprägte Kraft.
-          Die Kräfte von Decke, Rolle und Lagerbolzen sind <b>Reaktionskräfte</b>: Sie entstehen erst, weil die Feder zieht.
-          Eine Zugfeder zieht immer, und zwar entlang ihrer Achse <b>zu sich hin</b> (F<sub>F</sub>).</p>
-          <p class="small">Das Eigengewicht ist klein gegenüber der Federkraft. Beim Freimachen wird es deshalb vernachlässigt.</p>`
-};
+$("tabs").innerHTML = BEISPIELE.map((b, i) =>
+  `<button role="tab" type="button" data-i="${i}" aria-selected="false">${b.nr} ${b.titel}</button>`).join("");
+$("tabs").addEventListener("click", ev => {
+  const b = ev.target.closest("button"); if (b) zeige(+b.dataset.i, true);
+});
 
-function zeichne1() {
-  const w = st1.weg, r = lage(R, st1.rot, st1.v), p = lage(P, st1.rot, st1.v), e = lage(E, st1.rot, st1.v);
-  let s = "";
-  s += decke([0, 0], 40, 330, w === "decke" ? "weg" : "");
-  s += decke([0, 0], 330, 560);
-  s += bock([0, 0]) + anker([0, 0]);
-  s += feder(w === "feder" ? E : e, A, w === "feder" ? "weg" : "");
-  s += hebel(r, p, e);
-  s += w === "rolle" ? rolle(R, "weg") : rolle(r);
-  s += bolzen([0, 0], w === "lager" ? "weg" : "");
-  s += txt([60, 52], "Decke", "g") + txt([450, 52], "Lagerbock", "g") + txt([250, 148], "Hebel", "g") +
-       txt(add(w === "rolle" ? R : r, [0, 52]), "Rolle", "g", "middle") + txt([372, 296], "Zugfeder", "g", "end") + txt([372, 376], "Federanker", "g");
-  if (st1.phase === "halten") {
-    if (w === "decke") s += beweg([R[0] - 46, 110], [0, -1], 50) + txt([R[0] - 46, 128], "Rolle weicht aus", "g", "middle");
-    if (w === "rolle") s += beweg([R[0] - 46, 110], [0, -1], 50) + txt([R[0] - 46, 128], "Hebelende weicht aus", "g", "middle");
-    if (w === "lager") s += beweg(add(P, [-34, 30]), mul(FL, -1), 46) + txt(add(P, [-58, 96]), "Hebel rutscht weg", "g", "end");
-    if (w === "feder") s += beweg([70, 92], [0, 1], 50) + txt([22, 168], "Rolle fällt", "g") + txt([22, 186], "herunter", "g");
-  }
-  if (st1.phase === "fertig") {
-    if (w === "decke") s += pfeil(K, [0, 1], 58, "spitze") + fname([K[0] + 10, K[1] - 22], "N");
-    if (w === "rolle") s += pfeil(R, [0, 1], 58) + fname([R[0] + 10, R[1] + 52], "A");
-    if (w === "lager") s += pfeil(P, [1, 0], FL[0] * SK) + fname(add(P, [FL[0] * SK - 14, 26]), "Lx") +
-                            pfeil(P, [0, -1], -FL[1] * SK) + fname(add(P, [10, FL[1] * SK / 2 + 6]), "Ly");
-    if (w === "feder") s += pfeil(E, uF, 60) + fname(add(E, add(mul(uF, 60), [-28, 4])), "F");
-  }
-  s1.innerHTML = s;
-}
-
-let anim = 0;
-function spiele(w) {
+function zeige(i, merken) {
   cancelAnimationFrame(anim);
-  Object.assign(st1, { weg: w, rot: 0, v: [0, 0], phase: "" });
-  e1.innerHTML = "<p>…</p>";
-  const ziel = ZIEL1[w];
-  const T_HIN = 800, T_HALT = 900, T_ZURUECK = 500;
-  const t0 = performance.now();
-  const eas = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-  function schritt(t) {
-    const dt = t - t0;
-    let f;
-    if (dt < T_HIN) { f = eas(dt / T_HIN); st1.phase = ""; }
-    else if (dt < T_HIN + T_HALT) { f = 1; st1.phase = "halten"; }
-    else if (dt < T_HIN + T_HALT + T_ZURUECK) { f = 1 - eas((dt - T_HIN - T_HALT) / T_ZURUECK); st1.phase = ""; }
-    else { f = 0; st1.phase = "fertig"; }
-    st1.rot = ziel.rot * f; st1.v = mul(ziel.v, f);
-    zeichne1();
-    if (st1.phase !== "fertig") anim = requestAnimationFrame(schritt);
-    else fertig1(w);
-  }
-  if (ruhig) { st1.phase = "fertig"; zeichne1(); fertig1(w); } else anim = requestAnimationFrame(schritt);
+  B = BEISPIELE[i];
+  document.querySelectorAll("#tabs button").forEach((b, j) => b.setAttribute("aria-selected", i === j));
+  if (merken) try { history.replaceState(null, "", "#beispiel-" + B.nr); } catch (e) { /* ohne Adresszeile egal */ }
+  $("intro").innerHTML = B.intro;
+  $("intro2").textContent = B.intro2;
+  s1.setAttribute("viewBox", B.vb1); s2.setAttribute("viewBox", B.vb2); s3.setAttribute("viewBox", B.vb3);
+  st1 = { weg: null, f: 0, phase: "", erledigt: new Set() };
+  k1.innerHTML = B.weg.map(w => `<button class="btn-2" type="button" data-weg="${w.id}">${w.knopf}</button>`).join("");
+  e1.innerHTML = "<p>Wählen Sie links ein Nachbarteil aus.</p>";
+  ["w1", "b2", "w2", "b3", "w3"].forEach(id => $(id).hidden = true);
+  ["g2", "g3"].forEach(id => $(id).hidden = false);
+  /* Schritt 2 */
+  auswahl = {};
+  zeilenBox.innerHTML = B.zeilen.map(z => (z.gruppe ? `<h4 class="gruppe">${z.gruppe}</h4>` : "") +
+    `<div class="zeile" id="z-${z.id}"><h4>${z.titel}</h4><div class="satz">` +
+    sel(z, "subj", z.subj, "Wer?") + sel(z, "verb", z.verb, "Was tut er?") + sel(z, "obj", z.obj, "Mit wem?") +
+    sel(z, "richt", z.richt, "Wohin?") + `<span>.</span></div><div class="rm" aria-live="polite"></div></div>`).join("");
+  B.zeilen.forEach(z => auswahl[z.id] = {});
+  /* Schritt 3 */
+  fokus = "alle";
+  const paare = [...new Set(B.kr.map(k => k.paar).filter(p => p > 0))];
+  const K3 = [["alle", "Alle Kräfte"], ...paare.map(p => [p, "Paar " + "①②③④⑤⑥"[p - 1]]), ...B.k3];
+  k3.innerHTML = K3.map(([v, t]) => `<button class="btn-2" type="button" data-f="${v}" aria-pressed="${v === "alle"}">${t}</button>`).join("");
+  e3.innerHTML = "<p>Alle Kräfte sind eingeblendet. Wählen Sie unter dem Bild ein Paar oder ein Bauteil aus.</p>";
+  richtig = new Set();
+  fragenBox.innerHTML = B.fragen.map((f, i) => `<fieldset class="frage" style="margin:0 0 10px"><p class="q">${i + 1}. ${f.q}</p>` +
+    f.a.map((a, j) => `<label><input type="radio" name="f${i}" value="${j}"><span>${a[0]}</span></label>`).join("") +
+    `<div class="rm" aria-live="polite"></div></fieldset>`).join("");
+  zeichne1(); zeichne2();
+  const fehler = B.pruef(); if (fehler) console.error(fehler);
 }
-function fertig1(w) {
-  e1.innerHTML = TEXT1[w];
-  st1.erledigt.add(w);
-  document.querySelector(`#k1 [data-weg="${w}"]`).classList.add("erledigt");
-  if (st1.erledigt.size === Object.keys(ZIEL1).length) {
-    document.getElementById("w1").hidden = false;
-    document.getElementById("g2").hidden = true;
-    document.getElementById("b2").hidden = false;
-  }
-}
-document.querySelectorAll("#k1 [data-weg]").forEach(b => b.addEventListener("click", () => {
-  document.querySelectorAll("#k1 [data-weg]").forEach(x => x.setAttribute("aria-pressed", x === b));
-  spiele(b.dataset.weg);
-}));
-
-/* ================= Schritt 2 ================= */
-const s2 = document.getElementById("s2");
-const OR2 = [-80, 0];                         // Rolle im Bild neben den Hebel gerückt
-/* Codes: "h" = das gerade betrachtete Bauteil, "n" = der Nachbar */
-const ZEILEN = [
-  { id: "rd", gruppe: "Rolle freimachen", teil: "die Rolle", teilGen: "der Rolle",
-    titel: "Berührstelle Rolle – Decke", nachbar: "die Decke", punkt: add(K, OR2), name: "N",
-    subj: [["n", "Die Decke"], ["h", "Die Rolle"]], obj: [["h", "die Rolle"], ["n", "die Decke"]],
-    verb: [["drueckt", "drückt"], ["zieht", "zieht"]], richt: [["unten", "nach unten", [0, 1]], ["oben", "nach oben", [0, -1]]],
-    soll: { verb: "drueckt", richt: "unten" }, gegen: "oben",
-    verbFalsch: "Eine Decke kann nicht ziehen. Über eine Berührfläche wird nur Druck übertragen.",
-    richtFalsch: { oben: "Ohne Decke würde die Rolle nach oben ausweichen (Schritt 1). Die Decke hält dagegen." },
-    ok: "Die Decke drückt die Rolle senkrecht nach unten. Die Wirklinie geht durch den Rollenmittelpunkt." },
-  { id: "ra", teil: "die Rolle", teilGen: "der Rolle",
-    titel: "Rollenachse – Kraft auf die Rolle", nachbar: "den Hebel", punkt: add(R, OR2), name: "A", modus: "spitze",
-    subj: [["n", "Der Hebel"], ["h", "Die Rolle"]], obj: [["h", "die Rolle"], ["n", "den Hebel"]],
-    verb: [["drueckt", "drückt"], ["zieht", "zieht"]], richt: [["oben", "nach oben", [0, -1]], ["unten", "nach unten", [0, 1]]],
-    soll: { verb: "drueckt", richt: "oben" }, gegen: "unten",
-    verbFalsch: "Der Hebel zieht nicht an der Rolle. Er presst sie über die Achse gegen die Decke.",
-    richtFalsch: { unten: "Von oben drückt schon die Decke. Damit die Rolle in Ruhe bleibt, muss der Hebel sie über die Achse nach oben drücken." },
-    ok: "Der Hebel drückt die Rolle über die Achse nach oben. An der Rolle greifen nur zwei Kräfte an. Deshalb sind sie gleich groß, entgegengesetzt und liegen auf einer Wirklinie, wie beim Pendelstab." },
-  { id: "ha", gruppe: "Hebel freimachen", teil: "den Hebel", teilGen: "des Hebels",
-    titel: "Rollenachse – Kraft auf den Hebel", nachbar: "die Rolle", punkt: R, name: "A", modus: "fuss",
-    subj: [["n", "Die Rolle"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Rolle"]],
-    verb: [["drueckt", "drückt"], ["zieht", "zieht"]], richt: [["oben", "nach oben", [0, -1]], ["unten", "nach unten", [0, 1]]],
-    soll: { verb: "drueckt", richt: "unten" }, gegen: "oben",
-    verbFalsch: "Die Rolle stützt sich an der Decke ab und drückt über ihre Achse auf den Hebel. Sie zieht nicht.",
-    richtFalsch: { oben: "Ohne Rolle würde das Hebelende nach oben ausweichen (Schritt 1). Die Rolle hält dagegen." },
-    ok: "Die Rolle drückt den Hebel über die Achse nach unten. Das ist die Gegenkraft zu „Der Hebel drückt die Rolle nach oben“. Die Achse taucht deshalb in beiden Bildern auf, jeweils mit umgekehrter Richtung." },
-  { id: "lx", teil: "den Hebel", teilGen: "des Hebels",
-    titel: "Lagerbolzen – waagerecht (x-Richtung)", nachbar: "den Lagerbolzen", punkt: P, name: "Lx", modus: "fuss",
-    subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]],
-    verb: [["drueckt", "drückt"], ["zieht", "zieht"]], richt: [["r", "nach rechts", [1, 0]], ["l", "nach links", [-1, 0]]],
-    soll: { verb: "drueckt", richt: "r" }, gegen: "l",
-    verbFalsch: "Ein Bolzen kann nur gegen die Bohrungswand drücken. In welche Richtung, hängt von den übrigen Kräften ab.",
-    richtFalsch: { l: "Die Feder zieht den Hebel auch nach links. Ohne Bolzen würde er nach links wegrutschen (Schritt 1). Der Bolzen hält dagegen." },
-    ok: "Der Lagerbolzen drückt den Hebel nach rechts (F<sub>Lx</sub>). Er gleicht den waagerechten Anteil der Federkraft aus." },
-  { id: "ly", teil: "den Hebel", teilGen: "des Hebels",
-    titel: "Lagerbolzen – senkrecht (y-Richtung)", nachbar: "den Lagerbolzen", punkt: P, name: "Ly", modus: "fuss",
-    subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]],
-    verb: [["drueckt", "drückt"], ["zieht", "zieht"]], richt: [["o", "nach oben", [0, -1]], ["u", "nach unten", [0, 1]]],
-    soll: { verb: "drueckt", richt: "o" }, gegen: "u",
-    verbFalsch: "Ein Bolzen kann nur gegen die Bohrungswand drücken. In welche Richtung, hängt von den übrigen Kräften ab.",
-    richtFalsch: { u: "Feder und Rolle ziehen bzw. drücken den Hebel nach unten. Der Bolzen hält dagegen." },
-    ok: "Der Lagerbolzen drückt den Hebel nach oben (F<sub>Ly</sub>). Ein Festlager ist zweiwertig, deshalb gibt es hier zwei Komponenten. Kennt man den Richtungssinn nicht, nimmt man ihn an. Ein negatives Ergebnis heißt dann: Die Kraft wirkt umgekehrt." },
-  { id: "feder", teil: "den Hebel", teilGen: "des Hebels",
-    titel: "Federanschluss", nachbar: "die Feder", punkt: E, name: "F",
-    subj: [["n", "Die Feder"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Feder"]],
-    verb: [["zieht", "zieht"], ["drueckt", "drückt"]],
-    richt: [["hin", "zur Feder hin (nach links unten)", uF], ["weg", "von der Feder weg (nach rechts oben)", mul(uF, -1)]],
-    soll: { verb: "zieht", richt: "hin" }, gegen: "weg",
-    verbFalsch: "Eine Zugfeder ist gedehnt und will sich zusammenziehen. Sie kann nur ziehen.",
-    richtFalsch: { weg: "Eine Zugfeder zieht das Bauteil zu sich hin, also entlang der Federachse in Richtung Feder." },
-    ok: "Die Feder zieht den Hebel entlang der Federachse zu sich hin. Das ist die eingeprägte Kraft, die alles auslöst." }
-];
-const auswahl = {};
-const zeilenBox = document.getElementById("zeilen");
 function sel(z, k, opts, label) {
   return `<select data-z="${z.id}" data-k="${k}" aria-label="${label}"><option value="">– wählen –</option>` +
-         opts.map(o => `<option value="${o[0]}">${o[1]}</option>`).join("") + `</select>`;
+         opts.map(o => `<option value="${o[0]}">${o[1].replace(/<\/?sub>/g, "")}</option>`).join("") + `</select>`;
 }
-zeilenBox.innerHTML = ZEILEN.map(z => (z.gruppe ? `<h4 class="gruppe">${z.gruppe}</h4>` : "") +
-  `<div class="zeile" id="z-${z.id}"><h4>${z.titel}</h4><div class="satz">` +
-  sel(z, "subj", z.subj, "Wer?") + sel(z, "verb", z.verb, "Was tut er?") + sel(z, "obj", z.obj, "Mit wem?") +
-  sel(z, "richt", z.richt, "Wohin?") + `<span>.</span></div><div class="rm" aria-live="polite"></div></div>`).join("");
-ZEILEN.forEach(z => auswahl[z.id] = {});
+
+/* ---------- Schritt 1 ---------- */
+const zeichne1 = () => { s1.innerHTML = B.bild1(st1.weg, st1.f, st1.phase); };
+function spiele(w) {
+  cancelAnimationFrame(anim);
+  Object.assign(st1, { weg: w, f: 0, phase: "" });
+  e1.innerHTML = "<p>…</p>";
+  if (ruhig) { st1.phase = "fertig"; zeichne1(); return fertig1(w); }
+  const T_HIN = 800, T_HALT = 900, T_ZURUECK = 500, t0 = performance.now();
+  const eas = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+  (function schritt(t) {
+    const dt = t - t0;
+    if (dt < T_HIN) { st1.f = eas(dt / T_HIN); st1.phase = ""; }
+    else if (dt < T_HIN + T_HALT) { st1.f = 1; st1.phase = "halten"; }
+    else if (dt < T_HIN + T_HALT + T_ZURUECK) { st1.f = 1 - eas((dt - T_HIN - T_HALT) / T_ZURUECK); st1.phase = ""; }
+    else { st1.f = 0; st1.phase = "fertig"; }
+    zeichne1();
+    if (st1.phase !== "fertig") anim = requestAnimationFrame(schritt); else fertig1(w);
+  })(t0);
+}
+function fertig1(w) {
+  e1.innerHTML = B.weg.find(x => x.id === w).text;
+  st1.erledigt.add(w);
+  k1.querySelector(`[data-weg="${w}"]`).classList.add("erledigt");
+  if (st1.erledigt.size === B.weg.length) { $("w1").hidden = false; $("g2").hidden = true; $("b2").hidden = false; }
+}
+k1.addEventListener("click", ev => {
+  const b = ev.target.closest("[data-weg]"); if (!b) return;
+  k1.querySelectorAll("[data-weg]").forEach(x => x.setAttribute("aria-pressed", x === b));
+  spiele(b.dataset.weg);
+});
+
+/* ---------- Schritt 2 ---------- */
 zeilenBox.addEventListener("change", ev => {
   const s = ev.target; if (!s.dataset.z) return;
   auswahl[s.dataset.z][s.dataset.k] = s.value;
-  const box = document.getElementById("z-" + s.dataset.z);
+  const box = $("z-" + s.dataset.z);
   box.classList.remove("ok"); box.querySelector(".rm").textContent = ""; box.querySelector(".rm").className = "rm";
-  document.getElementById("w2").hidden = true;
+  $("w2").hidden = true;
   zeichne2();
 });
-
 function zeichne2() {
-  let s = decke([0, 0], 40, 560, "geist") + bock([0, 0], "geist") + bolzen([0, 0], "geist") +
-          anker([0, 0], "geist") + feder(E, A, "geist") + hebel(R, P, E) + rolle(add(R, OR2));
-  s += txt([250, 148], "Hebel", "g") + txt(add([R[0], 152], OR2), "Rolle", "g", "middle");
-  ZEILEN.forEach(z => {
+  let s = B.bild2();
+  B.zeilen.forEach(z => {
     const a = auswahl[z.id];
     if (!a.subj || !a.obj || !a.verb || !a.richt || a.subj === a.obj) return;
     const d = z.richt.find(r => r[0] === a.richt)[2];
     const modus = z.modus || (a.verb === "drueckt" ? "spitze" : "fuss");
-    const L = 58, auf = a.obj === "h";
-    s += pfeil(z.punkt, d, L, modus, auf ? "" : "gegen");
-    const u = norm(d), ende = modus === "spitze" ? sub(z.punkt, mul(u, L)) : add(z.punkt, mul(u, L));
-    let n = [-u[1], u[0]]; if (n[0] < 0) n = mul(n, -1);
-    const mitte = mul(add(ende, z.punkt), .5);
-    s += auf ? fname(add(mitte, add(mul(n, 14), [0, 6])), z.name)
-             : txt(add(mitte, add(mul(n, -14), [0, 5])), "auf " + z.nachbar.split(" ")[1], "g", "end");
+    const L = z.L || 58, auf = a.obj === "h", u = norm(d);
+    (z.punkte || [z.punkt]).forEach((p, i) => {
+      s += pfeil(p, d, L, modus, auf ? "" : "gegen");
+      const ende = modus === "spitze" ? sub(p, mul(u, L)) : add(p, mul(u, L));
+      let nn = [-u[1], u[0]]; if (nn[0] < 0) nn = mul(nn, -1);
+      const mitte = mul(add(ende, p), .5);
+      s += auf ? fname(add(mitte, add(mul(nn, 14), [0, 6])), z.namen ? z.namen[i] : z.name)
+               : txt(add(mitte, add(mul(nn, -14), [0, 5])), "auf " + z.nachbar.split(" ").pop(), "g", "end");
+    });
   });
   s2.innerHTML = s;
 }
-
 function rm(box, cls, html) { const r = box.querySelector(".rm"); r.className = "rm " + cls; r.innerHTML = html; }
-document.getElementById("pruef2").addEventListener("click", () => {
+$("pruef2").addEventListener("click", () => {
   let alleOk = true;
-  ZEILEN.forEach(z => {
-    const a = auswahl[z.id], box = document.getElementById("z-" + z.id);
+  B.zeilen.forEach(z => {
+    const a = auswahl[z.id], box = $("z-" + z.id), t = TEIL[z.teil];
     box.classList.remove("ok");
     if (!a.subj || !a.verb || !a.obj || !a.richt) { alleOk = false; return rm(box, "fb-hint", "Bitte alle vier Felder wählen."); }
     if (a.subj === a.obj) { alleOk = false; return rm(box, "fb-bad", "Ein Bauteil übt keine Kraft auf sich selbst aus. Wer ist hier der Nachbar?"); }
     if (a.obj !== "h") {
       alleOk = false;
       if (a.verb === z.soll.verb && a.richt === z.gegen)
-        return rm(box, "fb-bad", `Der Satz stimmt, beschreibt aber die <b>Gegenkraft</b>. Sie wirkt auf ${z.nachbar}. In das Bild ${z.teilGen} gehört nur, was der Nachbar mit ${z.teil.replace(/^die /, "der ").replace(/^den /, "dem ")} macht. Drehen Sie den Satz um.`);
-      return rm(box, "fb-bad", `Diese Kraft wirkt auf ${z.nachbar}, nicht auf ${z.teil}. Gesucht ist die Kraft <b>auf ${z.teil}</b>.`);
+        return rm(box, "fb-bad", `Der Satz stimmt, beschreibt aber die <b>Gegenkraft</b>. Sie wirkt auf ${z.nachbar}. In das Bild ${t.gen} gehört nur, was der Nachbar mit ${t.dat} macht. Drehen Sie den Satz um.`);
+      return rm(box, "fb-bad", `Diese Kraft wirkt auf ${z.nachbar}, nicht auf ${t.akk}. Gesucht ist die Kraft <b>auf ${t.akk}</b>.`);
     }
     if (a.verb !== z.soll.verb) { alleOk = false; return rm(box, "fb-bad", z.verbFalsch); }
     if (a.richt !== z.soll.richt) { alleOk = false; return rm(box, "fb-bad", z.richtFalsch[a.richt]); }
     box.classList.add("ok"); rm(box, "fb-ok", z.ok);
   });
   if (alleOk) {
-    const w = document.getElementById("w2");
-    w.innerHTML = "Rolle und Hebel sind freigemacht. An der Rolle: F<sub>N</sub> von der Decke und F<sub>A</sub> vom Hebel. Am Hebel: F<sub>A</sub> von der Rolle, F<sub>Lx</sub> und F<sub>Ly</sub> vom Lagerbolzen und F<sub>F</sub> von der Feder. Weiter mit Schritt 3.";
-    w.hidden = false;
-    document.getElementById("g3").hidden = true;
-    document.getElementById("b3").hidden = false;
+    $("w2").innerHTML = B.fertig2; $("w2").hidden = false;
+    $("g3").hidden = true; $("b3").hidden = false;
     zeichne3();
   }
 });
 
-/* ================= Schritt 3: Explosionsansicht ================= */
-const s3 = document.getElementById("s3");
-const e3 = document.getElementById("e3");
-const nF = [-uF[1], uF[0]];                                  // senkrecht zur Federachse
-const O = {
-  oben: [0, -90],                                             // Decke und Lagerbock
-  rolle: [0, -10],
-  hebel: [0, 70],
-  feder: add(add(mul(uF, 55), mul(nF, -40)), [0, 70]),
-};
-O.anker = add(add(O.feder, mul(uF, 105)), mul(nF, -32));
-const KR = [
-  // Paar, Bauteil, Angriffspunkt, Richtung, Betrag, Modus, Beschriftung
-  { paar: 1, teil: "rolle",   p: add(K, O.rolle),  d: [0, 1],      b: kN,      m: "spitze", name: "N" },
-  { paar: 1, teil: "gestell", p: add(K, O.oben),   d: [0, -1],     b: kN,      m: "spitze" },
-  { paar: 2, teil: "rolle",   p: add(R, O.rolle),  d: [0, -1],     b: kN,      m: "spitze", name: "A", seite: -1 },
-  { paar: 2, teil: "hebel",   p: add(R, O.hebel),  d: [0, 1],      b: kN,      m: "fuss",   name: "A" },
-  { paar: 3, teil: "hebel",   p: add(P, O.hebel),  d: [1, 0],      b: FL[0],   m: "fuss",   name: "Lx", lp: [FL[0] * SK + 6, 6] },
-  { paar: 3, teil: "hebel",   p: add(P, O.hebel),  d: [0, -1],     b: -FL[1],  m: "fuss",   name: "Ly", lp: [-36, FL[1] * SK + 10] },
-  { paar: 3, teil: "gestell", p: add(P, O.oben),   d: [-1, 0],     b: FL[0],   m: "fuss" },
-  { paar: 3, teil: "gestell", p: add(P, O.oben),   d: [0, 1],      b: -FL[1],  m: "fuss", seite: -1 },
-  { paar: 4, teil: "hebel",   p: add(E, O.hebel),  d: uF,          b: 1,       m: "fuss",   name: "F" },
-  { paar: 4, teil: "feder",   p: add(E, O.feder),  d: mul(uF, -1), b: 1,       m: "fuss" },
-  { paar: 5, teil: "feder",   p: add(A, O.feder),  d: uF,          b: 1,       m: "fuss" },
-  { paar: 5, teil: "gestell", p: add(A, O.anker),  d: mul(uF, -1), b: 1,       m: "fuss" },
-];
-const PAARTEXT = {
-  1: "<p><b>Paar ①:</b> Die Decke drückt die Rolle nach unten. Die Rolle drückt die Decke nach oben.</p>",
-  2: "<p><b>Paar ②:</b> Der Hebel drückt die Rolle über die Achse nach oben. Die Rolle drückt den Hebel über die Achse nach unten.</p>",
-  3: "<p><b>Paar ③:</b> Der Lagerbolzen drückt den Hebel nach rechts und nach oben (F<sub>Lx</sub>, F<sub>Ly</sub>). Der Hebel drückt den Lagerbolzen nach links und nach unten. Jede Komponente hat ihre eigene Gegenkomponente.</p>",
-  4: "<p><b>Paar ④:</b> Die Feder zieht den Hebel zu sich hin. Der Hebel zieht die Feder zu sich hin.</p>",
-  5: "<p><b>Paar ⑤:</b> Der Federanker zieht die Feder nach links unten. Die Feder zieht den Anker nach rechts oben.</p>"
-};
-const PAARZUSATZ = "<p>Kraft und Gegenkraft sind <b>gleich groß</b> und <b>entgegengesetzt</b>. Sie greifen aber an <b>zwei verschiedenen Bauteilen</b> an. Deshalb können sie sich nicht gegenseitig aufheben.</p>";
-const TEILTEXT = {
-  rolle: "<p><b>Kräfte an der Rolle:</b> F<sub>N</sub> von der Decke und F<sub>A</sub> vom Hebel. An der Rolle greifen nur diese zwei Kräfte an. Sie sind deshalb gleich groß, entgegengesetzt und liegen auf einer Wirklinie durch den Rollenmittelpunkt.</p><p>Die Rolle gibt die Kraft der Decke also unverändert an den Hebel weiter.</p>",
-  hebel: "<p><b>Kräfte am Hebel:</b> F<sub>A</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub> greifen am <b>selben</b> Bauteil an und halten sich das Gleichgewicht. Genau dieses Bild entsteht beim Freimachen des Hebels.</p>",
-  feder: "<p><b>Kräfte an der Feder:</b> An beiden Enden wird die Feder gleich stark nach außen gezogen. Wie ein Seil oder ein Pendelstab überträgt sie die Kraft nur entlang ihrer Achse.</p>",
-  gestell: "<p><b>Kräfte am Gestell:</b> Decke, Lagerbock und Federanker sind fest mit dem Fundament verbunden und bilden zusammen das Gestell. Auf das Gestell wirken die Gegenkräfte ①, ③ und ⑤. Die Kräfte vom Fundament sind hier nicht gezeichnet.</p>"
-};
-let fokus = null;
+/* ---------- Schritt 3 ---------- */
 function zeichne3() {
-  let s = "";
-  s += decke(O.oben) + bock(O.oben) + bolzen(O.oben) + anker(O.anker);
-  s += feder(add(E, O.feder), add(A, O.feder));
-  s += hebel(add(R, O.hebel), add(P, O.hebel), add(E, O.hebel));
-  s += rolle(add(R, O.rolle));
-  s += txt([60, DY + O.oben[1] - 22], "Gestell (Decke, Lagerbock)", "g");
-  s += txt(add(A, add(O.anker, [44, 12])), "Gestell (Federanker)", "g");
-  s += txt(add([250, 148], O.hebel), "Hebel", "g");
-  s += txt(add(R, add(O.rolle, [-RR - 10, 5])), "Rolle", "g", "end");
-  const fm = add(mul(add(E, A), .5), O.feder);
-  s += txt(add(fm, [-118, 6]), "Zugfeder", "g");
-  KR.forEach(k => {
-    const L = k.b * SK, u = norm(k.d);
-    const an = !fokus || fokus === "alle" || fokus === k.paar || fokus === k.teil;
+  let s = B.bild3();
+  B.kr.forEach(k => {
+    const L = k.b * B.sk, u = norm(k.d);
+    const an = fokus === "alle" || (k.paar > 0 && fokus === k.paar) || fokus === k.teil;
     const a = k.m === "spitze" ? sub(k.p, mul(u, L)) : k.p, b = k.m === "spitze" ? k.p : add(k.p, mul(u, L));
     const mitte = mul(add(a, b), .5), n = mul([-u[1], u[0]], k.seite || 1);
     let g = pfeil(k.p, k.d, L, k.m);
-    g += nummer(add(mitte, mul(n, 16)), k.paar);
-    if (k.name && k.lp) g += fname(add(k.p, k.lp), k.name);
-    else if (k.name) g += fname(add(mitte, add(mul(n, -18), [n[0] > 0 ? -22 : 4, 6])), k.name);
+    if (k.paar > 0) g += nummer(add(mitte, mul(n, 16)), k.paar);
+    if (k.name !== undefined) g += k.lp ? fname(add(k.p, k.lp), k.name)
+                                        : fname(add(mitte, add(mul(n, -18), [n[0] > 0 ? -22 : 4, 6])), k.name);
     s += `<g class="${an ? "" : "dim"}">${g}</g>`;
   });
   s3.innerHTML = s;
 }
-const K3 = [["alle", "Alle Kräfte"], [1, "Paar ①"], [2, "Paar ②"], [3, "Paar ③"], [4, "Paar ④"], [5, "Paar ⑤"],
-            ["rolle", "Kräfte an der Rolle"], ["hebel", "Kräfte am Hebel"], ["feder", "Kräfte an der Feder"], ["gestell", "Kräfte am Gestell"]];
-const k3 = document.getElementById("k3");
-k3.innerHTML = K3.map(([v, t]) => `<button class="btn-2" type="button" data-f="${v}" aria-pressed="${v === "alle"}">${t}</button>`).join("");
-e3.innerHTML = "<p>Alle Kräfte sind eingeblendet. Wählen Sie unter dem Bild ein Paar oder ein Bauteil aus.</p>";
+const PAARZUSATZ = "<p>Kraft und Gegenkraft sind <b>gleich groß</b> und <b>entgegengesetzt</b>. Sie greifen aber an <b>zwei verschiedenen Bauteilen</b> an. Deshalb können sie sich nicht gegenseitig aufheben.</p>";
 k3.addEventListener("click", ev => {
   const b = ev.target.closest("button"); if (!b) return;
   const v = b.dataset.f; fokus = /^\d$/.test(v) ? +v : v;
   k3.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
   e3.innerHTML = fokus === "alle" ? "<p>Alle Kräfte sind eingeblendet. Wählen Sie unter dem Bild ein Paar oder ein Bauteil aus.</p>"
-               : typeof fokus === "number" ? PAARTEXT[fokus] + PAARZUSATZ : TEILTEXT[fokus];
+               : typeof fokus === "number" ? B.paartext[fokus] + PAARZUSATZ : B.teiltext[fokus];
   zeichne3();
 });
-
-/* Abschlussfragen */
-const FRAGEN = [
-  { q: "Die Decke drückt auf die Rolle, die Rolle drückt auf die Decke (Paar ①). Wie groß sind die beiden Kräfte im Vergleich?",
-    a: [["Gleich groß", true, "Richtig. Kraft und Gegenkraft sind immer gleich groß und entgegengesetzt (Wechselwirkungsgesetz)."],
-        ["Die Kraft der Decke ist größer, sonst würde die Rolle nach oben ausweichen.", false, "Die Rolle bleibt in Ruhe, weil sich die beiden Kräfte <b>an der Rolle</b> aufheben (F<sub>N</sub> und F<sub>A</sub>). Kraft und Gegenkraft eines Paares sind immer gleich groß."],
-        ["Die Kraft der Rolle ist größer, weil die Feder dahintersteckt.", false, "Die Feder sorgt dafür, dass überhaupt gedrückt wird. Die beiden Kräfte des Paares sind trotzdem gleich groß."]] },
-  { q: "Welche Kräfte heben sich gegenseitig auf?",
-    a: [["Kraft und Gegenkraft eines Paares, z. B. die beiden Pfeile von ②", false, "Kraft und Gegenkraft greifen an verschiedenen Bauteilen an. Aufheben können sich nur Kräfte, die am <b>selben</b> Bauteil angreifen."],
-        ["Die Kräfte am Hebel", true, "Richtig. F<sub>A</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub> greifen alle am Hebel an. Weil der Hebel in Ruhe ist, halten sie sich das Gleichgewicht."],
-        ["Keine, im Gleichgewicht wirken keine Kräfte", false, "Gleichgewicht heißt nicht, dass keine Kräfte wirken. Es heißt, dass sich die Kräfte an einem Bauteil in ihrer Wirkung aufheben."]] },
-  { q: "Welche Kräfte wirken auf die Rolle?",
-    a: [["Nur die Kraft der Decke", false, "Dann würde die Rolle nach unten weggedrückt. Über die Achse hält der Hebel dagegen."],
-        ["Die Kraft der Decke nach unten und die Kraft des Hebels über die Achse nach oben", true, "Richtig. Zwei gleich große, entgegengesetzte Kräfte auf einer Wirklinie. Die Rolle leitet die Kraft der Decke an den Hebel weiter."],
-        ["Die Kraft der Decke nach unten und die Kraft der Feder", false, "Die Feder hängt am Hebel, nicht an der Rolle. Auf ein Bauteil wirken nur die Teile, die es berühren."]] },
-  { q: "Welche Kräfte wirken auf die Zugfeder?",
-    a: [["Nur die Kraft vom Hebel", false, "Am anderen Ende hält der Federanker. Ohne ihn würde die Feder einfach mitgezogen."],
-        ["An jedem Ende eine gleich große Kraft, beide nach außen gerichtet", true, "Richtig. Die Feder wird von beiden Seiten gezogen und dadurch gedehnt."],
-        ["An jedem Ende eine Kraft nach innen, zur Federmitte hin", false, "Kräfte nach innen würden die Feder zusammendrücken. Eine Zugfeder wird aber gedehnt."]] }
-];
-const fragenBox = document.getElementById("fragen");
-fragenBox.innerHTML = FRAGEN.map((f, i) => `<fieldset class="frage" style="margin:0 0 10px"><p class="q">${i + 1}. ${f.q}</p>` +
-  f.a.map((a, j) => `<label><input type="radio" name="f${i}" value="${j}"><span>${a[0]}</span></label>`).join("") +
-  `<div class="rm" aria-live="polite"></div></fieldset>`).join("");
-const richtig = new Set();
 fragenBox.addEventListener("change", ev => {
-  const i = +ev.target.name.slice(1), a = FRAGEN[i].a[+ev.target.value];
+  const i = +ev.target.name.slice(1), a = B.fragen[i].a[+ev.target.value];
   const r = fragenBox.querySelectorAll(".rm")[i];
   r.className = "rm " + (a[1] ? "fb-ok" : "fb-bad"); r.innerHTML = a[2];
   a[1] ? richtig.add(i) : richtig.delete(i);
-  const w = document.getElementById("w3");
-  w.hidden = richtig.size !== FRAGEN.length;
-  w.innerHTML = "Beispiel abgeschlossen. Kurz gesagt: Ins Bild eines Bauteils gehören nur die Kräfte, die <b>auf dieses Bauteil</b> wirken. Die Gegenkraft gehört immer zum Nachbarn.";
+  $("w3").hidden = richtig.size !== B.fragen.length;
+  $("w3").innerHTML = "Beispiel abgeschlossen. Kurz gesagt: Ins Bild eines Bauteils gehören nur die Kräfte, die <b>auf dieses Bauteil</b> wirken. Die Gegenkraft gehört immer zum Nachbarn." +
+                      (B.nr < BEISPIELE.length ? " Weiter mit Beispiel " + (B.nr + 1) + "." : "");
 });
 
-/* Startbild */
-zeichne1(); zeichne2();
-/* Selbstprüfung: Gleichgewicht am Hebel (Kräfte und Momente um P; F_A wirkt auf derselben Wirklinie wie F_N) */
-(() => {
-  const sumF = add(add(uF, FN), FL), mom = cross(sub(E, P), uF) + cross(sub(R, P), FN);
-  if (Math.abs(sumF[0]) + Math.abs(sumF[1]) + Math.abs(mom) > 1e-9) console.error("Gleichgewicht verletzt", sumF, mom);
-})();
+/* Start: Beispiel aus der Adresse (#beispiel-3) oder Beispiel 1 */
+const start = /#beispiel-(\d)/.exec(location.hash);
+zeige(start ? Math.min(Math.max(+start[1], 1), BEISPIELE.length) - 1 : 0, false);
 </script>
 </body>
 </html>
