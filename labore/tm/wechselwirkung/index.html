@@ -224,8 +224,8 @@ const uF = norm(sub(A, E));                                   // Richtung der Fe
 const kN = -cross(sub(E, P), uF) / cross(sub(K, P), [0, 1]);  // Betrag der Deckenkraft (nach unten)
 const FN = [0, kN];
 const FL = mul(add(uF, FN), -1);                              // Lagerkraft auf den Hebel
-const uL = norm(FL);
 const FIX = (v, n = 1) => v.toFixed(n);
+const SK = 55;                                                // Pfeillänge für F_F = 1
 
 /* ---------- Zeichenbausteine ---------- */
 const pt = p => `${FIX(p[0])},${FIX(p[1])}`;
@@ -319,8 +319,8 @@ const TEXT1 = {
           <p>Die Rolle stützt sich an der Decke ab und drückt den Hebel über ihre Achse nach <b>unten</b> (F<sub>A</sub>).
           Die Decke berührt den Hebel gar nicht. Ihre Kraft kommt nur über die Rolle beim Hebel an.</p>`,
   lager: `<p><b>Ohne Lagerbolzen</b> würden Feder und Rolle den Hebel nach <b>links unten</b> wegschieben.</p>
-          <p>Der Bolzen hält dagegen. Die Lagerkraft zeigt also nach <b>rechts oben</b>.
-          Ihre genaue Richtung kennt man vorher meist nicht. Beim Festlager zeichnet man deshalb zwei Komponenten F<sub>Lx</sub> und F<sub>Ly</sub>.</p>`,
+          <p>Der Bolzen hält dagegen, also nach <b>rechts</b> und nach <b>oben</b>.
+          Ein Festlager ist zweiwertig. Man zeichnet deshalb zwei Komponenten: F<sub>Lx</sub> in x-Richtung und F<sub>Ly</sub> in y-Richtung.</p>`,
   feder: `<p><b>Ohne Feder</b> fällt die Rolle nach <b>unten</b>. Der Schwerpunkt von Hebel und Rolle liegt links vom Lagerbolzen, das Eigengewicht dreht den Hebel gegen den Uhrzeigersinn.
           Die Decke kann die Rolle nicht festhalten, denn über eine Berührfläche wird nur Druck übertragen, kein Zug.</p>
           <p>Erst die Feder presst die Rolle gegen die Decke. Die Federkraft ist die <b>Ursache</b>, also die eingeprägte Kraft.
@@ -350,7 +350,8 @@ function zeichne1() {
   if (st1.phase === "fertig") {
     if (w === "decke") s += pfeil(K, [0, 1], 58, "spitze") + fname([K[0] + 10, K[1] - 22], "N");
     if (w === "rolle") s += pfeil(R, [0, 1], 58) + fname([R[0] + 10, R[1] + 52], "A");
-    if (w === "lager") s += pfeil(P, FL, 64) + fname(add(P, add(mul(uL, 64), [8, 8])), "L");
+    if (w === "lager") s += pfeil(P, [1, 0], FL[0] * SK) + fname(add(P, [FL[0] * SK - 14, 26]), "Lx") +
+                            pfeil(P, [0, -1], -FL[1] * SK) + fname(add(P, [10, FL[1] * SK / 2 + 6]), "Ly");
     if (w === "feder") s += pfeil(E, uF, 60) + fname(add(E, add(mul(uF, 60), [-28, 4])), "F");
   }
   s1.innerHTML = s;
@@ -423,18 +424,22 @@ const ZEILEN = [
     verbFalsch: "Die Rolle stützt sich an der Decke ab und drückt über ihre Achse auf den Hebel. Sie zieht nicht.",
     richtFalsch: { oben: "Ohne Rolle würde das Hebelende nach oben ausweichen (Schritt 1). Die Rolle hält dagegen." },
     ok: "Die Rolle drückt den Hebel über die Achse nach unten. Das ist die Gegenkraft zu „Der Hebel drückt die Rolle nach oben“. Die Achse taucht deshalb in beiden Bildern auf, jeweils mit umgekehrter Richtung." },
-  { id: "lager", teil: "den Hebel", teilGen: "des Hebels",
-    titel: "Lagerbolzen", nachbar: "den Lagerbolzen", punkt: P, name: "L", modus: "fuss",
+  { id: "lx", teil: "den Hebel", teilGen: "des Hebels",
+    titel: "Lagerbolzen – waagerecht (x-Richtung)", nachbar: "den Lagerbolzen", punkt: P, name: "Lx", modus: "fuss",
     subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]],
-    verb: [["drueckt", "drückt"], ["zieht", "zieht"]],
-    richt: [["ro", "nach rechts oben", uL], ["lu", "nach links unten", mul(uL, -1)], ["o", "nach oben", [0, -1]], ["r", "nach rechts", [1, 0]]],
-    soll: { verb: "drueckt", richt: "ro" }, gegen: "lu",
+    verb: [["drueckt", "drückt"], ["zieht", "zieht"]], richt: [["r", "nach rechts", [1, 0]], ["l", "nach links", [-1, 0]]],
+    soll: { verb: "drueckt", richt: "r" }, gegen: "l",
     verbFalsch: "Ein Bolzen kann nur gegen die Bohrungswand drücken. In welche Richtung, hängt von den übrigen Kräften ab.",
-    richtFalsch: {
-      lu: "In diese Richtung würde der Hebel ohne Bolzen wegrutschen (Schritt 1). Die Lagerkraft wirkt dagegen.",
-      o: "Teilweise richtig. Die Lagerkraft hat auch einen Anteil nach rechts, sonst bliebe der Anteil der Federkraft nach links unausgeglichen.",
-      r: "Teilweise richtig. Die Lagerkraft hat auch einen Anteil nach oben, denn Feder und Rolle ziehen bzw. drücken den Hebel beide nach unten." },
-    ok: "Der Lagerbolzen drückt den Hebel nach rechts oben. Da man die genaue Richtung vorher nicht kennt, zeichnet man beim Festlager zwei Komponenten: F<sub>Lx</sub> nach rechts und F<sub>Ly</sub> nach oben." },
+    richtFalsch: { l: "Die Feder zieht den Hebel auch nach links. Ohne Bolzen würde er nach links wegrutschen (Schritt 1). Der Bolzen hält dagegen." },
+    ok: "Der Lagerbolzen drückt den Hebel nach rechts (F<sub>Lx</sub>). Er gleicht den waagerechten Anteil der Federkraft aus." },
+  { id: "ly", teil: "den Hebel", teilGen: "des Hebels",
+    titel: "Lagerbolzen – senkrecht (y-Richtung)", nachbar: "den Lagerbolzen", punkt: P, name: "Ly", modus: "fuss",
+    subj: [["n", "Der Lagerbolzen"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "den Lagerbolzen"]],
+    verb: [["drueckt", "drückt"], ["zieht", "zieht"]], richt: [["o", "nach oben", [0, -1]], ["u", "nach unten", [0, 1]]],
+    soll: { verb: "drueckt", richt: "o" }, gegen: "u",
+    verbFalsch: "Ein Bolzen kann nur gegen die Bohrungswand drücken. In welche Richtung, hängt von den übrigen Kräften ab.",
+    richtFalsch: { u: "Feder und Rolle ziehen bzw. drücken den Hebel nach unten. Der Bolzen hält dagegen." },
+    ok: "Der Lagerbolzen drückt den Hebel nach oben (F<sub>Ly</sub>). Ein Festlager ist zweiwertig, deshalb gibt es hier zwei Komponenten. Kennt man den Richtungssinn nicht, nimmt man ihn an. Ein negatives Ergebnis heißt dann: Die Kraft wirkt umgekehrt." },
   { id: "feder", teil: "den Hebel", teilGen: "des Hebels",
     titel: "Federanschluss", nachbar: "die Feder", punkt: E, name: "F",
     subj: [["n", "Die Feder"], ["h", "Der Hebel"]], obj: [["h", "den Hebel"], ["n", "die Feder"]],
@@ -505,7 +510,7 @@ document.getElementById("pruef2").addEventListener("click", () => {
   });
   if (alleOk) {
     const w = document.getElementById("w2");
-    w.innerHTML = "Rolle und Hebel sind freigemacht. An der Rolle: F<sub>N</sub> von der Decke und F<sub>A</sub> vom Hebel. Am Hebel: F<sub>A</sub> von der Rolle, F<sub>L</sub> vom Lagerbolzen und F<sub>F</sub> von der Feder. Weiter mit Schritt 3.";
+    w.innerHTML = "Rolle und Hebel sind freigemacht. An der Rolle: F<sub>N</sub> von der Decke und F<sub>A</sub> vom Hebel. Am Hebel: F<sub>A</sub> von der Rolle, F<sub>Lx</sub> und F<sub>Ly</sub> vom Lagerbolzen und F<sub>F</sub> von der Feder. Weiter mit Schritt 3.";
     w.hidden = false;
     document.getElementById("g3").hidden = true;
     document.getElementById("b3").hidden = false;
@@ -524,15 +529,16 @@ const O = {
   feder: add(add(mul(uF, 55), mul(nF, -40)), [0, 70]),
 };
 O.anker = add(add(O.feder, mul(uF, 105)), mul(nF, -32));
-const SK = 55;                                                // Pfeillänge für F_F = 1
 const KR = [
   // Paar, Bauteil, Angriffspunkt, Richtung, Betrag, Modus, Beschriftung
   { paar: 1, teil: "rolle",   p: add(K, O.rolle),  d: [0, 1],      b: kN,      m: "spitze", name: "N" },
   { paar: 1, teil: "gestell", p: add(K, O.oben),   d: [0, -1],     b: kN,      m: "spitze" },
   { paar: 2, teil: "rolle",   p: add(R, O.rolle),  d: [0, -1],     b: kN,      m: "spitze", name: "A", seite: -1 },
   { paar: 2, teil: "hebel",   p: add(R, O.hebel),  d: [0, 1],      b: kN,      m: "fuss",   name: "A" },
-  { paar: 3, teil: "hebel",   p: add(P, O.hebel),  d: uL,          b: len(FL), m: "fuss",   name: "L" },
-  { paar: 3, teil: "gestell", p: add(P, O.oben),   d: mul(uL, -1), b: len(FL), m: "fuss" },
+  { paar: 3, teil: "hebel",   p: add(P, O.hebel),  d: [1, 0],      b: FL[0],   m: "fuss",   name: "Lx", lp: [FL[0] * SK + 6, 6] },
+  { paar: 3, teil: "hebel",   p: add(P, O.hebel),  d: [0, -1],     b: -FL[1],  m: "fuss",   name: "Ly", lp: [-36, FL[1] * SK + 10] },
+  { paar: 3, teil: "gestell", p: add(P, O.oben),   d: [-1, 0],     b: FL[0],   m: "fuss" },
+  { paar: 3, teil: "gestell", p: add(P, O.oben),   d: [0, 1],      b: -FL[1],  m: "fuss", seite: -1 },
   { paar: 4, teil: "hebel",   p: add(E, O.hebel),  d: uF,          b: 1,       m: "fuss",   name: "F" },
   { paar: 4, teil: "feder",   p: add(E, O.feder),  d: mul(uF, -1), b: 1,       m: "fuss" },
   { paar: 5, teil: "feder",   p: add(A, O.feder),  d: uF,          b: 1,       m: "fuss" },
@@ -541,14 +547,14 @@ const KR = [
 const PAARTEXT = {
   1: "<p><b>Paar ①:</b> Die Decke drückt die Rolle nach unten. Die Rolle drückt die Decke nach oben.</p>",
   2: "<p><b>Paar ②:</b> Der Hebel drückt die Rolle über die Achse nach oben. Die Rolle drückt den Hebel über die Achse nach unten.</p>",
-  3: "<p><b>Paar ③:</b> Der Lagerbolzen drückt den Hebel nach rechts oben. Der Hebel drückt den Lagerbolzen nach links unten.</p>",
+  3: "<p><b>Paar ③:</b> Der Lagerbolzen drückt den Hebel nach rechts und nach oben (F<sub>Lx</sub>, F<sub>Ly</sub>). Der Hebel drückt den Lagerbolzen nach links und nach unten. Jede Komponente hat ihre eigene Gegenkomponente.</p>",
   4: "<p><b>Paar ④:</b> Die Feder zieht den Hebel zu sich hin. Der Hebel zieht die Feder zu sich hin.</p>",
   5: "<p><b>Paar ⑤:</b> Der Federanker zieht die Feder nach links unten. Die Feder zieht den Anker nach rechts oben.</p>"
 };
 const PAARZUSATZ = "<p>Kraft und Gegenkraft sind <b>gleich groß</b> und <b>entgegengesetzt</b>. Sie greifen aber an <b>zwei verschiedenen Bauteilen</b> an. Deshalb können sie sich nicht gegenseitig aufheben.</p>";
 const TEILTEXT = {
   rolle: "<p><b>Kräfte an der Rolle:</b> F<sub>N</sub> von der Decke und F<sub>A</sub> vom Hebel. An der Rolle greifen nur diese zwei Kräfte an. Sie sind deshalb gleich groß, entgegengesetzt und liegen auf einer Wirklinie durch den Rollenmittelpunkt.</p><p>Die Rolle gibt die Kraft der Decke also unverändert an den Hebel weiter.</p>",
-  hebel: "<p><b>Kräfte am Hebel:</b> F<sub>A</sub>, F<sub>L</sub> und F<sub>F</sub> greifen am <b>selben</b> Bauteil an und halten sich das Gleichgewicht. Genau dieses Bild entsteht beim Freimachen des Hebels.</p><p>F<sub>L</sub> ist hier als eine schräge Kraft gezeichnet, damit das Paar ③ gut zu sehen ist. Beim Rechnen zerlegt man sie in F<sub>Lx</sub> und F<sub>Ly</sub>.</p>",
+  hebel: "<p><b>Kräfte am Hebel:</b> F<sub>A</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub> greifen am <b>selben</b> Bauteil an und halten sich das Gleichgewicht. Genau dieses Bild entsteht beim Freimachen des Hebels.</p>",
   feder: "<p><b>Kräfte an der Feder:</b> An beiden Enden wird die Feder gleich stark nach außen gezogen. Wie ein Seil oder ein Pendelstab überträgt sie die Kraft nur entlang ihrer Achse.</p>",
   gestell: "<p><b>Kräfte am Gestell:</b> Decke, Lagerbock und Federanker sind fest mit dem Fundament verbunden und bilden zusammen das Gestell. Auf das Gestell wirken die Gegenkräfte ①, ③ und ⑤. Die Kräfte vom Fundament sind hier nicht gezeichnet.</p>"
 };
@@ -572,7 +578,8 @@ function zeichne3() {
     const mitte = mul(add(a, b), .5), n = mul([-u[1], u[0]], k.seite || 1);
     let g = pfeil(k.p, k.d, L, k.m);
     g += nummer(add(mitte, mul(n, 16)), k.paar);
-    if (k.name) g += fname(add(mitte, add(mul(n, -18), [n[0] > 0 ? -22 : 4, 6])), k.name);
+    if (k.name && k.lp) g += fname(add(k.p, k.lp), k.name);
+    else if (k.name) g += fname(add(mitte, add(mul(n, -18), [n[0] > 0 ? -22 : 4, 6])), k.name);
     s += `<g class="${an ? "" : "dim"}">${g}</g>`;
   });
   s3.innerHTML = s;
@@ -599,7 +606,7 @@ const FRAGEN = [
         ["Die Kraft der Rolle ist größer, weil die Feder dahintersteckt.", false, "Die Feder sorgt dafür, dass überhaupt gedrückt wird. Die beiden Kräfte des Paares sind trotzdem gleich groß."]] },
   { q: "Welche Kräfte heben sich gegenseitig auf?",
     a: [["Kraft und Gegenkraft eines Paares, z. B. die beiden Pfeile von ②", false, "Kraft und Gegenkraft greifen an verschiedenen Bauteilen an. Aufheben können sich nur Kräfte, die am <b>selben</b> Bauteil angreifen."],
-        ["Die drei Kräfte am Hebel", true, "Richtig. F<sub>A</sub>, F<sub>L</sub> und F<sub>F</sub> greifen alle am Hebel an. Weil der Hebel in Ruhe ist, halten sie sich das Gleichgewicht."],
+        ["Die Kräfte am Hebel", true, "Richtig. F<sub>A</sub>, F<sub>Lx</sub>, F<sub>Ly</sub> und F<sub>F</sub> greifen alle am Hebel an. Weil der Hebel in Ruhe ist, halten sie sich das Gleichgewicht."],
         ["Keine, im Gleichgewicht wirken keine Kräfte", false, "Gleichgewicht heißt nicht, dass keine Kräfte wirken. Es heißt, dass sich die Kräfte an einem Bauteil in ihrer Wirkung aufheben."]] },
   { q: "Welche Kräfte wirken auf die Rolle?",
     a: [["Nur die Kraft der Decke", false, "Dann würde die Rolle nach unten weggedrückt. Über die Achse hält der Hebel dagegen."],
