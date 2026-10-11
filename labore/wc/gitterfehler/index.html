@@ -1099,13 +1099,13 @@ cFlecken();cUI();
 const FRAGEN={
  punkt:[
   {q:"Wählen Sie „Einlagerungsatom“. Warum werden die Nachbaratome auseinandergedrückt, obwohl ein Kohlenstoffatom viel kleiner ist als ein Eisenatom?",
-   o:["Die Lücken zwischen den Eisenatomen sind noch kleiner als das Kohlenstoffatom.","Das Kohlenstoffatom stößt die Eisenatome elektrisch ab.","Das Kohlenstoffatom dehnt sich im Gitter aus."],r:0,
+   o:["Die Lücken im Eisengitter sind noch kleiner als das Kohlenstoffatom.","Das Kohlenstoffatom ist geladen und stößt die Eisenatome elektrisch ab.","Das Kohlenstoffatom dehnt sich im Gitter durch die Wärme deutlich aus."],r:0,
    w:"Ein Kohlenstoffatom hat einen Radius von rund 0,07 nm, ein Eisenatom von rund 0,12 nm. Die Lücken im Eisengitter sind aber nur etwa 0,02 bis 0,05 nm groß. Jedes Kohlenstoffatom verzerrt deshalb das Gitter deutlich. Darum kann Eisen nur wenig Kohlenstoff lösen, und darum wirkt schon wenig Kohlenstoff stark verfestigend."},
   {q:"Wählen Sie „Leerstelle“ und lösen Sie mehrere Platzwechsel aus. Was wandert dabei durch das Gitter?",
    o:["Die Leerstelle, weil jeweils ein Nachbaratom in sie hineinspringt.","Ein einzelnes Atom, das ununterbrochen durch das ganze Gitter läuft.","Nichts, eine Leerstelle bleibt immer am selben Platz."],r:0,
    w:"Jeder Sprung eines Atoms verschiebt die Leerstelle um einen Platz in die Gegenrichtung. Über solche Platzwechsel diffundieren Atome im festen Metall. Je heißer das Metall, desto mehr Leerstellen gibt es und desto häufiger springen die Atome. Darauf beruhen viele Wärmebehandlungen."},
   {q:"Chrom und Nickel sitzen im Stahl auf regulären Gitterplätzen, Kohlenstoff in den Lücken. Woran liegt dieser Unterschied?",
-   o:["An der Atomgröße: Chrom und Nickel sind fast so groß wie Eisen, Kohlenstoff ist viel kleiner.","An der Menge: Was in kleinen Mengen zugegeben wird, lagert sich in die Lücken ein.","Am Schmelzpunkt: Elemente mit niedrigem Schmelzpunkt lagern sich ein."],r:0,
+   o:["An der Größe: Cr und Ni sind fast so groß wie Fe, C ist viel kleiner.","An der Menge: Was in kleinen Mengen zugegeben wird, lagert sich in die Lücken ein.","Am Schmelzpunkt: Elemente mit niedrigerem Schmelzpunkt lagern sich in Lücken ein."],r:0,
    w:"Ein Fremdatom kann ein Wirtsatom nur ersetzen, wenn es ähnlich groß ist. Faustregel: Der Radius darf sich um höchstens etwa 15 % unterscheiden, sonst löst sich nur wenig davon. In die Lücken passen nur sehr kleine Atome wie Wasserstoff, Kohlenstoff und Stickstoff."}
  ],
  vers:[
@@ -1113,21 +1113,21 @@ const FRAGEN={
    o:["Um genau einen Atomabstand.","Um so viele Atomabstände, wie die Versetzung Schritte gemacht hat.","Gar nicht, die Versetzung ist nur hindurchgelaufen."],r:0,
    w:"Jede Versetzung, die austritt, hinterlässt eine Gleitstufe von genau einem Atomabstand (Fachbegriff für diese Verschiebung: Burgersvektor). Für eine bleibende Verformung, die man mit bloßem Auge sieht, müssen deshalb sehr viele Versetzungen durch den Kristall laufen. Beim Verformen entstehen ständig neue."},
   {q:"Vergleichen Sie beide Modi. Warum braucht die wandernde Versetzung so viel weniger Kraft?",
-   o:["Es werden immer nur die Bindungen an der Versetzung umgeordnet, nicht alle in der Gleitebene gleichzeitig.","An der Versetzung ist der Kristall schon gerissen, dort hält nichts mehr.","Die Versetzung schiebt die Atome vor sich her wie ein Schneepflug."],r:0,
+   o:["Es werden nur die Bindungen an der Versetzung umgeordnet, nicht alle zugleich.","An der Versetzung ist der Kristall bereits gerissen, dort hält nichts mehr zusammen.","Die Versetzung schiebt die Atome vor sich her wie ein Schneepflug den Schnee."],r:0,
    w:"Wie bei der Falte im Teppich: Man bewegt immer nur einen kleinen Bereich. Eine Versetzung ist kein Riss. Auch an der Versetzung halten alle Atome zusammen, sie sind nur etwas aus ihrer Lage verschoben."},
   {q:"Schalten Sie „Atom verfolgen“ ein und lassen Sie eine Versetzung durchlaufen. Wie bewegt sich das markierte Atom?",
-   o:["Es rückt insgesamt um einen Atomabstand weiter, und nur, während die Versetzung vorbeiläuft.","Es wandert mit der Versetzung durch den ganzen Kristall.","Es bleibt völlig unbewegt."],r:0,
+   o:["Es rückt einmal um einen Atomabstand weiter, während die Versetzung vorbeiläuft.","Es wandert zusammen mit der Versetzung durch den ganzen Kristall bis an den Rand.","Es bleibt völlig unbewegt, nur die Nachbaratome verschieben sich um es herum."],r:0,
    w:"Durch den Kristall wandert die Störung, nicht das Atom. Das ist wie bei einer La-Ola-Welle im Stadion: Die Welle läuft einmal herum, die Menschen bleiben auf ihren Plätzen."}
  ],
  korn:[
   {q:"Lassen Sie die Schmelze einmal mit wenigen und einmal mit vielen Keimen erstarren. Was ändert sich?",
-   o:["Mit vielen Keimen entstehen viele kleine Körner und damit mehr Korngrenzen.","Mit vielen Keimen werden die Körner größer.","Die Zahl der Keime hat keinen Einfluss auf das Gefüge."],r:0,
+   o:["Mit vielen Keimen entstehen viele kleine Körner und mehr Korngrenzen.","Mit vielen Keimen wachsen die Körner zusammen und werden insgesamt größer.","Die Zahl der Keime beeinflusst nur die Erstarrungszeit, nicht das Gefüge."],r:0,
    w:"Jeder Keim wird zu einem Korn. Je mehr Keime, desto kleiner bleibt jedes Korn, weil es früher an seine Nachbarn stößt. Die Korngröße bestimmt Festigkeit und Zähigkeit mit (Reiter Verfestigung)."},
   {q:"Vergrößern Sie bei der Kleinwinkelkorngrenze den Abstand der Versetzungen. Was passiert mit dem Kippwinkel?",
    o:["Er wird kleiner.","Er wird größer.","Er bleibt gleich."],r:0,
    w:"Jede Versetzung kippt das Gitter um einen kleinen Betrag. Liegen sie weiter auseinander, kommen auf dieselbe Länge weniger Versetzungen, und der Winkel wird kleiner."},
   {q:"Welche Aussage über Korngrenzen stimmt?",
-   o:["Die Körner sind über die Korngrenze hinweg fest verbunden. Es wechselt nur die Ausrichtung des Gitters.","Zwischen zwei Körnern liegt ein feiner Spalt.","Alle Korngrenzen bestehen aus übereinander aufgereihten Stufenversetzungen."],r:0,
+   o:["Die Körner sind fest verbunden, nur die Ausrichtung des Gitters wechselt.","Zwischen zwei Körnern liegt ein feiner Spalt, den man im Mikroskop sieht.","Alle Korngrenzen bestehen aus übereinander aufgereihten Stufenversetzungen."],r:0,
    w:"Eine Korngrenze ist eine dünne, gestörte Übergangszone, kein Spalt. Nur Kleinwinkelkorngrenzen lassen sich als Reihe von Versetzungen beschreiben. Großwinkelkorngrenzen entstehen z. B. beim Erstarren, wenn Körner mit verschieden ausgerichteten Gittern aufeinandertreffen."},
   {q:"Bei welcher Phasengrenze laufen die Gitterebenen ohne Unterbrechung durch die Grenze?",
    o:["Bei der kohärenten.","Bei der teilkohärenten.","Bei der inkohärenten."],r:0,
@@ -1135,20 +1135,20 @@ const FRAGEN={
  ],
  verf:[
   {q:"Versetzungen sind die Träger der plastischen Verformung. Warum wird ein Metall trotzdem fester, wenn beim Kaltumformen immer mehr Versetzungen entstehen?",
-   o:["Die vielen Versetzungen behindern sich gegenseitig und verhaken sich.","Die Atome werden beim Umformen dichter zusammengepresst.","Die Versetzungen werden zu Rissen und schwächen das Gitter."],r:0,
+   o:["Die vielen Versetzungen behindern sich gegenseitig und verhaken sich.","Die Atome werden beim Umformen dichter zusammengepresst und halten fester.","Die Versetzungen lösen sich auf, und das Gitter wird wieder fehlerfrei."],r:0,
    w:"Wenige Versetzungen laufen leicht. Viele Versetzungen auf sich kreuzenden Gleitebenen stauen sich und blockieren sich. Um sie weiterzubewegen, braucht es mehr Spannung. Die Dichte des Metalls ändert sich dabei praktisch nicht."},
   {q:"Eine Büroklammer wird beim Hin- und Herbiegen an der Biegestelle immer schwerer zu biegen und bricht schließlich. Was passiert im Metall?",
-   o:["Die Versetzungsdichte steigt, bis kaum noch Versetzungen laufen können. Dann bilden sich Risse.","Durch die Reibung schmilzt das Metall an der Biegestelle an.","An der Biegestelle gehen Atome verloren, bis sie zu dünn ist."],r:0,
+   o:["Versetzungen stauen sich, bis keine mehr laufen können; dann bilden sich Risse.","Durch die Reibung beim Biegen schmilzt das Metall an der Biegestelle langsam an.","An der Biegestelle gehen bei jedem Biegen Atome verloren, bis sie zu dünn ist."],r:0,
    w:"Jedes Biegen verfestigt die Biegestelle weiter und verbraucht Verformungsvermögen. Irgendwann entstehen feine Risse, die bei jedem Biegen wachsen. Die Wärme, die man spürt, kommt aus der Umformarbeit, reicht aber bei Weitem nicht zum Schmelzen."},
   {q:"Welcher Mechanismus erhöht die Festigkeit und erhält zugleich die Zähigkeit?",
    o:["Feinkornhärtung","Kaltverfestigung","Mischkristallverfestigung"],r:0,
    w:"Feines Korn erhöht die Streckgrenze und verbessert zugleich die Zähigkeit, z. B. bleibt Stahl auch bei tiefen Temperaturen zäh. Deshalb setzt man im Stahlbau Feinkornbaustähle ein. Bei der Kaltverfestigung dagegen sinkt die Verformbarkeit deutlich."},
   {q:"Ein Kollege sagt: „Gitterfehler sind Fertigungsfehler. Ein guter Werkstoff hat keine.“ Was stimmt?",
-   o:["Das stimmt nicht: Ohne Versetzungen wären Metalle kaum verformbar, und Fremdatome, Versetzungen und Korngrenzen machen sie gezielt fester.","Das stimmt, denn jeder Gitterfehler senkt die Festigkeit.","Das stimmt, denn bei guter Fertigung lassen sich Gitterfehler ganz vermeiden."],r:0,
+   o:["Das stimmt nicht: Versetzungen machen Metalle verformbar, andere Gitterfehler gezielt fester.","Das stimmt, denn jeder Gitterfehler senkt die Festigkeit des Werkstoffs deutlich.","Das stimmt, denn bei sorgfältiger Fertigung lassen sich alle Gitterfehler vermeiden."],r:0,
    w:"Gitterfehler sind der Normalfall und meist gewollt. Legieren, Umformen und Wärmebehandeln heißt: gezielt mit Gitterfehlern arbeiten. Manche Fehler schaden aber tatsächlich, z. B. Poren und Einschlüsse oder Wasserstoff im Stahl (Wasserstoffversprödung)."},
   {q:"Blei lässt sich bei Raumtemperatur immer wieder biegen, ohne nennenswert fester zu werden. Warum?",
-   o:["Für Blei ist Raumtemperatur schon oberhalb der Rekristallisationstemperatur. Es bildet sich laufend ein neues, weiches Gefüge.","Blei hat keine Versetzungen.","Blei ist kein Metall."],r:0,
-   w:"„Kalt“ heißt beim Umformen: unterhalb der Rekristallisationstemperatur. Faustregel: etwa 0,4 · Schmelztemperatur in Kelvin. Für Blei liegt sie unter 0 °C, für Stahl bei etwa 450 °C."}
+   o:["Raumtemperatur liegt für Blei schon über der Rekristallisationstemperatur.","Blei hat als weiches Metall von Natur aus keine Versetzungen im Gitter.","Blei ist kein echtes Metall, sondern verhält sich eher wie ein Kunststoff."],r:0,
+   w:"„Kalt“ heißt beim Umformen: unterhalb der Rekristallisationstemperatur. Faustregel: etwa 0,4 · Schmelztemperatur in Kelvin. Für Blei liegt sie unter 0 °C, für Stahl bei etwa 450 °C. Im Blei bildet sich deshalb beim Biegen laufend ein neues, weiches Gefüge."}
  ]
 };
 function renderFragen(key,id){

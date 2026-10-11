@@ -10,9 +10,9 @@
   /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
      Elektronen blau wie im Atombaukasten. Wärme läuft von Grau über Bernstein nach Gelb,
      Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
-  :root{--electron:#1F6FB2;--rumpf:#7D8B97;--rumpf2:#4B5762;--rumpf-ink:#ffffff;--heiss1:#E39B2D;--heiss2:#F5D04A}
-  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--electron:#5BA7E8;--rumpf:#5E6B77;--rumpf2:#46525D;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}}
-  :root[data-theme="dark"]{--electron:#5BA7E8;--rumpf:#5E6B77;--rumpf2:#46525D;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}
+  :root{--electron:#1F6FB2;--electron2:#B8650A;--rumpf:#7D8B97;--rumpf2:#4B5762;--rumpf-ink:#ffffff;--heiss1:#E39B2D;--heiss2:#F5D04A}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--electron:#5BA7E8;--electron2:#F0B04A;--rumpf:#5E6B77;--rumpf2:#46525D;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}}
+  :root[data-theme="dark"]{--electron:#5BA7E8;--electron2:#F0B04A;--rumpf:#5E6B77;--rumpf2:#46525D;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}
 
   .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
   .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 16px}
@@ -203,7 +203,7 @@ const fmt=(x,d=1)=>x.toFixed(d).replace(".",",");
 const COL={};
 function readColors(){
   const cs=getComputedStyle(document.body);
-  for(const k of ["ink","muted","card","line","electron","soft","rumpf","rumpf2","rumpf-ink","heiss1","heiss2"])COL[k]=cs.getPropertyValue("--"+k).trim();
+  for(const k of ["ink","muted","card","line","electron","electron2","soft","rumpf","rumpf2","rumpf-ink","heiss1","heiss2"])COL[k]=cs.getPropertyValue("--"+k).trim();
 }
 function rgb(hex){const h=hex.replace("#","");return [0,2,4].map(i=>parseInt(h.substr(i,2),16))}
 function mix(a,b,t){const A=rgb(a),B=rgb(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")})`}
@@ -258,6 +258,8 @@ function tBindung(a,b){
   if(A.k==="M"&&B.k==="M")art="metall";
   else if(A.k==="H"||B.k==="H")art=(A.k==="M"||B.k==="M")?"grenz":"atom";
   else if(A.k==="N"&&B.k==="N")art="atom";
+  // Metall + C, N oder H (Carbide, Nitride, Hydride, z. B. TiN, Fe₃C): Mischformen, kein einfacher Fall
+  else if(["C","N","H"].includes(A.k==="N"?a:b))art="grenz";
   else art=d<1.0?"grenz":"ion";      // Metall + Nichtmetall
   return {art,d,stark,hi,lo};
 }
@@ -320,7 +322,11 @@ function tDraw(){
     // Elektronenpaar am Seil
     const px=ax+T.p*(bx-ax)+Math.sin(T.t*2.2)*2.5;
     circle(ctx,px,cy,19,alpha(COL.electron,.18));
-    circle(ctx,px,cy-7,6,COL.electron,COL.card,1.5);circle(ctx,px,cy+7,6,COL.electron,COL.card,1.5);
+    circle(ctx,px,cy-7,6,COL.electron,COL.card,1.5);circle(ctx,px,cy+7,6,COL.electron2,COL.card,1.5);
+    // Legende: Herkunft der beiden Elektronen
+    const la=T.a===T.b?`${T.a} links`:T.a,lb=T.a===T.b?`${T.b} rechts`:T.b;
+    circle(ctx,W2/2-118,H-11,6,COL.electron);text(ctx,"von "+la,W2/2-106,H-10,COL.muted,17,"left");
+    circle(ctx,W2/2+22,H-11,6,COL.electron2);text(ctx,"von "+lb,W2/2+34,H-10,COL.muted,17,"left");
     // Ladungen bei Ionenbindung (nur Vorzeichen, ohne Ladungszahl)
     if(E&&E.art==="ion"&&T.i>.05){
       ctx.globalAlpha=(1-T.m)*Math.min(1,T.i);
@@ -376,7 +382,9 @@ function tUpdate(){
     kurz="Atombindung";
   }else{
     kopf("Ergebnis: Grenzfall");
-    para(`${dEN} (${en}). ${grenzfall}`+(E.stark===null?"":` Das Elektronenpaar liegt etwas näher bei ${st.n}, ohne ganz zu wechseln.`));
+    const nm=ELEM[a].k==="N"?a:ELEM[b].k==="N"?b:null,mm=ELEM[a].k==="M"||ELEM[b].k==="M";
+    const cnh=mm&&["C","N","H"].includes(nm)?" Verbindungen von Metallen mit Kohlenstoff, Stickstoff oder Wasserstoff (Carbide, Nitride, Hydride) haben gemischte Bindungen. Beispiele aus der Technik: Zementit (Fe₃C) im Stahl und Titannitrid (TiN) als harte Beschichtung auf Werkzeugen.":"";
+    para(`${dEN} (${en}). ${grenzfall}`+(E.stark===null?"":` Das Elektronenpaar liegt etwas näher bei ${st.n}, ohne ganz zu wechseln.`)+cnh);
     kurz="Grenzfall";
   }
   $("t-weiter-row").hidden=E.art!=="metall";
@@ -619,21 +627,21 @@ vUpdateUI();
 const FRAGEN={
  tau:[
   {q:"Wählen Sie Natrium und Chlor. Warum wechselt das Elektron ganz zum Chlor?",
-   o:["Chlor zieht viel stärker (3,16 gegen 0,93), Natrium hält sein Außenelektron nur locker.","Chlor hat mehr Schalen als Natrium.","Natrium ist schwerer und schiebt das Elektron weg."],r:0,
+   o:["Chlor zieht viel stärker, Natrium hält sein Elektron nur locker.","Chlor hat eine Schale mehr als Natrium und deshalb mehr Platz für Elektronen.","Natrium ist schwerer als Chlor und stößt sein Elektron deshalb ab."],r:0,
    w:"Natrium und Chlor haben gleich viele Schalen; Chlor ist kleiner und hat die höhere Kernladung. Natrium wird zum positiven, Chlor zum negativen Ion."},
   {q:"Vergleichen Sie Chlor + Chlor mit Eisen + Eisen. Beide Male gibt es keinen Gewinner. Was ist der Unterschied?",
-   o:["Bei Chlor ziehen beide stark und halten das Elektronenpaar gemeinsam fest, bei Eisen ziehen beide schwach und keiner hält die Elektronen fest.","Es gibt keinen Unterschied, beides ist dieselbe Bindung.","Eisen hat mehr Elektronen und deshalb gewinnt das Eisen."],r:0,
+   o:["Chlor zieht auf beiden Seiten stark, Eisen auf beiden Seiten schwach.","Kein Unterschied: In beiden Fällen teilen sich die Atome ein festes Elektronenpaar.","Eisen hat mehr Elektronen als Chlor, deshalb entstehen beim Eisen mehr Elektronenpaare."],r:0,
    w:"Den Unterschied macht die Höhe der EN. Zwei starke Zieher teilen sich ein Elektronenpaar (Atombindung), zwei schwache lassen die Elektronen frei (Metallbindung, Elektronengas)."},
   {q:"Warum bildet sich zwischen Eisen und Kupfer ebenfalls eine Metallbindung?",
-   o:["Beide sind Metalle mit kleiner EN und geben ihre Außenelektronen an ein gemeinsames Elektronengas ab.","Kupfer zieht stärker und nimmt dem Eisen die Elektronen ab.","Eisen und Kupfer teilen sich je ein festes Elektronenpaar."],r:0,
+   o:["Beide haben eine kleine EN und geben Elektronen ans Elektronengas ab.","Kupfer zieht etwas stärker und nimmt dem Eisen dauerhaft ein Elektron ab.","Eisen und Kupfer teilen sich zwischen je zwei Atomen ein festes Elektronenpaar."],r:0,
    w:"Der EN-Unterschied ist sehr klein (1,83 gegen 1,90). Genau so halten Legierungen zusammen."}
  ],
  strom:[
   {q:"In welche Richtung bewegen sich die Elektronen im Mittel, wenn Spannung anliegt?",
-   o:["Zum Pluspol, zusätzlich zu ihrer ungeordneten Bewegung","Zum Minuspol","Gar nicht, sie bewegen sich weiter nur ungeordnet"],r:0,
+   o:["Zum Pluspol, zusätzlich zu ihrer ungeordneten Bewegung","Zum Minuspol, weil gleiche Ladungen sich dort sammeln","Gar nicht, sie bewegen sich weiter nur ungeordnet"],r:0,
    w:"Elektronen sind negativ geladen und werden vom Pluspol angezogen. Die ungeordnete Bewegung bleibt, die Wanderung kommt hinzu. Die technische Stromrichtung (von + nach −) wurde festgelegt, bevor man die Elektronen kannte. Sie ist deshalb umgekehrt."},
   {q:"Stellen Sie die Temperatur höher. Was passiert mit dem Strom, und warum?",
-   o:["Er wird kleiner, weil die stärker schwingenden Atomrümpfe die Elektronen öfter ablenken.","Er wird größer, weil sich die Elektronen schneller bewegen.","Er bleibt gleich, weil die Zahl der freien Elektronen gleich bleibt."],r:0,
+   o:["Er sinkt, weil stärker schwingende Rümpfe die Elektronen öfter ablenken.","Er wird größer, weil sich die Elektronen bei höherer Temperatur schneller bewegen.","Er bleibt gleich, weil sich die Zahl der freien Elektronen im Metall nicht ändert."],r:0,
    w:"Der elektrische Widerstand von Metallen steigt mit der Temperatur. Deshalb hat zum Beispiel der Draht einer Glühlampe kalt einen viel kleineren Widerstand als im Betrieb."},
   {q:"Aluminium hat 3 Außenelektronen. Welche Ladung trägt ein Atomrumpf im Aluminium?",
    o:["3+","3−","Keine, der Rumpf ist neutral"],r:0,
@@ -641,18 +649,18 @@ const FRAGEN={
  ],
  waerme:[
   {q:"Messen Sie beide Werkstoffe. Warum erreicht die Wärme den Messpunkt im Metall schneller?",
-   o:["Die freien Elektronen nehmen an der heißen Seite Energie auf und tragen sie schnell weiter.","Die Atomrümpfe wandern von der heißen zur kalten Seite.","Das Metall ist von Anfang an wärmer."],r:0,
+   o:["Freie Elektronen nehmen an der heißen Seite Energie auf und tragen sie weiter.","Die Atomrümpfe lösen sich an der heißen Seite und wandern zur kalten Seite.","Das Metall war schon vor dem Versuch wärmer und braucht deshalb weniger Energie."],r:0,
    w:"Die Rümpfe bleiben an ihrem Platz und schwingen nur. Den größten Teil der Wärme transportieren im Metall die beweglichen Elektronen. Deshalb sind gute elektrische Leiter wie Kupfer, Silber und Aluminium auch gute Wärmeleiter."},
   {q:"Ein Stahlgeländer und ein Holzgeländer stehen seit Stunden im gleichen Raum. Warum fühlt sich der Stahl kälter an?",
-   o:["Der Stahl leitet die Wärme schneller von der Hand weg.","Der Stahl ist tatsächlich kälter als das Holz.","Der Stahl gibt Kälte an die Hand ab."],r:0,
+   o:["Der Stahl leitet die Wärme schneller von der Hand weg.","Der Stahl ist tatsächlich kälter, weil Metall Wärme schlechter speichert.","Der Stahl gibt über seine Oberfläche Kälte an die Hand ab."],r:0,
    w:"Beide haben die gleiche Temperatur. Die Hand spürt aber, wie schnell sie Wärme verliert, und das geht beim Metall dank des Elektronengases viel schneller. „Kälte“ als Stoff, der abgegeben wird, gibt es nicht."}
  ],
  verf:[
   {q:"Verschieben Sie um genau einen Atomabstand. Was hat sich im Inneren des Gitters geändert?",
-   o:["Nichts: Jeder Rumpf sitzt wieder in einer Mulde, der Bindungszustand ist derselbe wie vorher.","Die Rümpfe liegen jetzt genau übereinander.","Zwischen den beiden Hälften ist ein Spalt entstanden."],r:0,
+   o:["Nichts: Jeder Rumpf sitzt wieder in einer Mulde, wie vorher.","Die Rümpfe liegen jetzt genau übereinander statt versetzt.","Zwischen den beiden Hälften ist ein feiner Spalt entstanden."],r:0,
    w:"Nur außen ist eine Stufe entstanden, die Gleitstufe. Das Metall ist bleibend verformt, aber nicht beschädigt. Das passiert beim Biegen einer Büroklammer viele Millionen Mal."},
   {q:"Warum bricht das Metall beim Verschieben nicht?",
-   o:["Das Elektronengas hält die Rümpfe in jeder Lage zusammen.","Die Rümpfe verformen sich und passen sich an.","Jedes Elektron sitzt fest zwischen zwei bestimmten Rümpfen."],r:0,
+   o:["Das Elektronengas hält die Rümpfe in jeder Lage zusammen.","Die Rümpfe verformen sich beim Verschieben und passen sich an.","Jedes Elektron sitzt fest zwischen zwei bestimmten Rümpfen."],r:0,
    w:"Die Metallbindung hängt nicht an festen Partnern. Jeder Rumpf ist in jeder Lage von Elektronengas umgeben und wird von ihm angezogen. Deshalb sind Metalle verformbar (duktil)."}
  ]
 };
