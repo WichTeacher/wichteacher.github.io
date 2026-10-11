@@ -92,6 +92,7 @@
   .facts dt{color:var(--muted)}
   .facts dd{margin:0;font-weight:600}
   .schalen svg{display:block;width:100%;max-width:220px;margin:6px auto 0;height:auto}
+  .schalen.eng svg{max-width:270px}
   .schalenbox{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--soft);margin-top:6px}
   .leer-text{color:var(--muted)}
 
@@ -572,17 +573,21 @@ function renderLegende(){
   L.innerHTML=h;
 }
 function schalenSVG(e){
-  const R=[78,112,146,180],cx=200,cy=200;
+  // Bis 4 Schalen wie im Atombaukasten; ab 5 Schalen enger, kleinere Punkte, Zahl an der Schale
+  const n=e.sch.length,eng=n>4,cx=200,cy=200,BU="KLMNOP";
+  const R=eng?e.sch.map((_,i)=>66+i*(186-66)/(n-1)):[78,112,146,180];
+  const pr=eng?(n>5?4:4.6):6.5,kr=eng?34:40;
   let s=`<svg viewBox="0 0 400 400" role="img" aria-label="Schalenmodell von ${e.n}: ${sch(e)}">`;
-  e.sch.forEach((n,i)=>{
-    s+=`<circle cx="${cx}" cy="${cy}" r="${R[i]}" fill="none" style="stroke:var(--shell)" stroke-width="1.5"/>`;
-    s+=`<text x="${cx+R[i]*.71+4}" y="${cy-R[i]*.71-4}" style="fill:var(--muted)" font-size="14" font-weight="600">${BUCH[i]}</text>`;
-    for(let j=0;j<n;j++){
-      const a=-Math.PI/2+j*2*Math.PI/n;
-      s+=`<circle cx="${(cx+R[i]*Math.cos(a)).toFixed(1)}" cy="${(cy+R[i]*Math.sin(a)).toFixed(1)}" r="6.5" style="fill:var(--electron)"/>`;
+  e.sch.forEach((m,i)=>{
+    s+=`<circle cx="${cx}" cy="${cy}" r="${R[i].toFixed(1)}" fill="none" style="stroke:var(--shell)" stroke-width="1.5"/>`;
+    const lbl=e.z>20?`${BU[i]} ${m}`:BU[i];
+    s+=`<text x="${(cx+R[i]*.71+4).toFixed(1)}" y="${(cy-R[i]*.71-4).toFixed(1)}" style="fill:var(--muted)" font-size="${eng?12:14}" font-weight="600">${lbl}</text>`;
+    for(let j=0;j<m;j++){
+      const a=-Math.PI/2+j*2*Math.PI/m;
+      s+=`<circle cx="${(cx+R[i]*Math.cos(a)).toFixed(1)}" cy="${(cy+R[i]*Math.sin(a)).toFixed(1)}" r="${pr}" style="fill:var(--electron)"/>`;
     }
   });
-  s+=`<circle cx="${cx}" cy="${cy}" r="40" style="fill:var(--kern)"/><text x="${cx}" y="${cy+8}" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="700">+${e.z}</text></svg>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${kr}" style="fill:var(--kern)"/><text x="${cx}" y="${cy+8}" text-anchor="middle" fill="#ffffff" font-size="${eng?19:22}" font-weight="700">+${e.z}</text></svg>`;
   return s;
 }
 function renderSteck(){
@@ -595,8 +600,8 @@ function renderSteck(){
   else stellung=`${e.p}. Periode · ${ROM[e.g]} Hauptgruppe`;
   const radius=e.r==null?"kein vergleichbarer Wert: anders gemessen":`${e.r} pm (${e.ra==="m"?"metallischer":"kovalenter"} Radius)`;
   let h=`<div class="steck-kopf"><span class="sym">${e.s}</span><span class="nm">${e.n}</span><span class="oz">Ordnungszahl ${e.z}</span></div>`;
-  if(e.z<=20)h+=`<div class="schalen">${schalenSVG(e)}</div>`;
-  else h+=`<div class="schalenbox"><b>Schalenbesetzung: ${sch(e)}</b><div class="small" style="margin-top:4px">Ab der 4. Periode reicht das einfache Schalenmodell nicht mehr: Bei den Nebengruppenelementen wird eine innere Schale nachträglich aufgefüllt. Warum das so ist, erklärt erst ein genaueres Atommodell. Für die Trends genügt: Zahl der Schalen = Periode, Zahl der Außenelektronen = Hauptgruppe.</div></div>`;
+  h+=`<div class="schalen${e.sch.length>4?" eng":""}">${schalenSVG(e)}</div>`;
+  if(e.z>20)h+=`<div class="schalenbox"><div class="small">Ab der 4. Periode reicht die einfache Regel 2 – 8 – 8 nicht mehr: Innere Schalen werden nachträglich bis 18 aufgefüllt, bei den Nebengruppen geschieht genau das. Warum, erklärt erst ein genaueres Atommodell. Für die Trends genügt: Zahl der Schalen = Periode, Zahl der Außenelektronen = Hauptgruppe.</div></div>`;
   h+=`<dl class="facts"><dt>Stellung im PSE</dt><dd>${stellung}</dd>`+
      `<dt>Protonen (Kernladung)</dt><dd>${e.z} (+${e.z})</dd>`+
      `<dt>Schalen</dt><dd>${sch(e)}</dd>`+
