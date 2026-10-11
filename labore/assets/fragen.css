@@ -1,0 +1,9 @@
+/* Beobachtungsfragen – gemeinsamer Baustein. Einbinden zusammen mit fragen.js. */
+.fragen h3{margin:18px 0 4px;font-size:1.2rem;color:var(--fach)}
+.fragen .frage{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
+.fragen .frage p{margin:0 0 6px;font-weight:600}
+.fragen .frage label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer}
+.fragen .frage input{margin-top:.35em;accent-color:var(--fach)}
+.fragen .frage .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fragen .frage .fb{margin-top:8px}
+.fragen .frage .fb:empty{display:none}

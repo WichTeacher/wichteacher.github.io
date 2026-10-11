@@ -6,6 +6,8 @@
 <title>Kristallgitter – Labor</title>
 <meta name="description" content="Interaktives Labor: Elementarzellen krz, kfz und hdp in 3D drehen, dichteste Kugelpackungen stapeln, Gitterumwandlung des Eisens und Kohlenstoff in Zwischengitterlücken">
 <link rel="stylesheet" href="../../assets/basis.css">
+<link rel="stylesheet" href="../../assets/fragen.css">
+<script src="../../assets/fragen.js"></script>
 <style>
   /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
      Atomfarben nach Okabe-Ito, ohne Rot und Grün (die bleiben der Rückmeldung richtig/falsch vorbehalten). */
@@ -64,13 +66,6 @@
   table.erg th,table.erg td{border:1px solid var(--line);padding:4px 10px;text-align:left;vertical-align:top}
   table.erg th{background:var(--soft);font-weight:600}
   .grenze{font-size:.88rem;color:var(--muted);margin:12px 0 0}
-  .fragen h3{margin:18px 0 4px;font-size:1.2rem;color:var(--fach)}
-  .frage{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:10px}
-  .frage p{margin:0 0 6px;font-weight:600}
-  .frage label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer}
-  .frage input{margin-top:.35em;accent-color:var(--fach)}
-  .frage .fb{margin-top:8px}
-  .frage .fb:empty{display:none}
   .hinweis{margin-top:8px}
   .hinweis:empty{display:none}
 
@@ -880,26 +875,7 @@ const FRAGEN={
    w:`Im kfz-Gitter ist viel Kohlenstoff gelöst. Beim schnellen Abkühlen will das Gitter krz werden, der Kohlenstoff bleibt aber eingeschlossen. Das verzerrte Gitter behindert das Abgleiten der Atomebenen: Der Stahl ist hart, aber auch spröder.`}
  ]
 };
-function renderFragen(key,id){
-  const box=$(id);box.innerHTML="<h3>Beobachtungsfragen</h3>";
-  FRAGEN[key].forEach((f,i)=>{
-    // Antworten gemischt anzeigen, damit die richtige nicht immer oben steht
-    const ord=f.o.map((_,k)=>k).sort(()=>Math.random()-.5);
-    const d=document.createElement("div");d.className="frage";
-    const name=`${key}-${i}`;
-    d.innerHTML=`<p>${i+1}. ${f.q}</p>`+ord.map(k=>`<label><input type="radio" name="${name}" value="${k}"><span>${f.o[k]}</span></label>`).join("")+
-      `<div class="row" style="margin-top:6px"><button class="btn-2">Prüfen</button></div><div class="fb" aria-live="polite"></div>`;
-    const fb=d.querySelector(".fb");
-    d.querySelector("button").addEventListener("click",()=>{
-      const sel=d.querySelector("input:checked");
-      if(!sel){fb.className="fb fb-hint";fb.textContent="Bitte wählen Sie zuerst eine Antwort.";return}
-      if(+sel.value===f.r){fb.className="fb fb-ok";fb.textContent="Richtig. "+f.w}
-      else{fb.className="fb fb-bad";fb.textContent="Noch nicht. Beobachten Sie das Modell noch einmal genau."}
-    });
-    d.addEventListener("change",()=>{fb.className="fb";fb.textContent=""});
-    box.appendChild(d);
-  });
-}
+function renderFragen(key,id){Fragen.render(id,FRAGEN[key],{name:key})}
 renderFragen("zellen","q-zellen");renderFragen("stapeln","q-stapeln");renderFragen("eisen","q-eisen");
 
 // =====================================================================
