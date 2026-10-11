@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trends im PSE – Labor</title>
+<meta name="description" content="Interaktives Labor: Atomradius, Ionisierungsenergie, Elektronegativität und Metallcharakter im Periodensystem – Trend-Karte, Größenvergleich, Treppe der Ionisierungsenergie und Vorhersage-Training">
+<link rel="stylesheet" href="../../assets/basis.css">
+<link rel="stylesheet" href="../../assets/fragen.css">
+<script src="../../assets/fragen.js"></script>
+<style>
+  /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
+     Werte-Skala und Stoffklassen einfarbig in Petrol (kräftiger = größer), keine Rot-Grün-Skala.
+     Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
+  :root{--electron:#1F6FB2;--shell:#9AA7B2;--kern:#5b6678;
+    --skala-lo:#e3f2f0;--skala-hi:#0b4f4a;
+    --m-bg:#0f766e;--m-fg:#ffffff;--h-a:#8fcfc6;--h-b:#b9e2dc;--h-fg:#000000;--n-bg:#e3f2f0;--n-fg:#000000}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--electron:#5BA7E8;--shell:#56646F;--kern:#5E6B77;
+    --skala-lo:#1f2e2d;--skala-hi:#5fd3c6;
+    --m-bg:#5fd3c6;--m-fg:#000000;--h-a:#2f7a72;--h-b:#245f59;--h-fg:#ffffff;--n-bg:#1f2e2d;--n-fg:#ffffff}}
+  :root[data-theme="dark"]{--electron:#5BA7E8;--shell:#56646F;--kern:#5E6B77;
+    --skala-lo:#1f2e2d;--skala-hi:#5fd3c6;
+    --m-bg:#5fd3c6;--m-fg:#000000;--h-a:#2f7a72;--h-b:#245f59;--h-fg:#ffffff;--n-bg:#1f2e2d;--n-fg:#ffffff}
+
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
+  .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 16px}
+  .tabs button[aria-selected="true"]{background:var(--fach);border-color:var(--fach);color:var(--fach-ink)}
+  .taskbox{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:var(--card);padding:16px;margin-bottom:16px}
+  button{touch-action:manipulation}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .row[hidden],[hidden]{display:none!important}
+  .wahl{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .wahl button{font:inherit;border:none;background:var(--card);color:var(--ink);padding:6px 12px;cursor:pointer}
+  .wahl button+button{border-left:1px solid var(--line)}
+  .wahl button[aria-pressed="true"]{background:var(--fach);color:var(--fach-ink);font-weight:600}
+  .btn-2[aria-pressed="true"]{border-color:var(--fach);box-shadow:inset 0 0 0 1px var(--fach);font-weight:600}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .status{border-left:4px solid var(--fach);border-radius:6px;padding:6px 10px;margin-top:12px;min-height:3.4em;font-size:.97rem;background:var(--soft)}
+  .grenze{font-size:.88rem;color:var(--muted);margin:12px 0 0}
+  .einleitung{margin:0 0 12px}
+  .auswahl{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .auswahl label{display:flex;flex-direction:column;gap:4px;font-weight:600;flex:1;min-width:150px}
+  .auswahl select,.sel{font:inherit;font-weight:400;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;width:100%}
+  .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
+  .info summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px}
+  .info summary::-webkit-details-marker{display:none}
+  .info summary::before{content:"▸";color:var(--fach);font-size:1.2rem;transition:transform .15s}
+  .info[open] summary::before{transform:rotate(90deg)}
+  .info summary:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  .info-body{padding:0 16px 14px}
+  .info-body ol,.info-body ul{margin:0;padding-left:1.3em}
+  .info-body li{margin:0 0 8px}
+  .info-tip{margin:6px 0 0;padding:8px 10px;background:var(--soft);border-radius:6px;font-weight:600}
+  .hinweis{border-left:4px solid var(--fach);background:var(--soft);border-radius:6px;padding:6px 10px;margin-top:10px;font-size:.93rem}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+  .fb{margin-top:10px;font-weight:600}
+  .fb:empty{display:none}
+
+  /* ---- Reiter 1: Karte ---- */
+  .lab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px}
+  .lab>*{min-width:0}
+  .karte-wrap{overflow-x:auto;padding:4px;margin:8px -4px 0}
+  .huelle{--pnr:1.6em;display:grid;grid-template-columns:auto minmax(0,1fr);font-size:1rem}
+  .huelle>[hidden]{display:none}
+  .pfeil-h{grid-column:2;grid-row:1;height:28px;position:relative;margin-left:calc(var(--pnr) + 3px)}
+  .pfeil-v{grid-column:1;grid-row:2;width:22px;position:relative;margin-right:2px}
+  .pfeil-h svg,.pfeil-v svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .pfeil-h span,.pfeil-v span{position:absolute;background:var(--card);color:var(--ink);font-size:.74rem;font-weight:600;white-space:nowrap;padding:0 6px}
+  .pfeil-h span{left:50%;top:50%;transform:translate(-50%,-50%)}
+  .pfeil-v span{left:50%;top:50%;transform:translate(-50%,-50%) rotate(180deg);writing-mode:vertical-rl;padding:6px 0}
+  .karte{grid-column:2;grid-row:2}
+  .karte2{grid-column:2;grid-row:3;margin-top:14px}
+  .karte,.karte2{display:grid;grid-template-columns:var(--pnr) repeat(8,minmax(0,1fr));gap:3px}
+  .kopfz{font-size:.78rem;color:var(--muted);text-align:center;align-self:center;font-weight:600}
+  .k2-titel{grid-column:1/-1;margin-bottom:2px}
+  .zelle{font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:0;min-width:0;aspect-ratio:1/1.05;border-radius:6px;border:1px solid rgba(128,128,128,.35);cursor:pointer;line-height:1.05;overflow:hidden;background:var(--soft);color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .zelle .sym{font-family:var(--font-head);font-weight:700;font-size:1.15rem}
+  .zelle .wert{font-size:.72rem}
+  .zelle[aria-pressed="true"]{box-shadow:0 0 0 3px var(--ink);position:relative;z-index:1}
+  .leer,.zelle.leer{background:repeating-linear-gradient(45deg,transparent 0 5px,var(--line) 5px 6px),var(--soft);color:var(--muted);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .platz{border:1px dashed var(--muted);border-radius:6px;opacity:.6;aspect-ratio:1/1.05;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:var(--font-head);font-weight:700;font-size:1.05rem;background:repeating-linear-gradient(45deg,transparent 0 5px,var(--line) 5px 6px),var(--soft)}
+  .legende{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;margin-top:10px;font-size:.88rem;color:var(--muted)}
+  .leg-bar{display:inline-block;width:150px;height:14px;border-radius:4px;border:1px solid var(--line);vertical-align:middle;background:linear-gradient(90deg,var(--skala-lo),var(--skala-hi));-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .leg-feld{display:inline-block;width:26px;height:16px;border-radius:4px;border:1px solid var(--line);vertical-align:middle;margin-right:6px}
+  .leg-feld.leer{background:repeating-linear-gradient(45deg,transparent 0 5px,var(--line) 5px 6px),var(--soft)}
+  .steck-kopf{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .steck-kopf .sym{font-family:var(--font-head);font-weight:700;font-size:2.6rem;line-height:1}
+  .steck-kopf .nm{font-size:1.4rem;font-weight:700;font-family:var(--font-head)}
+  .steck-kopf .oz{color:var(--muted)}
+  .facts{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:.95rem;margin:10px 0 0}
+  .facts dt{color:var(--muted)}
+  .facts dd{margin:0;font-weight:600}
+  .schalen svg{display:block;width:100%;max-width:220px;margin:6px auto 0;height:auto}
+  .schalenbox{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--soft);margin-top:6px}
+  .leer-text{color:var(--muted)}
+
+  /* ---- Reiter 2: Größenvergleich ---- */
+  .gv-svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+  .gv-svg text{font-family:var(--font)}
+
+  /* ---- Reiter 3: Treppe ---- */
+  .tr-svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+  .tr-svg text{font-family:var(--font)}
+  .tr-svg .bs{fill:var(--fach);cursor:pointer}
+  .tr-svg .bs:focus,.tr-svg .bs.sel{stroke:var(--ink);stroke-width:2;outline:none}
+  #tr-info{min-height:1.6em;margin:6px 0 0}
+  .raetsel-kopf{font-weight:600;margin:0 0 8px}
+
+  /* ---- Reiter 4: Training ---- */
+  .task{font-size:1.15rem;font-weight:600;margin:12px 0 10px}
+  .antworten{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+  .antw{font:inherit;min-height:88px;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;position:relative;min-width:0}
+  .antw:hover:not(:disabled){background:var(--soft)}
+  .antw .sym{font-family:var(--font-head);font-size:2rem;font-weight:700;line-height:1}
+  .antw .nm{font-weight:600}
+  .antw .pos{font-size:.8rem;color:var(--muted)}
+  .antw:disabled{opacity:1;cursor:default;color:var(--ink)}
+  .antw.ok{border:3px solid var(--ok)}
+  .antw.bad{border:3px solid var(--bad)}
+  .antw .mark{position:absolute;top:4px;right:8px;font-weight:700;font-size:1.2rem}
+  .antw.ok .mark{color:var(--ok)}
+  .antw.bad .mark{color:var(--bad)}
+  .prog{color:var(--muted);font-size:.92rem}
+
+  @media (max-width:780px){.lab{grid-template-columns:1fr}}
+  @media (max-width:480px){
+    .wrap{padding:12px 12px 40px}.taskbox{padding:10px}.tabs button{padding:6px 10px;font-size:.92rem}
+    .info summary{padding:10px 12px}.info-body{padding:0 12px 12px}.auswahl label{min-width:100%}
+    .zelle .sym{font-size:.95rem}.zelle .wert{font-size:.62rem}.platz{font-size:.85rem}.zelle{border-radius:4px}
+    .wahl button{padding:6px 9px;font-size:.93rem}.antw .sym{font-size:1.7rem}.antw .pos{font-size:.72rem}
+    .leg-bar{width:110px}
+  }
+  @media print{
+    [role=tabpanel]{display:block!important}
+    .tabs,.no-print{display:none!important}
+    .taskbox{border-top:1px solid #999;border-radius:var(--radius);break-inside:avoid;margin-top:12px}
+    .zelle,.leg-bar,.leer,.platz{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body data-fach="wc">
+<div class="wrap">
+  <header class="kopf">
+    <div class="pfad"><a href="../../">Labore</a> › <a href="../">Werkstoffkunde &amp; Chemie</a></div>
+    <h1>Trends im PSE</h1>
+    <p>Atomradius · Ionisierungsenergie · Elektronegativität · Metallcharakter</p>
+  </header>
+
+  <details class="info">
+    <summary>Grundbegriffe: Periode, Hauptgruppe, Kernladung, Abschirmung</summary>
+    <div class="info-body">
+      <ol>
+        <li>Die <b>Periode</b> gibt die Zahl der Schalen an, die <b>Hauptgruppe</b> die Zahl der Außenelektronen. Ausnahme Helium: 2 Außenelektronen, aber bei den Edelgasen.</li>
+        <li>Die <b>Kernladung</b> ist die Zahl der Protonen im Kern. Sie zieht die Elektronen an.</li>
+        <li>Die inneren Elektronen liegen zwischen Kern und Außenelektronen. Sie <b>schirmen</b> einen Teil der Kernladung <b>ab</b>. Elektronen auf derselben Schale schirmen sich gegenseitig kaum ab.</li>
+        <li>Alle vier Trends haben dieselbe Ursache: Wie stark zieht der Kern die Außenelektronen an? Das hängt von der Zahl der Schalen (Abstand) und von der Kernladung ab.</li>
+      </ol>
+      <p class="info-tip">Kleines Atom: Außenelektronen sitzen fest. Großes Atom: Außenelektronen sitzen locker.</p>
+    </div>
+  </details>
+
+  <div class="tabs" role="tablist" aria-label="Reiter">
+    <button role="tab" id="tab-karte" aria-selected="true" aria-controls="box-karte">Trend-Karte</button>
+    <button role="tab" id="tab-groesse" aria-selected="false" aria-controls="box-groesse">Größenvergleich</button>
+    <button role="tab" id="tab-treppe" aria-selected="false" aria-controls="box-treppe">Treppe der Ionisierungsenergie</button>
+    <button role="tab" id="tab-training" aria-selected="false" aria-controls="box-training">Vorhersage-Training</button>
+  </div>
+
+  <!-- ===== Trend-Karte ===== -->
+  <section class="taskbox" id="box-karte" role="tabpanel" aria-labelledby="tab-karte">
+    <div class="lab">
+      <div class="lab-l">
+        <div class="row no-print" style="margin-top:0">
+          <span class="wahl" role="group" aria-label="Eigenschaft">
+            <button data-eig="radius" aria-pressed="true">Atomradius</button><button data-eig="ie" aria-pressed="false">Ionisierungsenergie</button><button data-eig="en" aria-pressed="false">Elektronegativität</button><button data-eig="klasse" aria-pressed="false">Metall / Halbmetall / Nichtmetall</button>
+          </span>
+          <button class="btn-2" id="k-werte" aria-pressed="false">Werte anzeigen: aus</button>
+          <button class="btn-2" id="k-pfeile" aria-pressed="false">Trendpfeile: aus</button>
+        </div>
+        <div class="karte-wrap">
+          <div class="huelle" id="huelle">
+            <div class="pfeil-h" id="pfeil-h" hidden></div>
+            <div class="pfeil-v" id="pfeil-v" hidden></div>
+            <div class="karte" id="karte"></div>
+            <div class="karte2" id="karte2"></div>
+          </div>
+        </div>
+        <p class="small" style="margin:8px 0 0">Schraffierte Felder (Thallium bis Radon): in diesem Labor nicht aufgenommen, weil die Werte uneinheitlich sind bzw. die Elemente stark radioaktiv sind.</p>
+        <div class="legende" id="legende"></div>
+        <div class="status" id="k-status" aria-live="polite"></div>
+      </div>
+      <div class="lab-r"><div class="panel" id="steck" aria-live="polite"></div></div>
+    </div>
+    <p class="grenze"><b>Modellgrenze:</b> Atome haben keinen scharfen Rand, der Atomradius hängt vom Messverfahren ab. Für Metalle ist der halbe Abstand zweier Nachbaratome im Metall angegeben (metallischer Radius), für Nichtmetalle und Halbmetalle der halbe Abstand zweier Atome in einer Atombindung (kovalenter Radius). Dadurch wirkt der Unterschied zwischen Metallen und Nichtmetallen etwas größer, als er bei einheitlicher Messung wäre. Die Trends bleiben gleich. Bei Edelgasen misst man den Abstand sich berührender Atome ohne Bindung. Diese Werte sind größer und nicht vergleichbar. An einigen Stellen weichen die Werte vom Trend ab, z. B. die Ionisierungsenergie von Magnesium zu Aluminium. Das erklärt erst ein genaueres Atommodell mit Unterschalen.</p>
+    <p class="small" style="margin:8px 0 0">Wie Atome mit kleiner Elektronegativität zusammenhalten, zeigt das Labor <a href="../metallbindung/">Metallbindung</a> im Reiter „Tauziehen um Elektronen“.</p>
+    <div class="fragen" id="q-karte"></div>
+  </section>
+
+  <!-- ===== Größenvergleich ===== -->
+  <section class="taskbox" id="box-groesse" role="tabpanel" aria-labelledby="tab-groesse" hidden>
+    <div class="auswahl">
+      <label>Element 1 <select id="g-1" class="g-sel"></select></label>
+      <label>Element 2 <select id="g-2" class="g-sel"></select></label>
+      <label>Element 3 <select id="g-3" class="g-sel"></select></label>
+      <label>Element 4 <select id="g-4" class="g-sel"></select></label>
+    </div>
+    <p class="small" style="margin:-4px 0 8px">Edelgase fehlen, weil ihr Radius anders gemessen wird.</p>
+    <div class="row no-print" style="margin:0 0 12px">
+      <button class="btn-2" data-preset="p3">Periode 3</button>
+      <button class="btn-2" data-preset="g1">Hauptgruppe I</button>
+      <button class="btn-2" data-preset="nacl">Na gegen Cl</button>
+      <button class="btn-2" data-preset="stahl">Stahl: Fe, C, Cr, Ni</button>
+    </div>
+    <svg class="gv-svg" id="gv-svg" role="img" aria-label="Größenvergleich"></svg>
+    <div class="status" id="g-status" aria-live="polite"></div>
+    <p class="grenze"><b>Modellgrenze:</b> Kreise mit scharfem Rand sind ein Modell. Die Elektronenhülle wird nach außen allmählich dünner. Der Kern ist stark vergrößert gezeichnet: In Wirklichkeit ist er etwa 10 000- bis 100 000-mal kleiner als das Atom. Die Schalen sind gleichmäßig verteilt gezeichnet, ihre Abstände sind nicht maßstäblich.</p>
+    <div class="fragen" id="q-groesse"></div>
+  </section>
+
+  <!-- ===== Treppe der Ionisierungsenergie ===== -->
+  <section class="taskbox" id="box-treppe" role="tabpanel" aria-labelledby="tab-treppe" hidden>
+    <div class="row no-print" style="margin-top:0">
+      <span class="wahl" role="group" aria-label="Modus">
+        <button data-modus="erkunden" aria-pressed="true">Erkunden</button><button data-modus="raetsel" aria-pressed="false">Rätsel</button>
+      </span>
+      <span id="tr-erk" class="row" style="margin:0">
+        <select id="tr-el" class="sel" style="width:auto" aria-label="Element"></select>
+        <button class="btn-2" id="tr-prev" aria-label="vorheriges Element">◀</button>
+        <button class="btn-2" id="tr-next" aria-label="nächstes Element">▶</button>
+      </span>
+      <span class="wahl" role="group" aria-label="Achse">
+        <button data-achse="linear" aria-pressed="true">linear</button><button data-achse="log" aria-pressed="false">logarithmisch</button>
+      </span>
+      <button class="btn-2" id="tr-grenzen" aria-pressed="false">Schalengrenzen: aus</button>
+    </div>
+    <div id="tr-raetsel" hidden>
+      <p class="raetsel-kopf" id="r-kopf" style="margin-top:12px"></p>
+    </div>
+    <svg class="tr-svg" id="tr-svg" role="img" aria-label="Treppe der Ionisierungsenergie" style="margin-top:10px"></svg>
+    <p class="small" id="tr-info" aria-live="polite"></p>
+    <div id="r-ui" hidden>
+      <div class="row">
+        <label for="r-antwort" style="font-weight:600">Ihre Antwort</label>
+        <select id="r-antwort" class="sel" style="width:auto"></select>
+        <button class="btn" id="r-pruefen">Prüfen</button>
+        <button class="btn-2" id="r-neu">Neues Rätsel</button>
+        <button class="btn-2" id="r-loesung" disabled>Lösung zeigen</button>
+      </div>
+      <div class="fb" id="r-fb" aria-live="polite"></div>
+      <p class="prog" id="r-zaehler"></p>
+    </div>
+    <div class="status" id="tr-status" aria-live="polite"></div>
+    <p class="grenze"><b>Modellgrenze:</b> Innerhalb einer Schale gibt es kleinere Stufen, z. B. bei Aluminium zwischen dem 1. und dem 2. Elektron (578 → 1.817 kJ/mol). Sie entstehen durch Unterschalen. Das erklärt erst ein genaueres Atommodell. Je nach Quelle weichen die Werte um wenige kJ/mol ab, bei den sehr großen Werten um bis zu etwa 0,5 %.</p>
+    <div class="fragen" id="q-treppe"></div>
+  </section>
+
+  <!-- ===== Vorhersage-Training ===== -->
+  <section class="taskbox" id="box-training" role="tabpanel" aria-labelledby="tab-training" hidden>
+    <p class="einleitung">Entscheiden Sie mithilfe der Trends: Wo stehen die beiden Elemente im PSE, und was folgt daraus? Verglichen werden immer zwei Elemente aus derselben Periode oder derselben Hauptgruppe.</p>
+    <span class="wahl no-print" role="group" aria-label="Fragetyp">
+      <button data-typ="gemischt" aria-pressed="true">Gemischt</button><button data-typ="r" aria-pressed="false">Größer?</button><button data-typ="ie" aria-pressed="false">Gibt leichter ein Elektron ab?</button><button data-typ="en" aria-pressed="false">Höhere EN?</button><button data-typ="met" aria-pressed="false">Metallischer?</button>
+    </span>
+    <p class="task" id="ta-frage"></p>
+    <div class="antworten" id="ta-antworten"></div>
+    <div class="fb" id="ta-fb" aria-live="polite"></div>
+    <div class="row no-print">
+      <button class="btn" id="ta-weiter" hidden>Nächste Aufgabe</button>
+    </div>
+    <div class="row no-print">
+      <span class="prog" id="ta-zaehler"></span>
+      <button class="btn-2" id="ta-reset">Zähler zurücksetzen</button>
+    </div>
+    <p class="grenze"><b>Modellgrenze:</b> Die Trends sind Faustregeln. Abgefragt werden nur Paare aus derselben Periode oder derselben Hauptgruppe, bei denen Messwert und Trend übereinstimmen und der Unterschied deutlich ist. Diagonale Vergleiche wie Bor und Silicium lassen sich mit den Trends allein nicht sicher entscheiden.</p>
+    <div class="fragen" id="q-training"></div>
+  </section>
+
+  <details class="info">
+    <summary>Quellen der Werte</summary>
+    <div class="info-body">
+      <ul>
+        <li><b>Ionisierungsenergie:</b> Werte nach CRC Handbook of Chemistry and Physics (zitiert in Wikipedia, „Molar ionization energies of the elements“), auf ganze kJ/mol gerundet. Je nach Quelle weichen die Werte um wenige kJ/mol ab.</li>
+        <li><b>Elektronegativität:</b> Pauling-Skala, Werte nach Wikipedia, „Electronegativities of the elements (data page)“.</li>
+        <li><b>Atomradius:</b> Für Metalle der metallische Radius, für Nichtmetalle und Halbmetalle der kovalente Radius. Perioden 2 und 3 sowie I. und II. Hauptgruppe: gängige Lehrbuchwerte. Ergänzt nach Wikipedia, „Atomic radii of the elements (data page)“ (metallisch nach Greenwood und Earnshaw, kovalent: Einfachbindung). Für Edelgase gibt es keinen vergleichbaren Wert.</li>
+      </ul>
+    </div>
+  </details>
+
+  <footer class="fuss"><a href="../../">alle Labore</a> · <a href="../../../impressum.html">Impressum</a></footer>
+</div>
+
+<script>
+const ELEMENTE=[
+ {s:"H",n:"Wasserstoff",z:1,p:1,g:1,k:"N",r:32,ra:"k",ie:1312,en:2.20,sch:[1],ies:[1312]},
+ {s:"He",n:"Helium",z:2,p:1,g:8,k:"N",r:null,ra:null,ie:2372,en:null,sch:[2],ies:[2372,5251]},
+ {s:"Li",n:"Lithium",z:3,p:2,g:1,k:"M",r:152,ra:"m",ie:520,en:0.98,sch:[2,1],ies:[520,7298,11815]},
+ {s:"Be",n:"Beryllium",z:4,p:2,g:2,k:"M",r:112,ra:"m",ie:900,en:1.57,sch:[2,2],ies:[900,1757,14849,21007]},
+ {s:"B",n:"Bor",z:5,p:2,g:3,k:"H",r:88,ra:"k",ie:801,en:2.04,sch:[2,3],ies:[801,2427,3660,25026,32827]},
+ {s:"C",n:"Kohlenstoff",z:6,p:2,g:4,k:"N",r:77,ra:"k",ie:1087,en:2.55,sch:[2,4],ies:[1087,2353,4621,6223,37831,47277]},
+ {s:"N",n:"Stickstoff",z:7,p:2,g:5,k:"N",r:70,ra:"k",ie:1402,en:3.04,sch:[2,5],ies:[1402,2856,4578,7475,9445,53267,64360]},
+ {s:"O",n:"Sauerstoff",z:8,p:2,g:6,k:"N",r:66,ra:"k",ie:1314,en:3.44,sch:[2,6],ies:[1314,3388,5301,7469,10990,13327,71330,84078]},
+ {s:"F",n:"Fluor",z:9,p:2,g:7,k:"N",r:64,ra:"k",ie:1681,en:3.98,sch:[2,7],ies:[1681,3374,6050,8408,11023,15164,17868,92038,106434]},
+ {s:"Ne",n:"Neon",z:10,p:2,g:8,k:"N",r:null,ra:null,ie:2081,en:null,sch:[2,8],ies:[2081,3952,6122,9371,12177,15239,19999,23070,115380,131432]},
+ {s:"Na",n:"Natrium",z:11,p:3,g:1,k:"M",r:186,ra:"m",ie:496,en:0.93,sch:[2,8,1],ies:[496,4562,6910,9543,13354,16613,20117,25496,28932,141362,159076]},
+ {s:"Mg",n:"Magnesium",z:12,p:3,g:2,k:"M",r:160,ra:"m",ie:738,en:1.31,sch:[2,8,2],ies:[738,1451,7733,10543,13630,18020,21711,25661,31653,35458,169988,189368]},
+ {s:"Al",n:"Aluminium",z:13,p:3,g:3,k:"M",r:143,ra:"m",ie:578,en:1.61,sch:[2,8,3],ies:[578,1817,2745,11577,14842,18379,23326,27465,31853,38473,42647,201266,222316]},
+ {s:"Si",n:"Silicium",z:14,p:3,g:4,k:"H",r:117,ra:"k",ie:787,en:1.90,sch:[2,8,4],ies:[787,1577,3232,4356,16091,19805,23780,29287,33878,38726,45962,50502,235196,257923]},
+ {s:"P",n:"Phosphor",z:15,p:3,g:5,k:"N",r:110,ra:"k",ie:1012,en:2.19,sch:[2,8,5],ies:[1012,1907,2914,4964,6274,21267,25431,29872,35905,40950,46261,54110,59024,271791,296195]},
+ {s:"S",n:"Schwefel",z:16,p:3,g:6,k:"N",r:104,ra:"k",ie:1000,en:2.58,sch:[2,8,6],ies:[1000,2252,3357,4556,7004,8496,27107,31719,36621,43177,48710,54460,62930,68216,311048,337138]},
+ {s:"Cl",n:"Chlor",z:17,p:3,g:7,k:"N",r:99,ra:"k",ie:1251,en:3.16,sch:[2,8,7],ies:[1251,2298,3822,5159,6542,9362,11018,33604,38600,43961,51068,57119,63363,72341,78095,352994,380760]},
+ {s:"Ar",n:"Argon",z:18,p:3,g:8,k:"N",r:null,ra:null,ie:1521,en:null,sch:[2,8,8],ies:[1521,2666,3931,5771,7238,8781,11995,13842,40760,46186,52002,59653,66199,72918,82473,88576,397605,427066]},
+ {s:"K",n:"Kalium",z:19,p:4,g:1,k:"M",r:231,ra:"m",ie:419,en:0.82,sch:[2,8,8,1],ies:[419,3052,4420,5877,7975,9590,11343,14944,16964,48610,54490,60730,68950,75900,83080,93400,99710,444880,476063]},
+ {s:"Ca",n:"Calcium",z:20,p:4,g:2,k:"M",r:197,ra:"m",ie:590,en:1.00,sch:[2,8,8,2],ies:[590,1145,4912,6491,8153,10496,12270,14206,18191,20385,57110,63410,70110,78890,86310,94000,104900,111711,494850,527762]},
+ {s:"Ga",n:"Gallium",z:31,p:4,g:3,k:"M",r:135,ra:"m",ie:579,en:1.81,sch:[2,8,18,3]},
+ {s:"Ge",n:"Germanium",z:32,p:4,g:4,k:"H",r:121,ra:"k",ie:762,en:2.01,sch:[2,8,18,4]},
+ {s:"As",n:"Arsen",z:33,p:4,g:5,k:"H",r:121,ra:"k",ie:947,en:2.18,sch:[2,8,18,5]},
+ {s:"Se",n:"Selen",z:34,p:4,g:6,k:"N",r:116,ra:"k",ie:941,en:2.55,sch:[2,8,18,6]},
+ {s:"Br",n:"Brom",z:35,p:4,g:7,k:"N",r:114,ra:"k",ie:1140,en:2.96,sch:[2,8,18,7]},
+ {s:"Kr",n:"Krypton",z:36,p:4,g:8,k:"N",r:null,ra:null,ie:1351,en:null,sch:[2,8,18,8]},
+ {s:"Rb",n:"Rubidium",z:37,p:5,g:1,k:"M",r:244,ra:"m",ie:403,en:0.82,sch:[2,8,18,8,1]},
+ {s:"Sr",n:"Strontium",z:38,p:5,g:2,k:"M",r:215,ra:"m",ie:550,en:0.95,sch:[2,8,18,8,2]},
+ {s:"In",n:"Indium",z:49,p:5,g:3,k:"M",r:167,ra:"m",ie:558,en:1.78,sch:[2,8,18,18,3]},
+ {s:"Sn",n:"Zinn",z:50,p:5,g:4,k:"M",r:140,ra:"k",ie:709,en:1.96,sch:[2,8,18,18,4]},
+ {s:"Sb",n:"Antimon",z:51,p:5,g:5,k:"H",r:140,ra:"k",ie:834,en:2.05,sch:[2,8,18,18,5]},
+ {s:"Te",n:"Tellur",z:52,p:5,g:6,k:"H",r:136,ra:"k",ie:869,en:2.1,sch:[2,8,18,18,6]},
+ {s:"I",n:"Iod",z:53,p:5,g:7,k:"N",r:133,ra:"k",ie:1008,en:2.66,sch:[2,8,18,18,7]},
+ {s:"Xe",n:"Xenon",z:54,p:5,g:8,k:"N",r:null,ra:null,ie:1170,en:null,sch:[2,8,18,18,8]},
+ {s:"Cs",n:"Cäsium",z:55,p:6,g:1,k:"M",r:262,ra:"m",ie:376,en:0.79,sch:[2,8,18,18,8,1]},
+ {s:"Ba",n:"Barium",z:56,p:6,g:2,k:"M",r:220,ra:"m",ie:503,en:0.89,sch:[2,8,18,18,8,2]},
+ {s:"Ti",n:"Titan",z:22,p:4,g:0,k:"M",r:147,ra:"m",ie:659,en:1.54,sch:[2,8,10,2]},
+ {s:"Cr",n:"Chrom",z:24,p:4,g:0,k:"M",r:128,ra:"m",ie:653,en:1.66,sch:[2,8,13,1]},
+ {s:"Fe",n:"Eisen",z:26,p:4,g:0,k:"M",r:126,ra:"m",ie:763,en:1.83,sch:[2,8,14,2]},
+ {s:"Ni",n:"Nickel",z:28,p:4,g:0,k:"M",r:124,ra:"m",ie:737,en:1.91,sch:[2,8,16,2]},
+ {s:"Cu",n:"Kupfer",z:29,p:4,g:0,k:"M",r:128,ra:"m",ie:746,en:1.90,sch:[2,8,18,1]},
+ {s:"Zn",n:"Zink",z:30,p:4,g:0,k:"M",r:134,ra:"m",ie:906,en:1.65,sch:[2,8,18,2]}
+];
+const PLATZHALTER=["Tl","Pb","Bi","Po","At","Rn"];   // Periode 6, HG III–VIII, ohne Daten
+const EL=Object.fromEntries(ELEMENTE.map(e=>[e.s,e]));
+const HINWEIS={
+ H:"Wasserstoff steht wegen seines einen Außenelektrons über der I. Hauptgruppe. Er ist aber ein Nichtmetall und gehört nicht zu den Alkalimetallen.",
+ He:"Helium hat nur 2 Außenelektronen und steht trotzdem bei den Edelgasen: Seine einzige Schale ist mit 2 Elektronen schon voll.",
+ B:"Ausreißer: Bor hat eine kleinere Ionisierungsenergie als Beryllium (801 statt 900 kJ/mol), obwohl es weiter rechts steht. Das Schalenmodell kann das nicht erklären, erst ein genaueres Atommodell mit Unterschalen.",
+ O:"Ausreißer: Sauerstoff hat eine kleinere Ionisierungsenergie als Stickstoff (1314 statt 1402 kJ/mol). Das erklärt erst ein genaueres Atommodell mit Unterschalen.",
+ Al:"Ausreißer: Aluminium hat eine kleinere Ionisierungsenergie als Magnesium (578 statt 738 kJ/mol). Das erklärt erst ein genaueres Atommodell mit Unterschalen.",
+ S:"Ausreißer: Schwefel hat eine etwas kleinere Ionisierungsenergie als Phosphor (1000 statt 1012 kJ/mol). Das erklärt erst ein genaueres Atommodell mit Unterschalen.",
+ Se:"Ausreißer: Selen hat eine etwas kleinere Ionisierungsenergie als Arsen (941 statt 947 kJ/mol), aus demselben Grund wie bei Sauerstoff und Schwefel. Selen wird hier zu den Nichtmetallen gezählt, manche Quellen nennen es ein Halbmetall.",
+ Ga:"Ausreißer: Gallium ist kleiner als Aluminium (135 statt 143 pm), hat eine höhere Elektronegativität (1,81 statt 1,61) und fast dieselbe Ionisierungsenergie (579 statt 578 kJ/mol), obwohl es eine Periode tiefer steht. Das hängt mit den Nebengruppenelementen zusammen, die in der 4. Periode vor Gallium stehen. Erklären kann es erst ein genaueres Atommodell.",
+ Ge:"Ausreißer: Germanium hat eine etwas höhere Elektronegativität als Silicium (2,01 statt 1,90), obwohl es tiefer steht. Grund wie bei Gallium.",
+ As:"Arsen und Germanium haben in der Tabelle denselben Radius (121 pm). Die Elektronegativität von Arsen (2,18) ist fast gleich der von Phosphor (2,19).",
+ In:"Indium hat eine höhere Elektronegativität als Aluminium (1,78 statt 1,61), obwohl es tiefer steht. Grund wie bei Gallium.",
+ Sn:"Für Zinn ist der kovalente Radius angegeben, obwohl es ein Metall ist: Für einen metallischen Radius lag kein vergleichbarer Tabellenwert vor. Die Elektronegativität von Zinn (1,96) ist etwas höher als die von Silicium (1,90).",
+ Sb:"Antimon und Zinn haben in der Tabelle denselben Radius (140 pm).",
+ Te:"Für Tellur gibt die Quelle die Elektronegativität nur mit einer Nachkommastelle an (2,1).",
+ K:"Die 3. Schale (M) könnte bis zu 18 Elektronen aufnehmen. Trotzdem beginnt nach 8 Elektronen schon die 4. Schale. Warum das so ist, erklärt erst ein genaueres Atommodell.",
+ Ca:"Wie bei Kalium: Nach 8 Elektronen in der 3. Schale beginnt schon die 4. Schale. Das erklärt erst ein genaueres Atommodell.",
+ Rb:"Kalium und Rubidium haben dieselbe Elektronegativität (0,82). In der I. Hauptgruppe ändert sie sich nach unten nur noch wenig.",
+ Kr:"Krypton bildet einige wenige Verbindungen, deshalb gibt es einen Elektronegativitätswert (3,00). In der Karte bleiben alle Edelgase ohne Färbung.",
+ Xe:"Xenon bildet einige wenige Verbindungen, deshalb gibt es einen Elektronegativitätswert (2,6). In der Karte bleiben alle Edelgase ohne Färbung."
+};
+const TECHNIK={
+ C:"Wichtigstes Legierungselement im Stahl: Schon wenige Zehntelprozent erhöhen Festigkeit und Härtbarkeit.",
+ Mg:"Leichtbau (Magnesium-Druckguss), Legierungselement in Aluminium (z. B. AlMgSi).",
+ Al:"Leichtbau: Profile, Bleche, Gussteile. Leitet Strom und Wärme gut.",
+ Si:"Legierungselement in Aluminium-Gusslegierungen (AlSi), in Federstahl und Elektroblech. Halbleiter in Mikrochips und Solarzellen.",
+ Ti:"Leicht, fest und sehr korrosionsbeständig: Luftfahrt, Medizintechnik, Chemieanlagen.",
+ Cr:"Legierungselement in nichtrostendem Stahl (ab etwa 10,5 % Chrom) und in Werkzeugstahl. Hartverchromen von Oberflächen.",
+ Fe:"Grundlage von Stahl und Gusseisen.",
+ Ni:"Legierungselement in austenitischem nichtrostendem Stahl (z. B. 1.4301) und Grundlage von Nickellegierungen für hohe Temperaturen.",
+ Cu:"Elektrotechnik (Leitungen, Wicklungen), Grundlage von Messing (CuZn) und Bronze (CuSn).",
+ Zn:"Korrosionsschutz durch Verzinken, Legierungselement in Messing, Zink-Druckguss.",
+ Sn:"Legierungselement in Bronze (CuSn), Weichlote, Weißblech (verzinntes Stahlblech)."
+};
+const SCHWELLE={r:4,ie:10,en:0.05};
+// Radius: Reihenfolge hängt von der Tabelle ab (kovalente Radien nach verschiedenen Autoren) oder Ausreißer
+const SPERRE_R=["O-F","Se-Br","Te-I","Sb-Te","Sn-Te","Ge-As","Sn-Sb","Al-Ga"];
+const FRAGEN={
+ karte:[
+  {q:"Wählen Sie „Atomradius“ und schalten Sie die Trendpfeile ein. In welche Richtungen nimmt der Atomradius zu?",
+   o:["Nach links und nach unten","Nach rechts und nach unten","Nach links und nach oben"],r:0,
+   w:"Nach unten kommt mit jeder Periode eine Schale dazu. Nach links nimmt die Kernladung ab, der Kern zieht die Hülle weniger stark heran. Die größten Atome stehen deshalb links unten (Cäsium), die kleinsten oben rechts (Fluor), und ganz oben steht der Wasserstoff mit nur einer Schale."},
+  {q:"Vergleichen Sie die Karten „Atomradius“ und „Ionisierungsenergie“. Was stellen Sie fest?",
+   o:["Große Atome haben eine kleine Ionisierungsenergie, kleine eine große.","Große Atome haben eine große Ionisierungsenergie.","Radius und Ionisierungsenergie hängen nicht zusammen."],r:0,
+   w:"Je größer das Atom, desto weiter ist das Außenelektron vom Kern entfernt und desto leichter lässt es sich abtrennen. Beide Trends haben dieselbe Ursache: Schalenzahl und Kernladung."},
+  {q:"Wählen Sie „Metall / Halbmetall / Nichtmetall“ und danach „Elektronegativität“. Was gilt für die Metalle?",
+   o:["Sie stehen links unten und haben eine kleine EN.","Sie stehen rechts oben, weil sie Elektronen festhalten.","Sie stehen in der Mitte und haben eine mittlere EN."],r:0,
+   w:"Metalle halten ihre Außenelektronen nur locker: großer Atomradius, kleine Ionisierungsenergie, kleine Elektronegativität. Auch die Konstruktionsmetalle liegen mit etwa 1,5 bis 1,9 eher niedrig. Die Grenze ist aber nicht scharf: Das Halbmetall Silicium hat dieselbe Elektronegativität wie Kupfer (1,90)."}
+ ],
+ groesse:[
+  {q:"Wählen Sie „Periode 3“. Natrium hat 11 Protonen, Chlor 17, beide haben 3 Schalen. Warum ist das Chlor-Atom kleiner?",
+   o:["Die größere Kernladung zieht die Hülle näher heran.","Mehr Außenelektronen füllen die Schale dichter aus.","Chlor ist ein Nichtmetall, Nichtmetalle sind kleiner."],r:0,
+   w:"Bei gleicher Schalenzahl entscheidet die Kernladung. Die zusätzlichen Elektronen kommen auf dieselbe Schale und schirmen sich gegenseitig kaum ab. Unterm Strich zieht der Kern stärker."},
+  {q:"Wählen Sie „Hauptgruppe I“. Von Lithium bis Rubidium steigt die Kernladung von +3 auf +37. Warum werden die Atome trotzdem größer?",
+   o:["Mit jeder Periode kommt eine neue Schale dazu.","Mehr Protonen stoßen die Elektronen weiter weg.","Schwerere Kerne brauchen mehr Platz im Atom."],r:0,
+   w:"Das Außenelektron liegt bei jedem Schritt eine Schale weiter außen. Von der Kernladung kommt dort wegen der Abschirmung durch die inneren Elektronen nur ungefähr +1 an."},
+  {q:"Wählen Sie „Stahl: Fe, C, Cr, Ni“. Chrom und Nickel nehmen im Stahl die Plätze von Eisenatomen ein, Kohlenstoff sitzt in den Lücken dazwischen. Woran liegt das?",
+   o:["Cr und Ni sind etwa so groß wie Fe, C ist viel kleiner.","Cr und Ni ziehen Elektronen ähnlich stark wie Fe, C schwächer.","Kohlenstoff ist größer und drückt die Eisenatome weg."],r:0,
+   w:"Eisen 126 pm, Chrom 128 pm, Nickel 124 pm: fast gleich groß, deshalb können sie Eisenatome im Gitter ersetzen (Austauschmischkristall). Kohlenstoff ist mit 77 pm nur etwa 0,6-mal so groß und lagert sich in die Lücken ein (Einlagerungsmischkristall). Ganz hinein passt er trotzdem nicht, er drückt die Nachbarn etwas auseinander."}
+ ],
+ treppe:[
+  {q:"Wählen Sie Natrium. Wo liegt der erste große Sprung, und was folgt daraus?",
+   o:["Nach dem 1. Elektron: Natrium hat 1 Außenelektron.","Nach dem 2. Elektron: Natrium hat 2 Außenelektronen.","Nach dem 8. Elektron: Natrium hat 8 Außenelektronen."],r:0,
+   w:"Das erste Elektron kostet 496 kJ/mol, das zweite schon 4.562 kJ/mol, rund das Neunfache. Das zweite Elektron muss aus der L-Schale kommen, die viel näher am Kern liegt."},
+  {q:"Wählen Sie Calcium und die lineare Achse. Die ersten Balken sind kaum zu sehen. Schalten Sie auf logarithmisch um. Woran lag es?",
+   o:["Die letzten zwei Elektronen brauchen Hunderte Male mehr Energie.","Die ersten Elektronen werden ohne nennenswerte Energie abgegeben.","Bei linearer Achse beginnt die Skala erst bei 10.000 kJ/mol."],r:0,
+   w:"Die beiden Elektronen der K-Schale sitzen direkt am Kern und brauchen mehrere Hundert Mal so viel Energie wie das erste Elektron. Auf der logarithmischen Achse steht jede Gitterlinie für das Zehnfache. So sieht man alle drei Sprünge: nach dem 2., dem 10. und dem 18. Elektron. Sie trennen die vier Schalen N, M, L und K."},
+  {q:"Jeder Balken ist höher als der vorige, auch innerhalb einer Schale. Warum?",
+   o:["Das Ion wird immer stärker positiv und hält die übrigen fester.","Jedes weitere Elektron sitzt auf einer kernnäheren Schale.","Mit jedem abgetrennten Elektron kommt ein Proton hinzu."],r:0,
+   w:"Die Zahl der Protonen bleibt gleich, die Zahl der Elektronen sinkt. Die übrigen Elektronen werden deshalb immer stärker angezogen. Die großen Sprünge kommen hinzu, wenn eine neue, kernnähere Schale an der Reihe ist."}
+ ],
+ training:[
+  {q:"Zwei Elemente stehen in derselben Periode. Woran erkennen Sie, welches Atom größer ist?",
+   o:["Es steht weiter links und hat bei gleicher Schalenzahl weniger Protonen.","Es steht weiter rechts und hat mehr Elektronen.","Es hat die größere Atommasse und mehr Neutronen."],r:0,
+   w:"In einer Periode haben alle Atome gleich viele Schalen. Nach rechts steigt die Kernladung, die Atome werden kleiner. Wer mehr Elektronen hat, steht weiter rechts und ist deshalb kleiner, nicht größer."},
+  {q:"Warum fragt das Training Magnesium gegen Aluminium bei der Ionisierungsenergie nicht ab?",
+   o:["Der gemessene Wert weicht dort vom Trend ab.","Aluminium ist ein Halbmetall, kein Metall.","Für Aluminium gibt es keinen sicheren Messwert."],r:0,
+   w:"Der Trend gilt im Großen und Ganzen. An wenigen Stellen gibt es kleine Ausreißer, z. B. Be/B, N/O, Mg/Al und P/S. Das Schalenmodell kann sie nicht erklären. Im Training kommen nur Paare vor, bei denen Trend und Messwert übereinstimmen."},
+  {q:"Kalium und Rubidium haben beide die Elektronegativität 0,82. Widerspricht das dem Trend?",
+   o:["Nein, nach unten ändert sie sich hier nur noch wenig.","Ja, in der I. Hauptgruppe gilt der Trend nicht.","Nein, beide haben gleich viele Schalen und Außenelektronen."],r:0,
+   w:"Von Lithium (0,98) bis Cäsium (0,79) nimmt die Elektronegativität ab, aber in kleinen Schritten. Zwischen Kalium und Rubidium ist der Unterschied kleiner als die Rundung. Solche Paare fragt das Training deshalb nicht ab."}
+ ]
+};
+
+// =====================================================================
+// Hilfen
+// =====================================================================
+const $=id=>document.getElementById(id);
+const ROM=["","I.","II.","III.","IV.","V.","VI.","VII.","VIII."];
+const KLASSE={M:"Metall",H:"Halbmetall",N:"Nichtmetall"};
+const KURZ={M:"M",H:"HM",N:"NM"};
+const fz=n=>n.toLocaleString("de-DE");
+const fen=e=>e.s==="Te"?"2,1":e.en.toFixed(2).replace(".",",");
+const fkomma=(x,d=1)=>x.toFixed(d).replace(".",",");
+const sch=e=>e.sch.join(" · ");
+const NS="http://www.w3.org/2000/svg";
+const BUCH="KLMN";
+
+// Zustand (und Adressparameter)
+const S={tab:"karte",eig:"radius",werte:false,pfeile:false,el:null};
+const TAB_IDS=["karte","groesse","treppe","training"];
+const EIG_IDS=["radius","ie","en","klasse"];
+
+function urlSchreiben(){
+  const p=new URLSearchParams();
+  if(S.tab!=="karte")p.set("reiter",S.tab);
+  if(S.eig!=="radius")p.set("eig",S.eig);
+  if(S.werte)p.set("werte","1");
+  if(S.pfeile)p.set("pfeile","1");
+  const el=S.tab==="treppe"?TR.el:(S.tab==="karte"?S.el:null);
+  if(el)p.set("el",el);
+  const q=p.toString();
+  try{history.replaceState(null,"",location.pathname+(q?"?"+q:""))}catch(e){}
+}
+
+// =====================================================================
+// Farben
+// =====================================================================
+const hex2rgb=h=>{h=h.replace("#","");return [0,2,4].map(i=>parseInt(h.substr(i,2),16))};
+const rgb2hex=a=>"#"+a.map(v=>Math.round(v).toString(16).padStart(2,"0")).join("");
+function lum(rgb){const c=rgb.map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+function kontrast(h1,h2){const a=lum(hex2rgb(h1)),b=lum(hex2rgb(h2));return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)}
+let FARBEN={};
+function farbenLesen(){
+  const cs=getComputedStyle(document.documentElement),v=n=>cs.getPropertyValue(n).trim();
+  FARBEN={lo:v("--skala-lo"),hi:v("--skala-hi"),mBg:v("--m-bg"),mFg:v("--m-fg"),hA:v("--h-a"),hB:v("--h-b"),hFg:v("--h-fg"),nBg:v("--n-bg"),nFg:v("--n-fg")};
+}
+const WERTE_KEY={radius:"r",ie:"ie",en:"en"};
+const BEREICH={};
+for(const [eig,k] of Object.entries(WERTE_KEY)){
+  const w=ELEMENTE.map(e=>e[k]).filter(x=>x!=null);BEREICH[eig]=[Math.min(...w),Math.max(...w)];
+}
+// Zellfarbe: bg (CSS-Wert), fg, bgs (Volltöne zur Kontrastprüfung)
+function zellfarbe(eig,e){
+  if(eig==="klasse"){
+    if(e.k==="M")return {bg:FARBEN.mBg,fg:FARBEN.mFg,bgs:[FARBEN.mBg]};
+    if(e.k==="H")return {bg:`repeating-linear-gradient(135deg,${FARBEN.hA} 0 6px,${FARBEN.hB} 6px 12px)`,fg:FARBEN.hFg,bgs:[FARBEN.hA,FARBEN.hB]};
+    return {bg:FARBEN.nBg,fg:FARBEN.nFg,bgs:[FARBEN.nBg]};
+  }
+  const v=e[WERTE_KEY[eig]];
+  if(v==null)return {bg:null,fg:null,leer:true,bgs:[]};
+  const [mn,mx]=BEREICH[eig],t=(v-mn)/(mx-mn),lo=hex2rgb(FARBEN.lo),hi=hex2rgb(FARBEN.hi);
+  const h=rgb2hex(lo.map((x,i)=>x+(hi[i]-x)*t));
+  const fg=kontrast(h,"#000000")>=kontrast(h,"#ffffff")?"#000000":"#ffffff";
+  return {bg:h,fg,bgs:[h]};
+}
+function farbenNeu(){renderKarte();renderLegende()}
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",farbenNeu);
+new MutationObserver(farbenNeu).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+farbenLesen();
+
+// =====================================================================
+// Trend-Karte
+// =====================================================================
+const POS={};ELEMENTE.forEach(e=>{if(e.g>=1)POS[e.p+"-"+e.g]=e});
+const KONSTRUKT=["Ti","Cr","Fe","Ni","Cu","Zn"];
+const PFEIL={
+  radius:{h:"links",v:"unten",th:"Atomradius nimmt zu",tv:"nimmt zu"},
+  ie:{h:"rechts",v:"oben",th:"Ionisierungsenergie nimmt zu",tv:"nimmt zu"},
+  en:{h:"rechts",v:"oben",th:"Elektronegativität nimmt zu",tv:"nimmt zu"},
+  klasse:{h:"links",v:"unten",th:"metallischer",tv:"metallischer"}
+};
+const STATUS_K={
+  radius:"Atomradius: Abstand vom Kern bis zum Rand der Elektronenhülle, in Pikometer (1 pm = 10⁻¹² m). Je kräftiger die Farbe, desto größer das Atom.",
+  ie:"Ionisierungsenergie: Energie, die man braucht, um einem Atom das äußerste Elektron zu entreißen, in kJ/mol. Je kräftiger die Farbe, desto fester sitzt das Elektron.",
+  en:"Elektronegativität: wie stark ein Atom in einer Bindung die gemeinsamen Elektronen zu sich heranzieht (Pauling-Skala, ohne Einheit). Je kräftiger die Farbe, desto stärker zieht das Atom.",
+  klasse:"Metalle geben ihre Außenelektronen leicht ab und leiten den elektrischen Strom. Nichtmetalle nehmen eher Elektronen auf. Halbmetalle wie Silicium haben Eigenschaften von beiden."
+};
+function wertKurz(eig,e){
+  if(eig==="radius")return e.r==null?"–":String(e.r);
+  if(eig==="ie")return String(e.ie);
+  if(eig==="en")return e.en==null?"–":fen(e);
+  return KURZ[e.k];
+}
+function zellLabel(eig,e){
+  if(eig==="radius")return e.r==null?`${e.n}, Atomradius: kein vergleichbarer Wert`:`${e.n}, Atomradius ${e.r} Pikometer`;
+  if(eig==="ie")return `${e.n}, Ionisierungsenergie ${e.ie} Kilojoule pro Mol`;
+  if(eig==="en")return e.en==null?`${e.n}, Elektronegativität: kein Wert`:`${e.n}, Elektronegativität ${fen(e)}`;
+  return `${e.n}, ${KLASSE[e.k]}`;
+}
+function mkZelle(e){
+  const b=document.createElement("button");b.className="zelle";b.type="button";b.dataset.s=e.s;
+  const f=zellfarbe(S.eig,e);
+  if(f.leer)b.classList.add("leer");else{b.style.background=f.bg;b.style.color=f.fg}
+  b.innerHTML=`<span class="sym">${e.s}</span>`+(S.werte?`<span class="wert">${wertKurz(S.eig,e)}</span>`:"");
+  b.setAttribute("aria-label",zellLabel(S.eig,e));
+  b.setAttribute("aria-pressed",S.el===e.s);
+  b.addEventListener("click",()=>{S.el=S.el===e.s?null:e.s;urlSchreiben();renderKarte();renderSteck()});
+  return b;
+}
+function div(cls,txt){const d=document.createElement("div");if(cls)d.className=cls;if(txt!=null)d.textContent=txt;return d}
+function renderKarte(){
+  farbenLesen();
+  const k=$("karte");k.textContent="";
+  k.appendChild(div());
+  for(let g=1;g<=8;g++)k.appendChild(div("kopfz",ROM[g].replace(".","")));
+  for(let p=1;p<=6;p++){
+    k.appendChild(div("kopfz",String(p)));
+    for(let g=1;g<=8;g++){
+      const e=POS[p+"-"+g];
+      if(e)k.appendChild(mkZelle(e));
+      else if(p===6&&g>=3){
+        const pl=div("platz",PLATZHALTER[g-3]);pl.setAttribute("aria-hidden","true");pl.title="In diesem Labor nicht aufgenommen";k.appendChild(pl);
+      }else k.appendChild(div());
+    }
+  }
+  const k2=$("karte2");k2.textContent="";
+  k2.appendChild(div("small k2-titel","Konstruktionsmetalle (Nebengruppen, 4. Periode)"));
+  k2.appendChild(div());
+  for(let i=0;i<8;i++)k2.appendChild(i<KONSTRUKT.length?mkZelle(EL[KONSTRUKT[i]]):div());
+  // Pfeile
+  const ph=$("pfeil-h"),pv=$("pfeil-v");
+  ph.hidden=pv.hidden=!S.pfeile;
+  if(S.pfeile){
+    const P=PFEIL[S.eig];
+    const mk=(id)=>`<marker id="${id}" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--ink)"/></marker>`;
+    const ln=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="stroke:var(--ink)" stroke-width="3" marker-end="url(#pk)"/>`;
+    ph.innerHTML=`<svg aria-hidden="true"><defs>${mk("pk")}</defs>${P.h==="links"?ln("100%",14,3,14):ln(0,14,"99.2%",14)}</svg><span>${P.th}</span>`;
+    pv.innerHTML=`<svg aria-hidden="true"><defs>${mk("pk2")}</defs>${(P.v==="oben"?ln(11,"100%",11,3):ln(11,0,11,"99.5%")).replace("pk","pk2")}</svg><span>${P.tv}</span>`;
+    ph.setAttribute("title",P.th);
+  }
+}
+function renderLegende(){
+  const L=$("legende");let h="";
+  if(S.eig==="klasse"){
+    h=`<span><span class="leg-feld" style="background:${FARBEN.mBg};color:${FARBEN.mFg}"></span>M Metall</span><span><span class="leg-feld" style="background:repeating-linear-gradient(135deg,${FARBEN.hA} 0 6px,${FARBEN.hB} 6px 12px)"></span>HM Halbmetall</span><span><span class="leg-feld" style="background:${FARBEN.nBg}"></span>NM Nichtmetall</span>`;
+  }else{
+    const [mn,mx]=BEREICH[S.eig];
+    const zahl=S.eig==="radius"?`${mn} pm … ${mx} pm`:S.eig==="ie"?`${fz(mn)} … ${fz(mx)} kJ/mol`:`${fkomma(mn,2)} … ${fkomma(mx,2)}`;
+    h=`<span>klein <span class="leg-bar" aria-hidden="true"></span> groß`+(S.werte?` (${zahl})`:"")+`</span>`;
+    if(S.eig==="radius")h+=`<span><span class="leg-feld leer"></span>Edelgase: anders gemessen, nicht vergleichbar</span>`;
+    if(S.eig==="en")h+=`<span><span class="leg-feld leer"></span>Edelgase: kein Wert, sie gehen praktisch keine Bindungen ein</span>`;
+  }
+  L.innerHTML=h;
+}
+function schalenSVG(e){
+  const R=[78,112,146,180],cx=200,cy=200;
+  let s=`<svg viewBox="0 0 400 400" role="img" aria-label="Schalenmodell von ${e.n}: ${sch(e)}">`;
+  e.sch.forEach((n,i)=>{
+    s+=`<circle cx="${cx}" cy="${cy}" r="${R[i]}" fill="none" style="stroke:var(--shell)" stroke-width="1.5"/>`;
+    s+=`<text x="${cx+R[i]*.71+4}" y="${cy-R[i]*.71-4}" style="fill:var(--muted)" font-size="14" font-weight="600">${BUCH[i]}</text>`;
+    for(let j=0;j<n;j++){
+      const a=-Math.PI/2+j*2*Math.PI/n;
+      s+=`<circle cx="${(cx+R[i]*Math.cos(a)).toFixed(1)}" cy="${(cy+R[i]*Math.sin(a)).toFixed(1)}" r="6.5" style="fill:var(--electron)"/>`;
+    }
+  });
+  s+=`<circle cx="${cx}" cy="${cy}" r="40" style="fill:var(--kern)"/><text x="${cx}" y="${cy+8}" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="700">+${e.z}</text></svg>`;
+  return s;
+}
+function renderSteck(){
+  const box=$("steck"),e=S.el?EL[S.el]:null;
+  if(!e){box.innerHTML=`<p class="leer-text" style="margin:0">Tippen Sie ein Element an.</p>`;return}
+  const nebengr=e.g===0;
+  let stellung;
+  if(e.s==="H")stellung="1. Periode · steht über der I. Hauptgruppe";
+  else if(nebengr)stellung=`${e.p}. Periode · Nebengruppe`;
+  else stellung=`${e.p}. Periode · ${ROM[e.g]} Hauptgruppe`;
+  const radius=e.r==null?"kein vergleichbarer Wert: anders gemessen":`${e.r} pm (${e.ra==="m"?"metallischer":"kovalenter"} Radius)`;
+  let h=`<div class="steck-kopf"><span class="sym">${e.s}</span><span class="nm">${e.n}</span><span class="oz">Ordnungszahl ${e.z}</span></div>`;
+  if(e.z<=20)h+=`<div class="schalen">${schalenSVG(e)}</div>`;
+  else h+=`<div class="schalenbox"><b>Schalenbesetzung: ${sch(e)}</b><div class="small" style="margin-top:4px">Ab der 4. Periode reicht das einfache Schalenmodell nicht mehr: Bei den Nebengruppenelementen wird eine innere Schale nachträglich aufgefüllt. Warum das so ist, erklärt erst ein genaueres Atommodell. Für die Trends genügt: Zahl der Schalen = Periode, Zahl der Außenelektronen = Hauptgruppe.</div></div>`;
+  h+=`<dl class="facts"><dt>Stellung im PSE</dt><dd>${stellung}</dd>`+
+     `<dt>Protonen (Kernladung)</dt><dd>${e.z} (+${e.z})</dd>`+
+     `<dt>Schalen</dt><dd>${sch(e)}</dd>`+
+     `<dt>Außenelektronen</dt><dd>${nebengr?"bei Nebengruppen nicht einfach ablesbar":e.sch[e.sch.length-1]}</dd>`+
+     `<dt>Atomradius</dt><dd>${radius}</dd>`+
+     `<dt>Ionisierungsenergie</dt><dd>${fz(e.ie)} kJ/mol</dd>`+
+     `<dt>Elektronegativität</dt><dd>${e.en==null?"kein Wert":fen(e)}</dd>`+
+     `<dt>Stoffklasse</dt><dd>${KLASSE[e.k]}</dd></dl>`;
+  if(HINWEIS[e.s])h+=`<div class="hinweis">${HINWEIS[e.s]}</div>`;
+  if(TECHNIK[e.s])h+=`<div class="hinweis"><b>Im Maschinenbau:</b> ${TECHNIK[e.s]}</div>`;
+  if(e.z<=20)h+=`<p style="margin:10px 0 0"><a href="../atombaukasten/">Dieses Atom im Atombaukasten bauen →</a></p>`;
+  box.innerHTML=h;
+}
+function kartePflege(){
+  document.querySelectorAll("[data-eig]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.eig===S.eig));
+  $("k-werte").textContent="Werte anzeigen: "+(S.werte?"an":"aus");$("k-werte").setAttribute("aria-pressed",S.werte);
+  $("k-pfeile").textContent="Trendpfeile: "+(S.pfeile?"an":"aus");$("k-pfeile").setAttribute("aria-pressed",S.pfeile);
+  $("k-status").textContent=STATUS_K[S.eig];
+}
+function karteAlles(){kartePflege();renderKarte();renderLegende();renderSteck();urlSchreiben()}
+document.querySelectorAll("[data-eig]").forEach(b=>b.addEventListener("click",()=>{S.eig=b.dataset.eig;karteAlles()}));
+$("k-werte").addEventListener("click",()=>{S.werte=!S.werte;karteAlles()});
+$("k-pfeile").addEventListener("click",()=>{S.pfeile=!S.pfeile;karteAlles()});
+
+// =====================================================================
+// Größenvergleich
+// =====================================================================
+const G={sel:["Na","Cl","","",],klein:matchMedia("(max-width:600px)")};
+const PRESETS={p3:["Na","Al","P","Cl"],g1:["Li","Na","K","Rb"],nacl:["Na","Cl"],stahl:["Fe","C","Cr","Ni"]};
+function gvOptionen(sel){
+  let h=`<option value="">—</option><optgroup label="Hauptgruppen">`;
+  ELEMENTE.filter(e=>e.g>=1&&e.r!=null).sort((a,b)=>a.z-b.z).forEach(e=>{h+=`<option value="${e.s}">${e.s} – ${e.n}</option>`});
+  h+=`</optgroup><optgroup label="Konstruktionsmetalle">`;
+  KONSTRUKT.forEach(s=>{h+=`<option value="${s}">${s} – ${EL[s].n}</option>`});
+  sel.innerHTML=h+"</optgroup>";
+}
+document.querySelectorAll(".g-sel").forEach(gvOptionen);
+function gvLesen(){G.sel=[1,2,3,4].map(i=>$("g-"+i).value)}
+function gvSchreiben(){G.sel.forEach((s,i)=>{$("g-"+(i+1)).value=s||""})}
+function gvStatus(){
+  const namen=[...new Set(G.sel.filter(Boolean))];
+  if(!namen.length)return "Wählen Sie bis zu vier Elemente aus.";
+  const E=namen.map(s=>EL[s]);let t;
+  if(namen.length===4&&["Fe","C","Cr","Ni"].every(x=>namen.includes(x)))
+    t="Chrom (128 pm) und Nickel (124 pm) sind fast so groß wie Eisen (126 pm). Sie können im Stahl Eisenatome auf ihren Plätzen ersetzen. Kohlenstoff (77 pm) ist viel kleiner und sitzt in den Lücken zwischen den Eisenatomen. Wie eng es dort ist, zeigt das Labor <a href=\"../kristallgitter/\">Kristallgitter</a>.";
+  else if(E.length>=2&&E.every(e=>e.g>=1&&e.p===E[0].p)){
+    const z=E.map(e=>e.z);
+    t=`Alle stehen in der ${E[0].p}. Periode und haben ${E[0].p} Schalen. Von links nach rechts steigt die Kernladung von +${Math.min(...z)} auf +${Math.max(...z)}. Der Kern zieht die Hülle stärker an, die Atome werden kleiner.`;
+  }else if(E.length>=2&&E.every(e=>e.g>=1&&e.g===E[0].g))
+    t=`Alle stehen in der ${ROM[E[0].g]} Hauptgruppe. Mit jeder Periode kommt eine Schale dazu. Die Außenelektronen liegen weiter außen, die Atome werden größer, obwohl die Kernladung steigt.`;
+  else t="Vergleichen Sie: Wo stehen die Elemente im PSE, und wie viele Schalen und Protonen haben sie?";
+  if(E.length===2&&E[0].r!==E[1].r){
+    const [gr,kl]=E[0].r>E[1].r?[E[0],E[1]]:[E[1],E[0]];
+    t+=` Der Radius von ${gr.n} ist etwa ${fkomma(gr.r/kl.r)}-mal so groß wie der von ${kl.n}.`;
+  }
+  if(E.some(e=>e.ra==="m")&&E.some(e=>e.ra==="k"))t+=" Hinweis: Metalle und Nichtmetalle sind etwas unterschiedlich gemessen (metallischer bzw. kovalenter Radius).";
+  return t;
+}
+function renderGroesse(){
+  G.klein=matchMedia("(max-width:600px)");
+  const klein=G.klein.matches,svg=$("gv-svg");
+  const VW=klein?400:800,VH=klein?610:320;
+  const centers=klein?[[100,105],[300,105],[100,395],[300,395]]:[[100,105],[300,105],[500,105],[700,105]];
+  svg.setAttribute("viewBox",`0 0 ${VW} ${VH}`);
+  let s="";
+  const namen=[];
+  G.sel.forEach((sym,i)=>{
+    if(!sym)return;
+    const e=EL[sym],[cx,cy]=centers[i],R=92*e.r/262,n=e.sch.length;
+    namen.push(`${e.n} ${e.r} pm`);
+    s+=`<circle cx="${cx}" cy="${cy}" r="${R.toFixed(2)}" data-r="${e.r}" style="fill:var(--soft);stroke:var(--ink)" stroke-width="2"/>`;
+    for(let k=1;k<n;k++)s+=`<circle cx="${cx}" cy="${cy}" r="${(R*k/n).toFixed(2)}" fill="none" style="stroke:var(--muted)" stroke-dasharray="4 4" stroke-width="1.2"/>`;
+    const kr=Math.min(9,.3*R);
+    s+=`<circle cx="${cx}" cy="${cy}" r="${kr.toFixed(2)}" style="fill:var(--kern)"/>`;
+    if(kr>=7)s+=`<text x="${cx}" y="${cy+3}" text-anchor="middle" fill="#ffffff" font-size="8.5" font-weight="700">+${e.z}</text>`;
+    const ty=cy+92+22;
+    s+=`<text x="${cx}" y="${ty+4}" text-anchor="middle" style="fill:var(--ink)" font-size="22" font-weight="700">${e.s}</text>`;
+    s+=`<text x="${cx}" y="${ty+24}" text-anchor="middle" style="fill:var(--ink)" font-size="16" font-weight="600">${e.r} pm</text>`;
+    s+=`<text x="${cx}" y="${ty+41}" text-anchor="middle" style="fill:var(--muted)" font-size="13">${e.ra==="m"?"metallisch":"kovalent"}</text>`;
+    s+=`<text x="${cx}" y="${ty+57}" text-anchor="middle" style="fill:var(--muted)" font-size="12">Kern +${e.z} · Schalen ${e.sch.join("·")}</text>`;
+  });
+  const bl=92*100/262;
+  s+=`<line x1="20" y1="${VH-18}" x2="${20+bl}" y2="${VH-18}" style="stroke:var(--ink)" stroke-width="3"/><line x1="20" y1="${VH-24}" x2="20" y2="${VH-12}" style="stroke:var(--ink)" stroke-width="2"/><line x1="${20+bl}" y1="${VH-24}" x2="${20+bl}" y2="${VH-12}" style="stroke:var(--ink)" stroke-width="2"/><text x="${20+bl+8}" y="${VH-13}" style="fill:var(--muted)" font-size="13">100 pm</text>`;
+  svg.innerHTML=s;
+  svg.setAttribute("aria-label","Größenvergleich"+(namen.length?": "+namen.join(", "):""));
+  $("g-status").innerHTML=gvStatus();
+}
+document.querySelectorAll(".g-sel").forEach(sl=>sl.addEventListener("change",()=>{gvLesen();renderGroesse()}));
+document.querySelectorAll("[data-preset]").forEach(b=>b.addEventListener("click",()=>{
+  const p=PRESETS[b.dataset.preset];G.sel=[0,1,2,3].map(i=>p[i]||"");gvSchreiben();renderGroesse();
+}));
+G.sel=PRESETS.nacl.concat(["",""]);gvSchreiben();
+matchMedia("(max-width:600px)").addEventListener("change",()=>{renderGroesse();renderTreppe()});
+
+// =====================================================================
+// Treppe der Ionisierungsenergie
+// =====================================================================
+const TR={modus:"erkunden",el:"Na",achse:"linear",grenzen:false,sel:null};
+const R={el:null,n:0,geloest:0,fehl:0,fertig:false,gezeigt:false};
+const POOL=["Na","Mg","Al","Si","P","S","Cl","K","Ca"];
+const EL20=ELEMENTE.filter(e=>e.z<=20).sort((a,b)=>a.z-b.z);
+function stufen(e){
+  if(!e.ies)return [];
+  const r=[...e.sch].reverse(),out=[];let sum=0;
+  for(let i=0;i<r.length-1;i++){sum+=r[i];out.push(sum)}
+  return out;
+}
+function schoenMax(m){
+  const b=Math.pow(10,Math.floor(Math.log10(m)));
+  for(const [c,st] of [[1,.2],[2,.5],[2.5,.5],[5,1],[10,2]])if(c*b>=m)return {max:c*b,step:st*b};
+}
+function aussen(a){return a===1?"1 Außenelektron":`${a} Außenelektronen`}
+function trendWerte(){return TR.modus==="raetsel"?EL[R.el].ies.slice(0,10):EL[TR.el].ies}
+function renderTreppe(){
+  const svg=$("tr-svg");if(!svg)return;
+  const rae=TR.modus==="raetsel",e=EL[rae?R.el:TR.el];
+  if(!e)return;
+  const werte=rae?e.ies.slice(0,10):e.ies,n=werte.length;
+  const klein=matchMedia("(max-width:600px)").matches;
+  const VW=klein?400:800,VH=380,L=klein?62:70,Rr=10,Tp=34,Bt=50,pw=VW-L-Rr,ph=VH-Tp-Bt;
+  svg.setAttribute("viewBox",`0 0 ${VW} ${VH}`);
+  const log=TR.achse==="log",mx=Math.max(...werte);
+  let ymax,grid=[],yf;
+  if(log){
+    const P=Math.floor(Math.log10(mx))+1;ymax=Math.pow(10,P);
+    for(let k=2;k<=P;k++)grid.push(Math.pow(10,k));
+    yf=v=>Tp+ph*(1-(Math.log10(Math.max(v,100))-2)/(P-2));
+  }else{
+    const sm=schoenMax(mx);ymax=sm.max;
+    for(let v=0;v<=ymax+1e-6;v+=sm.step)grid.push(Math.round(v));
+    yf=v=>Tp+ph*(1-v/ymax);
+  }
+  const slot=pw/n,bw=slot*.7,scale=svg.getBoundingClientRect().width/VW||1;
+  let s="";
+  // Schalengrenzen (Hintergrund)
+  const grenzen=TR.grenzen&&!rae&&e.ies;
+  let gruppen=[];
+  if(grenzen){
+    const r=[...e.sch].reverse();let start=0;
+    r.forEach((c,i)=>{gruppen.push({start,c,idx:e.sch.length-1-i,aussen:i===0});start+=c});
+    gruppen.forEach((g,i)=>{
+      if(i%2===0)s+=`<rect x="${L+g.start*slot}" y="${Tp}" width="${g.c*slot}" height="${ph}" style="fill:var(--soft)"/>`;
+    });
+  }
+  grid.forEach(v=>{
+    const y=yf(v);
+    s+=`<line x1="${L}" y1="${y.toFixed(1)}" x2="${VW-Rr}" y2="${y.toFixed(1)}" style="stroke:var(--line)" stroke-width="1"/>`;
+    s+=`<text x="${L-6}" y="${(y+4).toFixed(1)}" text-anchor="end" style="fill:var(--muted)" font-size="12">${fz(v)}</text>`;
+  });
+  s+=`<line x1="${L}" y1="${Tp}" x2="${L}" y2="${Tp+ph}" style="stroke:var(--muted)"/><line x1="${L}" y1="${Tp+ph}" x2="${VW-Rr}" y2="${Tp+ph}" style="stroke:var(--muted)"/>`;
+  const base=Tp+ph;
+  werte.forEach((v,i)=>{
+    const x=L+i*slot+(slot-bw)/2,y=yf(v);
+    s+=`<rect class="bs" data-i="${i}" tabindex="0" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${(base-y).toFixed(1)}" aria-label="Elektron Nr. ${i+1}: ${fz(v)} Kilojoule pro Mol"/>`;
+    if(bw*scale>=34)s+=`<text x="${(x+bw/2).toFixed(1)}" y="${(y-4).toFixed(1)}" text-anchor="middle" style="fill:var(--ink)" font-size="11" pointer-events="none">${fz(v)}</text>`;
+    if(slot>=18||i%2===0)s+=`<text x="${(L+i*slot+slot/2).toFixed(1)}" y="${base+16}" text-anchor="middle" style="fill:var(--muted)" font-size="12">${i+1}</text>`;
+  });
+  if(grenzen){
+    gruppen.forEach((g,i)=>{
+      const xa=L+g.start*slot,xb=L+(g.start+g.c)*slot,b=BUCH[g.idx];
+      if(i>0)s+=`<line x1="${xa}" y1="${Tp}" x2="${xa}" y2="${base}" style="stroke:var(--ink)" stroke-dasharray="4 4" stroke-width="1.2"/>`;
+      const w=xb-xa,voll=g.aussen?`Außenschale (${b})`:`${b}-Schale`;
+      const kurz=g.aussen?`außen: ${b}`:`${b}-Schale`;const t=w>=voll.length*6.2?voll:(w>=kurz.length*6.2?kurz:b);
+      s+=`<text x="${((xa+xb)/2).toFixed(1)}" y="${Tp-9}" text-anchor="middle" style="fill:var(--ink)" font-size="12" font-weight="600">${t}</text>`;
+    });
+  }
+  s+=`<text transform="translate(15 ${Tp+ph/2}) rotate(-90)" text-anchor="middle" style="fill:var(--ink)" font-size="${klein?11:12}">Ionisierungsenergie in kJ/mol</text>`;
+  s+=`<text x="${L+pw/2}" y="${VH-8}" text-anchor="middle" style="fill:var(--ink)" font-size="${klein?10.5:12}">Nummer des abgetrennten Elektrons (1 = zuerst abgetrennt)</text>`;
+  svg.innerHTML=s;
+  svg.setAttribute("aria-label",rae?"Balkendiagramm der ersten 10 Ionisierungsenergien eines gesuchten Elements":`Treppe der Ionisierungsenergie von ${e.n}, ${n} Balken`);
+  $("tr-info").textContent="Tippen Sie einen Balken an, um den Wert zu sehen.";
+}
+function balkenInfo(i){
+  const rae=TR.modus==="raetsel",e=EL[rae?R.el:TR.el],v=e.ies[i];
+  let t=`Elektron Nr. ${i+1}: ${fz(v)} kJ/mol`;
+  if(TR.grenzen&&!rae){
+    const r=[...e.sch].reverse();let start=0;
+    for(let k=0;k<r.length;k++){if(i<start+r[k]){t+=` (${BUCH[e.sch.length-1-k]}-Schale)`;break}start+=r[k]}
+  }
+  $("tr-info").textContent=t;
+}
+{
+  const svg=$("tr-svg");
+  const f=ev=>{const r=ev.target.closest&&ev.target.closest(".bs");if(!r)return;
+    svg.querySelectorAll(".bs.sel").forEach(x=>x.classList.remove("sel"));r.classList.add("sel");balkenInfo(+r.dataset.i)};
+  svg.addEventListener("click",f);svg.addEventListener("mouseover",f);svg.addEventListener("focusin",f);
+}
+function trendStatus(){
+  const e=EL[TR.el];let t;
+  if(e.z===1)t="Wasserstoff hat nur ein Elektron. Es gibt deshalb nur einen Balken.";
+  else if(e.z===2)t="Helium: Beide Elektronen sitzen in der K-Schale. Das zweite braucht trotzdem mehr als doppelt so viel Energie (5.251 statt 2.372 kJ/mol), weil es von einem positiv geladenen Ion abgetrennt werden muss.";
+  else{
+    const st=stufen(e),a=st[0],f=Math.round(e.ies[a]/e.ies[a-1]),sc=BUCH[e.sch.length-2];
+    t=`${e.n} (${sch(e)}): Der erste große Sprung liegt zwischen dem ${a}. und dem ${a+1}. Elektron. Dort steigt die Energie auf etwa das ${f}-Fache. Vorher ${a===1?"wird":"werden"} ${aussen(a)} abgetrennt, danach ist die ${sc}-Schale dran, die näher am Kern liegt.`;
+    if(st.length>1)t+=` Weitere große Sprünge: ${st.slice(1).map(b=>`nach dem ${b}. Elektron`).join(" und ")}. Jeder Sprung zeigt den Wechsel zu einer weiteren, kernnäheren Schale.`;
+    if(e.s==="Ne"||e.s==="Ar")t+=" Die Außenschale ist voll besetzt (Edelgas).";
+  }
+  if(TR.achse==="log")t+=" Logarithmische Achse: Jede Gitterlinie steht für das Zehnfache der vorigen.";
+  else if(e.z>=11)t+=" Die ersten Balken sind kaum zu sehen? Schalten Sie auf die logarithmische Achse um.";
+  return t;
+}
+function trPflege(){
+  const rae=TR.modus==="raetsel";
+  document.querySelectorAll("[data-modus]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.modus===TR.modus));
+  document.querySelectorAll("[data-achse]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.achse===TR.achse));
+  $("tr-erk").hidden=rae;$("tr-raetsel").hidden=!rae;$("r-ui").hidden=!rae;
+  const g=$("tr-grenzen");g.disabled=rae;g.title=rae?"Im Rätsel nicht verfügbar":"";
+  g.textContent="Schalengrenzen: "+(!rae&&TR.grenzen?"an":"aus");g.setAttribute("aria-pressed",!rae&&TR.grenzen);
+  $("tr-el").value=TR.el;
+  $("tr-status").textContent=rae?"Tipp: Suchen Sie den ersten großen Sprung. Davor liegen die Außenelektronen.":trendStatus();
+}
+function trAlles(){trPflege();renderTreppe();urlSchreiben()}
+{
+  const sel=$("tr-el");sel.innerHTML=EL20.map(e=>`<option value="${e.s}">${e.z} – ${e.s} – ${e.n}</option>`).join("");
+  const ra=$("r-antwort");ra.innerHTML=`<option value="">—</option>`+EL20.map(e=>`<option value="${e.s}">${e.s} – ${e.n}</option>`).join("");
+  sel.addEventListener("change",()=>{TR.el=sel.value;trAlles()});
+  const schritt=d=>{const i=EL20.findIndex(e=>e.s===TR.el);TR.el=EL20[(i+d+EL20.length)%EL20.length].s;trAlles()};
+  $("tr-prev").addEventListener("click",()=>schritt(-1));$("tr-next").addEventListener("click",()=>schritt(1));
+  document.querySelectorAll("[data-achse]").forEach(b=>b.addEventListener("click",()=>{TR.achse=b.dataset.achse;trAlles()}));
+  $("tr-grenzen").addEventListener("click",()=>{TR.grenzen=!TR.grenzen;trAlles()});
+  document.querySelectorAll("[data-modus]").forEach(b=>b.addEventListener("click",()=>{
+    TR.modus=b.dataset.modus;
+    if(TR.modus==="raetsel"&&!R.el)raetselNeu();
+    raetselAnzeige();trAlles();
+  }));
+}
+// ---- Rätsel ----
+function raetselReset(){R.el=null;R.n=0;R.geloest=0;R.fehl=0;R.fertig=false;R.gezeigt=false}
+function raetselNeu(){
+  let c;
+  do{c=POOL[Math.floor(Math.random()*POOL.length)]}while(c===R.el||(R.n===0&&c==="Mg"));
+  R.el=c;R.n++;R.fehl=0;R.fertig=false;R.gezeigt=false;
+  return c;
+}
+function loesungsText(prefix){
+  const e=EL[R.el],a=stufen(e)[0];
+  return `${prefix} ${e.n}. Der große Sprung liegt zwischen dem ${a}. und dem ${a+1}. Elektron. Also ${aussen(a)}, ${ROM[e.g]} Hauptgruppe. Zusammen mit der ${e.p}. Periode ergibt das ${e.n} (${sch(e)}).`;
+}
+function raetselAnzeige(){
+  if(!R.el)return;
+  const e=EL[R.el];
+  $("r-kopf").textContent=`Rätsel ${R.n}: Das Diagramm zeigt die ersten 10 Ionisierungsenergien eines Elements aus der ${e.p}. Periode. Um welches Element handelt es sich?`;
+  $("r-zaehler").textContent=`Gelöst: ${R.geloest} von ${R.n} Rätseln`;
+  $("r-pruefen").disabled=R.fertig||R.gezeigt;
+  $("r-loesung").disabled=!(R.fehl>=2)||R.fertig||R.gezeigt;
+}
+function raetselFb(cls,txt){const f=$("r-fb");f.className="fb "+cls;f.textContent=txt}
+$("r-pruefen").addEventListener("click",()=>{
+  const v=$("r-antwort").value;
+  if(!v){raetselFb("fb-hint","Bitte wählen Sie zuerst ein Element.");return}
+  if(v===R.el){R.fertig=true;R.geloest++;raetselFb("fb-ok",loesungsText("Richtig:"))}
+  else{R.fehl++;raetselFb("fb-bad","Noch nicht. Suchen Sie den ersten großen Sprung: Wie viele Elektronen lassen sich vorher vergleichsweise leicht abtrennen? Das ist die Zahl der Außenelektronen.")}
+  raetselAnzeige();
+});
+$("r-loesung").addEventListener("click",()=>{R.gezeigt=true;raetselFb("fb-hint",loesungsText("Lösung:"));raetselAnzeige()});
+$("r-neu").addEventListener("click",()=>{raetselNeu();$("r-antwort").value="";$("r-fb").className="fb";$("r-fb").textContent="";raetselAnzeige();renderTreppe();urlSchreiben()});
+$("r-antwort").addEventListener("change",()=>{});
+
+// =====================================================================
+// Vorhersage-Training
+// =====================================================================
+function vergleichsArt(a,b){
+  if(typeof a==="string")a=EL[a];if(typeof b==="string")b=EL[b];
+  if(a.g<1||b.g<1||a.s===b.s)return null;
+  if(a.p===b.p)return "P";
+  if(a.g===b.g)return "G";
+  return null;
+}
+// A = weiter links bzw. weiter oben
+function ordnen(a,b){const art=vergleichsArt(a,b);return art==="P"?(a.g<b.g?[a,b]:[b,a]):(a.p<b.p?[a,b]:[b,a])}
+function gueltigesPaar(a,b,typ){
+  if(typeof a==="string")a=EL[a];if(typeof b==="string")b=EL[b];
+  if(a.s==="H"||b.s==="H")return false;
+  const art=vergleichsArt(a,b);if(!art)return false;
+  const [A,B]=ordnen(a,b);
+  if(typ==="met")return A.k!==B.k;
+  const k=WERTE_KEY[typ==="r"?"radius":typ];
+  if(A[k]==null||B[k]==null)return false;
+  let d;
+  if(typ==="r"){d=art==="P"?A.r-B.r:B.r-A.r;if(SPERRE_R.includes(A.s+"-"+B.s))return false}
+  else d=art==="P"?B[k]-A[k]:A[k]-B[k];
+  return Math.round(d*100)/100>=SCHWELLE[typ]&&d>0;
+}
+function richtig(a,b,typ){
+  if(typeof a==="string")a=EL[a];if(typeof b==="string")b=EL[b];
+  const art=vergleichsArt(a,b),[A,B]=ordnen(a,b);
+  if(typ==="met")return art==="P"?A:B;
+  if(typ==="r")return art==="P"?A:B;
+  // ie: wer leichter abgibt = kleinere IE; en: größere EN
+  if(typ==="ie")return A.ie<B.ie?A:B;
+  return A.en>B.en?A:B;
+}
+const PAARE=(()=>{
+  const out={r:[],ie:[],en:[],met:[]};
+  const HG=ELEMENTE.filter(e=>e.g>=1&&e.s!=="H");
+  for(let i=0;i<HG.length;i++)for(let j=i+1;j<HG.length;j++){
+    const art=vergleichsArt(HG[i],HG[j]);if(!art)continue;
+    const [A,B]=ordnen(HG[i],HG[j]);
+    for(const t of ["r","ie","en","met"])if(gueltigesPaar(A,B,t))out[t].push([A.s,B.s]);
+  }
+  return out;
+})();
+const WERT_TXT={
+  r:e=>`${e.s} ${e.r} pm`,
+  ie:e=>`${e.s} ${fz(e.ie)} kJ/mol`,
+  en:e=>`${e.s} ${fen(e)}`
+};
+function begruendung(a,b,typ){
+  if(typeof a==="string")a=EL[a];if(typeof b==="string")b=EL[b];
+  const art=vergleichsArt(a,b),[A,B]=ordnen(a,b);let t;
+  const w=(f)=>`${f(A)}, ${f(B)}`;
+  if(art==="P"){
+    t=`${A.n} und ${B.n} stehen beide in der ${A.p}. Periode und haben ${A.p} Schalen. ${B.n} hat mehr Protonen im Kern (+${B.z} statt +${A.z}) und zieht die Elektronenhülle stärker an.`;
+    if(typ==="r")t+=` Deshalb ist das ${A.n}-Atom größer. (${w(WERT_TXT.r)})`;
+    else if(typ==="ie")t+=` ${A.n} hält sein Außenelektron schwächer fest und gibt es leichter ab. (Ionisierungsenergie: ${w(WERT_TXT.ie)})`;
+    else if(typ==="en")t+=` Deshalb zieht ${B.n} auch die Bindungselektronen stärker an und hat die höhere Elektronegativität. (${w(WERT_TXT.en)})`;
+    else t+=` ${A.n} gibt seine Außenelektronen leichter ab und ist deshalb metallischer. (${A.n}: ${KLASSE[A.k]}, ${B.n}: ${KLASSE[B.k]})`;
+  }else{
+    const d=B.p-A.p;
+    t=`${A.n} und ${B.n} stehen beide in der ${ROM[A.g]} Hauptgruppe. ${B.n} steht weiter unten und hat ${d===1?"1 Schale":d+" Schalen"} mehr: Seine Außenelektronen sind weiter vom Kern entfernt. Die größere Kernladung wird von den inneren Schalen abgeschirmt.`;
+    if(typ==="r")t+=` Deshalb ist das ${B.n}-Atom größer. (${w(WERT_TXT.r)})`;
+    else if(typ==="ie")t+=` ${B.n} hält sein Außenelektron schwächer fest und gibt es leichter ab. (Ionisierungsenergie: ${w(WERT_TXT.ie)})`;
+    else if(typ==="en")t+=` Deshalb zieht ${A.n} Bindungselektronen stärker an und hat die höhere Elektronegativität. (${w(WERT_TXT.en)})`;
+    else t+=` ${B.n} gibt seine Außenelektronen leichter ab und ist deshalb metallischer. (${A.n}: ${KLASSE[A.k]}, ${B.n}: ${KLASSE[B.k]})`;
+  }
+  return t;
+}
+const FRAGE_TXT={r:"Welches Atom ist größer?",ie:"Welches Atom gibt leichter ein Elektron ab?",en:"Welches Atom hat die höhere Elektronegativität?",met:"Welches Element ist metallischer?"};
+const TA={typ:"gemischt",aufgabe:null,richtig:0,gesamt:0,serie:0,verlauf:[]};
+function ziehen(){
+  let a;
+  for(let versuch=0;versuch<50;versuch++){
+    const typ=TA.typ==="gemischt"?["r","ie","en","met"][Math.floor(Math.random()*4)]:TA.typ;
+    const liste=PAARE[typ],p=liste[Math.floor(Math.random()*liste.length)];
+    const key=typ+":"+p.join("-");
+    if(TA.verlauf.includes(key))continue;
+    a={typ,paar:p,key};break;
+  }
+  if(!a){const typ=TA.typ==="gemischt"?"r":TA.typ,p=PAARE[typ][0];a={typ,paar:p,key:typ+":"+p.join("-")}}
+  TA.verlauf.push(a.key);if(TA.verlauf.length>8)TA.verlauf.shift();
+  return a;
+}
+function taZaehler(){$("ta-zaehler").textContent=`Richtig: ${TA.richtig} von ${TA.gesamt} · Serie: ${TA.serie}`}
+function taNeu(){
+  const a=ziehen();TA.aufgabe=a;TA.beantwortet=false;
+  const [x,y]=Math.random()<.5?a.paar:[a.paar[1],a.paar[0]];
+  $("ta-frage").textContent=FRAGE_TXT[a.typ];
+  const box=$("ta-antworten");box.textContent="";
+  for(const s of [x,y]){
+    const e=EL[s],b=document.createElement("button");b.className="antw";b.type="button";b.dataset.s=s;
+    b.innerHTML=`<span class="sym">${e.s}</span><span class="nm">${e.n}</span><span class="pos">${e.p}. Periode · ${ROM[e.g]} Hauptgruppe</span>`;
+    b.addEventListener("click",()=>taAntwort(s));
+    box.appendChild(b);
+  }
+  const fb=$("ta-fb");fb.className="fb";fb.textContent="";
+  $("ta-weiter").hidden=true;
+  taZaehler();
+}
+function taAntwort(s){
+  if(TA.beantwortet)return;TA.beantwortet=true;
+  const [a,b]=TA.aufgabe.paar,r=richtig(a,b,TA.aufgabe.typ),ok=r.s===s;
+  TA.gesamt++;if(ok){TA.richtig++;TA.serie++}else TA.serie=0;
+  document.querySelectorAll("#ta-antworten .antw").forEach(btn=>{
+    btn.disabled=true;
+    if(btn.dataset.s===r.s){btn.classList.add("ok");btn.insertAdjacentHTML("beforeend",`<span class="mark" aria-hidden="true">✓</span>`)}
+    else if(btn.dataset.s===s){btn.classList.add("bad");btn.insertAdjacentHTML("beforeend",`<span class="mark" aria-hidden="true">✗</span>`)}
+  });
+  const fb=$("ta-fb");fb.className="fb "+(ok?"fb-ok":"fb-bad");
+  fb.textContent=(ok?"Richtig. ":`Nicht ganz: Richtig ist ${r.n}. `)+begruendung(a,b,TA.aufgabe.typ);
+  taZaehler();
+  const w=$("ta-weiter");w.hidden=false;w.focus();
+}
+$("ta-weiter").addEventListener("click",taNeu);
+$("ta-reset").addEventListener("click",()=>{TA.richtig=TA.gesamt=TA.serie=0;taZaehler()});
+document.querySelectorAll("[data-typ]").forEach(b=>b.addEventListener("click",()=>{
+  TA.typ=b.dataset.typ;document.querySelectorAll("[data-typ]").forEach(x=>x.setAttribute("aria-pressed",x===b));taNeu();
+}));
+
+// =====================================================================
+// Beobachtungsfragen
+// =====================================================================
+Fragen.render("q-karte",FRAGEN.karte,{name:"karte"});
+Fragen.render("q-groesse",FRAGEN.groesse,{name:"groesse"});
+Fragen.render("q-treppe",FRAGEN.treppe,{name:"treppe"});
+Fragen.render("q-training",FRAGEN.training,{name:"training",falsch:"Noch nicht. Überlegen Sie noch einmal."});
+
+// =====================================================================
+// Reiter und Start
+// =====================================================================
+function zeige(k,fokus){
+  S.tab=k;
+  for(const t of TAB_IDS){const sel=t===k;$("tab-"+t).setAttribute("aria-selected",sel);$("tab-"+t).tabIndex=sel?0:-1;$("box-"+t).hidden=!sel}
+  if(k==="groesse")renderGroesse();
+  if(k==="treppe"){trAlles()}
+  if(fokus)$("tab-"+k).focus();
+  urlSchreiben();
+}
+TAB_IDS.forEach((t,i)=>{
+  $("tab-"+t).addEventListener("click",()=>zeige(t));
+  $("tab-"+t).addEventListener("keydown",ev=>{
+    if(ev.key==="ArrowRight"||ev.key==="ArrowLeft"){ev.preventDefault();zeige(TAB_IDS[(i+(ev.key==="ArrowRight"?1:-1)+4)%4],true)}
+  });
+});
+let resizeT;
+addEventListener("resize",()=>{clearTimeout(resizeT);resizeT=setTimeout(()=>{if(S.tab==="treppe")renderTreppe()},150)});
+
+(function start(){
+  const p=new URLSearchParams(location.search);
+  const eig=p.get("eig"),reiter=p.get("reiter"),el=p.get("el");
+  if(EIG_IDS.includes(eig))S.eig=eig;
+  if(p.get("werte")==="1")S.werte=true;
+  if(p.get("pfeile")==="1")S.pfeile=true;
+  if(el&&EL[el]){S.el=el;if(EL[el].z<=20)TR.el=el}
+  karteAlles();
+  renderGroesse();
+  taNeu();
+  trPflege();
+  zeige(TAB_IDS.includes(reiter)?reiter:"karte");
+})();
+</script>
+</body>
+</html>
