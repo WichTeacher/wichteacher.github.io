@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Metallbindung – Labor</title>
-<meta name="description" content="Interaktives Labor: Atomrümpfe im Elektronengas – elektrische Leitung, Wärmeleitung und Verformbarkeit der Metalle im Modell">
+<meta name="description" content="Interaktives Labor: vom Tauziehen um Elektronen zum Elektronengas – elektrische Leitung, Wärmeleitung und Verformbarkeit der Metalle im Modell">
 <link rel="stylesheet" href="../../assets/basis.css">
 <style>
   /* Grundfarben und Schrift kommen aus ../../assets/basis.css.
      Elektronen blau wie im Atombaukasten. Wärme läuft von Grau über Bernstein nach Gelb,
      Rot und Grün bleiben der Rückmeldung richtig/falsch vorbehalten. */
-  :root{--electron:#1F6FB2;--rumpf:#7D8B97;--rumpf-ink:#ffffff;--heiss1:#E39B2D;--heiss2:#F5D04A}
-  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--electron:#5BA7E8;--rumpf:#5E6B77;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}}
-  :root[data-theme="dark"]{--electron:#5BA7E8;--rumpf:#5E6B77;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}
+  :root{--electron:#1F6FB2;--rumpf:#7D8B97;--rumpf2:#4B5762;--rumpf-ink:#ffffff;--heiss1:#E39B2D;--heiss2:#F5D04A}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--electron:#5BA7E8;--rumpf:#5E6B77;--rumpf2:#46525D;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}}
+  :root[data-theme="dark"]{--electron:#5BA7E8;--rumpf:#5E6B77;--rumpf2:#46525D;--rumpf-ink:#ffffff;--heiss1:#E8A33D;--heiss2:#F7D354}
 
   .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
   .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 16px}
@@ -22,6 +22,8 @@
   button{touch-action:manipulation}
   button:focus-visible,input:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+  .row[hidden]{display:none}
+  #cv-tau{max-width:760px;margin:0 auto}
   .wahl{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
   .wahl button{font:inherit;border:none;background:var(--card);color:var(--ink);padding:6px 12px;cursor:pointer}
   .wahl button+button{border-left:1px solid var(--line)}
@@ -48,6 +50,13 @@
   .frage .fb{margin-top:8px}
   .frage .fb:empty{display:none}
 
+  .einleitung{margin:0 0 12px}
+  .auswahl{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .auswahl label{display:flex;flex-direction:column;gap:4px;font-weight:600;flex:1;min-width:150px}
+  .auswahl select{font:inherit;font-weight:400;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:44px;width:100%}
+  .auswahl select:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
+  #box-tau .status{min-height:7.5em}
+  #box-tau .info{margin:16px 0 4px}
   .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
   .info summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px}
   .info summary::-webkit-details-marker{display:none}
@@ -58,7 +67,7 @@
   .info-body ol{margin:0;padding-left:1.3em}
   .info-body li{margin:0 0 8px}
   .info-tip{margin:6px 0 0;padding:8px 10px;background:var(--soft);border-radius:6px;font-weight:600}
-  @media (max-width:480px){.wrap{padding:12px 12px 40px}.taskbox{padding:10px}.tabs button{padding:6px 10px;font-size:.92rem}.regler{min-width:100%;gap:6px}.regler output{min-width:3.6em}.info summary{padding:10px 12px}.info-body{padding:0 12px 12px}}
+  @media (max-width:480px){.auswahl label{min-width:100%}.wrap{padding:12px 12px 40px}.taskbox{padding:10px}.tabs button{padding:6px 10px;font-size:.92rem}.regler{min-width:100%;gap:6px}.regler output{min-width:3.6em}.info summary{padding:10px 12px}.info-body{padding:0 12px 12px}}
 </style>
 </head>
 <body data-fach="wc">
@@ -66,7 +75,7 @@
   <header class="kopf">
     <div class="pfad"><a href="../../">Labore</a> › <a href="../">Werkstoffkunde &amp; Chemie</a></div>
     <h1>Metallbindung</h1>
-    <p>Atomrümpfe im Elektronengas · elektrische Leitung, Wärmeleitung, Verformbarkeit</p>
+    <p>Tauziehen um Elektronen · Atomrümpfe im Elektronengas · elektrische Leitung, Wärmeleitung, Verformbarkeit</p>
   </header>
 
   <details class="info">
@@ -83,13 +92,39 @@
   </details>
 
   <div class="tabs" role="tablist">
-    <button role="tab" id="tab-strom" aria-selected="true" aria-controls="box-strom">Elektrische Leitung</button>
+    <button role="tab" id="tab-tau" aria-selected="true" aria-controls="box-tau">Tauziehen um Elektronen</button>
+    <button role="tab" id="tab-strom" aria-selected="false" aria-controls="box-strom">Elektrische Leitung</button>
     <button role="tab" id="tab-waerme" aria-selected="false" aria-controls="box-waerme">Wärmeleitung</button>
     <button role="tab" id="tab-verf" aria-selected="false" aria-controls="box-verf">Verformbarkeit</button>
   </div>
 
+  <!-- ===== Tauziehen um Elektronen ===== -->
+  <section class="taskbox" id="box-tau" role="tabpanel" aria-labelledby="tab-tau">
+    <p class="einleitung">Wählen Sie zwei Atome und beobachten Sie, wer das Tauziehen um die Elektronen gewinnt.</p>
+    <div class="auswahl">
+      <label>Atom 1 <select id="t-a"></select></label>
+      <label>Atom 2 <select id="t-b"></select></label>
+    </div>
+    <canvas id="cv-tau" role="img" aria-label="Zwei Atome ziehen an einem Elektronenpaar"></canvas>
+    <div class="row">
+      <button class="btn-2 pause">Pause</button>
+    </div>
+    <div class="status" id="t-status" aria-live="polite"></div>
+    <div class="row" id="t-weiter-row" hidden>
+      <button class="btn" id="t-weiter">Weiter: Elektrische Leitung →</button>
+    </div>
+    <details class="info">
+      <summary>Modellgrenze</summary>
+      <div class="info-body">
+        <p style="margin:0">Das Tauziehen ist eine Faustregel. Die Übergänge zwischen den Bindungsarten sind fließend. Die EN allein trennt Metalle und Nichtmetalle nicht scharf: Kupfer und Silicium haben beide 1,90, trotzdem ist Kupfer ein Metall und Silicium ein Halbmetall. Entscheidend für die Metallbindung ist, dass beide Partner ihre Außenelektronen nur locker halten.</p>
+        <p class="small" style="margin:8px 0 0">EN-Werte nach Pauling.</p>
+      </div>
+    </details>
+    <div class="fragen" id="q-tau"></div>
+  </section>
+
   <!-- ===== Elektrische Leitung ===== -->
-  <section class="taskbox" id="box-strom" role="tabpanel" aria-labelledby="tab-strom">
+  <section class="taskbox" id="box-strom" role="tabpanel" aria-labelledby="tab-strom" hidden>
     <canvas id="cv-strom" role="img" aria-label="Atomrümpfe im Elektronengas, wahlweise mit angelegter Spannung"></canvas>
     <div class="row">
       <button class="btn" id="s-on">Spannung anlegen</button>
@@ -168,7 +203,7 @@ const fmt=(x,d=1)=>x.toFixed(d).replace(".",",");
 const COL={};
 function readColors(){
   const cs=getComputedStyle(document.body);
-  for(const k of ["ink","muted","card","line","electron","rumpf","rumpf-ink","heiss1","heiss2"])COL[k]=cs.getPropertyValue("--"+k).trim();
+  for(const k of ["ink","muted","card","line","electron","soft","rumpf","rumpf2","rumpf-ink","heiss1","heiss2"])COL[k]=cs.getPropertyValue("--"+k).trim();
 }
 function rgb(hex){const h=hex.replace("#","");return [0,2,4].map(i=>parseInt(h.substr(i,2),16))}
 function mix(a,b,t){const A=rgb(a),B=rgb(b);return `rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")})`}
@@ -178,14 +213,15 @@ readColors();
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",readColors);
 
 // ---------- Canvas in Modellkoordinaten ----------
-function makeCanvas(id,H){
+function makeCanvas(id,H,mw){
+  const WW=mw||W;
   const cv=$(id),ctx=cv.getContext("2d");
-  cv.style.aspectRatio=W+"/"+H;
+  cv.style.aspectRatio=WW+"/"+H;
   return {ctx,H,fit(){
     const w=cv.clientWidth;if(!w)return false;
-    const dpr=window.devicePixelRatio||1,pw=Math.round(w*dpr),ph=Math.round(w*H/W*dpr);
+    const dpr=window.devicePixelRatio||1,pw=Math.round(w*dpr),ph=Math.round(w*H/WW*dpr);
     if(cv.width!==pw||cv.height!==ph){cv.width=pw;cv.height=ph}
-    ctx.setTransform(pw/W,0,0,pw/W,0,0);return true;
+    ctx.setTransform(pw/WW,0,0,pw/WW,0,0);return true;
   }};
 }
 // Dichteste Kugelpackung in 2D: jede zweite Reihe um einen halben Abstand versetzt
@@ -198,6 +234,157 @@ function hexLattice(cols,rows,a,x0,yBottom){
 function circle(ctx,x,y,r,fill,stroke,lw){ctx.beginPath();ctx.arc(x,y,r,0,TAU);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw||1;ctx.stroke()}}
 function text(ctx,s,x,y,color,size,align,weight){ctx.fillStyle=color;ctx.font=`${weight||600} ${size}px Barlow, system-ui, sans-serif`;ctx.textAlign=align||"center";ctx.textBaseline="middle";ctx.fillText(s,x,y)}
 function randDir(v){const a=Math.random()*TAU;return [v*Math.cos(a),v*Math.sin(a)]}
+
+// =====================================================================
+// 0) Tauziehen um Elektronen
+// =====================================================================
+// Elektronegativität nach Pauling. k: M = Metall, H = Halbmetall, N = Nichtmetall
+const ELEM={
+  Na:{n:"Natrium",en:0.93,k:"M"},K:{n:"Kalium",en:0.82,k:"M"},Mg:{n:"Magnesium",en:1.31,k:"M"},Ca:{n:"Calcium",en:1.00,k:"M"},
+  Al:{n:"Aluminium",en:1.61,k:"M"},Ti:{n:"Titan",en:1.54,k:"M"},Cr:{n:"Chrom",en:1.66,k:"M"},Fe:{n:"Eisen",en:1.83,k:"M"},
+  Ni:{n:"Nickel",en:1.91,k:"M"},Cu:{n:"Kupfer",en:1.90,k:"M"},Zn:{n:"Zink",en:1.65,k:"M"},
+  Si:{n:"Silicium",en:1.90,k:"H"},
+  H:{n:"Wasserstoff",en:2.20,k:"N"},C:{n:"Kohlenstoff",en:2.55,k:"N"},N:{n:"Stickstoff",en:3.04,k:"N"},O:{n:"Sauerstoff",en:3.44,k:"N"},
+  F:{n:"Fluor",en:3.98,k:"N"},S:{n:"Schwefel",en:2.58,k:"N"},Cl:{n:"Chlor",en:3.16,k:"N"}
+};
+const GRUPPEN=[["Metalle",["Na","K","Mg","Ca","Al","Ti","Cr","Fe","Ni","Cu","Zn"]],["Halbmetall",["Si"]],["Nichtmetalle",["H","C","N","O","F","S","Cl"]]];
+const grenzfall="Grenzfall: Hier reicht das einfache Tauziehen-Modell nicht aus.";
+
+// Faustregel nach Stoffklassen, nicht nach einer festen ΔEN-Grenze
+function tBindung(a,b){
+  const A=ELEM[a],B=ELEM[b],hi=Math.max(A.en,B.en),lo=Math.min(A.en,B.en),d=Math.round((hi-lo)*100)/100;
+  const stark=A.en===B.en?null:(A.en>B.en?"a":"b");
+  let art;
+  if(A.k==="M"&&B.k==="M")art="metall";
+  else if(A.k==="H"||B.k==="H")art=(A.k==="M"||B.k==="M")?"grenz":"atom";
+  else if(A.k==="N"&&B.k==="N")art="atom";
+  else art=d<1.0?"grenz":"ion";      // Metall + Nichtmetall
+  return {art,d,stark,hi,lo};
+}
+
+const T={H:260,Wm:520,ax:84,bx:436,cy:135,R:64,a:"Na",b:"Cl",p:.5,pz:.5,i:0,iz:0,m:0,mz:0,t:0,el:[],ergebnis:null,
+  x0:71,a2:84,yB:190,box:{x1:30,x2:490,y1:12,y2:248}};
+T.cv=makeCanvas("cv-tau",T.H,T.Wm);
+T.ions=hexLattice(5,3,T.a2,T.x0,T.yB);
+for(let k=0;k<15;k++){const [vx,vy]=randDir(90);T.el.push({x:T.box.x1+Math.random()*(T.box.x2-T.box.x1),y:T.box.y1+Math.random()*(T.box.y2-T.box.y1),vx,vy})}
+
+// Auswahllisten füllen
+for(const id of ["t-a","t-b"]){
+  const sel=$(id);
+  for(const [g,liste] of GRUPPEN){
+    const og=document.createElement("optgroup");og.label=g;
+    for(const s of liste){const o=document.createElement("option");o.value=s;o.textContent=`${s} – ${ELEM[s].n} (EN ${fmt(ELEM[s].en,2)})`;og.appendChild(o)}
+    sel.appendChild(og);
+  }
+}
+$("t-a").value="Na";$("t-b").value="Cl";
+
+function tStep(dt){
+  T.t+=dt;
+  const k=1-Math.exp(-3.5*dt);
+  T.p+=(T.pz-T.p)*k;T.i+=(T.iz-T.i)*k;
+  const dm=T.mz-T.m,v=1.4*dt;T.m=Math.abs(dm)<=v?T.mz:T.m+Math.sign(dm)*v;
+  const b=T.box;
+  for(const e of T.el){
+    e.x+=e.vx*dt;e.y+=e.vy*dt;
+    if(e.x<b.x1){e.x=2*b.x1-e.x;e.vx=-e.vx}if(e.x>b.x2){e.x=2*b.x2-e.x;e.vx=-e.vx}
+    if(e.y<b.y1){e.y=2*b.y1-e.y;e.vy=-e.vy}if(e.y>b.y2){e.y=2*b.y2-e.y;e.vy=-e.vy}
+    if(Math.random()<2.5*dt)[e.vx,e.vy]=randDir(90);
+  }
+}
+function tAtom(ctx,sym,x,y,r){
+  const E=ELEM[sym];let fill,ink,stroke;
+  if(E.k==="M"){fill=COL.rumpf;ink=COL["rumpf-ink"];stroke=null}
+  else if(E.k==="H"){fill=mix(COL.rumpf,COL.soft,.6);ink=COL.ink;stroke=COL.rumpf}
+  else{fill=COL.soft;ink=COL.ink;stroke=COL.rumpf}
+  circle(ctx,x,y,r,fill,stroke,3);
+  text(ctx,sym,x,y-11,ink,40,"center",700);
+  text(ctx,"EN "+fmt(E.en,2),x,y+24,ink,24,"center",600);
+}
+function tDraw(){
+  const {ctx}=T.cv;if(!T.cv.fit())return;
+  const W2=T.Wm,H=T.H,E=T.ergebnis;
+  ctx.fillStyle=COL.card;ctx.fillRect(0,0,W2,H);
+  // --- Szene 1: zwei Atome am Seil ---
+  if(T.m<.999){
+    ctx.save();ctx.globalAlpha=1-T.m;
+    const {ax,bx,cy,R}=T;
+    const katA=E&&E.art==="ion"&&E.stark==="b",anA=E&&E.art==="ion"&&E.stark==="a";
+    const rA=R*(1+T.i*(katA?-.2:anA?.1:0)),rB=R*(1+T.i*(anA?-.2:katA?.1:0));
+    ctx.strokeStyle=COL.muted;ctx.lineWidth=5;ctx.lineCap="round";
+    ctx.beginPath();ctx.moveTo(ax,cy);ctx.lineTo(bx,cy);ctx.stroke();
+    tAtom(ctx,T.a,ax,cy,rA);tAtom(ctx,T.b,bx,cy,rB);
+    const lbl=who=>!E||!E.stark?"zieht gleich stark":(E.stark===who?"zieht stärker":"zieht schwächer");
+    text(ctx,lbl("a"),ax,cy+R+30,COL.muted,20);text(ctx,lbl("b"),bx,cy+R+30,COL.muted,20);
+    text(ctx,"ΔEN = "+fmt(E?E.d:0,2),W2/2,34,COL.ink,30,"center",700);
+    // Elektronenpaar am Seil
+    const px=ax+T.p*(bx-ax)+Math.sin(T.t*2.2)*2.5;
+    circle(ctx,px,cy,19,alpha(COL.electron,.18));
+    circle(ctx,px,cy-7,6,COL.electron,COL.card,1.5);circle(ctx,px,cy+7,6,COL.electron,COL.card,1.5);
+    // Ladungen bei Ionenbindung (nur Vorzeichen, ohne Ladungszahl)
+    if(E&&E.art==="ion"&&T.i>.05){
+      ctx.globalAlpha=(1-T.m)*Math.min(1,T.i);
+      for(const [x,r,minus] of [[ax,rA,E.stark==="a"],[bx,rB,E.stark==="b"]]){
+        const bxp=x+r*.78,byp=cy-r*.78;
+        circle(ctx,bxp,byp,15,COL.card,COL.ink,2.5);text(ctx,minus?"−":"+",bxp,byp+1,COL.ink,26,"center",700);
+      }
+    }
+    ctx.restore();
+  }
+  // --- Szene 2: Gitter aus Atomrümpfen im Elektronengas ---
+  if(T.m>.001){
+    ctx.save();ctx.globalAlpha=T.m;
+    const s=.85+.15*T.m;ctx.translate(W2/2,H/2);ctx.scale(s,s);ctx.translate(-W2/2,-H/2);
+    const b=T.box;
+    ctx.fillStyle=alpha(COL.electron,.10);ctx.beginPath();ctx.roundRect(b.x1,b.y1,b.x2-b.x1,b.y2-b.y1,14);ctx.fill();
+    for(const p of T.ions){
+      const sym=(p.r+p.c)%2?T.b:T.a;
+      const x=p.x+2*Math.sin(p.f1*T.t+p.p1),y=p.y+2*Math.sin(p.f2*T.t+p.p2);
+      circle(ctx,x,y,30,sym!==T.a?COL.rumpf2:COL.rumpf);
+      text(ctx,sym,x,y+1,COL["rumpf-ink"],26,"center",700);
+    }
+    for(const e of T.el)circle(ctx,e.x,e.y,4.2,COL.electron);
+    text(ctx,"Elektronengas",W2-20,H-10,COL.electron,20,"right");
+    ctx.restore();
+  }
+}
+function tUpdate(){
+  const a=$("t-a").value,b=$("t-b").value;T.a=a;T.b=b;
+  const A=ELEM[a],B=ELEM[b],E=tBindung(a,b);T.ergebnis=E;
+  const st=E.stark==="a"?A:E.stark==="b"?B:null,schw=E.stark==="a"?B:E.stark==="b"?A:null;
+  T.pz=.5+(E.stark===null?0:(E.stark==="b"?1:-1)*(E.art==="ion"?.37:.3*Math.min(E.d/1.8,1)));
+  T.iz=E.art==="ion"?1:0;T.mz=E.art==="metall"?1:0;
+  const dEN=`ΔEN = ${fmt(E.d,2)}`;
+  const en=E.stark===null?`beide EN ${fmt(A.en,2)}`:`EN ${fmt(E.hi,2)} gegen ${fmt(E.lo,2)}`;
+  const el=$("t-status");el.textContent="";
+  const kopf=t=>{const h=document.createElement("b");h.textContent=t;el.appendChild(h);el.appendChild(document.createElement("br"))};
+  const para=t=>{el.appendChild(document.createTextNode(t))};
+  let kurz;
+  if(E.art==="metall"){
+    kopf("Ergebnis: Metallbindung");
+    para(`${dEN} (${en}). Beide Atome ziehen nur schwach an Elektronen. Keiner der Partner hält die Außenelektronen fest; sie werden frei beweglich und bilden ein Elektronengas. Zurück bleiben positiv geladene Atomrümpfe.`+(a!==b?" So halten auch Legierungen zusammen.":""));
+    kurz="Metallbindung";
+  }else if(E.art==="ion"){
+    kopf("Ergebnis: Ionenbindung");
+    para(`${dEN} (${en}). ${st.n} zieht deutlich stärker. Ein Elektron von ${schw.n} wechselt ganz zu ${st.n}. ${schw.n} wird zum positiven Ion, ${st.n} zum negativen Ion, und die entgegengesetzten Ladungen ziehen sich an. Vereinfacht ist hier nur ein Elektron dargestellt; die Ladungszahl richtet sich nach den Außenelektronen.`);
+    kurz="Ionenbindung";
+  }else if(E.art==="atom"){
+    kopf("Ergebnis: Atombindung");
+    para(`${dEN} (${en}). `+(E.stark===null
+      ?"Beide Atome ziehen gleich stark. Das Elektronenpaar wird geteilt, gleichmäßig. Es gehört beiden Atomen und hält sie zusammen."
+      :`${st.n} zieht stärker. Das Elektronenpaar wird geteilt, aber zum stärkeren Partner hin verschoben.`)+" Die Atombindung wird später genauer behandelt.");
+    kurz="Atombindung";
+  }else{
+    kopf("Ergebnis: Grenzfall");
+    para(`${dEN} (${en}). ${grenzfall}`+(E.stark===null?"":` Das Elektronenpaar liegt etwas näher bei ${st.n}, ohne ganz zu wechseln.`));
+    kurz="Grenzfall";
+  }
+  $("t-weiter-row").hidden=E.art!=="metall";
+  $("cv-tau").setAttribute("aria-label",`${A.n} (EN ${fmt(A.en,2)}) und ${B.n} (EN ${fmt(B.en,2)}), ${dEN}: ${kurz}`);
+  T.kurz=kurz;
+}
+$("t-a").addEventListener("change",tUpdate);$("t-b").addEventListener("change",tUpdate);
+tUpdate();
 
 // =====================================================================
 // 1) Elektrische Leitung
@@ -430,6 +617,17 @@ vUpdateUI();
 // Beobachtungsfragen
 // =====================================================================
 const FRAGEN={
+ tau:[
+  {q:"Wählen Sie Natrium und Chlor. Warum wechselt das Elektron ganz zum Chlor?",
+   o:["Chlor zieht viel stärker (3,16 gegen 0,93), Natrium hält sein Außenelektron nur locker.","Chlor hat mehr Schalen als Natrium.","Natrium ist schwerer und schiebt das Elektron weg."],r:0,
+   w:"Natrium und Chlor haben gleich viele Schalen; Chlor ist kleiner und hat die höhere Kernladung. Natrium wird zum positiven, Chlor zum negativen Ion."},
+  {q:"Vergleichen Sie Chlor + Chlor mit Eisen + Eisen. Beide Male gibt es keinen Gewinner. Was ist der Unterschied?",
+   o:["Bei Chlor ziehen beide stark und halten das Elektronenpaar gemeinsam fest, bei Eisen ziehen beide schwach und keiner hält die Elektronen fest.","Es gibt keinen Unterschied, beides ist dieselbe Bindung.","Eisen hat mehr Elektronen und deshalb gewinnt das Eisen."],r:0,
+   w:"Den Unterschied macht die Höhe der EN. Zwei starke Zieher teilen sich ein Elektronenpaar (Atombindung), zwei schwache lassen die Elektronen frei (Metallbindung, Elektronengas)."},
+  {q:"Warum bildet sich zwischen Eisen und Kupfer ebenfalls eine Metallbindung?",
+   o:["Beide sind Metalle mit kleiner EN und geben ihre Außenelektronen an ein gemeinsames Elektronengas ab.","Kupfer zieht stärker und nimmt dem Eisen die Elektronen ab.","Eisen und Kupfer teilen sich je ein festes Elektronenpaar."],r:0,
+   w:"Der EN-Unterschied ist sehr klein (1,83 gegen 1,90). Genau so halten Legierungen zusammen."}
+ ],
  strom:[
   {q:"In welche Richtung bewegen sich die Elektronen im Mittel, wenn Spannung anliegt?",
    o:["Zum Pluspol, zusätzlich zu ihrer ungeordneten Bewegung","Zum Minuspol","Gar nicht, sie bewegen sich weiter nur ungeordnet"],r:0,
@@ -478,18 +676,19 @@ function renderFragen(key,id){
     box.appendChild(d);
   });
 }
-renderFragen("strom","q-strom");renderFragen("waerme","q-waerme");renderFragen("verf","q-verf");
+renderFragen("tau","q-tau");renderFragen("strom","q-strom");renderFragen("waerme","q-waerme");renderFragen("verf","q-verf");
 
 // =====================================================================
 // Reiter, Pause und Animationsschleife
 // =====================================================================
-const SIMS={strom:{step:sStep,draw:sDraw},waerme:{step:dt=>hStep(dt),draw:hDraw},verf:{step:vStep,draw:vDraw}};
-let aktiv="strom",pause=false;
+const SIMS={tau:{step:tStep,draw:tDraw},strom:{step:sStep,draw:sDraw},waerme:{step:dt=>hStep(dt),draw:hDraw},verf:{step:vStep,draw:vDraw}};
+let aktiv="tau",pause=false;
 function zeige(k){
   aktiv=k;
-  for(const t of ["strom","waerme","verf"]){$("tab-"+t).setAttribute("aria-selected",t===k);$("box-"+t).hidden=t!==k}
+  for(const t of ["tau","strom","waerme","verf"]){$("tab-"+t).setAttribute("aria-selected",t===k);$("box-"+t).hidden=t!==k}
 }
-for(const t of ["strom","waerme","verf"])$("tab-"+t).addEventListener("click",()=>zeige(t));
+for(const t of ["tau","strom","waerme","verf"])$("tab-"+t).addEventListener("click",()=>zeige(t));
+$("t-weiter").addEventListener("click",()=>{zeige("strom");$("tab-strom").focus()});
 document.querySelectorAll(".pause").forEach(b=>b.addEventListener("click",()=>{
   pause=!pause;document.querySelectorAll(".pause").forEach(x=>x.textContent=pause?"Weiter":"Pause");
 }));
