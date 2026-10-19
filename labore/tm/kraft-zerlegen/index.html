@@ -16,19 +16,22 @@
   button:focus-visible,select:focus-visible,summary:focus-visible,input:focus-visible,tr:focus-visible{outline:3px solid var(--fach);outline-offset:2px}
   button:disabled{opacity:.45;cursor:not-allowed}
 
-  .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0;border-bottom:3px solid var(--fach)}
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 12px;border-bottom:3px solid var(--fach)}
   .tabs button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);border-bottom:none;border-radius:8px 8px 0 0;background:var(--card);color:var(--ink);padding:8px 14px;min-height:40px}
   .tabs button[aria-selected="true"]{background:var(--fach);border-color:var(--fach);color:var(--fach-ink)}
-  .taskbox{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--radius) var(--radius);background:var(--card);padding:16px;margin-bottom:16px}
+  @media (max-width:480px){.tabs{gap:4px}.tabs button{flex:1 1 calc(50% - 4px);border-radius:8px 8px 0 0}}
+  .taskbox{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);padding:16px;margin-bottom:16px}
 
-  .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:16px}
+  .info{border:1px solid var(--line);border-left:6px solid var(--fach);border-radius:var(--radius);background:var(--card);margin-bottom:12px}
   .info summary{cursor:pointer;padding:12px 16px;font-weight:700;font-size:1.1rem;list-style:none;display:flex;align-items:center;gap:10px;min-height:44px}
   .info summary::-webkit-details-marker{display:none}
   .info summary::before{content:"▸";color:var(--fach);font-size:1.2rem;transition:transform .15s}
   .info[open] summary::before{transform:rotate(90deg)}
   .info-body{padding:0 16px 14px}
   .info-body ul{margin:0 0 8px;padding-left:20px}
-  .info-body li{margin:0 0 4px}
+  .info-body li{margin:0 0 6px}
+  .info-body .fo{display:block;white-space:nowrap;margin:2px 0 2px 12px}
+  .info summary{font-size:1rem}
 
   .schritt{border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
   .schritt:first-of-type{border-top:none;margin-top:0;padding-top:0}
@@ -101,22 +104,8 @@
   <header class="kopf">
     <div class="pfad"><a href="../../">Labore</a> › <a href="../">Technische Mechanik</a></div>
     <h1>Kräfte zerlegen und zusammensetzen</h1>
-    <p>Schatten einer Kraft · Schätzen · Rechnen mit Rückmeldung · Fehlersuche · ca. 20 min</p>
+    <p>1 Schatten ca. 5 min · 2 Schätzen ca. 5 min · 3 Rechnen ca. 10 min · 4 Fehlersuche zum Weiterüben</p>
   </header>
-
-  <details class="info" open>
-    <summary>So rechnen wir – die Regeln aus dem Skript</summary>
-    <div class="info-body">
-      <ul>
-        <li><b>α</b> ist immer der <b>spitze Winkel zwischen der Kraft und der x-Achse</b> (0° bis 90°). cos α und sin α sind deshalb nie negativ.</li>
-        <li>F<sub>x</sub> = ± F · cos α &nbsp;&nbsp; F<sub>y</sub> = ± F · sin α. Das Vorzeichen setzen Sie nach der Skizze: nach rechts und nach oben +, nach links und nach unten −.</li>
-        <li>Umgekehrt: F = √(F<sub>x</sub>² + F<sub>y</sub>²), &nbsp; α = tan⁻¹(|F<sub>y</sub>| / |F<sub>x</sub>|). Die Richtung (Quadrant) lesen Sie an den Vorzeichen ab.</li>
-        <li>Taschenrechner auf <b>DEG</b>. Kurztest: cos 60 muss 0,5 ergeben. tan⁻¹ heißt auch arctan (meist SHIFT + tan).</li>
-        <li>Eingaben mit Komma oder Punkt. Runden Sie auf 0,1 N bzw. 0,1°.</li>
-      </ul>
-      <p class="small" style="margin:0">Ergebnis wie im Skript: „F<sub>r</sub> = 562,2 N unter 26,4° zur x-Achse nach rechts oben“.</p>
-    </div>
-  </details>
 
   <div class="tabs" role="tablist" aria-label="Stationen" id="tabs">
     <button role="tab" type="button" data-s="1" aria-selected="true">1 Schatten</button>
@@ -125,6 +114,26 @@
     <button role="tab" type="button" data-s="4" aria-selected="false">4 Fehlersuche</button>
   </div>
 
+  <details class="info">
+    <summary>Regeln aus dem Skript zum Nachschlagen</summary>
+    <div class="info-body">
+      <ul>
+        <li><b>α</b> ist immer der <b>spitze Winkel zwischen der Kraft und der x-Achse</b> (0° bis 90°). cos α und sin α sind deshalb nie negativ.</li>
+        <li>Zerlegen:
+          <span class="fo">F<sub>x</sub> = ± F · cos α</span>
+          <span class="fo">F<sub>y</sub> = ± F · sin α</span>
+          Das Vorzeichen setzen Sie nach der Skizze: nach rechts und nach oben +, nach links und nach unten −.</li>
+        <li>Umgekehrt:
+          <span class="fo">F = √(F<sub>x</sub>² + F<sub>y</sub>²)</span>
+          <span class="fo">α = tan⁻¹(|F<sub>y</sub>| / |F<sub>x</sub>|)</span>
+          Die Richtung (Quadrant) lesen Sie an den Vorzeichen ab.</li>
+        <li>Taschenrechner auf <b>DEG</b>. Kurztest: cos 60 muss 0,5 ergeben. tan⁻¹ heißt auch arctan (meist SHIFT + tan).</li>
+        <li>Eingaben mit Komma oder Punkt. Runden Sie auf 0,01 N bzw. 0,01°.</li>
+      </ul>
+      <p class="small" style="margin:0">Ergebnis wie im Skript: „F<sub>r</sub> = 562,18 N unter 26,40° zur x-Achse nach rechts oben“.</p>
+    </div>
+  </details>
+
   <!-- ================= Station 1 ================= -->
   <section class="taskbox" role="tabpanel" id="st1">
     <div class="schritt"><h3><span class="nr">1</span>Der Schatten einer Kraft</h3>
@@ -132,10 +141,11 @@
          Stellen Sie sich vor, eine Lampe leuchtet von oben: Der Schatten des Kraftpfeils auf der x-Achse ist genau die Komponente F<sub>x</sub>.
          Leuchtet die Lampe von der Seite, fällt der Schatten auf die y-Achse – das ist F<sub>y</sub>.</p>
       <div class="lab">
-        <div><svg class="sys" id="s1bild" viewBox="-95 -215 325 250" role="img" aria-label="Seilkraft mit Schatten auf den Achsen"></svg></div>
+        <div><svg class="sys" id="s1bild" viewBox="-95 -215 325 270" role="img" aria-label="Seilkraft mit Schatten auf den Achsen"></svg></div>
         <div>
           <div class="regler"><label for="s1a">Winkel α zur x-Achse: <b id="s1aanz">α = 30°</b></label>
-            <input type="range" id="s1a" min="0" max="90" step="1" value="30"></div>
+            <input type="range" id="s1a" min="0" max="90" step="1" value="30">
+            <div class="knoepfe" style="margin-top:6px"><button class="btn-2" type="button" id="s1m" aria-label="Winkel um 1 Grad verkleinern">− 1°</button><button class="btn-2" type="button" id="s1p" aria-label="Winkel um 1 Grad vergrößern">+ 1°</button></div></div>
           <div class="regler"><label for="s1F">Seilkraft F: <b id="s1Fanz">F = 200 N</b></label>
             <input type="range" id="s1F" min="50" max="300" step="10" value="200"></div>
           <div class="knoepfe">
@@ -157,8 +167,8 @@
       <div class="fragen" id="s1fragen"></div>
     </div>
 
-    <div class="schritt"><h3><span class="nr">3</span>Umgekehrt: vom Verhältnis zum Winkel</h3>
-      <p>Auf einem Verkehrsschild steht „10 %“. Das heißt: Auf 100 m waagrecht geht es 10 m nach oben. Das Verhältnis Höhe : Länge heißt <b>Steigung</b> und ist der Tangens des Steigungswinkels: tan α = 10 m / 100 m = 0,1. Den Winkel liefert die Umkehrfunktion <b>tan⁻¹</b> (auch arctan, meist SHIFT + tan): α = tan⁻¹(0,1) = 5,7°.</p>
+    <div class="schritt"><h3><span class="nr">3</span>Umgekehrt: vom Verhältnis zum Winkel (zum Vertiefen)</h3>
+      <p>Auf einem Verkehrsschild steht „10 %“. Das heißt: Auf 100 m waagrecht geht es 10 m nach oben. Das Verhältnis Höhe : Länge heißt <b>Steigung</b> und ist der Tangens des Steigungswinkels: tan α = 10 m / 100 m = 0,1. Den Winkel liefert die Umkehrfunktion <b>tan⁻¹</b> (auch arctan, meist SHIFT + tan): α = tan⁻¹(0,1) = 5,71°.</p>
       <div class="knoepfe" id="s1steig"></div>
       <svg class="sys" id="s1schild" viewBox="0 0 360 220" role="img" aria-label="Verkehrsschild und Rampe mit Steigung" style="margin-top:10px;max-width:520px"></svg>
       <p id="s1steigtxt" style="font-variant-numeric:tabular-nums;margin:8px 0" aria-live="polite"></p>
@@ -177,7 +187,7 @@
       <p style="margin-top:0">Ohne Taschenrechner: Schätzen Sie zuerst, welche Komponente größer ist, und danach den Betrag von F<sub>x</sub>. So merken Sie später sofort, wenn ein Rechenergebnis nicht stimmen kann.</p>
       <div class="lab">
         <div><p style="margin:0 0 6px"><b id="s2kopf"></b></p>
-          <svg class="sys" id="s2bild" viewBox="-175 -175 350 350" role="img" aria-label="Kraft mit Raster"></svg></div>
+          <svg class="sys" id="s2bild" viewBox="-175 -175 350 350" role="img" aria-label="Kraft im Koordinatensystem"></svg></div>
         <div>
           <details class="info" style="margin-bottom:12px"><summary>Stützwerte ohne Taschenrechner</summary>
             <div class="info-body"><p style="margin:0">cos 0° = 1 · cos 30° ≈ 0,87 · cos 45° ≈ 0,71 · cos 60° = 0,5 · cos 90° = 0</p>
@@ -275,12 +285,13 @@ window.onerror=function(msg,src,line){
 
 /* ===== LOGIK ===== */
 const RAD = d => d*Math.PI/180, DEG = r => r*180/Math.PI;
-const r1 = v => Math.round(v*10)/10;
+const r1 = v => Math.round(v*10)/10;      // nur für die Vorgaben des Generators (Station 3b)
+const r2 = v => Math.round(v*100)/100;   // Rundung auf 0,01 wie in der Anzeige
 const MINUS = "−";
-function zahl(v, n=1){ if (Math.abs(v) < 0.5*Math.pow(10,-n)) v = 0;
+function zahl(v, n=2){ if (Math.abs(v) < 0.5*Math.pow(10,-n)) v = 0;
   const s = Math.abs(v).toFixed(n).replace(".", ","); return (v < 0 ? MINUS : "") + s; }
-function vz(v){ return Math.abs(v) < 0.05 ? "0 N" : (v > 0 ? "+ " : MINUS+" ") + zahl(Math.abs(v)) + " N"; }
-function vzK(v){ return Math.abs(v) < 0.05 ? "0 N" : (v > 0 ? "+" : MINUS) + zahl(Math.abs(v)) + " N"; }
+function vz(v){ return Math.abs(v) < 0.005 ? "0 N" : (v > 0 ? "+ " : MINUS+" ") + zahl(Math.abs(v)) + " N"; }
+function vzK(v){ return Math.abs(v) < 0.005 ? "0 N" : (v > 0 ? "+" : MINUS) + zahl(Math.abs(v)) + " N"; }
 function lies(s){
   s = String(s ?? "").trim().replace(/[−–—]/g,"-").replace(/\s+/g,"").replace(/(N|°)$/i,"").replace(",",".");
   if (s === "") return {leer:true};
@@ -305,8 +316,8 @@ const RICHTUNG = {
   ob: ["senkrecht nach oben (auf der y-Achse)",  "senkrecht nach oben"],
   un: ["senkrecht nach unten (auf der y-Achse)", "senkrecht nach unten"] };
 function richtungAus(fx, fy){
-  if (Math.abs(fx) < 0.05) return fy > 0 ? "ob" : "un";
-  if (Math.abs(fy) < 0.05) return fx > 0 ? "re" : "li";
+  if (Math.abs(fx) < 0.005) return fy > 0 ? "ob" : "un";
+  if (Math.abs(fy) < 0.005) return fx > 0 ? "re" : "li";
   return fx > 0 ? (fy > 0 ? "I" : "IV") : (fy > 0 ? "II" : "III"); }
 function richtungKraft(k){ const z = zerlege(k); return richtungAus(z.fx, z.fy); }
 
@@ -333,18 +344,24 @@ function aufgabeZerlegen(rnd = Math.random){
 function pruefeKomp(eingabe, k, achse){
   const L = lies(eingabe); if (L.leer) return {code:"leer"}; if (L.format) return {code:"format"};
   const v = L.wert, {fx, fy} = zerlege(k), e = achse==="x" ? fx : fy;
-  const tolE = 0.15, tolW = Math.max(0.15, 0.005*k.F);
+  const tolS = Math.max(0.15, 0.005*k.F);                       // Toleranz der gezielten Fehlererkennung
   const fnAnders = achse==="x" ? Math.sin : Math.cos;
   const fnEigen  = achse==="x" ? Math.cos : Math.sin;
-  if (Math.abs(v-e) <= tolE) return {code:"ok"};
-  if (Math.abs(v-e) <= tolW) return {code:"okRund", e};
+  const d = Math.abs(v-e);
+  if (d <= 0.011) return {code:"ok"};
+  if (d <= Math.max(0.05, 0.002*k.F)) return {code:"okRund", e};
+  const ca = k.a === 90 ? 0 : Math.cos(RAD(k.a)), sa = k.a === 0 ? 0 : Math.sin(RAD(k.a));
+  const eig = achse==="x" ? ca : sa, and = achse==="x" ? sa : ca, av = Math.abs(v);
+  if (av > 0.02 && av <= 1 && Math.abs(av-eig) <= 0.01) return {code:"nurFn", wert:eig, fn:achse==="x" ? "cos" : "sin", andere:false};
+  if (av > 0.02 && av <= 1 && Math.abs(av-and) <= 0.01) return {code:"nurFn", wert:and, fn:achse==="x" ? "sin" : "cos", andere:true};
   const sonder = k.a===0 || k.a===90;
-  if (achse==="x" && k.a===90 && Math.abs(Math.abs(v)-k.F) <= tolW) return {code:"sonder90"};
-  if (achse==="y" && k.a===0  && Math.abs(Math.abs(v)-k.F) <= tolW) return {code:"sonder0"};
-  if (sonder && Math.abs(v) <= tolW && Math.abs(e) > tolW) return {code:"sonderNull"};
-  if (Math.abs(e) > tolW && Math.abs(v+e) <= tolW) return {code:"vorzeichen", e};
-  if (!sonder && Math.abs(Math.abs(v) - k.F*fnAnders(RAD(k.a))) <= tolW) return {code:"vertauscht"};
-  if (Math.abs(Math.abs(v) - Math.abs(k.F*fnEigen(k.a))) <= tolW) return {code:"rad"};
+  if (achse==="x" && k.a===90 && Math.abs(av-k.F) <= tolS) return {code:"sonder90"};
+  if (achse==="y" && k.a===0  && Math.abs(av-k.F) <= tolS) return {code:"sonder0"};
+  if (sonder && av <= tolS && Math.abs(e) > tolS) return {code:"sonderNull"};
+  if (Math.abs(e) > tolS && Math.abs(v+e) <= tolS) return {code:"vorzeichen", e};
+  if (!sonder && Math.abs(av - k.F*fnAnders(RAD(k.a))) <= tolS) return {code:"vertauscht"};
+  if (Math.abs(av - Math.abs(k.F*fnEigen(k.a))) <= tolS) return {code:"rad"};   // a als Bogenmaß
+  if (Math.abs(e) > 1 && d <= Math.max(0.03*Math.abs(e), 0.5)) return {code:"ungenau"};
   return {code:"falsch"}; }
 
 function aufgabeZusammen(rnd = Math.random){
@@ -359,26 +376,31 @@ const winkelSoll = t => t.fx===0 ? 90 : t.fy===0 ? 0 : DEG(Math.atan(Math.abs(t.
 
 function pruefeBetrag(eingabe, t){
   const L = lies(eingabe); if (L.leer) return {code:"leer"}; if (L.format) return {code:"format"};
-  const v = L.wert, e = betragSoll(t), tolW = Math.max(0.15, 0.005*e);
-  if (Math.abs(v-e) <= 0.15) return {code:"ok"};
-  if (Math.abs(v-e) <= tolW) return {code:"okRund", e};
+  const v = L.wert, e = betragSoll(t), tolS = Math.max(0.15, 0.005*e), d = Math.abs(v-e);
+  if (d <= 0.011) return {code:"ok"};
+  if (d <= Math.max(0.05, 0.002*e)) return {code:"okRund", e};
   if (Math.abs(v - (Math.abs(t.fx)+Math.abs(t.fy))) <= 0.5) return {code:"addiert"};
   const q = t.fx*t.fx + t.fy*t.fy; if (Math.abs(v-q) <= 0.005*q) return {code:"wurzel"};
-  if (t.fx*t.fy < 0){ const k = Math.sqrt(Math.abs(t.fy*t.fy - t.fx*t.fx)); if (Math.abs(v-k) <= tolW) return {code:"klammer"}; }
+  if (t.fx*t.fy < 0){ const k = Math.sqrt(Math.abs(t.fy*t.fy - t.fx*t.fx)); if (Math.abs(v-k) <= tolS) return {code:"klammer"}; }
+  if (d <= Math.max(0.03*e, 0.5)) return {code:"ungenau"};
   return {code:"falsch"}; }
 function pruefeWinkel(eingabe, fx, fy){
   const L = lies(eingabe); if (L.leer) return {code:"leer"}; if (L.format) return {code:"format"};
-  const v = L.wert, e = fx===0 ? 90 : fy===0 ? 0 : DEG(Math.atan(Math.abs(fy)/Math.abs(fx)));
+  const v = L.wert, av = Math.abs(v), neg = v < 0, e = fx===0 ? 90 : fy===0 ? 0 : DEG(Math.atan(Math.abs(fy)/Math.abs(fx)));
   let phi = DEG(Math.atan2(fy, fx)); if (phi < 0) phi += 360;
-  const achse = e===0 || e===90;
-  if (Math.abs(v-e) <= 0.15) return {code:"ok"};
-  if (Math.abs(v-e) <= 0.5)  return {code:"okRund", e};
-  if (achse && Math.abs(v-(90-e)) <= 0.5) return {code:"sonderWinkel", e};
-  if (v < 0 && Math.abs(v+e) <= 0.5) return {code:"negativ", e};
-  if (!achse && Math.abs(v-(90-e)) <= 0.5) return {code:"vertauscht", e};
-  if (Math.abs(v - RAD(e)) <= 0.01) return {code:"rad", e};
-  if (!achse && Math.abs(v - Math.abs(fy)/Math.abs(fx)) <= 0.01) return {code:"tanStatt", e};
+  const achse = e===0 || e===90, d = Math.abs(v-e);
+  if (d <= 0.011) return {code:"ok"};
+  if (d <= 0.1)   return {code:"okRund", e};
+  if (achse && Math.abs(av-(90-e)) <= 0.5) return {code:"sonderWinkel", e, neg};
+  if (neg && Math.abs(v+e) <= 0.5) return {code:"negativ", e};
+  if (!achse && Math.abs(av-(90-e)) <= 0.5) return {code:"vertauscht", e, neg};
+  /* Bei kleinen Winkeln liegen RAD(α) und tan α dicht beieinander: dann gewinnt der Wert, der näher an der Eingabe liegt. */
+  const kand = [{code:"rad", d:Math.abs(av - RAD(e)), neg}];
+  if (!achse){ kand.push({code:"kehrwert", d:Math.abs(v - Math.abs(fx)/Math.abs(fy))}, {code:"tanStatt", d:Math.abs(v - Math.abs(fy)/Math.abs(fx))}); }
+  const best = kand.filter(c => c.d <= 0.01).sort((p, q) => p.d - q.d)[0];
+  if (best) return {code:best.code, e, neg:!!best.neg};
   if (Math.abs(phi-e) > 0.5 && Math.abs(v-phi) <= 0.5) return {code:"vollwinkel", e, phi};
+  if (d <= 1.0) return {code:"ungenau", e};
   return {code:"falsch", e}; }
 function pruefeRichtung(key, fx, fy){
   const soll = richtungAus(fx, fy), achseSoll = !QUAD[soll];
@@ -397,8 +419,13 @@ function kompText(res, k, achse){
   switch(res.code){
     case "ok": return ["fb-ok","Richtig."];
     case "okRund": return ["fb-ok",`Richtig. Genauer: ${zahl(e)} N. Runden Sie erst das Endergebnis, nicht schon cos α bzw. sin α.`];
+    case "ungenau": return ["fb-bad","Fast, aber zu ungenau. Rechnen Sie mit den ungerundeten Werten aus dem Taschenrechner weiter und runden Sie erst das Ergebnis auf 0,01 N."];
+    case "nurFn": { const eigen = achse==="x" ? "cos" : "sin";
+      return ["fb-bad", `Das ist nur ${res.fn} α (${zahl(res.wert,3)}). Multiplizieren Sie noch mit F.` +
+        (res.andere ? ` Außerdem sind sin und cos vertauscht: ${X} = ± F · ${eigen} α. Der cos liegt am Winkel an, α liegt an der x-Achse.`
+                    : ` ${X} = ± F · ${res.fn} α.`)]; }
     case "leer": return ["fb-hint","Bitte einen Wert eingeben."];
-    case "format": return ["fb-hint","Bitte eine Zahl eingeben, z. B. −344,0 (Komma oder Punkt, Vorzeichen mit dem ±-Knopf)."];
+    case "format": return ["fb-hint","Bitte eine Zahl eingeben, z. B. −344,04 (Komma oder Punkt, Vorzeichen mit dem ±-Knopf)."];
     case "vorzeichen": { const r = achse==="x" ? (e<0?"links":"rechts") : (e<0?"unten":"oben");
       return ["fb-bad",`Der Betrag stimmt, das Vorzeichen nicht. Schauen Sie in die Skizze: Die Kraft zeigt nach ${r}, also ist ${X} ${e<0?"negativ":"positiv"}. α selbst ist nie negativ, das Vorzeichen setzen Sie nur einmal, nach der Skizze.`]; }
     case "vertauscht": return ["fb-bad",`Sie haben sin und cos vertauscht. Haben Sie den Winkel zur y-Achse genommen? α liegt an der x-Achse, deshalb gilt ${X} = ± F · ${fn} α. Der cos liegt am Winkel an.`];
@@ -416,27 +443,30 @@ function betragText(res, t){
     case "okRund": return ["fb-ok",`Richtig. Genauer: ${zahl(res.e)} N.`];
     case "leer": return ["fb-hint","Bitte einen Wert eingeben."];
     case "format": return ["fb-hint","Bitte eine Zahl eingeben (Komma oder Punkt)."];
+    case "ungenau": return ["fb-bad","Fast, aber zu ungenau. Rechnen Sie mit den ungerundeten Werten aus dem Taschenrechner weiter und runden Sie erst das Ergebnis auf 0,01 N."];
     case "addiert": return ["fb-bad",`Sie haben die Beträge einfach addiert. ${FX} und ${FY} stehen senkrecht aufeinander, deshalb gilt der Satz des Pythagoras: F = √(${FX}² + ${FY}²).`];
     case "wurzel": return ["fb-bad",`Die Wurzel fehlt: F = √(${FX}² + ${FY}²).`];
-    case "klammer": { const n = t.fx<0 ? t.fx : t.fy, q = zahl(-(n*n),1);
+    case "klammer": { const n = t.fx<0 ? t.fx : t.fy, q = zahl(-(n*n));
       return ["fb-bad",`Klammer vergessen? Der Taschenrechner rechnet ${zahl(n)}² = ${q}, weil er erst quadriert und dann das Minus setzt. Schreiben Sie (${zahl(n)})² oder rechnen Sie gleich mit dem Betrag.`]; }
-    default: return ["fb-bad",`Noch nicht richtig. F = √(${FX}² + ${FY}²). Das Quadrat einer negativen Zahl ist positiv.`];
+    default: return ["fb-bad",`Noch nicht richtig. F = √(${FX}² + ${FY}²).` + (t.fx < 0 || t.fy < 0 ? " Das Quadrat einer negativen Zahl ist positiv." : "")];
   } }
 function winkelText(res, fx, fy){
-  const B = x => `|${x}|`;
+  const B = x => `|${x}|`, NEG = res.neg ? " Außerdem: α ist nie negativ, rechnen Sie mit Beträgen." : "";
   switch(res.code){
     case "ok": return ["fb-ok","Richtig."];
     case "okRund": return ["fb-ok",`Richtig. Genauer: ${zahl(res.e)}°.`];
     case "leer": return ["fb-hint","Bitte einen Wert eingeben."];
     case "format": return ["fb-hint","Bitte eine Zahl eingeben (Komma oder Punkt)."];
     case "negativ": return ["fb-bad",`Negativer Winkel: Sie haben tan⁻¹ mit Vorzeichen gerechnet. α ist der spitze Winkel (0° bis 90°). Rechnen Sie mit Beträgen, α = tan⁻¹(${B(FY)} / ${B(FX)}). Wohin die Kraft zeigt, geben Sie über die Richtung an.`];
-    case "vertauscht": return ["fb-bad",`Das ist der Winkel zur y-Achse: Sie haben ${B(FX)} / ${B(FY)} gerechnet. Zur x-Achse gilt α = tan⁻¹(${B(FY)} / ${B(FX)}), ${FY} steht oben im Bruch.`];
-    case "rad": return ["fb-bad","Ihr Ergebnis ist im Bogenmaß: Der Taschenrechner steht auf RAD. Stellen Sie auf DEG und rechnen Sie neu."];
+    case "vertauscht": return ["fb-bad",`Das ist der Winkel zur y-Achse: Sie haben ${B(FX)} / ${B(FY)} gerechnet. Zur x-Achse gilt α = tan⁻¹(${B(FY)} / ${B(FX)}), ${FY} steht oben im Bruch.` + NEG];
+    case "rad": return ["fb-bad","Ihr Ergebnis ist im Bogenmaß: Der Taschenrechner steht auf RAD. Stellen Sie auf DEG und rechnen Sie neu." + NEG];
+    case "kehrwert": return ["fb-bad",`Ihr Wert ist ${B(FX)} / ${B(FY)}: Das Verhältnis ist umgedreht, und tan⁻¹ fehlt noch. Richtig: α = tan⁻¹(${B(FY)} / ${B(FX)}).`];
+    case "ungenau": return ["fb-bad","Fast, aber zu ungenau. Rechnen Sie mit den ungerundeten Werten aus dem Taschenrechner weiter und runden Sie erst das Ergebnis auf 0,01°."];
     case "tanStatt": return ["fb-bad",`Ihr Wert ist das Verhältnis ${B(FY)} / ${B(FX)} = tan α, also die „Steigung“, noch nicht der Winkel. Wenden Sie noch tan⁻¹ an (SHIFT + tan).`];
     case "vollwinkel": return ["fb-ok",`Gleichwertig: ${zahl(res.phi)}° ist der Winkel ab der positiven x-Achse. Im Skript geben wir den spitzen Winkel zur x-Achse und die Richtung an: α = ${zahl(res.e)}° ${RICHTUNG[richtungAus(fx,fy)][1]}.`];
     case "sonderWinkel": return ["fb-bad", res.e===90
-      ? `${FX} = 0 N: Die Kraft liegt auf der y-Achse. Ihr Winkel zur x-Achse ist 90°, tan⁻¹ brauchen Sie dafür nicht.`
-      : `${FY} = 0 N: Die Kraft liegt auf der x-Achse, α = 0°.`];
+      ? `${FX} = 0 N: Die Kraft liegt auf der y-Achse. Ihr Winkel zur x-Achse ist 90°, tan⁻¹ brauchen Sie dafür nicht.${NEG}`
+      : `${FY} = 0 N: Die Kraft liegt auf der x-Achse, α = 0°.${NEG}`];
     default: return ["fb-bad",`Noch nicht richtig. α = tan⁻¹(${B(FY)} / ${B(FX)}), Taschenrechner auf DEG.`];
   } }
 function richtungText(res, fx, fy){
@@ -455,7 +485,6 @@ function richtungText(res, fx, fy){
 
 /* ---------- Station 4 ---------- */
 const FEHLER = {
- rad:        "Taschenrechner auf RAD statt DEG",
  vertauscht: "sin und cos vertauscht (Winkel zur y-Achse)",
  vorzeichen: "Vorzeichen passt nicht zur Richtung",
  sonder:     "Kraft auf einer Achse falsch zerlegt (cos 90° bzw. sin 0°)",
@@ -463,7 +492,6 @@ const FEHLER = {
  pythagoras: "Betrag falsch: Komponenten addiert statt Pythagoras",
  quadrant:   "Richtung bzw. Quadrant falsch abgelesen" };
 const TIPP = {
- rad:"Rechnen Sie den Wert mit Ihrem Taschenrechner nach: Kommt mit DEG etwas anderes heraus?",
  vertauscht:"Steht in der F<sub>x</sub>-Spalte wirklich cos α?",
  vorzeichen:"Vergleichen Sie das Vorzeichen mit der Spalte Richtung.",
  sonder:"Welchen Wert haben cos 90° und sin 0°?",
@@ -471,7 +499,6 @@ const TIPP = {
  pythagoras:"Wie berechnet man die Hypotenuse aus zwei Katheten?",
  quadrant:"Lesen Sie die Vorzeichen von F<sub>rx</sub> und F<sub>ry</sub> noch einmal ab." };
 const ERKL = {
- rad:"Der Wert entsteht, wenn der Taschenrechner auf RAD steht: cos 60 ergibt dann −0,95 statt 0,5.",
  vertauscht:"F<sub>x</sub> und F<sub>y</sub> sind vertauscht. Das passiert, wenn man den Winkel zur y-Achse abliest.",
  vorzeichen:"Das Vorzeichen widerspricht der Richtung der Kraft.",
  sonder:"Eine senkrechte Kraft hat keine x-Komponente (cos 90° = 0), eine waagrechte keine y-Komponente (sin 0° = 0).",
@@ -479,7 +506,7 @@ const ERKL = {
  pythagoras:"Die Komponenten stehen senkrecht aufeinander, deshalb F<sub>r</sub> = √(F<sub>rx</sub>² + F<sub>ry</sub>²).",
  quadrant:"F<sub>rx</sub> positiv heißt nach rechts, F<sub>ry</sub> positiv heißt nach oben." };
 function komponentenText(F, a, s, fn, wert){
-  if (Math.abs(wert) < 0.05) return `± ${F} N · ${fn} ${a}° = 0 N`;
+  if (Math.abs(wert) < 0.005) return `± ${F} N · ${fn} ${a}° = 0 N`;
   return `${s>0?"+":MINUS} ${F} N · ${fn} ${a}° = ${vz(wert)}`; }
 const RTEXT = {I:"rechts oben",II:"links oben",III:"links unten",IV:"rechts unten",re:"nach rechts",li:"nach links",ob:"nach oben",un:"nach unten"};
 const QNAME = {I:RICHTUNG.I[0],II:RICHTUNG.II[0],III:RICHTUNG.III[0],IV:RICHTUNG.IV[0]};
@@ -489,33 +516,32 @@ function tabelle(kraefte, fehler){
   const zeilen = {}; let sx_ = 0, sy_ = 0;
   kraefte.forEach((k, i) => {
     const id = "F" + (i+1), z = zerlege(k);
-    let fx = r1(z.fx), fy = r1(z.fy), sxF = k.sx, syF = k.sy, fnX = "cos", fnY = "sin";
+    let fx = r2(z.fx), fy = r2(z.fy), sxF = k.sx, syF = k.sy, fnX = "cos", fnY = "sin";
     if (fehler && fehler.zeile === id){
       const t = fehler.typ, kx = fehler.komp === "x", ky = fehler.komp === "y";
-      if (t === "rad"){ if (kx) fx = r1(k.sx*k.F*Math.cos(k.a)); if (ky) fy = r1(k.sy*k.F*Math.sin(k.a)); }
-      else if (t === "vertauscht"){ fx = r1(k.sx*k.F*Math.sin(RAD(k.a))); fy = r1(k.sy*k.F*Math.cos(RAD(k.a))); fnX = "sin"; fnY = "cos"; }
+      if (t === "vertauscht"){ fx = r2(k.sx*k.F*Math.sin(RAD(k.a))); fy = r2(k.sy*k.F*Math.cos(RAD(k.a))); fnX = "sin"; fnY = "cos"; }
       else if (t === "vorzeichen"){ if (kx){ fx = -fx; sxF = -k.sx; } if (ky){ fy = -fy; syF = -k.sy; } }
-      else if (t === "sonder"){ if (k.a === 90){ fx = r1(fehler.s*k.F); sxF = fehler.s; } else { fy = r1(fehler.s*k.F); syF = fehler.s; } }
+      else if (t === "sonder"){ if (k.a === 90){ fx = r2(fehler.s*k.F); sxF = fehler.s; } else { fy = r2(fehler.s*k.F); syF = fehler.s; } }
     }
     sx_ += fx; sy_ += fy;
     const cells = [`F<sub>${i+1}</sub> = ${k.F} N`, `${k.a}°`, RTEXT[richtungKraft(k)],
       komponentenText(k.F, k.a, sxF, fnX, fx), komponentenText(k.F, k.a, syF, fnY, fy)];
     zeilen[id] = {fx, fy, cells, text: cells.join(" | ")};
   });
-  const frx = r1(sx_), fry = r1(sy_);
+  const frx = r2(sx_), fry = r2(sy_);
   const sCells = ["Summe", "", "", `F<sub>rx</sub> = ΣF<sub>x</sub> = ${vz(frx)}`, `F<sub>ry</sub> = ΣF<sub>y</sub> = ${vz(fry)}`];
   zeilen.SUM = {frx, fry, cells:sCells, text:sCells.join(" | ")};
   const typ = fehler ? fehler.typ : null;
   let fr, frT;
-  if (typ === "pythagoras"){ fr = r1(Math.abs(frx)+Math.abs(fry));
+  if (typ === "pythagoras"){ fr = r2(Math.abs(frx)+Math.abs(fry));
     frT = `Betrag: F<sub>r</sub> = |F<sub>rx</sub>| + |F<sub>ry</sub>| = ${zahl(Math.abs(frx))} N + ${zahl(Math.abs(fry))} N = ${zahl(fr)} N`; }
-  else { fr = r1(Math.hypot(frx, fry));
+  else { fr = r2(Math.hypot(frx, fry));
     frT = `Betrag: F<sub>r</sub> = √((${zahl(frx)} N)² + (${zahl(fry)} N)²) = ${zahl(fr)} N`; }
   zeilen.FR = {fr, cells:[frT], text:frT};
   let ar, arT;
-  if (typ === "arctanVZ"){ ar = r1(DEG(Math.atan(fry/frx)));
+  if (typ === "arctanVZ"){ ar = r2(DEG(Math.atan(fry/frx)));
     arT = `Winkel: α<sub>r</sub> = arctan (F<sub>ry</sub> / F<sub>rx</sub>) = arctan (${zahl(fry)} N / ${zahl(frx)} N) = ${zahl(ar)}°`; }
-  else { ar = r1(DEG(Math.atan(Math.abs(fry)/Math.abs(frx))));
+  else { ar = r2(DEG(Math.atan(Math.abs(fry)/Math.abs(frx))));
     arT = `Winkel: α<sub>r</sub> = arctan (|F<sub>ry</sub>| / |F<sub>rx</sub>|) = arctan (${zahl(Math.abs(fry))} N / ${zahl(Math.abs(frx))} N) = ${zahl(ar)}°`; }
   zeilen.AR = {ar, cells:[arT], text:arT};
   let q = richtungAus(frx, fry);
@@ -547,7 +573,7 @@ function variante(typ, rnd = Math.random){
     if (Math.abs(S.frx) < 30 || Math.abs(S.fry) < 30) continue;
     const q = Math.abs(S.fry)/Math.abs(S.frx); if (q >= 0.85 && q <= 1.18) continue;
     let fehler;
-    if (["rad","vertauscht","vorzeichen","sonder"].includes(typ)){
+    if (["vertauscht","vorzeichen","sonder"].includes(typ)){
       const k = kr[kIdx];
       if (typ!=="sonder" && (k.a===0 || k.a===90)) continue;
       const komp = typ==="sonder" ? (k.a===90 ? "x" : "y") : (rnd()<.5 ? "x" : "y");
@@ -557,8 +583,6 @@ function variante(typ, rnd = Math.random){
     const ist = tabelle(kr, fehler);
     const z = fehler.zeile;
     if (ist.zeilen[z].text === soll.zeilen[z].text) continue;
-    if (typ==="rad"){ const d = fehler.komp==="x" ? ist.zeilen[z].fx - soll.zeilen[z].fx : ist.zeilen[z].fy - soll.zeilen[z].fy;
-                      if (Math.abs(d) < 5) continue; }
     return {kraefte:kr, typ, zeile:z, komp:fehler.komp, soll, ist}; }
   throw new Error("variante: keine gültige Variante für " + typ); }
 
@@ -579,7 +603,7 @@ function bewerteText(res, v){
     case "keinTyp": return ["fb-hint","Wählen Sie noch die Fehlerart."];
     case "zeileOk": return ["fb-bad","Diese Zeile ist richtig gerechnet. Suchen Sie weiter."];
     case "folgefehler": return ["fb-bad","Hier stimmt der Wert nicht, aber nur als Folgefehler. Der Fehler entsteht weiter oben."];
-    case "typFalsch": return ["fb-bad","Die Zeile stimmt, aber die Fehlerart nicht. " + TIPP[v.typ]];
+    case "typFalsch": return ["fb-bad","Richtige Zeile gefunden, aber die Fehlerart passt nicht. " + TIPP[v.typ]];
     default: return ["fb-ok","Richtig erkannt. " + ERKL[v.typ] + " Richtig wäre: " + sollTextZeile(v)];
   } }
 
@@ -599,6 +623,10 @@ function fname(x, y, i, anchor = "middle"){
 function bogenPfad(sx, sy, a, r){
   const ca = a === 90 ? 0 : Math.cos(RAD(a)), sa = a === 0 ? 0 : Math.sin(RAD(a));
   return `M ${FIX(sx*r)} 0 A ${r} ${r} 0 0 ${(sx*sy > 0) ? 0 : 1} ${FIX(sx*r*ca)} ${FIX(-sy*r*sa)}`; }
+/* Lage der Winkelbeschriftung. Bei kleinem Winkel (< 20°) läge sie auf dem Pfeil: Dann steht sie auf der anderen Seite der Achse, neben dem Bogenende. */
+function alphaPos(sx, sy, a, r, rl, breit, seiteFrei = true){
+  if (a >= 20 || !seiteFrei) return [sx*rl*Math.cos(RAD(a/2)), -sy*rl*Math.sin(RAD(a/2)) + 5];
+  return [sx*(r + 8 + breit/2), sy > 0 ? 18 : -7]; }
 function achsenSVG(x0, x1, y0, y1, xl, yl){
   return `<line class="achse" x1="${x0}" y1="0" x2="${x1-8}" y2="0"/><polygon class="achse-spitze" points="${x1},0 ${x1-12},-4.5 ${x1-12},4.5"/>` +
          `<line class="achse" x1="0" y1="${y0}" x2="0" y2="${y1+8}"/><polygon class="achse-spitze" points="0,${y1} -4.5,${y1+12} 4.5,${y1+12}"/>` +
@@ -614,10 +642,12 @@ function kraftBild(kraefte, opt = {}){
     const L = lmax*k.F/Fmax, ca = k.a === 90 ? 0 : Math.cos(RAD(k.a)), sa = k.a === 0 ? 0 : Math.sin(RAD(k.a));
     const P = [k.sx*L*ca, -k.sy*L*sa];
     if (k.a > 0 && k.a < 90){
-      const r = 38 + 8*i, rl = 56 + 16*i, am = k.a/2;
+      const r = 38 + 8*i, rl = kraefte.length === 1 ? 56 : 72 + 14*i, am = k.a/2;
       s += `<path class="bogen" d="${bogenPfad(k.sx, k.sy, k.a, r)}"/>`;
       const alpha = kraefte.length === 1 ? (opt.alphaText || "α") : (k.a + "°");
-      s += txt(k.sx*rl*Math.cos(RAD(am)), -k.sy*rl*Math.sin(RAD(am)) + 5, alpha, "g");
+      const frei = !kraefte.some((o, j) => j !== i && o.sx === k.sx && o.sy === -k.sy && o.a > 0 && o.a < 90);
+      const pos = alphaPos(k.sx, k.sy, k.a, r, frei ? rl : 100, alpha.length > 1 ? 26 : 10, frei);
+      s += txt(pos[0], pos[1], alpha, "g");
     }
     if (opt.komp){
       s += pfeilSVG([0, 0], [P[0], 0], "komp", 10, 5) + pfeilSVG([P[0], 0], P, "komp", 10, 5);
@@ -648,7 +678,10 @@ function zeigeStation(n, merken = true){
   for (let i = 1; i <= 4; i++) $("st"+i).hidden = (i !== n);
   if (merken){ try { history.replaceState(null, "", "#station-" + n); } catch(e){} }
 }
-document.querySelectorAll("#tabs button").forEach(b => b.addEventListener("click", () => zeigeStation(+b.dataset.s)));
+document.querySelectorAll("#tabs button").forEach(b => b.addEventListener("click", () => {
+  zeigeStation(+b.dataset.s);
+  let reduziert = false; try { reduziert = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch(e){}
+  $("tabs").scrollIntoView({block:"start", behavior: reduziert ? "auto" : "smooth"}); }));
 
 /* ===== Station 1 ===== */
 function s1zeichne(){
@@ -664,7 +697,7 @@ function s1zeichne(){
     s += `<circle class="lampe" cx="${FIX(P[0]/2)}" cy="-200" r="9"/>`;
     for (let i = 1; i <= 5; i++){ const x = P[0]*i/5; s += `<line class="strahl" x1="${FIX(x)}" y1="-190" x2="${FIX(x)}" y2="0"/>`; }
     s += `<line class="schatten" x1="0" y1="0" x2="${FIX(P[0])}" y2="0"/>`;
-    s += txt(Math.max(P[0]/2, 50), 24, "Schatten = F<tspan dy=\"5\" font-size=\"12\">x</tspan>", "g");
+    s += txt(Math.max(P[0]/2, 50), 46, "Schatten = F<tspan dy=\"5\" font-size=\"12\">x</tspan>", "g");
   } else {
     s += `<circle class="lampe" cx="210" cy="${FIX(P[1]/2)}" r="9"/>`;
     for (let i = 1; i <= 5; i++){ const y = P[1]*i/5; s += `<line class="strahl" x1="200" y1="${FIX(y)}" x2="0" y2="${FIX(y)}"/>`; }
@@ -672,7 +705,7 @@ function s1zeichne(){
     s += txt(-8, P[1]/2 + 5, "Schatten = F<tspan dy=\"5\" font-size=\"12\">y</tspan>", "g", "end");
   }
   if (a > 0 && a < 90){
-    s += `<path class="bogen" d="${bogenPfad(1, 1, a, 38)}"/>` + txt(56*Math.cos(RAD(a/2)), -56*Math.sin(RAD(a/2)) + 5, "α", "g");
+    s += `<path class="bogen" d="${bogenPfad(1, 1, a, 38)}"/>` + (p => txt(p[0], p[1], "α", "g"))(alphaPos(1, 1, a, 38, 56, 10));
   }
   s += pfeilSVG([0, 0], P, "kraft");
   s += fname(P[0] - sa*16 - 8, P[1] - ca*16 + 5, "");
@@ -684,6 +717,8 @@ function s1zeichne(){
   ["s1rA","s1rB"].forEach(i => leerRm($(i)));
 }
 $("s1a").addEventListener("input", s1zeichne);
+[["s1m", -1], ["s1p", 1]].forEach(([id, d]) => $(id).addEventListener("click", () => {
+  $("s1a").value = Math.min(90, Math.max(0, +$("s1a").value + d)); s1zeichne(); }));
 $("s1F").addEventListener("input", s1zeichne);
 $("s1oben").addEventListener("click", () => { $("s1oben").setAttribute("aria-pressed","true"); $("s1seite").setAttribute("aria-pressed","false"); s1zeichne(); });
 $("s1seite").addEventListener("click", () => { $("s1seite").setAttribute("aria-pressed","true"); $("s1oben").setAttribute("aria-pressed","false"); s1zeichne(); });
@@ -743,7 +778,7 @@ function s2neu(k){
   s2 = {k: k || aufgabeSchaetzen(), vgl:null, vz:0, geprueft:false};
   const {F, a} = s2.k;
   $("s2kopf").textContent = `F = ${F} N, α = ${a}°`;
-  $("s2bild").innerHTML = kraftBild([s2.k], {raster:true, alphaText:a+"°"});
+  $("s2bild").innerHTML = kraftBild([s2.k], {alphaText:a+"°"});
   document.querySelectorAll("#s2vgl button").forEach(b => b.disabled = false);
   document.querySelectorAll("#s2vz button").forEach(b => b.setAttribute("aria-pressed","false"));
   leerRm($("s2r1")); leerRm($("s2r2")); $("s2exakt").innerHTML = "";
@@ -780,7 +815,7 @@ $("s2pruef").addEventListener("click", () => {
   if (!vzOk) setRm($("s2r2"), "fb-bad", `Vorzeichen: Die Kraft zeigt nach ${k.sx < 0 ? "links" : "rechts"}, F<sub>x</sub> ist also ${k.sx < 0 ? "negativ" : "positiv"}. ${betrag}`);
   else setRm($("s2r2"), ok ? "fb-ok" : "fb-bad", betrag);
   $("s2exakt").innerHTML = `Exakt: F<sub>x</sub> = ${k.sx > 0 ? "+" : MINUS} F · cos α = ${komponentenText(k.F, k.a, k.sx, "cos", e)}`;
-  $("s2bild").innerHTML = kraftBild([k], {raster:true, alphaText:k.a+"°", komp:true});
+  $("s2bild").innerHTML = kraftBild([k], {alphaText:k.a+"°", komp:true});
   if (!s2.geprueft){ s2.geprueft = true; s2z.m++; if (ok && vzOk) s2z.n++; s2zaehler(); }
   $("s2pruef").disabled = true;
 });
@@ -797,7 +832,7 @@ function s3leeren(){
   $("s3loes").hidden = true; $("s3loes").innerHTML = ""; s3.geloest = false; }
 function s3skizzeB(){
   const t = s3.t, k = {F:betragSoll(t), a:winkelSoll(t), sx:t.fx < 0 ? -1 : 1, sy:t.fy < 0 ? -1 : 1};
-  $("s3bild").innerHTML = kraftBild([k], {alphaText:zahl(r1(k.a))+"°"}); $("s3bildbox").hidden = false; }
+  $("s3bild").innerHTML = kraftBild([k], {alphaText:zahl(r2(k.a))+"°"}); $("s3bildbox").hidden = false; }
 function setzeAufgabe3(modus, aufg){
   s3.modus = modus; s3leeren();
   $("m3a").setAttribute("aria-pressed", String(modus === "a")); $("m3b").setAttribute("aria-pressed", String(modus === "b"));
@@ -829,20 +864,20 @@ function s3pruefe(){
       s3gelöst("Aufgabe gelöst. Ergebnis: " + ergebnisB(t) + "."); s3skizzeB(); }
   } }
 function ergebnisB(t){
-  const F = zahl(r1(betragSoll(t))), e = winkelSoll(t), key = richtungAus(t.fx, t.fy);
-  return QUAD[key] ? `F = ${F} N unter ${zahl(r1(e))}° zur x-Achse ${RICHTUNG[key][1]}` : `F = ${F} N ${RICHTUNG[key][1]} (α = ${e}°)`; }
+  const F = zahl(r2(betragSoll(t))), e = winkelSoll(t), key = richtungAus(t.fx, t.fy);
+  return QUAD[key] ? `F = ${F} N unter ${zahl(r2(e))}° zur x-Achse ${RICHTUNG[key][1]}` : `F = ${F} N ${RICHTUNG[key][1]} (α = ${e}°)`; }
 function loesungA(k){
   const z = zerlege(k), key = richtungKraft(k);
-  const p = [`F<sub>x</sub> = ${komponentenText(k.F, k.a, k.sx, "cos", r1(z.fx))}`, `F<sub>y</sub> = ${komponentenText(k.F, k.a, k.sy, "sin", r1(z.fy))}`];
+  const p = [`F<sub>x</sub> = ${komponentenText(k.F, k.a, k.sx, "cos", r2(z.fx))}`, `F<sub>y</sub> = ${komponentenText(k.F, k.a, k.sy, "sin", r2(z.fy))}`];
   p.push(QUAD[key] ? `Vorzeichen: Die Kraft zeigt ${RICHTUNG[key][1]}, also ist F<sub>x</sub> ${k.sx<0?"negativ":"positiv"} und F<sub>y</sub> ${k.sy<0?"negativ":"positiv"}.`
     : `Vorzeichen: Die Kraft zeigt ${RICHTUNG[key][1]}. ${k.a === 90 ? `F<sub>x</sub> ist 0 N, F<sub>y</sub> ist ${k.sy<0?"negativ":"positiv"}` : `F<sub>y</sub> ist 0 N, F<sub>x</sub> ist ${k.sx<0?"negativ":"positiv"}`}.`);
   return p.map(x => `<p>${x}</p>`).join(""); }
 function loesungB(t){
-  const F = r1(betragSoll(t)), e = winkelSoll(t), key = richtungAus(t.fx, t.fy);
+  const F = r2(betragSoll(t)), e = winkelSoll(t), key = richtungAus(t.fx, t.fy);
   let p = [`F = √((${zahl(t.fx)} N)² + (${zahl(t.fy)} N)²) = ${zahl(F)} N`];
   if (t.fx === 0) p.push(`F<sub>x</sub> = 0 N, die Kraft liegt auf der y-Achse: α = 90° (kein tan⁻¹ nötig).`);
   else if (t.fy === 0) p.push(`F<sub>y</sub> = 0 N, die Kraft liegt auf der x-Achse: α = 0° (kein tan⁻¹ nötig).`);
-  else p.push(`α = tan⁻¹(|F<sub>y</sub>| / |F<sub>x</sub>|) = tan⁻¹(${zahl(Math.abs(t.fy))} N / ${zahl(Math.abs(t.fx))} N) = ${zahl(r1(e))}°`);
+  else p.push(`α = tan⁻¹(|F<sub>y</sub>| / |F<sub>x</sub>|) = tan⁻¹(${zahl(Math.abs(t.fy))} N / ${zahl(Math.abs(t.fx))} N) = ${zahl(r2(e))}°`);
   p.push(QUAD[key] ? `F<sub>x</sub> ist ${t.fx<0?"negativ":"positiv"} und F<sub>y</sub> ist ${t.fy<0?"negativ":"positiv"}. F zeigt also ${RICHTUNG[key][0]}.` : `F zeigt ${RICHTUNG[key][0]}.`);
   p.push("Ergebnis: " + ergebnisB(t) + ".");
   return p.map(x => `<p>${x}</p>`).join(""); }
@@ -870,7 +905,7 @@ function setzeVariante4(v){
   v.kraefte.forEach((k, i) => { const id = "F"+(i+1), c = z[id].cells;
     h += `<tr class="klick" data-z="${id}" tabindex="0"><td data-l="Kraft">${c[0]}</td><td data-l="α">${c[1]}</td><td data-l="Richtung">${c[2]}</td><td data-l="Fx">${c[3]}</td><td data-l="Fy">${c[4]}</td></tr>`; });
   const sc = z.SUM.cells;
-  h += `<tr class="klick" data-z="SUM" tabindex="0"><td>${sc[0]}</td><td></td><td></td><td data-l="Fx">${sc[3]}</td><td data-l="Fy">${sc[4]}</td></tr>`;
+  h += `<tr class="klick" data-z="SUM" tabindex="0"><td>${sc[0]}</td><td></td><td></td><td>${sc[3]}</td><td>${sc[4]}</td></tr>`;
   ["FR","AR","RI"].forEach(id => { h += `<tr class="klick" data-z="${id}" tabindex="0"><td colspan="5">${z[id].cells[0]}</td></tr>`; });
   $("s4body").innerHTML = h;
   $("s4body").querySelectorAll("tr").forEach(tr => {
@@ -896,34 +931,52 @@ function selftest(){
   let z = zerlege(T1); nah(z.fx, -344.044, .01, "T1 fx"); nah(z.fy, -240.902, .01, "T1 fy");
   z = zerlege(T3); ok(z.fx === 0, "T3 fx exakt 0"); nah(z.fy, -450, 1e-9, "T3 fy");
   z = zerlege(T4); nah(z.fx, 350, 1e-9, "T4 fx"); ok(z.fy === 0, "T4 fy exakt 0");
-  ok(zahl(-0.0001) === "0,0" && zahl(-344.04) === "−344,0" && vz(-344.04) === "− 344,0 N" && vz(0) === "0 N", "Zahlenformat");
+  ok(zahl(-0.0001) === "0,00" && zahl(-344.04) === "−344,04" && vz(-344.04) === "− 344,04 N" && vz(0) === "0 N" && vz(0.004) === "0 N" && zahl(0.5736, 3) === "0,574", "Zahlenformat");
 
   // B) pruefeKomp
   const kc = (e, k, a, code) => { const r = pruefeKomp(e, k, a).code; ok(r === code, `pruefeKomp("${e}", ${a}) = ${r}, erwartet ${code}`); };
-  kc("-344,0",T1,"x","ok"); kc("−344,0",T1,"x","ok"); kc("-344.4",T1,"x","okRund"); kc("344,0",T1,"x","vorzeichen");
-  kc("-240,9",T1,"x","vertauscht"); kc("-379,6",T1,"x","rad"); kc("379,6",T1,"x","rad"); kc("-179,8",T1,"y","rad");
+  kc("-344,04",T1,"x","ok"); kc("−344,04",T1,"x","ok"); kc("-344,05",T1,"x","ok"); kc("-344,0",T1,"x","okRund"); kc("-344.4",T1,"x","okRund"); kc("344,04",T1,"x","vorzeichen");
+  kc("-240,9",T1,"x","vertauscht"); kc("-379,6",T1,"x","rad"); kc("379,55",T1,"x","rad"); kc("-179,8",T1,"y","rad");
   kc("-344,0",T1,"y","vertauscht"); kc("",T1,"x","leer"); kc("abc",T1,"x","format"); kc("12,3,4",T1,"x","format");
-  kc("-100",T2,"x","ok"); kc("100",T2,"x","vorzeichen"); kc("-190,5",T2,"x","rad");
-  kc("173,2",T2,"y","ok"); kc("-173,2",T2,"y","vorzeichen"); kc("100",T2,"y","vertauscht");
+  kc("-240,90",T1,"y","ok"); kc("-241,5",T1,"y","okRund"); kc("-246",T1,"y","ungenau"); kc("-336",T1,"x","ungenau"); kc("-300",T1,"x","falsch");
+  kc("-0,82",T1,"x","nurFn"); kc("0,5736",T1,"y","nurFn"); kc("0,82",T1,"x","nurFn"); kc("-0,57",T1,"x","nurFn"); kc("0,82",T1,"y","nurFn");
+  kc("-100",T2,"x","ok"); kc("100",T2,"x","vorzeichen"); kc("-190,48",T2,"x","rad");
+  kc("173,21",T2,"y","ok"); kc("-173,21",T2,"y","vorzeichen"); kc("100",T2,"y","vertauscht");
   kc("0",T3,"x","ok"); kc("-0",T3,"x","ok"); kc("-450",T3,"x","sonder90"); kc("450",T3,"x","sonder90"); kc("-201,6",T3,"x","rad");
-  kc("-450,0",T3,"y","ok"); kc("450",T3,"y","vorzeichen"); kc("0",T3,"y","sonderNull");
+  kc("-450,00",T3,"y","ok"); kc("450",T3,"y","vorzeichen"); kc("0",T3,"y","sonderNull");
   kc("350",T4,"x","ok"); kc("+350",T4,"x","ok"); kc("0",T4,"x","sonderNull"); kc("-350",T4,"x","vorzeichen");
   kc("350",T4,"y","sonder0"); kc("0",T4,"y","ok");
+  // Texte nurFn
+  let tx = kompText(pruefeKomp("-0,82",T1,"x"), T1, "x")[1];
+  ok(tx.includes("Das ist nur cos α (0,819)") && tx.includes("Multiplizieren Sie noch mit F") && !tx.includes("vertauscht"), "Text nurFn eigene Funktion: " + tx);
+  tx = kompText(pruefeKomp("0,57",T1,"x"), T1, "x")[1];
+  ok(tx.includes("Das ist nur sin α (0,574)") && tx.includes("vertauscht") && tx.includes("cos α"), "Text nurFn andere Funktion: " + tx);
+  tx = kompText(pruefeKomp("-336",T1,"x"), T1, "x"); ok(tx[0] === "fb-bad" && tx[1].includes("auf 0,01 N"), "Text ungenau Komponente");
 
   // C) pruefeBetrag
   const bc = (e, t, code) => { const r = pruefeBetrag(e, t).code; ok(r === code, `pruefeBetrag("${e}") = ${r}, erwartet ${code}`); };
   const tA = {fx:503.6, fy:250}, tB = {fx:-250, fy:480.5};
-  bc("562,2",tA,"ok"); bc("562,0",tA,"okRund"); bc("753,6",tA,"addiert"); bc("316113",tA,"wurzel"); bc("500",tA,"falsch");
-  bc("541,6",tB,"ok"); bc("410,3",tB,"klammer"); bc("730,5",tB,"addiert");
+  bc("562,24",tA,"ok"); bc("562,0",tA,"okRund"); bc("753,6",tA,"addiert"); bc("316113",tA,"wurzel"); bc("500",tA,"falsch"); bc("550",tA,"ungenau"); bc("570",tA,"ungenau");
+  bc("541,65",tB,"ok"); bc("541,6",tB,"okRund"); bc("410,3",tB,"klammer"); bc("730,5",tB,"addiert"); bc("530",tB,"ungenau"); bc("500",tB,"falsch");
+  tx = betragText(pruefeBetrag("500",tA), tA)[1]; ok(tx.includes("Noch nicht richtig") && !tx.includes("negativ"), "Betrag-Hinweis ohne negative Komponente: " + tx);
+  tx = betragText(pruefeBetrag("500",tB), tB)[1]; ok(tx.includes("Quadrat einer negativen Zahl"), "Betrag-Hinweis mit negativer Komponente");
+  tx = betragText(pruefeBetrag("550",tA), tA)[1]; ok(tx.includes("auf 0,01 N"), "Text ungenau Betrag");
 
   // D) pruefeWinkel
   const wc = (e, fx, fy, code) => { const r = pruefeWinkel(e, fx, fy).code; ok(r === code, `pruefeWinkel("${e}", ${fx}|${fy}) = ${r}, erwartet ${code}`); };
-  wc("26,4",503.6,250,"ok"); wc("63,6",503.6,250,"vertauscht"); wc("0,46",503.6,250,"rad"); wc("0,50",503.6,250,"tanStatt");
-  wc("62,5",-250,480.5,"ok"); wc("-62,5",-250,480.5,"negativ"); wc("27,5",-250,480.5,"vertauscht"); wc("117,5",-250,480.5,"vollwinkel"); wc("1,09",-250,480.5,"rad");
-  wc("17,0",312.4,-95.8,"ok"); wc("-17,0",312.4,-95.8,"negativ"); wc("343,0",312.4,-95.8,"vollwinkel");
+  wc("26,4",503.6,250,"ok"); wc("63,6",503.6,250,"vertauscht"); wc("0,46",503.6,250,"rad"); wc("0,50",503.6,250,"tanStatt"); wc("2,01",503.6,250,"kehrwert");
+  wc("62,51",-250,480.5,"ok"); wc("62,5",-250,480.5,"okRund"); wc("62,6",-250,480.5,"okRund"); wc("62",-250,480.5,"ungenau"); wc("63,4",-250,480.5,"ungenau"); wc("65",-250,480.5,"falsch");
+  wc("-62,51",-250,480.5,"negativ"); wc("27,49",-250,480.5,"vertauscht"); wc("117,49",-250,480.5,"vollwinkel"); wc("1,09",-250,480.5,"rad");
+  wc("0,52",-250,480.5,"kehrwert"); wc("-1,09",-250,480.5,"rad"); wc("-27,49",-250,480.5,"vertauscht"); wc("1,92",-250,480.5,"tanStatt");
+  tx = winkelText(pruefeWinkel("-1,09",-250,480.5), -250, 480.5)[1]; ok(tx.includes("Bogenmaß") && tx.includes("nie negativ"), "Text rad negativ");
+  tx = winkelText(pruefeWinkel("-27,49",-250,480.5), -250, 480.5)[1]; ok(tx.includes("Winkel zur y-Achse") && tx.includes("nie negativ"), "Text vertauscht negativ");
+  tx = winkelText(pruefeWinkel("1,09",-250,480.5), -250, 480.5)[1]; ok(tx.includes("Bogenmaß") && !tx.includes("nie negativ"), "Text rad positiv");
+  tx = winkelText(pruefeWinkel("0,52",-250,480.5), -250, 480.5)[1]; ok(tx.includes("umgedreht") && tx.includes("tan⁻¹ fehlt noch") && tx.includes("<sub>"), "Text kehrwert");
+  tx = winkelText(pruefeWinkel("62",-250,480.5), -250, 480.5)[1]; ok(tx.includes("auf 0,01°"), "Text ungenau Winkel");
+  wc("17,05",312.4,-95.8,"ok"); wc("-17,05",312.4,-95.8,"negativ"); wc("342,95",312.4,-95.8,"vollwinkel");
   wc("90",0,-300,"ok"); wc("0",0,-300,"sonderWinkel"); wc("-90",0,-300,"negativ");
   wc("0",-420,0,"ok"); wc("180",-420,0,"vollwinkel"); wc("90",-420,0,"sonderWinkel");
-  wc("26,6",300,150,"ok"); wc("0,5",300,150,"tanStatt"); wc("63,4",300,150,"vertauscht"); wc("0,46",300,150,"rad");
+  wc("26,57",300,150,"ok"); wc("0,5",300,150,"tanStatt"); wc("63,43",300,150,"vertauscht"); wc("0,46",300,150,"rad"); wc("2",300,150,"kehrwert");
 
   // E) Richtung
   ok(richtungAus(-250,480.5) === "II" && richtungAus(0,-300) === "un" && richtungAus(-420,0) === "li" && richtungAus(312.4,-95.8) === "IV", "richtungAus");
@@ -935,35 +988,34 @@ function selftest(){
   const kr = [{F:400,a:60,sx:-1,sy:1},{F:500,a:45,sx:1,sy:1},{F:350,a:0,sx:1,sy:1},{F:450,a:90,sx:1,sy:-1}];
   const zl = (r) => r.zeilen;
   let t = zl(tabelle(kr, null));
-  ok(t.F1.fx === -200 && t.F1.fy === 346.4 && t.F2.fx === 353.6 && t.F2.fy === 353.6 && t.F3.fx === 350 && t.F3.fy === 0 && t.F4.fx === 0 && t.F4.fy === -450, "F: Einzelwerte " + JSON.stringify([t.F1.fx,t.F1.fy,t.F2.fx,t.F2.fy,t.F3.fx,t.F3.fy,t.F4.fx,t.F4.fy]));
-  ok(t.SUM.frx === 503.6 && t.SUM.fry === 250 && t.FR.fr === 562.2 && t.AR.ar === 26.4 && t.RI.q === "I", "F: Summen " + [t.SUM.frx,t.SUM.fry,t.FR.fr,t.AR.ar,t.RI.q]);
-  ok(t.F3.text.includes("± 350 N · sin 0° = 0 N") && t.F1.text.includes("− 400 N · cos 60° = − 200,0 N"), "F: Formeltexte");
-  ok(t.RI.text.includes("Ergebnis:</b> F<sub>r</sub> = 562,2 N unter 26,4° zur x-Achse nach rechts oben"), "F: RI-Text");
+  ok(t.F1.fx === -200 && t.F1.fy === 346.41 && t.F2.fx === 353.55 && t.F2.fy === 353.55 && t.F3.fx === 350 && t.F3.fy === 0 && t.F4.fx === 0 && t.F4.fy === -450, "F: Einzelwerte " + JSON.stringify([t.F1.fx,t.F1.fy,t.F2.fx,t.F2.fy,t.F3.fx,t.F3.fy,t.F4.fx,t.F4.fy]));
+  ok(t.SUM.frx === 503.55 && t.SUM.fry === 249.96 && t.FR.fr === 562.18 && t.AR.ar === 26.4 && t.RI.q === "I", "F: Summen " + [t.SUM.frx,t.SUM.fry,t.FR.fr,t.AR.ar,t.RI.q]);
+  ok(t.F3.text.includes("± 350 N · sin 0° = 0 N") && t.F1.text.includes("− 400 N · cos 60° = − 200,00 N"), "F: Formeltexte");
+  ok(t.RI.text.includes("Ergebnis:</b> F<sub>r</sub> = 562,18 N unter 26,40° zur x-Achse nach rechts oben"), "F: RI-Text");
+  ok(!Object.keys(FEHLER).includes("rad") && Object.keys(FEHLER).length === 6, "F: sechs Fehlerarten ohne RAD");
   const ver = (f) => ({kraefte:kr, typ:f.typ, zeile:f.zeile, komp:f.komp, soll:tabelle(kr,null), ist:tabelle(kr,f)});
   // pythagoras
   let f = {typ:"pythagoras", zeile:"FR"}, v = ver(f), tt = zl(v.ist);
-  ok(tt.FR.fr === 753.6 && tt.RI.text.includes("753,6") && tt.SUM.text === v.soll.zeilen.SUM.text, "F: pythagoras");
+  ok(tt.FR.fr === 753.51 && tt.RI.text.includes("753,51") && tt.SUM.text === v.soll.zeilen.SUM.text, "F: pythagoras");
   ok(bewerte(v,"FR","pythagoras") === "richtig" && bewerte(v,"FR","quadrant") === "typFalsch" && bewerte(v,"F1","pythagoras") === "zeileOk" && bewerte(v,"RI","pythagoras") === "folgefehler", "F: bewerte pythagoras");
+  ok(bewerteText("typFalsch", v)[1].startsWith("Richtige Zeile gefunden, aber die Fehlerart passt nicht. "), "F: Text typFalsch");
   // sonder
   f = {typ:"sonder", zeile:"F4", komp:"x", s:-1}; v = ver(f); tt = zl(v.ist);
-  ok(tt.F4.fx === -450 && tt.F4.text.includes("− 450 N · cos 90° = − 450,0 N") && tt.SUM.frx === 53.6 && tt.FR.fr === 255.7 && tt.AR.ar === 77.9, "F: sonder " + [tt.F4.fx,tt.SUM.frx,tt.FR.fr,tt.AR.ar]);
+  ok(tt.F4.fx === -450 && tt.F4.text.includes("− 450 N · cos 90° = − 450,00 N") && tt.SUM.frx === 53.55 && tt.FR.fr === 255.63 && tt.AR.ar === 77.91, "F: sonder " + [tt.F4.fx,tt.SUM.frx,tt.FR.fr,tt.AR.ar]);
   ok(bewerte(v,"SUM","sonder") === "folgefehler", "F: bewerte sonder");
-  // rad
-  f = {typ:"rad", zeile:"F1", komp:"x"}; v = ver(f); tt = zl(v.ist);
-  ok(tt.F1.fx === 381 && tt.F1.text.includes("− 400 N · cos 60° = + 381,0 N") && tt.SUM.frx === 1084.6 && tt.FR.fr === 1113 && tt.AR.ar === 13, "F: rad " + [tt.F1.fx,tt.SUM.frx,tt.FR.fr,tt.AR.ar]);
   // vertauscht
   f = {typ:"vertauscht", zeile:"F1", komp:"x"}; v = ver(f); tt = zl(v.ist);
-  ok(tt.F1.fx === -346.4 && tt.F1.fy === 200 && tt.SUM.frx === 357.2 && tt.SUM.fry === 103.6 && tt.FR.fr === 371.9 && tt.AR.ar === 16.2, "F: vertauscht " + [tt.F1.fx,tt.F1.fy,tt.SUM.frx,tt.SUM.fry,tt.FR.fr,tt.AR.ar]);
+  ok(tt.F1.fx === -346.41 && tt.F1.fy === 200 && tt.SUM.frx === 357.14 && tt.SUM.fry === 103.55 && tt.FR.fr === 371.85 && tt.AR.ar === 16.17, "F: vertauscht " + [tt.F1.fx,tt.F1.fy,tt.SUM.frx,tt.SUM.fry,tt.FR.fr,tt.AR.ar]);
   // vorzeichen
   f = {typ:"vorzeichen", zeile:"F2", komp:"y"}; v = ver(f); tt = zl(v.ist);
-  ok(tt.F2.fy === -353.6 && tt.SUM.fry === -457.2 && tt.FR.fr === 680.2 && tt.AR.ar === 42.2 && tt.RI.text.includes("nach rechts unten (IV. Quadrant)"), "F: vorzeichen " + [tt.F2.fy,tt.SUM.fry,tt.FR.fr,tt.AR.ar]);
+  ok(tt.F2.fy === -353.55 && tt.SUM.fry === -457.14 && tt.FR.fr === 680.1 && tt.AR.ar === 42.23 && tt.RI.text.includes("nach rechts unten (IV. Quadrant)"), "F: vorzeichen " + [tt.F2.fy,tt.SUM.fry,tt.FR.fr,tt.AR.ar]);
   // quadrant
   f = {typ:"quadrant", zeile:"RI"}; v = ver(f); tt = zl(v.ist);
   ok(tt.RI.text.includes("ist positiv und F<sub>ry</sub> ist positiv") && tt.RI.text.includes("nach links oben (II. Quadrant)"), "F: quadrant");
-  // arctanVZ (nachgerechnet mit python3: Frx 218,7, Fry -132,1, 31,1°)
+  // arctanVZ (mit python3 nachgerechnet: Frx 218,72, Fry -132,08, 31,13°)
   const kv = [{F:400,a:60,sx:-1,sy:1},{F:300,a:20,sx:1,sy:-1},{F:400,a:70,sx:1,sy:-1}];
   f = {typ:"arctanVZ", zeile:"AR"}; v = {kraefte:kv, typ:f.typ, zeile:f.zeile, soll:tabelle(kv,null), ist:tabelle(kv,f)};
-  ok(v.soll.zeilen.SUM.frx === 218.7 && v.soll.zeilen.SUM.fry === -132.1 && v.soll.zeilen.AR.ar === 31.1 && v.ist.zeilen.AR.ar === -31.1 && v.soll.zeilen.RI.q === "IV", "F: arctanVZ " + [v.soll.zeilen.SUM.frx, v.soll.zeilen.SUM.fry, v.soll.zeilen.AR.ar, v.ist.zeilen.AR.ar]);
+  ok(v.soll.zeilen.SUM.frx === 218.72 && v.soll.zeilen.SUM.fry === -132.08 && v.soll.zeilen.AR.ar === 31.13 && v.ist.zeilen.AR.ar === -31.13 && v.soll.zeilen.RI.q === "IV", "F: arctanVZ " + [v.soll.zeilen.SUM.frx, v.soll.zeilen.SUM.fry, v.soll.zeilen.AR.ar, v.ist.zeilen.AR.ar]);
   ok(bewerte(v,"AR","arctanVZ") === "richtig" && bewerte(v,"RI","arctanVZ") === "folgefehler", "F: bewerte arctanVZ");
 
   // G) Generatoren
@@ -981,8 +1033,8 @@ function selftest(){
     const tz = aufgabeZusammen(rnd);
     if (tz.fx === 0 && tz.fy === 0) bad++;
     else if (tz.fx !== 0 && tz.fy !== 0){ const q = Math.abs(tz.fy/tz.fx); if ((q >= .8 && q <= 1.25) || q < .1 || q > 10) bad++; }
-    if (pruefeBetrag(zahl(r1(betragSoll(tz))), tz).code !== "ok" && pruefeBetrag(zahl(r1(betragSoll(tz))), tz).code !== "okRund") bad++;
-    if (!["ok","okRund"].includes(pruefeWinkel(zahl(r1(winkelSoll(tz))), tz.fx, tz.fy).code)) bad++;
+    if (pruefeBetrag(zahl(r2(betragSoll(tz))), tz).code !== "ok") bad++;
+    if (pruefeWinkel(zahl(r2(winkelSoll(tz))), tz.fx, tz.fy).code !== "ok") bad++;
     if (pruefeRichtung(richtungAus(tz.fx, tz.fy), tz.fx, tz.fy).code !== "ok") bad++;
   }
   ok(bad === 0, "aufgabeZusammen: " + bad + " ungültige");
@@ -990,6 +1042,45 @@ function selftest(){
   for (let i = 0; i < 2000; i++){ const k = aufgabeSchaetzen(rnd); if (!ALPHA2.includes(k.a) || k.F < 100 || k.F > 500 || k.F % 50) bad++; }
   ok(bad === 0, "aufgabeSchaetzen");
   ok(schaetzOk(240,-245.7,300) && !schaetzOk(200,-245.7,300) && schaetzOk(20,26.15,300) && !schaetzOk(15,26.15,300), "schaetzOk");
+  // Wechselwirkung der Prüfungen: „ungenau“ darf keine gezielte Erkennung verdecken und umgekehrt
+  rnd = mulberry32(777); let sw = [];
+  for (let i = 0; i < 3000; i++){
+    const k = aufgabeZerlegen(rnd), zz = zerlege(k), sonderK = k.a === 0 || k.a === 90;
+    for (const [ach, e] of [["x", zz.fx], ["y", zz.fy]]){
+      const eig = ach === "x" ? Math.cos : Math.sin, and = ach === "x" ? Math.sin : Math.cos, fz = k.F;
+      const code = (w) => pruefeKomp(zahl(w), k, ach).code;
+      if (Math.abs(e) > 1){
+        const tolS = Math.max(0.15, 0.005*k.F), konkurrenz = [-e, Math.sign(e)*fz*and(RAD(k.a)), Math.sign(e)*fz*Math.abs(eig(k.a))];
+        for (const f of [1.015, 0.985]) if (code(e*f) !== "ungenau" && !konkurrenz.some(c => Math.abs(c - e*f) <= tolS + 0.01)) sw.push(`ungenau ${ach} ${JSON.stringify(k)} f=${f}: ${code(e*f)}`);
+        if (code(-e) !== "vorzeichen") sw.push(`vorzeichen ${ach} ${JSON.stringify(k)}: ${code(-e)}`);
+        if (!sonderK){
+          const w = Math.sign(e)*fz*and(RAD(k.a));
+          if (code(w) !== "vertauscht") sw.push(`vertauscht ${ach} ${JSON.stringify(k)}: ${code(w)}`);
+          const c = code(Math.sign(e)*fz*Math.abs(eig(k.a)));
+          if (c !== "rad") sw.push(`rad ${ach} ${JSON.stringify(k)}: ${c}`);
+          const nf = pruefeKomp(zahl(Math.abs(eig(RAD(k.a)))), k, ach).code;
+          if (nf !== "nurFn") sw.push(`nurFn ${ach} ${JSON.stringify(k)}: ${nf}`); }
+      } }
+  }
+  ok(sw.length === 0, "Komponenten-Sweep: " + sw.length + " Abweichungen, z. B. " + sw.slice(0,3).join(" | "));
+  rnd = mulberry32(778); sw = [];
+  for (let i = 0; i < 3000; i++){
+    const tz = aufgabeZusammen(rnd), e = betragSoll(tz), w = winkelSoll(tz), achseT = tz.fx === 0 || tz.fy === 0;
+    const cb = x => pruefeBetrag(zahl(x), tz).code, cw = x => pruefeWinkel(zahl(x), tz.fx, tz.fy).code;
+    const klam = tz.fx*tz.fy < 0 ? Math.sqrt(Math.abs(tz.fy*tz.fy - tz.fx*tz.fx)) : -1e9, tolK = Math.max(0.15, 0.005*e);
+    for (const f of [1.015, 0.985]) if (cb(e*f) !== "ungenau" && Math.abs(klam - e*f) > tolK + 0.01) sw.push(`Betrag ungenau ${JSON.stringify(tz)} f=${f}: ${cb(e*f)}`);
+    if (!achseT && cb(Math.abs(tz.fx)+Math.abs(tz.fy)) !== "addiert") sw.push(`addiert ${JSON.stringify(tz)}: ${cb(Math.abs(tz.fx)+Math.abs(tz.fy))}`);
+    if (!achseT){
+      for (const d of [0.5, -0.5]) if (cw(w+d) !== "ungenau") sw.push(`Winkel ungenau ${JSON.stringify(tz)} d=${d}: ${cw(w+d)}`);
+      if (cw(90-w) !== "vertauscht" || cw(-(90-w)) !== "vertauscht") sw.push(`W vertauscht ${JSON.stringify(tz)}`);
+      const nah_ = Math.abs(RAD(w) - Math.abs(tz.fy/tz.fx)) < 0.012 || Math.abs(RAD(w) - Math.abs(tz.fx/tz.fy)) < 0.012;   // RAD(α) ≈ tan α bei kleinem α: nicht eindeutig
+      if (!nah_ && (cw(RAD(w)) !== "rad" || cw(-RAD(w)) !== "rad")) sw.push(`W rad ${JSON.stringify(tz)}`);
+      const zufall = x => Math.abs(x - w) <= 1.1 || Math.abs(x - (90-w)) <= 0.6;   // Verhältniswert fällt zufällig auf den Winkel selbst
+      if (!zufall(Math.abs(tz.fx/tz.fy)) && cw(Math.abs(tz.fx/tz.fy)) !== "kehrwert") sw.push(`W kehrwert ${JSON.stringify(tz)}: ${cw(Math.abs(tz.fx/tz.fy))}`);
+      if (!nah_ && !zufall(Math.abs(tz.fy/tz.fx)) && cw(Math.abs(tz.fy/tz.fx)) !== "tanStatt") sw.push(`W tanStatt ${JSON.stringify(tz)}: ${cw(Math.abs(tz.fy/tz.fx))}`);
+      if (cw(-w) !== "negativ") sw.push(`W negativ ${JSON.stringify(tz)}: ${cw(-w)}`);
+    } }
+  ok(sw.length === 0, "Zusammensetzen-Sweep: " + sw.length + " Abweichungen, z. B. " + sw.slice(0,3).join(" | "));
   rnd = mulberry32(12345);
   for (const typ of Object.keys(FEHLER)){
     let b = 0;
@@ -1014,38 +1105,38 @@ function selftest(){
   eingabe("s1a", 60); klick("s1pA"); ok($("s1rA").classList.contains("fb-ok"), "Station 1 A bei 60°");
   eingabe("s1a", 30); klick("s1pA"); ok($("s1rA").classList.contains("fb-bad") && $("s1rA").textContent.includes("sin 30°"), "Station 1 A bei 30°");
   eingabe("s1a", 45); klick("s1pB"); ok($("s1rB").classList.contains("fb-ok"), "Station 1 B bei 45°");
-  eingabe("s1a", 90); ok($("s1werte").textContent.includes("0,0 N") && !$("s1werte").textContent.includes("−0") && !/NaN/.test($("s1bild").innerHTML + $("s1werte").textContent), "Station 1 bei 90°");
+  eingabe("s1a", 90); ok($("s1werte").textContent.includes("0,00 N") && !$("s1werte").textContent.includes("−0") && !/NaN/.test($("s1bild").innerHTML + $("s1werte").textContent), "Station 1 bei 90°");
   eingabe("s1a", 0); ok(!/NaN/.test($("s1bild").innerHTML), "Station 1 bei 0°");
   klick("s1seite"); eingabe("s1a", 35); ok(!/NaN/.test($("s1bild").innerHTML), "Station 1 Lampe seitlich");
   klick("s1oben");
   STEIG.forEach(p => { document.querySelector(`#s1steig button[data-p="${p}"]`).click(); ok(!/NaN/.test($("s1schild").innerHTML), "Steigung " + p); });
-  const erw = {10:"5,7",25:"14,0",50:"26,6",100:"45,0",200:"63,4"};
+  const erw = {10:"5,71",25:"14,04",50:"26,57",100:"45,00",200:"63,43"};
   STEIG.forEach(p => { document.querySelector(`#s1steig button[data-p="${p}"]`).click(); ok($("s1steigtxt").textContent.endsWith(erw[p] + "°"), "Steigung " + p + " → " + $("s1steigtxt").textContent); });
   eingabe("s1w", "0,5"); klick("s1pw"); ok($("s1rw").textContent.includes("tan"), "Umkehrung tanStatt");
-  eingabe("s1w", "26,6"); klick("s1pw"); ok($("s1rw").classList.contains("fb-ok"), "Umkehrung richtig");
+  eingabe("s1w", "26,57"); klick("s1pw"); ok($("s1rw").classList.contains("fb-ok"), "Umkehrung richtig");
   // Station 2
   s2neu({F:300, a:35, sx:-1, sy:-1}); klick("s2pruef"); ok($("s2r2").classList.contains("fb-hint"), "Station 2 ohne Vorzeichen");
   document.querySelector('#s2vz button[data-s="-1"]').click(); eingabe("s2est", 240); klick("s2pruef");
-  ok($("s2r2").classList.contains("fb-ok") && $("s2exakt").textContent.includes("− 245,7 N") && s2z.n === 1, "Station 2 Schätzung gut");
+  ok($("s2r2").classList.contains("fb-ok") && $("s2exakt").textContent.includes("− 245,75 N") && s2z.n === 1, "Station 2 Schätzung gut");
   s2neu({F:300, a:35, sx:-1, sy:-1}); document.querySelector('#s2vz button[data-s="1"]').click(); eingabe("s2est", 240); klick("s2pruef");
   ok($("s2r2").classList.contains("fb-bad") && $("s2r2").textContent.includes("Vorzeichen"), "Station 2 Vorzeichen falsch");
   s2z = {n:0, m:0}; s2zaehler(); s2neu();
   // Station 3
-  setzeAufgabe3("a", T1); eingabe("s3fx", "-344,0"); eingabe("s3fy", "-240,9"); klick("s3pruef");
+  setzeAufgabe3("a", T1); eingabe("s3fx", "-344,04"); eingabe("s3fy", "-240,90"); klick("s3pruef");
   ok($("s3rx").classList.contains("fb-ok") && $("s3ry").classList.contains("fb-ok") && $("s3ges").textContent.includes("Aufgabe gelöst"), "Station 3a gelöst");
   eingabe("s3fx", "-379,6"); klick("s3pruef"); ok($("s3rx").textContent.includes("RAD"), "Station 3a RAD");
-  klick("s3weg"); ok($("s3loes").textContent.includes("− 420 N · cos 35° = − 344,0 N"), "Station 3a Lösungsweg");
+  klick("s3weg"); ok($("s3loes").textContent.includes("− 420 N · cos 35° = − 344,04 N"), "Station 3a Lösungsweg");
   setzeAufgabe3("b", {fx:-250, fy:480.5}); ok($("s3bildbox").hidden, "3b ohne Skizze");
-  eingabe("s3betrag", "541,6"); eingabe("s3winkel", "62,5"); $("s3richt").value = "II"; klick("s3pruef");
-  ok($("s3ges").textContent.includes("541,6 N unter 62,5° zur x-Achse nach links oben") && !$("s3bildbox").hidden, "Station 3b gelöst");
-  eingabe("s3winkel", "117,5"); $("s3richt").value = "II"; klick("s3pruef"); ok($("s3rw").classList.contains("fb-ok") && $("s3rw").textContent.includes("Gleichwertig"), "3b Vollwinkel");
+  eingabe("s3betrag", "541,65"); eingabe("s3winkel", "62,51"); $("s3richt").value = "II"; klick("s3pruef");
+  ok($("s3ges").textContent.includes("541,65 N unter 62,51° zur x-Achse nach links oben") && !$("s3bildbox").hidden, "Station 3b gelöst");
+  eingabe("s3winkel", "117,49"); $("s3richt").value = "II"; klick("s3pruef"); ok($("s3rw").classList.contains("fb-ok") && $("s3rw").textContent.includes("Gleichwertig"), "3b Vollwinkel");
   setzeAufgabe3("b", {fx:0, fy:-300}); eingabe("s3betrag", "300"); eingabe("s3winkel", "90"); $("s3richt").value = "un"; klick("s3pruef");
-  ok($("s3ges").textContent.includes("F = 300,0 N senkrecht nach unten (α = 90°)"), "Station 3b Achse: " + $("s3ges").textContent);
+  ok($("s3ges").textContent.includes("F = 300,00 N senkrecht nach unten (α = 90°)"), "Station 3b Achse: " + $("s3ges").textContent);
   // Station 4
   v = {kraefte:kr, typ:"pythagoras", zeile:"FR", komp:undefined, soll:tabelle(kr,null), ist:tabelle(kr,{typ:"pythagoras", zeile:"FR"})};
   setzeVariante4(v); document.querySelector('#s4body tr[data-z="FR"]').click(); $("s4typ").value = "pythagoras"; klick("s4pruef");
   ok($("s4rm").classList.contains("fb-ok") && s4.n === 1, "Station 4 Pythagoras");
-  $("s4typ").value = "rad"; klick("s4pruef"); ok($("s4rm").classList.contains("fb-bad"), "Station 4 Typ falsch");
+  $("s4typ").value = "vorzeichen"; klick("s4pruef"); ok($("s4rm").classList.contains("fb-bad") && $("s4rm").textContent.includes("Richtige Zeile gefunden"), "Station 4 Typ falsch");
   s4.n = 0; s4.m = 0; setzeVariante4(variante(naechsterTyp())); s4.m = 1; s4zaehler();
   const svgs = [...document.querySelectorAll("svg")].map(s => s.innerHTML).join("");
   ok(!/#[0-9a-fA-F]{3,6}\b/.test(svgs), "keine Hex-Farben in den SVGs"); ok(!/NaN|undefined/.test(svgs + document.body.textContent.replace(/NaN|undefined/, "").slice(0,0)), "kein NaN in den SVGs");
