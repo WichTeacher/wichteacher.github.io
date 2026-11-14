@@ -35,7 +35,9 @@
   .schritt h3{margin:0 0 6px;font-size:1.3rem;color:var(--fach)}
   .schritt h3 .nr{display:inline-block;min-width:1.6em;height:1.6em;line-height:1.6em;text-align:center;border-radius:50%;background:var(--fach);color:var(--fach-ink);font-size:.95rem;margin-right:6px}
 
-  svg.sys{display:block;width:100%;height:auto;background:var(--bg);border:1px solid var(--line);border-radius:10px;touch-action:none;user-select:none}
+  svg.sys{display:block;width:100%;height:auto;background:var(--bg);border:1px solid var(--line);border-radius:10px;user-select:none}
+  .bildrahmen{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  @media (max-width:700px){.bildrahmen svg.sys{min-width:640px}.bildrahmen::after{content:"← Bild seitlich verschieben →";display:block;text-align:center;font-size:.8rem;color:var(--muted);position:sticky;left:0}}
   svg.sys text{font-family:var(--font);font-size:15px;fill:var(--ink)}
   svg.sys text.k{font-weight:700;fill:var(--fach);font-size:16px}
   svg.sys text.g{fill:var(--muted);font-size:13px}
@@ -44,7 +46,7 @@
   svg.sys .gelenk{fill:var(--card);stroke:var(--ink);stroke-width:2.5}
   svg.sys .last line{stroke:var(--fach);stroke-width:3.4}
   svg.sys .last polygon{fill:var(--fach)}
-  svg.sys .last{cursor:grab}
+  svg.sys .last{cursor:grab;touch-action:none}
   svg.sys .last .griff{fill:transparent}
   svg.sys .res line{stroke:var(--ink);stroke-width:2.6;stroke-dasharray:9 6}
   svg.sys .res polygon{fill:var(--ink)}
@@ -115,9 +117,9 @@
   <!-- ================= Station 1 ================= -->
   <section class="taskbox" role="tabpanel" id="st1">
     <div class="schritt"><h3><span class="nr">1</span>Lasten verschieben</h3>
-      <p style="margin-top:0">Ein Roboterarm ist im Gelenk D gelagert. Drei Lasten wirken auf ihn. Die Startwerte sind die Ausgangssituation aus dem Skript.
+      <p style="margin-top:0">Ein Roboterarm ist im Gelenk D gelagert. Drei Lasten wirken auf ihn: F<sub>1</sub> Arm, F<sub>2</sub> Motor, F<sub>3</sub> Greifer mit Werkstück (im Skript G<sub>1</sub>, G<sub>2</sub> und F). Die Startwerte sind die Ausgangssituation aus dem Skript.
         Ziehen Sie die Pfeile mit der Maus oder dem Finger, oder stellen Sie die Regler ein. Die gestrichelte Kraft ist die Resultierende F<sub>r</sub>.</p>
-      <svg class="sys" id="bild1" viewBox="0 0 720 345" role="img" aria-label="Arm mit Lasten und Resultierender"></svg>
+      <div class="bildrahmen"><svg class="sys" id="bild1" viewBox="0 0 720 345" role="img" aria-label="Arm mit Lasten und Resultierender"></svg></div>
       <div class="grid2" id="regler"></div>
       <div class="knoepfe">
         <button class="btn-2" type="button" id="start">Startwerte (Skript)</button>
@@ -141,7 +143,7 @@
   <section class="taskbox" role="tabpanel" id="st2" hidden>
     <div class="schritt">
       <p style="margin-top:0">Bestimmen Sie Betrag, Richtung und Lage der Resultierenden. Bezugspunkt ist das Gelenk D.</p>
-      <svg class="sys" id="bild2" viewBox="0 0 720 345" role="img" aria-label="Zufallsaufgabe: Arm mit Lasten"></svg>
+      <div class="bildrahmen"><svg class="sys" id="bild2" viewBox="0 0 720 345" role="img" aria-label="Zufallsaufgabe: Arm mit Lasten"></svg></div>
       <p id="aufgtxt" style="font-variant-numeric:tabular-nums"></p>
       <div class="feld"><label for="eF">F<sub>r</sub> =</label><input type="text" inputmode="decimal" autocomplete="off" id="eF"><span class="einheit">N</span>
         <select id="eR" aria-label="Richtung der Resultierenden"><option value="">Richtung …</option><option value="u">nach unten</option><option value="o">nach oben</option></select></div>
@@ -200,7 +202,7 @@ function aufgabe(rnd=Math.random){
     const lasten=[...xs].sort((a,b)=>a-b).map(k=>({x:k/10,F:10*(2+Math.floor(rnd()*19)),auf:false}));
     if(rnd()<0.4) lasten[Math.floor(rnd()*n)].auf=true;
     const e=rechne(lasten);
-    if(e.Fr<20||e.paar===true||e.lr===undefined||e.lr>1.6) continue;
+    if(e.Fr<20||e.paar===true||e.lr===undefined||e.xr>1.25||e.xr<-0.2) continue;
     if(Math.abs(r2(e.lr)-e.lr)>1e-9 && Math.abs(r2(e.lr*1000)/1000-e.lr)>1e-9){ /* krumme Werte sind erlaubt */ }
     return lasten;
   }
@@ -222,7 +224,9 @@ function pruefe(lasten,eF,eR,eL,eS){
     if(gemischt&&Math.abs(Math.abs(F.wert)-summeBetraege)<0.5) res.teile.push("F<sub>r</sub>: Sie haben alle Beträge addiert. Kräfte nach oben zählen positiv, nach unten negativ.");
     else res.teile.push("F<sub>r</sub> stimmt noch nicht. Addieren Sie die Kräfte mit Vorzeichen.");
   } else if(!rOk) res.teile.push("Die Richtung von F<sub>r</sub> stimmt nicht. Das Vorzeichen der Summe zeigt sie an.");
-  if(!lOk){
+  const nk=v=>{const m=String(v).replace(",",".").match(/\.(\d*)/);return m?m[1].length:0};
+  if(!lOk&&Math.abs(Math.abs(L.wert)-e.lr)<0.06&&nk(eL)<2) res.teile.push("l<sub>r</sub>: Der Ansatz passt, aber runden Sie auf zwei Nachkommastellen.");
+  else if(!lOk){
     const SMbetrag=lasten.reduce((s,l)=>s+l.F*l.x,0);
     if(Math.abs(Math.abs(L.wert)-r2(e.lr)*1000)<=15) res.teile.push("l<sub>r</sub>: Das sieht nach Millimetern aus. Gefragt ist l<sub>r</sub> in m.");
     else if(gemischt&&Math.abs(Math.abs(L.wert)-SMbetrag/summeBetraege)<=t) res.teile.push("l<sub>r</sub>: Sie haben alle Momente und Kräfte ohne Vorzeichen gerechnet. Die Kraft nach oben dreht andersherum.");
@@ -238,7 +242,7 @@ function loesungsweg(lasten){
   return `<p><b>Betrag:</b> F<sub>ry</sub> = ${lasten.map(l=>(fy(l)>0?"+ ":MINUS+" ")+l.F+" N").join(" ")} = ${vz(e.Fry,"N")} → F<sub>r</sub> = ${zahl(e.Fr)} N nach ${e.Fry<0?"unten":"oben"}</p>
     <p><b>Momente um D</b> (gegen den Uhrzeigersinn +):<br>${zeilen.join("<br>")}<br>ΣM<sub>D</sub> = ${vz(e.SM,"Nm")}</p>
     <p><b>Lage:</b> l<sub>r</sub> = |ΣM<sub>D</sub>| / F<sub>r</sub> = ${zahl(Math.abs(e.SM))} Nm / ${zahl(e.Fr)} N = ${zahl(e.lr)} m</p>
-    <p><b>Seite:</b> F<sub>r</sub> zeigt nach ${e.Fry<0?"unten":"oben"} und muss ${e.SM<0?"im":"gegen den"} Uhrzeigersinn drehen → ${e.seite==="r"?"rechts":"links"} von D.</p>`;
+    <p><b>Seite:</b> F<sub>r</sub> zeigt nach ${e.Fry<0?"unten":"oben"} und muss ${e.SM<0?"im":"gegen den"} Uhrzeigersinn drehen → ${e.seite==="r"?"rechts":"links"} von D.</p>${e.seite==="l"?"<p>F<sub>r</sub> liegt links von D, also neben dem Arm. Das ist möglich, weil Kräfte in beide Richtungen wirken: F<sub>r</sub> ist nur eine gedachte Ersatzkraft mit derselben Wirkung.</p>":""}`;
 }
 
 /* ===== ZEICHNEN ===== */
@@ -263,7 +267,7 @@ function zeichne(svg,lasten,opt){
   el("rect",{x:X0-44,y:YB-6,width:44,height:12,class:"wand"},svg);
   el("rect",{x:X0,y:YB-8,width:SK*1.28,height:16,rx:3,class:"balken"},svg);
   el("circle",{cx:X0,cy:YB,r:13,class:"gelenk"},svg); el("circle",{cx:X0,cy:YB,r:3.5,fill:"currentColor"},svg);
-  txt("D",X0-24,YB-16,"","middle",svg);
+  txt("D",X0-24,YB+30,"","middle",svg);
   // Beschriftungen versetzen, wenn Lasten auf derselben Seite eng beieinander liegen
   const hoch={}; [true,false].forEach(seite=>{let vor=null,vh=false;
     lasten.map((l,i)=>({l,i})).filter(o=>o.l.F>0&&o.l.auf===seite).sort((a,b)=>a.l.x-b.l.x).forEach(o=>{
@@ -281,15 +285,16 @@ function zeichne(svg,lasten,opt){
       const xr=Math.max(-0.2,Math.min(1.45,e.xr)), x=px(xr), L=laenge(e.Fr)*0.85, g=el("g",{class:"res"},svg);
       const aussen=xr!==e.xr;
       const fr=`F<tspan baseline-shift="sub" font-size="11">r</tspan>`+(aussen?" (weiter außen)":"");
-      if(e.Fry<0){ pfeil(g,x,YB-8-L,YB-9,8); txt(fr,x+7,YB-34,"","start",g); }
-      else { pfeil(g,x,YB+8+L,YB+9,8); txt(fr,x+7,YB+46,"","start",g); }
+      const tx=x>560?x-7:x+7, ta=x>560?"end":"start";
+      if(e.Fry<0){ pfeil(g,x,YB-8-L,YB-9,8); txt(fr,tx,YB-34,"",ta,g); }
+      else { pfeil(g,x,YB+8+L,YB+9,8); txt(fr,tx,YB+66,"",ta,g); }
       // Maß l_r oben
       const ym=24; el("line",{x1:X0,y1:ym-8,x2:X0,y2:YB-16,class:"mass"},svg); el("line",{x1:x,y1:ym-8,x2:x,y2:ym+8,class:"mass"},svg);
       if(Math.abs(x-X0)>20){ el("line",{x1:X0,y1:ym,x2:x,y2:ym,class:"mass"},svg);
         const d=x>X0?1:-1; el("polygon",{points:`${x},${ym} ${x-d*9},${ym-4} ${x-d*9},${ym+4}`,class:"massp"},svg); el("polygon",{points:`${X0},${ym} ${X0+d*9},${ym-4} ${X0+d*9},${ym+4}`,class:"massp"},svg); }
-      txt(`l<tspan baseline-shift="sub" font-size="11">r</tspan> = ${zahl(e.lr)} m`,(X0+x)/2,ym-6,"","middle",svg);
+      txt(`l<tspan baseline-shift="sub" font-size="11">r</tspan> = ${zahl(e.lr)} m`+(aussen?" (Bild zu klein)":""),(X0+x)/2,ym-6,"","middle",svg);
     } else if(e.paar){
-      txt("F_r = 0, aber ΣM ≠ 0: Es bleibt ein reines Moment (Kräftepaar).",W/2,30,"","middle",svg);
+      txt(`F<tspan baseline-shift="sub" font-size="11">r</tspan> = 0, aber ΣM ≠ 0: Es bleibt ein reines Moment (Kräftepaar).`,W/2,30,"","middle",svg);
     }
     // Drehsinn-Pfeil um D (über dem Gelenk)
     if(Math.abs(e.SM)>0.005){
@@ -304,14 +309,14 @@ function zeichne(svg,lasten,opt){
 }
 
 /* ===== STATION 1 ===== */
-const START=[{x:0.4,F:60,auf:false},{x:0.6,F:40,auf:false},{x:1.2,F:50,auf:false}];
+const START=[{x:0.4,F:60,auf:false,n:"Arm"},{x:0.6,F:40,auf:false,n:"Motor"},{x:1.2,F:50,auf:false,n:"Greifer"}];
 let L1=START.map(l=>({...l}));
 const svg1=document.getElementById("bild1");
 function regler(){
   const box=document.getElementById("regler"); box.innerHTML="";
   L1.forEach((l,i)=>{
     const d=document.createElement("div"); d.className="lastbox";
-    d.innerHTML=`<h4>F<sub>${i+1}</sub></h4>
+    d.innerHTML=`<h4>F<sub>${i+1}</sub>${l.n?" · "+l.n:""}</h4>
       <label>Abstand von D: <b id="lx${i}"></b><input type="range" min="0.05" max="1.25" step="0.05" value="${l.x}" id="rx${i}" aria-label="Abstand von F${i+1}"></label>
       <label>Betrag: <b id="lf${i}"></b><input type="range" min="0" max="150" step="5" value="${l.F}" id="rf${i}" aria-label="Betrag von F${i+1}"></label>
       <div class="knoepfe" style="margin-top:4px"><button class="btn-2" type="button" id="ru${i}" aria-pressed="${!l.auf}">↓ nach unten</button><button class="btn-2" type="button" id="ro${i}" aria-pressed="${l.auf}">↑ nach oben</button></div>`;
@@ -330,7 +335,7 @@ function zeige1(){
     document.getElementById("ru"+i).setAttribute("aria-pressed",!l.auf); document.getElementById("ro"+i).setAttribute("aria-pressed",l.auf);
   });
   const e=rechne(L1);
-  document.getElementById("tab1").innerHTML=L1.filter(l=>l.F>0).map((l)=>{const i=L1.indexOf(l);return `<tr><td>F<sub>${i+1}</sub> = ${zahl(l.F,0)} N ${l.auf?"↑":"↓"}</td><td>${zahl(l.x)} m</td><td>${fy(l)>0?"+":MINUS} ${zahl(l.F,0)} N · ${zahl(l.x)} m = ${vz(l.x*fy(l),"Nm")}</td></tr>`}).join("")+
+  document.getElementById("tab1").innerHTML=L1.filter(l=>l.F>0).map((l)=>{const i=L1.indexOf(l);return `<tr><td>F<sub>${i+1}</sub>${l.n?" ("+l.n+")":""} = ${zahl(l.F,0)} N ${l.auf?"↑":"↓"}</td><td>${zahl(l.x)} m</td><td>${fy(l)>0?"+":MINUS} ${zahl(l.F,0)} N · ${zahl(l.x)} m = ${vz(l.x*fy(l),"Nm")}</td></tr>`}).join("")+
     `<tr><td></td><th>Summe</th><th>ΣM<sub>D</sub> = ${vz(e.SM,"Nm")}</th></tr>`;
   let h=`<p><b>F<sub>r</sub></b> = ${zahl(e.Fr)} N${e.Fr>0?" nach "+(e.Fry<0?"unten":"oben"):""}</p><p><b>ΣM<sub>D</sub></b> = ${vz(e.SM,"Nm")}${Math.abs(e.SM)>0.005?(e.SM<0?" (im Uhrzeigersinn)":" (gegen den Uhrzeigersinn)"):""}</p>`;
   if(e.lr!==undefined) h+=`<p><b>l<sub>r</sub></b> = |ΣM<sub>D</sub>| / F<sub>r</sub> = ${zahl(Math.abs(e.SM))} Nm / ${zahl(e.Fr)} N = <b>${zahl(e.lr)} m</b> ${e.seite==="r"?"rechts":"links"} von D</p>`;
@@ -348,15 +353,15 @@ document.getElementById("start").addEventListener("click",()=>{L1=START.map(l=>(
 document.getElementById("gegen").addEventListener("click",()=>{L1=[{x:0.3,F:100,auf:false},{x:0.6,F:80,auf:true},{x:1.1,F:40,auf:false}];regler();zeige1()});
 
 Fragen.render("fragen1",[
-  {q:"Stellen Sie die Startwerte ein und ziehen Sie F<sub>3</sub> (Greifer) weiter nach außen. Was passiert?",
+  {q:"Stellen Sie die Startwerte ein und ziehen Sie F<sub>2</sub> (Motor) von 0,6 m auf 1,0 m. Was passiert?",
    o:["F<sub>r</sub> bleibt gleich, l<sub>r</sub> wird größer","F<sub>r</sub> wird größer, l<sub>r</sub> bleibt dabei unverändert","F<sub>r</sub> und l<sub>r</sub> werden beide deutlich größer"],
-   r:0,w:"Der Betrag hängt nur von den Kräften ab. Das Moment von F3 wächst, also wandert die Resultierende nach außen. Für den Motor wird es enger."},
+   r:0,w:"Der Betrag hängt nur von den Kräften ab. Das Moment von F2 wächst (124 Nm statt 108 Nm), also wandert die Resultierende nach außen, hier auf 0,83 m. Der Motor mit 120 Nm schafft es nicht mehr."},
   {q:"Alle Lasten zeigen nach unten. Wo liegt F<sub>r</sub> dann immer?",
    o:["zwischen der innersten und der äußersten Last","immer genau in der Mitte des ganzen Arms","immer direkt unter der größten der drei Lasten"],
    r:0,w:"Bei gleich gerichteten Kräften liegt die Resultierende immer zwischen den Kräften, näher an den großen."},
   {q:"Klicken Sie auf „Beispiel: eine Kraft nach oben“. Was fällt bei F<sub>r</sub> auf?",
    o:["F<sub>r</sub> ist kleiner als die Summe der Beträge","F<sub>r</sub> ist größer als die Summe aller drei Beträge","F<sub>r</sub> ist genau gleich der Summe aller Beträge"],
-   r:0,w:"Die Kraft nach oben zählt mit umgekehrtem Vorzeichen. Dadurch kann F_r sogar außerhalb der Lasten liegen. Probieren Sie es mit F2 noch größer."},
+   r:0,w:"Die Kraft nach oben zählt mit umgekehrtem Vorzeichen. Dadurch kann die Resultierende sogar außerhalb der Lasten liegen. Probieren Sie es mit F2 noch größer."},
   {q:"Stellen Sie F<sub>1</sub> = 50 N nach unten und F<sub>2</sub> = 50 N nach oben ein, F<sub>3</sub> auf 0 N. Was bleibt übrig?",
    o:["ein reines Moment ohne Resultierende","eine Resultierende von 100 N nach unten","eine Resultierende genau im Gelenk D selbst"],
    r:0,w:"Zwei gleich große, entgegengesetzte Kräfte heben sich als Kraft auf, drehen aber. Das ist ein Kräftepaar."}
@@ -402,10 +407,11 @@ if(/[?&]test/.test(location.search)){
   e=rechne([{x:.4,F:50,auf:false},{x:.8,F:50,auf:true}]); chk("Kräftepaar",e.paar===true&&e.lr===undefined);
   chk("Prüfen richtig",pruefe(START,"150","u","0,72","r").ok===true);
   chk("Diagnose mm",/Millimetern/.test(pruefe(START,"150","u","720","r").teile.join()));
+  chk("Rundungshinweis",/zwei Nachkommastellen/.test(pruefe(START,"150","u","0,7","r").teile.join()));
   chk("Diagnose ΣM",/Teilen Sie noch/.test(pruefe(START,"150","u","108","r").teile.join()));
   const G=[{x:.3,F:100,auf:false},{x:.6,F:80,auf:true},{x:1.1,F:40,auf:false}];
   chk("Diagnose Beträge",/Beträge addiert/.test(pruefe(G,"220","u","1","r").teile.join()));
-  const rnd=mulberry32(7); let gut=0; for(let k=0;k<500;k++){const a=aufgabe(rnd), x=rechne(a); if(x.Fr>=20&&x.lr!==undefined&&x.lr<=1.6&&pruefe(a,String(r2(x.Fr)),x.Fry<0?"u":"o",String(r2(x.lr)),x.seite).ok) gut++;}
+  const rnd=mulberry32(7); let gut=0; for(let k=0;k<500;k++){const a=aufgabe(rnd), x=rechne(a); if(x.Fr>=20&&x.lr!==undefined&&x.xr<=1.25&&x.xr>=-0.2&&pruefe(a,String(r2(x.Fr)),x.Fry<0?"u":"o",String(r2(x.lr)),x.seite).ok) gut++;}
   chk("500 Zufallsaufgaben lösbar ("+gut+")",gut===500);
   const fr=Fragen.laengenbericht(); log.push(`Fragen: ${fr.fragen}, richtige Antwort am längsten: ${fr.laengste}`);
   const st=document.getElementById("selftest"); st.hidden=false; st.textContent=log.join("\n")+"\n"+(ok?"SELBSTTEST OK":"SELBSTTEST FEHLER");
